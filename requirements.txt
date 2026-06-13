@@ -1,0 +1,8 @@
+Flask
+Flask-Cors
+static-ffmpeg
+librosa
+numpy<2.0.0
+joblib
+tensorflow
+gunicorn
