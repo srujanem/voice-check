@@ -6,11 +6,19 @@ import librosa
 import numpy as np
 import joblib
 import os
+import tensorflow as tf
 
 app = Flask(__name__)
 CORS(app)
 
-model = joblib.load("model.pkl")
+# ── Load model & scaler ───────────────────────────────────────────────────────
+model = tf.keras.models.load_model("model.keras")
+try:
+    scaler = joblib.load("scaler.pkl")
+    print("✅ Model and scaler loaded.")
+except FileNotFoundError:
+    scaler = None
+    print("⚠️  scaler.pkl not found — predictions may be less accurate.")
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -21,31 +29,53 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ── Feature extraction (must match train_model.py exactly) ───────────────────
 def extract_features(file_path):
     try:
         y, sr = librosa.load(file_path, duration=5, sr=22050)
+
         if len(y) == 0:
             return None
-        # Pad audio if it's too short for mfcc calculation (n_fft=2048)
+
         if len(y) < 2048:
             y = np.pad(y, (0, 2048 - len(y)))
-            
+
+        # MFCC
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+
+        # Chroma
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        mel = librosa.feature.melspectrogram(y=y, sr=sr)
+
+        # Pitch
+        pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
+        pitch_values = pitches[magnitudes > np.median(magnitudes)]
+        pitch_mean = np.mean(pitch_values) if len(pitch_values) > 0 else 0.0
+        pitch_std  = np.std(pitch_values)  if len(pitch_values) > 0 else 0.0
+
+        # Zero Crossing Rate
+        zcr = librosa.feature.zero_crossing_rate(y)
+
+        # RMS Energy
+        rms = librosa.feature.rms(y=y)
+
         features = np.hstack([
             np.mean(mfcc.T, axis=0),
+            np.std(mfcc.T, axis=0),
             np.mean(chroma.T, axis=0),
-            np.mean(mel.T, axis=0)
+            np.std(chroma.T, axis=0),
+            [pitch_mean, pitch_std],
+            [np.mean(zcr), np.std(zcr)],
+            [np.mean(rms), np.std(rms)],
         ])
         return features.reshape(1, -1)
+
     except Exception as e:
-        print(f"Error extracting features: {e}")
+        print(f"Feature extraction error: {e}")
         return None
 
+# ── Predict endpoint ──────────────────────────────────────────────────────────
 @app.route("/predict", methods=["POST"])
 def predict():
-
     if "audio" not in request.files:
         return jsonify({"error": "No file uploaded"})
 
@@ -53,27 +83,44 @@ def predict():
 
     if file.filename == '':
         return jsonify({"error": "No file selected"})
-        
+
     if not allowed_file(file.filename):
-        return jsonify({"error": f"Unsupported file format. Allowed formats: {', '.join(ALLOWED_EXTENSIONS)}"})
+        return jsonify({"error": f"Unsupported format. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
 
     path = os.path.join(UPLOAD_FOLDER, file.filename)
-
     file.save(path)
 
     features = extract_features(path)
 
     if features is None:
-        return jsonify({"error": "Failed to extract features from audio"})
+        return jsonify({"error": "Could not extract features from audio. Try a different file."}), 422
 
-    prediction = model.predict(features)[0]
+    if scaler is not None:
+        features = scaler.transform(features)
 
-    result = "Human Voice" if prediction == 0 else "AI Voice"
+    pred_prob = float(model.predict(features, verbose=0)[0][0])
+    is_ai = pred_prob >= 0.5
+
+    result = "AI Voice" if is_ai else "Human Voice"
+
+    # Extra detail: individual class probabilities
+    prob_ai    = round(pred_prob * 100, 1)
+    prob_human = round((1.0 - pred_prob) * 100, 1)
+    confidence = prob_ai if is_ai else prob_human
+
+    print(f"Prediction: {result} | Confidence: {confidence}% | Human: {prob_human}% | AI: {prob_ai}%")
 
     return jsonify({
-        "prediction": result
+        "prediction": result,
+        "confidence": confidence,
+        "prob_human": prob_human,
+        "prob_ai":    prob_ai
     })
+
+# ── Health check ──────────────────────────────────────────────────────────────
+@app.route("/", methods=["GET"])
+def health():
+    return jsonify({"status": "Voice Check API is running ✅"})
 
 if __name__ == "__main__":
     app.run(debug=True)
-# model reloaded again

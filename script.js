@@ -1,51 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
-    const tabUpload = document.getElementById('tab-upload');
-    const tabRecord = document.getElementById('tab-record');
-    const uploadArea = document.getElementById('upload-area');
-    const recordArea = document.getElementById('record-area');
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const recordBtn = document.getElementById('record-btn');
-    const recordStatus = document.getElementById('record-status');
+    const tabUpload     = document.getElementById('tab-upload');
+    const tabRecord     = document.getElementById('tab-record');
+    const uploadArea    = document.getElementById('upload-area');
+    const recordArea    = document.getElementById('record-area');
+    const dropZone      = document.getElementById('drop-zone');
+    const fileInput     = document.getElementById('file-input');
+    const recordBtn     = document.getElementById('record-btn');
+    const recordStatus  = document.getElementById('record-status');
     const recordingTimer = document.getElementById('recording-timer');
-    
+
     const audioPreviewContainer = document.getElementById('audio-preview-container');
-    const fileNameDisplay = document.getElementById('file-name');
-    const audioPlayer = document.getElementById('audio-player');
-    const removeAudioBtn = document.getElementById('remove-audio');
-    
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const loadingState = document.getElementById('loading-state');
-    const resultState = document.getElementById('result-state');
-    const resultCard = document.getElementById('result-card');
-    const resultIconFa = document.getElementById('result-icon-fa');
-    const resultText = document.getElementById('result-text');
-    const confidencePercentage = document.getElementById('confidence-percentage');
-    const confidenceBar = document.getElementById('confidence-bar');
-    const resetBtn = document.getElementById('reset-btn');
-    
-    const errorAlert = document.getElementById('error-alert');
-    const errorMessage = document.getElementById('error-message');
-    const inputSection = document.getElementById('input-section');
+    const fileNameDisplay       = document.getElementById('file-name');
+    const audioPlayer           = document.getElementById('audio-player');
+    const removeAudioBtn        = document.getElementById('remove-audio');
+
+    const analyzeBtn            = document.getElementById('analyze-btn');
+    const loadingState          = document.getElementById('loading-state');
+    const resultState           = document.getElementById('result-state');
+    const resultCard            = document.getElementById('result-card');
+    const resultIconFa          = document.getElementById('result-icon-fa');
+    const resultText            = document.getElementById('result-text');
+    const confidencePercentage  = document.getElementById('confidence-percentage');
+    const confidenceBar         = document.getElementById('confidence-bar');
+    const resetBtn              = document.getElementById('reset-btn');
+
+    const errorAlert    = document.getElementById('error-alert');
+    const errorMessage  = document.getElementById('error-message');
+    const inputSection  = document.getElementById('input-section');
+
+    // Probability detail elements (added in index.html below)
+    const probHumanEl = document.getElementById('prob-human');
+    const probAiEl    = document.getElementById('prob-ai');
 
     // --- State Variables ---
     let currentAudioFile = null;
-    let currentAudioUrl = null;
-    let isRecording = false;
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let recordInterval = null;
-    let recordTime = 0;
+    let currentAudioUrl  = null;
+    let isRecording      = false;
+    let mediaRecorder    = null;
+    let audioChunks      = [];
+    let recordInterval   = null;
+    let recordTime       = 0;
 
-    // --- Tab Switching Logic ---
+    // --- Tab Switching ---
     tabUpload.addEventListener('click', () => {
         tabUpload.classList.add('active');
         tabRecord.classList.remove('active');
         uploadArea.classList.add('active');
         recordArea.classList.remove('active');
-        
-        // Stop recording if active when switching tabs
         if (isRecording) stopRecording();
     });
 
@@ -56,11 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadArea.classList.remove('active');
     });
 
-    // --- File Upload Logic ---
-    // Trigger file input on click
+    // --- File Upload ---
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Handle drag events for visual feedback
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropZone.classList.add('dragover');
@@ -70,54 +70,40 @@ document.addEventListener('DOMContentLoaded', () => {
         dropZone.classList.remove('dragover');
     });
 
-    // Handle file drop
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('dragover');
-        
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
+        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
     });
 
-    // Handle normal file selection
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
     });
 
     function handleFile(file) {
         hideError();
-        
-        // Validate file format
-        const validTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/flac', 'audio/x-flac'];
-        // Also check extension as fallback for some OS
+        const validTypes      = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/flac', 'audio/x-flac'];
         const validExtensions = ['.wav', '.mp3', '.flac'];
-        const fileName = file.name.toLowerCase();
-        const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+        const fileName        = file.name.toLowerCase();
+        const hasValidExt     = validExtensions.some(ext => fileName.endsWith(ext));
 
-        if (!validTypes.includes(file.type) && !hasValidExtension) {
+        if (!validTypes.includes(file.type) && !hasValidExt) {
             showError('Unsupported file format. Please upload a WAV, MP3, or FLAC file.');
             return;
         }
 
         currentAudioFile = file;
-        
-        // Free memory if there was a previous URL
         if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
         currentAudioUrl = URL.createObjectURL(file);
-        
         showAudioPreview(file.name, currentAudioUrl);
     }
 
-    // --- Microphone Recording Logic ---
+    // --- Microphone Recording ---
     let isRequesting = false;
     let recordingExt = 'webm';
 
     recordBtn.addEventListener('click', async () => {
         if (isRequesting) return;
-        
         if (!isRecording) {
             isRequesting = true;
             await startRecording();
@@ -129,74 +115,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function startRecording() {
         try {
-            // Request microphone access
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            
-            // Determine correct extension based on browser
+            const stream   = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder  = new MediaRecorder(stream);
+            audioChunks    = [];
+
             recordingExt = 'webm';
-            if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) {
-                recordingExt = 'mp4';
-            } else if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('ogg')) {
-                recordingExt = 'ogg';
-            }
+            if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4'))  recordingExt = 'mp4';
+            else if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('ogg')) recordingExt = 'ogg';
 
             mediaRecorder.addEventListener('dataavailable', event => {
-                if (event.data.size > 0) {
-                    audioChunks.push(event.data);
-                }
+                if (event.data.size > 0) audioChunks.push(event.data);
             });
 
             mediaRecorder.addEventListener('stop', () => {
-                // Combine chunks into a blob
-                const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' }); 
-                
+                const audioBlob       = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
                 if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
-                currentAudioUrl = URL.createObjectURL(audioBlob);
-                currentAudioFile = audioBlob; 
+                currentAudioUrl       = URL.createObjectURL(audioBlob);
+                currentAudioFile      = audioBlob;
                 currentAudioFile.recordedName = `recorded_audio.${recordingExt}`;
-                
                 showAudioPreview(`recorded_audio.${recordingExt}`, currentAudioUrl);
-                
-                // Release the microphone stream
                 stream.getTracks().forEach(track => track.stop());
             });
 
             mediaRecorder.start();
             isRecording = true;
-            
-            // UI Updates for recording state
             recordBtn.classList.add('recording');
-            recordBtn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+            recordBtn.innerHTML     = '<i class="fa-solid fa-stop"></i>';
             recordStatus.textContent = 'Recording...';
             startTimer();
             hideError();
 
         } catch (err) {
-            console.error('Error accessing microphone:', err);
-            // Specific error handling based on user action
+            console.error('Microphone error:', err);
             if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                showError('Microphone access denied. Please allow microphone permissions in your browser.');
-            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                showError('Microphone access denied. Please allow microphone permissions.');
+            } else if (err.name === 'NotFoundError') {
                 showError('No microphone found on this device.');
             } else {
-                showError('Error accessing microphone: ' + err.message);
+                showError('Microphone error: ' + err.message);
             }
         }
     }
 
     function stopRecording() {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-        }
-        
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
         isRecording = false;
-        
-        // Reset UI
         recordBtn.classList.remove('recording');
-        recordBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        recordBtn.innerHTML      = '<i class="fa-solid fa-microphone"></i>';
         recordStatus.textContent = 'Click to start recording';
         stopTimer();
     }
@@ -204,10 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startTimer() {
         recordTime = 0;
         updateTimerDisplay();
-        recordInterval = setInterval(() => {
-            recordTime++;
-            updateTimerDisplay();
-        }, 1000);
+        recordInterval = setInterval(() => { recordTime++; updateTimerDisplay(); }, 1000);
     }
 
     function stopTimer() {
@@ -222,52 +184,48 @@ document.addEventListener('DOMContentLoaded', () => {
         recordingTimer.textContent = `${mins}:${secs}`;
     }
 
-    // --- Audio Preview Logic ---
+    // --- Audio Preview ---
     function showAudioPreview(filename, url) {
         fileNameDisplay.textContent = filename;
         audioPlayer.src = url;
+        audioPlayer.load();
         audioPreviewContainer.classList.remove('hidden');
         analyzeBtn.disabled = false;
+        document.querySelector('.tabs').style.display = 'none';
+        uploadArea.style.display = 'none';
+        recordArea.style.display = 'none';
     }
 
-    removeAudioBtn.addEventListener('click', () => {
-        resetInputState();
-    });
+    removeAudioBtn.addEventListener('click', resetInputState);
 
     function resetInputState() {
         currentAudioFile = null;
-        if (currentAudioUrl) {
-            URL.revokeObjectURL(currentAudioUrl);
-            currentAudioUrl = null;
-        }
+        if (currentAudioUrl) { URL.revokeObjectURL(currentAudioUrl); currentAudioUrl = null; }
         audioPlayer.src = '';
         audioPreviewContainer.classList.add('hidden');
         analyzeBtn.disabled = true;
-        fileInput.value = ''; 
+        fileInput.value = '';
         hideError();
+        document.querySelector('.tabs').style.display = '';
+        uploadArea.style.display = '';
+        recordArea.style.display = '';
     }
 
-    // --- Analysis Logic ---
+    // --- Analysis ---
     analyzeBtn.addEventListener('click', () => {
-        if (!currentAudioFile && !currentAudioUrl) {
+        if (!currentAudioFile) {
             showError('Please upload or record an audio file first.');
             return;
         }
-
         startAnalysis();
     });
 
     async function startAnalysis() {
-        // Hide inputs and analyze button
         inputSection.style.display = 'none';
-        analyzeBtn.style.display = 'none';
+        analyzeBtn.style.display   = 'none';
         hideError();
-        
-        // Show loading state
         loadingState.classList.remove('hidden');
         resultState.classList.add('hidden');
-        
-        // Pause audio if it's currently playing
         audioPlayer.pause();
 
         try {
@@ -280,67 +238,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            if (!response.ok) {
-                throw new Error(`Server returned status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
             const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.error);
-            }
+            if (data.error) throw new Error(data.error);
 
             const isHuman = data.prediction === "Human Voice";
-            showResult(isHuman);
+            showResult(isHuman, data.confidence, data.prob_human, data.prob_ai);
+
         } catch (err) {
-            console.error('Error during analysis:', err);
-            showError('An error occurred while analyzing the audio: ' + err.message);
-            // Reset UI on error
+            console.error('Analysis error:', err);
+            showError('Error analyzing audio: ' + err.message);
             inputSection.style.display = 'block';
-            analyzeBtn.style.display = 'flex';
+            analyzeBtn.style.display   = 'flex';
             loadingState.classList.add('hidden');
         }
     }
 
-    function showResult(isHuman) {
+    // --- Show Result with REAL confidence ---
+    function showResult(isHuman, confidence, probHuman, probAi) {
         loadingState.classList.add('hidden');
         resultState.classList.remove('hidden');
 
-        // Reset any previous result classes
-        resultCard.className = 'result-card';
+        resultCard.className   = 'result-card';
         confidenceBar.style.width = '0%';
-        
-        // Use a tiny timeout to allow the browser to render the initial state before applying animations
+
         setTimeout(() => {
             if (isHuman) {
                 resultCard.classList.add('human');
-                resultIconFa.className = 'fa-solid fa-user';
-                resultText.textContent = 'Human Voice';
+                resultIconFa.className  = 'fa-solid fa-user';
+                resultText.textContent  = 'Human Voice';
             } else {
                 resultCard.classList.add('ai');
-                resultIconFa.className = 'fa-solid fa-robot';
-                resultText.textContent = 'AI Generated Voice';
+                resultIconFa.className  = 'fa-solid fa-robot';
+                resultText.textContent  = 'AI Generated Voice';
             }
-            
-            // Animate progress bar and set text
-            confidencePercentage.textContent = 'Analysis Complete';
-            confidenceBar.style.width = '100%';
+
+            // ✅ Real confidence score from model
+            confidencePercentage.textContent  = `${confidence}%`;
+            confidenceBar.style.width         = `${confidence}%`;
+
+            // ✅ Show both probabilities if elements exist
+            if (probHumanEl) probHumanEl.textContent = `Human: ${probHuman}%`;
+            if (probAiEl)    probAiEl.textContent    = `AI: ${probAi}%`;
+
         }, 50);
     }
 
-    // --- Reset Application Logic ---
+    // --- Reset ---
     resetBtn.addEventListener('click', () => {
-        // Restore initial UI state
         inputSection.style.display = 'block';
-        analyzeBtn.style.display = 'flex';
-        
+        analyzeBtn.style.display   = 'flex';
         resultState.classList.add('hidden');
-        confidenceBar.style.width = '0%';
-        
+        confidenceBar.style.width  = '0%';
         resetInputState();
     });
 
-    // --- Helper Functions ---
+    // --- Helpers ---
     function showError(msg) {
         errorMessage.textContent = msg;
         errorAlert.classList.remove('hidden');
@@ -350,22 +304,18 @@ document.addEventListener('DOMContentLoaded', () => {
         errorAlert.classList.add('hidden');
     }
 
-    // --- Theme Toggle Logic ---
+    // --- Theme Toggle ---
     const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    
-    // Check local storage for saved theme, default to dark
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    
-    // Apply saved theme on load
+    const themeIcon      = document.getElementById('theme-icon');
+    const savedTheme     = localStorage.getItem('theme') || 'dark';
+
     if (savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
         themeIcon.classList.replace('fa-sun', 'fa-moon');
     }
-    
+
     themeToggleBtn.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        
         if (currentTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');

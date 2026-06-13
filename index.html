@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI vs Human Voice Detection</title>
+    <title>Voice Check — AI vs Human Detection</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,37 +14,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Abstract Background Elements -->
+    <!-- Background Effects -->
     <div class="background-effects">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
     </div>
-    
+
     <!-- Theme Toggle -->
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
         <i class="fa-solid fa-sun" id="theme-icon"></i>
     </button>
-    
+
     <main class="container">
-        <!-- 1. Header Section -->
+        <!-- Header -->
         <header class="header">
-            <img src="logo.png" alt="AI vs Human Voice Detection Logo" class="main-logo">
-            <h1>AI vs Human Voice Detection</h1>
+            <img src="logo.png" alt="Voice Check Logo" class="main-logo">
+            <h1>Voice Check</h1>
             <p>Upload or record audio to detect whether the voice is AI-generated or human.</p>
         </header>
 
-        <!-- Main Content Card -->
+        <!-- Main Card -->
         <div class="card">
-            
-            <!-- 7. Error Handling Section -->
+
+            <!-- Error Alert -->
             <div id="error-alert" class="alert hidden">
                 <i class="fa-solid fa-circle-exclamation"></i>
                 <span id="error-message"></span>
             </div>
 
-            <!-- 2. Audio Input Section -->
+            <!-- Input Section -->
             <div class="input-section" id="input-section">
-                <!-- Tabs to switch between Upload and Record -->
+                <!-- Tabs -->
                 <div class="tabs">
                     <button class="tab-btn active" id="tab-upload">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload Audio
@@ -54,19 +54,20 @@
                     </button>
                 </div>
 
-                <!-- Upload Area (Drag & Drop) -->
+                <!-- Upload Area -->
                 <div id="upload-area" class="input-area active">
                     <div class="drop-zone" id="drop-zone">
                         <i class="fa-solid fa-file-audio"></i>
                         <h3>Drag & Drop Audio File</h3>
                         <p>or click to browse</p>
-                        <p class="format-info">Supported formats: WAV, MP3, FLAC</p>
-                        <!-- Hidden File Input -->
-                        <input type="file" id="file-input" accept=".wav, .mp3, .flac, audio/wav, audio/mpeg, audio/flac, audio/x-flac" hidden>
+                        <p class="format-info">Supported: WAV, MP3, FLAC</p>
+                        <input type="file" id="file-input"
+                               accept=".wav,.mp3,.flac,audio/wav,audio/mpeg,audio/flac,audio/x-flac"
+                               hidden>
                     </div>
                 </div>
 
-                <!-- Record Area (Microphone) -->
+                <!-- Record Area -->
                 <div id="record-area" class="input-area hidden">
                     <div class="record-container">
                         <button id="record-btn" class="record-btn">
@@ -77,29 +78,29 @@
                     </div>
                 </div>
 
-                <!-- Audio Player Preview (Hidden until file selected) -->
+                <!-- Audio Preview -->
                 <div id="audio-preview-container" class="audio-preview hidden">
                     <div class="file-info">
                         <i class="fa-solid fa-music"></i>
                         <span id="file-name">audio_sample.wav</span>
-                        <button id="remove-audio" class="icon-btn" title="Remove Audio"><i class="fa-solid fa-xmark"></i></button>
+                        <button id="remove-audio" class="icon-btn" title="Remove">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                     <audio id="audio-player" controls></audio>
                 </div>
             </div>
 
-            <!-- 3. Analyze Button -->
+            <!-- Analyze Button -->
             <button id="analyze-btn" class="btn-primary" disabled>
                 <span>Analyze Voice</span>
                 <i class="fa-solid fa-microchip"></i>
             </button>
 
-            <!-- 4. Loading State & 6. Visualization Section -->
+            <!-- Loading State -->
             <div id="loading-state" class="state-container hidden">
                 <div class="spinner"></div>
                 <p>Analyzing voice characteristics...</p>
-                
-                <!-- Animated fake waveform placeholder -->
                 <div class="visualization-container">
                     <div class="bar"></div>
                     <div class="bar"></div>
@@ -112,10 +113,10 @@
                 </div>
             </div>
 
-            <!-- 5. Result Section -->
+            <!-- Result Section -->
             <div id="result-state" class="state-container hidden">
                 <h3 class="result-title">Analysis Complete</h3>
-                
+
                 <div class="result-card" id="result-card">
                     <div class="result-header">
                         <div class="result-icon">
@@ -123,7 +124,8 @@
                         </div>
                         <h2 id="result-text">Human Voice</h2>
                     </div>
-                    
+
+                    <!-- Confidence Score (real value from model) -->
                     <div class="confidence-section">
                         <div class="confidence-header">
                             <span>Confidence Score</span>
@@ -133,8 +135,14 @@
                             <div id="confidence-bar" class="progress-fill"></div>
                         </div>
                     </div>
+
+                    <!-- Dual Probability Breakdown -->
+                    <div class="prob-breakdown">
+                        <span id="prob-human" class="prob-item human-prob">Human: —</span>
+                        <span id="prob-ai"    class="prob-item ai-prob">AI: —</span>
+                    </div>
                 </div>
-                
+
                 <button id="reset-btn" class="btn-secondary">
                     <i class="fa-solid fa-rotate-right"></i> Analyze Another File
                 </button>
