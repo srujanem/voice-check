@@ -120,6 +120,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function animateCountUp(element, target, duration, prefix = '', suffix = '%') {
+        let start = 0;
+        const targetNum = parseFloat(target);
+        if (isNaN(targetNum)) { element.textContent = prefix + target + suffix; return; }
+        const increment = targetNum / (duration / 16);
+        const interval = setInterval(() => {
+            start += increment;
+            if (start >= targetNum) {
+                start = targetNum;
+                clearInterval(interval);
+            }
+            element.textContent = prefix + start.toFixed(1) + suffix;
+        }, 16);
+    }
+
     function showResults(data) {
         resultsSection.classList.remove('hidden');
         
@@ -127,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const confidence = Math.round(data.confidence);
         
         resultCard.className = 'result-card';
+        const icon = document.getElementById('result-icon');
         scoreProgress.style.strokeDashoffset = '339.292';
 
         setTimeout(() => {
@@ -134,20 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultCard.classList.add('status-authentic');
                 resultCard.classList.remove('status-fake');
                 classificationResult.textContent = 'Authentic Image';
+                icon.className = 'fa-solid fa-user-check';
             } else {
                 resultCard.classList.add('status-fake');
                 resultCard.classList.remove('status-authentic');
                 classificationResult.textContent = 'AI-Generated Image';
+                icon.className = 'fa-solid fa-robot';
             }
 
-            scorePercentage.textContent = confidence + '%';
+            animateCountUp(scorePercentage, confidence, 1500);
             
             const circumference = 339.292;
             const offset = circumference - (confidence / 100) * circumference;
             scoreProgress.style.strokeDashoffset = offset;
 
-            probReal.textContent = `Real: ${data.prob_real}%`;
-            probFake.textContent = `Fake: ${data.prob_fake}%`;
+            if (probReal) animateCountUp(probReal, data.prob_real, 1500, 'Real: ');
+            if (probFake) animateCountUp(probFake, data.prob_fake, 1500, 'Fake: ');
         }, 50);
     }
 });

@@ -140,6 +140,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function animateCountUp(element, target, duration, prefix = '', suffix = '%') {
+        let start = 0;
+        const targetNum = parseFloat(target);
+        if (isNaN(targetNum)) { element.textContent = prefix + target + suffix; return; }
+        const increment = targetNum / (duration / 16);
+        const interval = setInterval(() => {
+            start += increment;
+            if (start >= targetNum) {
+                start = targetNum;
+                clearInterval(interval);
+            }
+            element.textContent = prefix + start.toFixed(1) + suffix;
+        }, 16);
+    }
+
     // --- Show Result with REAL confidence ---
     function showResult(isHuman, confidence, probHuman, probAi) {
         loadingState.classList.add('hidden');
@@ -147,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resultCard.className   = 'result-card';
         const ring = document.getElementById('confidence-bar-circle');
+        const icon = document.getElementById('result-icon');
         ring.style.strokeDashoffset = '339.292';
 
         setTimeout(() => {
@@ -154,23 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultCard.classList.add('status-authentic');
                 resultCard.classList.remove('status-fake');
                 resultText.textContent  = 'Human Voice';
+                icon.className = 'fa-solid fa-user-check';
             } else {
                 resultCard.classList.add('status-fake');
                 resultCard.classList.remove('status-authentic');
                 resultText.textContent  = 'AI Generated Voice';
+                icon.className = 'fa-solid fa-robot';
             }
 
-            // Real confidence score from model
-            confidencePercentage.textContent  = `${confidence}%`;
+            animateCountUp(confidencePercentage, confidence, 1500);
             
-            // Calculate stroke offset for circle
             const circumference = 339.292;
             const offset = circumference - (confidence / 100) * circumference;
             ring.style.strokeDashoffset = offset;
 
-            // Show both probabilities if elements exist
-            if (probHumanEl) probHumanEl.textContent = `Human: ${probHuman}%`;
-            if (probAiEl)    probAiEl.textContent    = `AI: ${probAi}%`;
+            if (probHumanEl) animateCountUp(probHumanEl, probHuman, 1500, 'Human: ');
+            if (probAiEl)    animateCountUp(probAiEl, probAi, 1500, 'AI: ');
 
         }, 50);
     }
