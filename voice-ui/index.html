@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Check — AI vs Human Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="style.css"> <!-- Specific overrides if needed -->
+</head>
+<body>
+    
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="logo-section">
+                <img src="../assets/voice_logo.png" alt="Voice Check Logo" class="app-logo">
+                <div>
+                    <h2>Voice Detector</h2>
+                    <p style="font-size: 14px;">Identify AI-generated speech</p>
+                </div>
+            </div>
+            <a href="../index.html" class="btn-secondary">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </header>
+
+        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 10px; border-radius: 8px; margin-bottom: 20px; color: white;">
+            <i class="fa-solid fa-circle-exclamation"></i> <span id="error-message"></span>
+        </div>
+
+        <div id="input-section">
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
+                <button class="tab-btn" id="tab-record"><i class="fa-solid fa-microphone"></i> Record</button>
+            </div>
+
+            <div id="upload-area" class="input-area active">
+                <div class="upload-area" id="drop-zone">
+                    <i class="fa-solid fa-file-audio upload-icon"></i>
+                    <h3>Drag & Drop Audio</h3>
+                    <p>WAV, MP3, or FLAC</p>
+                    <input type="file" id="file-input" accept=".wav,.mp3,.flac,audio/*" hidden>
+                </div>
+            </div>
+
+            <div id="record-area" class="input-area hidden">
+                <div class="upload-area" style="display:flex; flex-direction:column; align-items:center;">
+                    <button id="record-btn" class="record-btn">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <h3 id="record-status" style="margin-top:10px;">Click to start</h3>
+                    <p id="recording-timer">00:00</p>
+                </div>
+            </div>
+
+            <div id="audio-preview-container" class="hidden" style="text-align: center; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px;">
+                <p id="file-name" style="margin-bottom: 10px; font-weight: 600;"></p>
+                <audio id="audio-player" controls style="width: 100%; margin-bottom: 10px;"></audio>
+                <button id="remove-audio" class="btn-secondary" style="width: auto;">Remove File</button>
+            </div>
+        </div>
+
+        <button id="analyze-btn" class="btn-primary" disabled>
+            <i class="fa-solid fa-microchip"></i> Analyze Audio
+        </button>
+
+        <div id="loading-state" class="hidden text-center" style="margin-top: 20px;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--accent-purple); margin-bottom: 10px;"></i>
+            <p>Analyzing voice features...</p>
+        </div>
+
+        <div id="result-state" class="hidden">
+            <div class="result-card" id="result-card">
+                <h3 class="result-title" id="result-text">Human Voice</h3>
+                
+                <div class="confidence-ring">
+                    <svg>
+                        <circle cx="60" cy="60" r="54"></circle>
+                        <circle class="progress" cx="60" cy="60" r="54" id="confidence-bar-circle"></circle>
+                    </svg>
+                    <div class="confidence-text" id="confidence-percentage">0%</div>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <span id="prob-human">Human: --</span>
+                    <span id="prob-ai">AI: --</span>
+                </div>
+            </div>
+
+            <button id="reset-btn" class="btn-secondary" style="width: 100%; margin-top: 20px; justify-content: center;">
+                <i class="fa-solid fa-rotate-right"></i> Analyze Another
+            </button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

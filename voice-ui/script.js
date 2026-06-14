@@ -261,24 +261,29 @@ document.addEventListener('DOMContentLoaded', () => {
         resultState.classList.remove('hidden');
 
         resultCard.className   = 'result-card';
-        confidenceBar.style.width = '0%';
+        const ring = document.getElementById('confidence-bar-circle');
+        ring.style.strokeDashoffset = '339.292';
 
         setTimeout(() => {
             if (isHuman) {
-                resultCard.classList.add('human');
-                resultIconFa.className  = 'fa-solid fa-user';
+                resultCard.classList.add('status-authentic');
+                resultCard.classList.remove('status-fake');
                 resultText.textContent  = 'Human Voice';
             } else {
-                resultCard.classList.add('ai');
-                resultIconFa.className  = 'fa-solid fa-robot';
+                resultCard.classList.add('status-fake');
+                resultCard.classList.remove('status-authentic');
                 resultText.textContent  = 'AI Generated Voice';
             }
 
-            // ✅ Real confidence score from model
+            // Real confidence score from model
             confidencePercentage.textContent  = `${confidence}%`;
-            confidenceBar.style.width         = `${confidence}%`;
+            
+            // Calculate stroke offset for circle
+            const circumference = 339.292;
+            const offset = circumference - (confidence / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
 
-            // ✅ Show both probabilities if elements exist
+            // Show both probabilities if elements exist
             if (probHumanEl) probHumanEl.textContent = `Human: ${probHuman}%`;
             if (probAiEl)    probAiEl.textContent    = `AI: ${probAi}%`;
 
@@ -290,7 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
         inputSection.style.display = 'block';
         analyzeBtn.style.display   = 'flex';
         resultState.classList.add('hidden');
-        confidenceBar.style.width  = '0%';
+        const ring = document.getElementById('confidence-bar-circle');
+        if (ring) ring.style.strokeDashoffset = '339.292';
         resetInputState();
     });
 

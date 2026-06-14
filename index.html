@@ -3,159 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Check — AI vs Human Detection</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>AI Detection Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="global.css">
 </head>
 <body>
-    <!-- Background Effects -->
-    <div class="background-effects">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
+    
+    <header class="landing-header">
+        <h1>AI Detection Suite</h1>
+        <p>Advanced machine learning tools to distinguish human authenticity from AI generation.</p>
+    </header>
+
+    <div class="cards-grid">
+        <a href="voice-ui/index.html" class="nav-card purple">
+            <img src="assets/voice_logo.png" alt="Voice Detection">
+            <h2>Voice Detection</h2>
+            <p>Upload or record audio to detect whether a voice is AI-generated or human.</p>
+            <span class="btn-secondary" style="margin-top: 10px; border:none; background:rgba(255,255,255,0.1)">
+                Launch Tool <i class="fa-solid fa-arrow-right"></i>
+            </span>
+        </a>
+
+        <a href="deepfake-ui/index.html" class="nav-card">
+            <img src="assets/image_logo.png" alt="Image Detection">
+            <h2>Image Detection</h2>
+            <p>Spot subtle pixel artifacts to determine if a face photo is real or AI-generated.</p>
+            <span class="btn-secondary" style="margin-top: 10px; border:none; background:rgba(255,255,255,0.1)">
+                Launch Tool <i class="fa-solid fa-arrow-right"></i>
+            </span>
+        </a>
     </div>
 
-    <!-- Theme Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
-        <i class="fa-solid fa-sun" id="theme-icon"></i>
-    </button>
-
-    <main class="container">
-        <!-- Header -->
-        <header class="header">
-            <img src="logo.png" alt="Voice Check Logo" class="main-logo">
-            <h1>Voice Check</h1>
-            <p>Upload or record audio to detect whether the voice is AI-generated or human.</p>
-            <div style="margin-top: 20px;">
-                <a href="deepfake-ui/index.html" class="btn-secondary" style="text-decoration: none; display: inline-flex; gap: 8px; align-items: center; padding: 10px 20px; border-radius: 8px;">
-                    <i class="fa-solid fa-image"></i> Go to Deepfake Image Detector
-                </a>
-            </div>
-        </header>
-
-        <!-- Main Card -->
-        <div class="card">
-
-            <!-- Error Alert -->
-            <div id="error-alert" class="alert hidden">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                <span id="error-message"></span>
-            </div>
-
-            <!-- Input Section -->
-            <div class="input-section" id="input-section">
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab-btn active" id="tab-upload">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Audio
-                    </button>
-                    <button class="tab-btn" id="tab-record">
-                        <i class="fa-solid fa-microphone"></i> Record Voice
-                    </button>
-                </div>
-
-                <!-- Upload Area -->
-                <div id="upload-area" class="input-area active">
-                    <div class="drop-zone" id="drop-zone">
-                        <i class="fa-solid fa-file-audio"></i>
-                        <h3>Drag & Drop Audio File</h3>
-                        <p>or click to browse</p>
-                        <p class="format-info">Supported: WAV, MP3, FLAC</p>
-                        <input type="file" id="file-input"
-                               accept=".wav,.mp3,.flac,audio/wav,audio/mpeg,audio/flac,audio/x-flac"
-                               hidden>
-                    </div>
-                </div>
-
-                <!-- Record Area -->
-                <div id="record-area" class="input-area hidden">
-                    <div class="record-container">
-                        <button id="record-btn" class="record-btn">
-                            <i class="fa-solid fa-microphone"></i>
-                        </button>
-                        <p id="record-status">Click to start recording</p>
-                        <div class="recording-timer" id="recording-timer">00:00</div>
-                    </div>
-                </div>
-
-                <!-- Audio Preview -->
-                <div id="audio-preview-container" class="audio-preview hidden">
-                    <div class="file-info">
-                        <i class="fa-solid fa-music"></i>
-                        <span id="file-name">audio_sample.wav</span>
-                        <button id="remove-audio" class="icon-btn" title="Remove">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    <audio id="audio-player" controls></audio>
-                </div>
-            </div>
-
-            <!-- Analyze Button -->
-            <button id="analyze-btn" class="btn-primary" disabled>
-                <span>Analyze Voice</span>
-                <i class="fa-solid fa-microchip"></i>
-            </button>
-
-            <!-- Loading State -->
-            <div id="loading-state" class="state-container hidden">
-                <div class="spinner"></div>
-                <p>Analyzing voice characteristics...</p>
-                <div class="visualization-container">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
-            </div>
-
-            <!-- Result Section -->
-            <div id="result-state" class="state-container hidden">
-                <h3 class="result-title">Analysis Complete</h3>
-
-                <div class="result-card" id="result-card">
-                    <div class="result-header">
-                        <div class="result-icon">
-                            <i id="result-icon-fa" class="fa-solid"></i>
-                        </div>
-                        <h2 id="result-text">Human Voice</h2>
-                    </div>
-
-                    <!-- Confidence Score (real value from model) -->
-                    <div class="confidence-section">
-                        <div class="confidence-header">
-                            <span>Confidence Score</span>
-                            <span id="confidence-percentage">0%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div id="confidence-bar" class="progress-fill"></div>
-                        </div>
-                    </div>
-
-                    <!-- Dual Probability Breakdown -->
-                    <div class="prob-breakdown">
-                        <span id="prob-human" class="prob-item human-prob">Human: —</span>
-                        <span id="prob-ai"    class="prob-item ai-prob">AI: —</span>
-                    </div>
-                </div>
-
-                <button id="reset-btn" class="btn-secondary">
-                    <i class="fa-solid fa-rotate-right"></i> Analyze Another File
-                </button>
-            </div>
-
-        </div>
-    </main>
-
-    <script src="script.js"></script>
 </body>
 </html>
