@@ -26,26 +26,27 @@
 }
 
 [data-theme="light"] {
-    --bg-main: #f3f4f6;
-    --bg-card: rgba(255, 255, 255, 0.85);
-    --bg-hover: rgba(243, 244, 246, 0.8);
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --border-color: rgba(0, 0, 0, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    --bg-main: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-hover: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --border-color: rgba(15, 23, 42, 0.1);
+    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+    --backdrop-blur: blur(20px);
 }
 
 /* ── Specific UI Components ── */
 .tabs {
     display: flex;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 4px;
+    border-radius: 12px;
+    padding: 6px;
     margin-bottom: 24px;
 }
 
 [data-theme="light"] .tabs {
-    background: rgba(0, 0, 0, 0.05);
+    background: #e2e8f0;
 }
 
 .tab-btn {
@@ -53,18 +54,23 @@
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .tab-btn.active {
-    background: var(--bg-hover);
+    background: var(--bg-card);
     color: var(--text-primary);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+[data-theme="light"] .tab-btn.active {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .input-area { display: none; }
@@ -84,7 +90,7 @@
 .record-btn.recording {
     background: var(--color-error);
     color: white;
-    box-shadow: 0 0 15px var(--color-error);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
     animation: pulse 1.5s infinite;
 }
 
@@ -101,22 +107,22 @@
 
 .theme-toggle {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 24px;
+    right: 24px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    width: 44px; height: 44px;
+    width: 48px; height: 48px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     z-index: 100;
-    backdrop-filter: var(--backdrop-blur);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.theme-toggle:hover { transform: scale(1.1); }
+.theme-toggle:hover { transform: scale(1.1); background: var(--bg-hover); }
 
 * {
     margin: 0;
@@ -133,33 +139,40 @@ body {
     flex-direction: column;
     align-items: center;
     overflow-x: hidden;
-    /* Premium animated gradient background */
-    background: radial-gradient(circle at 15% 50%, var(--accent-purple-glow), transparent 25%),
-                radial-gradient(circle at 85% 30%, var(--accent-blue-glow), transparent 25%);
+    background: radial-gradient(circle at 15% 50%, var(--accent-purple-glow), transparent 30%),
+                radial-gradient(circle at 85% 30%, var(--accent-blue-glow), transparent 30%);
     background-color: var(--bg-main);
     background-attachment: fixed;
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* ── Container Styles ── */
 .app-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     margin: 40px auto;
-    padding: 30px;
+    padding: 40px;
     background: var(--bg-card);
     backdrop-filter: var(--backdrop-blur);
     -webkit-backdrop-filter: var(--backdrop-blur);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: 24px;
     box-shadow: var(--glass-shadow);
+    transition: all 0.4s ease;
 }
 
 /* ── Typography & Headers ── */
 h1 {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    background: linear-gradient(to right, #fff, #9ca3af);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #ffffff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] h1 {
+    background: linear-gradient(to right, #0f172a, #475569);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -199,85 +212,6 @@ p {
     box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
 
-/* ── Buttons ── */
-.btn-primary {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    color: white;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px var(--accent-blue-glow);
-    width: 100%;
-}
-
-.btn-primary:hover:not(:disabled):not(.disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
-}
-
-.btn-primary:disabled, .btn-primary.disabled {
-    background: var(--bg-hover);
-    color: var(--text-secondary);
-    box-shadow: none;
-    cursor: not-allowed;
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* ── Upload Area ── */
-.upload-area {
-    border: 2px dashed var(--border-color);
-    border-radius: 12px;
-    padding: 40px 20px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    margin-bottom: 24px;
-}
-
-.upload-area:hover, .upload-area.dragover {
-    border-color: var(--accent-purple);
-    background: rgba(139, 92, 246, 0.05);
-}
-
-.upload-icon {
-    font-size: 48px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    transition: color 0.3s;
-}
-
-.upload-area:hover .upload-icon {
-    color: var(--accent-purple);
-}
-
 /* ── Landing Page Specifics ── */
 .landing-header {
     text-align: center;
@@ -302,35 +236,151 @@ p {
     background: var(--bg-card);
     backdrop-filter: var(--backdrop-blur);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 30px;
+    border-radius: 20px;
+    padding: 40px 30px;
     text-align: center;
     text-decoration: none;
     color: var(--text-primary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+[data-theme="light"] .nav-card {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .nav-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-10px) scale(1.02);
     border-color: var(--accent-cyan);
-    box-shadow: 0 12px 40px rgba(6, 182, 212, 0.2);
+    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.25);
 }
 
 .nav-card.purple:hover {
     border-color: var(--accent-purple);
-    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
+}
+
+[data-theme="light"] .nav-card:hover {
+    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.15);
+}
+
+[data-theme="light"] .nav-card.purple:hover {
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
 }
 
 .nav-card img {
-    width: 80px;
-    height: 80px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    margin-bottom: 10px;
+    width: 90px;
+    height: 90px;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+[data-theme="light"] .nav-card img {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.nav-card:hover img {
+    transform: scale(1.05);
+}
+
+.nav-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    width: 100%;
+}
+
+.btn-primary:hover:not(:disabled):not(.disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(139, 92, 246, 0.6);
+}
+
+.btn-primary:disabled, .btn-primary.disabled {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+[data-theme="light"] .btn-secondary {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Upload Area ── */
+.upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 50px 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 24px;
+}
+
+[data-theme="light"] .upload-area {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--accent-purple);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+[data-theme="light"] .upload-area:hover, [data-theme="light"] .upload-area.dragover {
+    background: rgba(139, 92, 246, 0.05);
 }
 
 .nav-card h2 {
