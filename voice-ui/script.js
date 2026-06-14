@@ -1,14 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
-    const tabUpload     = document.getElementById('tab-upload');
-    const tabRecord     = document.getElementById('tab-record');
     const uploadArea    = document.getElementById('upload-area');
-    const recordArea    = document.getElementById('record-area');
     const dropZone      = document.getElementById('drop-zone');
     const fileInput     = document.getElementById('file-input');
-    const recordBtn     = document.getElementById('record-btn');
-    const recordStatus  = document.getElementById('record-status');
-    const recordingTimer = document.getElementById('recording-timer');
 
     const audioPreviewContainer = document.getElementById('audio-preview-container');
     const fileNameDisplay       = document.getElementById('file-name');
@@ -36,27 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let currentAudioFile = null;
     let currentAudioUrl  = null;
-    let isRecording      = false;
-    let mediaRecorder    = null;
-    let audioChunks      = [];
-    let recordInterval   = null;
-    let recordTime       = 0;
-
-    // --- Tab Switching ---
-    tabUpload.addEventListener('click', () => {
-        tabUpload.classList.add('active');
-        tabRecord.classList.remove('active');
-        uploadArea.classList.add('active');
-        recordArea.classList.remove('active');
-        if (isRecording) stopRecording();
-    });
-
-    tabRecord.addEventListener('click', () => {
-        tabRecord.classList.add('active');
-        tabUpload.classList.remove('active');
-        recordArea.classList.add('active');
-        uploadArea.classList.remove('active');
-    });
 
     // --- File Upload ---
     dropZone.addEventListener('click', () => fileInput.click());
@@ -98,91 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showAudioPreview(file.name, currentAudioUrl);
     }
 
-    // --- Microphone Recording ---
-    let isRequesting = false;
-    let recordingExt = 'webm';
 
-    recordBtn.addEventListener('click', async () => {
-        if (isRequesting) return;
-        if (!isRecording) {
-            isRequesting = true;
-            await startRecording();
-            isRequesting = false;
-        } else {
-            stopRecording();
-        }
-    });
-
-    async function startRecording() {
-        try {
-            const stream   = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder  = new MediaRecorder(stream);
-            audioChunks    = [];
-
-            recordingExt = 'webm';
-            if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4'))  recordingExt = 'mp4';
-            else if (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('ogg')) recordingExt = 'ogg';
-
-            mediaRecorder.addEventListener('dataavailable', event => {
-                if (event.data.size > 0) audioChunks.push(event.data);
-            });
-
-            mediaRecorder.addEventListener('stop', () => {
-                const audioBlob       = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-                if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
-                currentAudioUrl       = URL.createObjectURL(audioBlob);
-                currentAudioFile      = audioBlob;
-                currentAudioFile.recordedName = `recorded_audio.${recordingExt}`;
-                showAudioPreview(`recorded_audio.${recordingExt}`, currentAudioUrl);
-                stream.getTracks().forEach(track => track.stop());
-            });
-
-            mediaRecorder.start();
-            isRecording = true;
-            recordBtn.classList.add('recording');
-            recordBtn.innerHTML     = '<i class="fa-solid fa-stop"></i>';
-            recordStatus.textContent = 'Recording...';
-            startTimer();
-            hideError();
-
-        } catch (err) {
-            console.error('Microphone error:', err);
-            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                showError('Microphone access denied. Please allow microphone permissions.');
-            } else if (err.name === 'NotFoundError') {
-                showError('No microphone found on this device.');
-            } else {
-                showError('Microphone error: ' + err.message);
-            }
-        }
-    }
-
-    function stopRecording() {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-        isRecording = false;
-        recordBtn.classList.remove('recording');
-        recordBtn.innerHTML      = '<i class="fa-solid fa-microphone"></i>';
-        recordStatus.textContent = 'Click to start recording';
-        stopTimer();
-    }
-
-    function startTimer() {
-        recordTime = 0;
-        updateTimerDisplay();
-        recordInterval = setInterval(() => { recordTime++; updateTimerDisplay(); }, 1000);
-    }
-
-    function stopTimer() {
-        clearInterval(recordInterval);
-        recordTime = 0;
-        updateTimerDisplay();
-    }
-
-    function updateTimerDisplay() {
-        const mins = Math.floor(recordTime / 60).toString().padStart(2, '0');
-        const secs = (recordTime % 60).toString().padStart(2, '0');
-        recordingTimer.textContent = `${mins}:${secs}`;
-    }
 
     // --- Audio Preview ---
     function showAudioPreview(filename, url) {
@@ -191,9 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audioPlayer.load();
         audioPreviewContainer.classList.remove('hidden');
         analyzeBtn.disabled = false;
-        document.querySelector('.tabs').style.display = 'none';
         uploadArea.style.display = 'none';
-        recordArea.style.display = 'none';
     }
 
     removeAudioBtn.addEventListener('click', resetInputState);
@@ -206,9 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeBtn.disabled = true;
         fileInput.value = '';
         hideError();
-        document.querySelector('.tabs').style.display = '';
         uploadArea.style.display = '';
-        recordArea.style.display = '';
     }
 
     // --- Analysis ---
@@ -310,26 +195,4 @@ document.addEventListener('DOMContentLoaded', () => {
         errorAlert.classList.add('hidden');
     }
 
-    // --- Theme Toggle ---
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon      = document.getElementById('theme-icon');
-    const savedTheme     = localStorage.getItem('theme') || 'dark';
-
-    if (savedTheme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        themeIcon.classList.replace('fa-sun', 'fa-moon');
-    }
-
-    themeToggleBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        if (currentTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            themeIcon.classList.replace('fa-sun', 'fa-moon');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-        }
-    });
 });
