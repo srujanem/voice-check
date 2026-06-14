@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from backend.services.ml_engine import ml
+from backend.decorators import require_api_key
 
 url_bp = Blueprint('url', __name__)
 
 @url_bp.route("/predict_url", methods=["POST"])
+@require_api_key
 def predict_url():
     if ml.text_model is None or ml.text_vectorizer is None:
         return jsonify({"error": "Text model not loaded"}), 500

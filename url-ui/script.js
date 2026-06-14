@@ -64,6 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = urlInput.value.trim();
         if (!url) return;
         
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) {
+            alert('Please log in to use the URL Scanner.');
+            window.location.href = '../login.html';
+            return;
+        }
+
+        scannerLine.classList.remove('hidden');
         hideError();
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
@@ -72,7 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('http://localhost:5000/predict_url', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
                 body: JSON.stringify({ url: url })
             });
 

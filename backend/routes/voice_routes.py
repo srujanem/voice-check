@@ -4,6 +4,7 @@ import librosa
 import numpy as np
 from backend.services.ml_engine import ml
 from backend.config import Config
+from backend.decorators import require_api_key
 
 voice_bp = Blueprint('voice', __name__)
 
@@ -17,6 +18,7 @@ def extract_features(file_path):
         return None
 
 @voice_bp.route("/predict_voice", methods=["POST"])
+@require_api_key
 def predict_voice():
     if ml.voice_model is None:
         return jsonify({"error": "Voice model not loaded on server."}), 500

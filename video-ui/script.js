@@ -104,6 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnAnalyze.classList.contains('disabled')) return;
         if (!currentFile) return;
         
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) {
+            alert('Please log in to use the Video Analysis tool.');
+            window.location.href = '../login.html';
+            return;
+        }
+
         scannerLine.classList.remove('hidden');
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
@@ -115,6 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('http://localhost:5000/predict_video', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                },
                 body: formData
             });
 

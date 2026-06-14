@@ -10,6 +10,7 @@ from backend.services.ml_engine import ml
 from backend.config import Config
 from backend.database import db
 from backend.models import VideoTask
+from backend.decorators import require_api_key
 
 video_bp = Blueprint('video', __name__)
 
@@ -85,6 +86,7 @@ def process_video_task(app, task_id, path):
 
 
 @video_bp.route("/predict_video", methods=["POST"])
+@require_api_key
 def predict_video():
     if ml.image_model is None:
         return jsonify({"error": "Image model not loaded. Cannot process video frames."}), 500

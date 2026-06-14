@@ -199,20 +199,35 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeBtn.style.display   = 'none';
         hideError();
         loadingState.classList.remove('hidden');
-        resultState.classList.add('hidden');
-        audioPlayer.pause();
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) {
+            alert('Please log in to use the Voice Analysis tool.');
+            window.location.href = '../login.html';
+            return;
+        }
+
+        scannerLine.classList.remove('hidden');
+        btnAnalyze.style.display = 'none';
+        loadingState.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+
+        const formData = new FormData();
+        const filename = currentAudioFile.recordedName || currentAudioFile.name || 'recorded_audio.webm';
+        formData.append('audio', currentAudioFile, filename);
 
         try {
-            const formData = new FormData();
-            const filename = currentAudioFile.recordedName || currentAudioFile.name || 'recorded_audio.webm';
-            formData.append('audio', currentAudioFile, filename);
-
-            const response = await fetch('http://127.0.0.1:5000/predict', {
+            const response = await fetch('http://localhost:5000/predict_voice', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                },
                 body: formData
             });
 
-            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Server error');
+            }
 
             const data = await response.json();
             if (data.error) throw new Error(data.error);

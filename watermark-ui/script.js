@@ -57,6 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnProtect.addEventListener('click', async () => {
         if (!currentFile) return;
         
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) {
+            alert('Please log in to use the Watermark tools.');
+            window.location.href = '../login.html';
+            return;
+        }
+        
         hideError();
         btnProtect.style.display = 'none';
         loadingState.classList.remove('hidden');
@@ -65,12 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('image', currentFile);
 
         try {
-            const response = await fetch('http://localhost:5000/watermark', {
+            const response = await fetch('http://localhost:5000/create_watermark', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                },
                 body: formData
             });
 
-            if (!response.ok) throw new Error('Server error applying watermark.');
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Server error applying watermark.');
+            }
 
             const blob = await response.blob();
             const downloadUrl = window.URL.createObjectURL(blob);

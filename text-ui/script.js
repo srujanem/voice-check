@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Please paste some text to analyze.");
             return;
         }
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) {
+            alert('Please log in to use the Text Analysis tool.');
+            window.location.href = '../login.html';
+            return;
+        }
         
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
@@ -46,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('http://localhost:5000/predict_text', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({ text: text })
             });

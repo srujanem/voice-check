@@ -2,10 +2,12 @@ from flask import Blueprint, request, jsonify
 import tensorflow as tf
 from PIL import Image
 from backend.services.ml_engine import ml
+from backend.decorators import require_api_key
 
 image_bp = Blueprint('image', __name__)
 
 @image_bp.route("/predict_image", methods=["POST"])
+@require_api_key
 def predict_image():
     if ml.image_model is None:
         return jsonify({"error": "Image model not loaded."}), 500
