@@ -22,6 +22,22 @@ class ScanHistory {
         
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(history));
         this.renderHistory();
+
+        // Push to Database if logged in
+        const userId = localStorage.getItem('user_id');
+        if (userId) {
+            fetch('http://127.0.0.1:5000/history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    scan_type: type,
+                    target_name: fileName,
+                    is_ai: isAi,
+                    confidence: confidence
+                })
+            }).catch(e => console.error("Failed to sync history to DB", e));
+        }
     }
 
     clearHistory() {
@@ -55,6 +71,29 @@ class ScanHistory {
                 </div>
             </div>
         `).join('');
+    }
+
+    async fetchHistoryFromDB() {
+        const userId = localStorage.getItem('user_id');
+        if (!userId) return;
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/history?user_id=${userId}`);
+            if (res.ok) {
+                const data = await res.json();
+                const formatted = data.map(scan => ({
+                    id: scan.id,
+                    date: new Date(scan.timestamp).toLocaleString(),
+                    type: scan.scan_type,
+                    fileName: scan.target_name,
+                    isAi: scan.is_ai,
+                    confidence: scan.confidence
+                }));
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(formatted));
+                this.renderHistory();
+            }
+        } catch (e) {
+            console.error("Failed to fetch history from DB", e);
+        }
     }
 
     initSidebar() {
@@ -111,4 +150,5 @@ const scanHistory = new ScanHistory();
 
 document.addEventListener('DOMContentLoaded', () => {
     scanHistory.initSidebar();
+    scanHistory.fetchHistoryFromDB();
 });

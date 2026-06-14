@@ -42,31 +42,91 @@
 
         <div class="divider">or</div>
 
-        <form onsubmit="event.preventDefault(); window.location.href='dashboard-ui/index.html';">
+        <div class="auth-tabs" style="display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+            <button id="tab-login" class="tab-btn active" style="flex:1; padding:10px; background:transparent; border:none; color:var(--accent-cyan); border-bottom: 2px solid var(--accent-cyan); cursor:pointer;">Login</button>
+            <button id="tab-register" class="tab-btn" style="flex:1; padding:10px; background:transparent; border:none; color:var(--text-secondary); cursor:pointer;">Register</button>
+        </div>
+
+        <form id="auth-form">
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" placeholder="you@example.com" required>
+                <input type="email" id="email" placeholder="you@example.com" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" placeholder="••••••••" required>
+                <input type="password" id="password" placeholder="••••••••" required>
             </div>
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px;">
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                    <input type="checkbox"> Remember me
-                </label>
-                <a href="#" style="color: var(--accent-cyan); text-decoration: none;">Forgot Password?</a>
-            </div>
+            <div id="error-message" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; display: none;"></div>
 
-            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px;">Sign In</button>
+            <button type="submit" id="submit-btn" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px;">Sign In</button>
         </form>
         
         <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
-            Don't have an account? <a href="pricing.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500;">View Plans</a>
+            <a href="pricing.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500;">View Enterprise Plans</a>
         </p>
     </div>
 
     <script src="theme.js"></script>
+    <script>
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const form = document.getElementById('auth-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorMsg = document.getElementById('error-message');
+        
+        let isLogin = true;
+
+        tabLogin.onclick = () => {
+            isLogin = true;
+            tabLogin.style.color = 'var(--accent-cyan)';
+            tabLogin.style.borderBottom = '2px solid var(--accent-cyan)';
+            tabRegister.style.color = 'var(--text-secondary)';
+            tabRegister.style.borderBottom = 'none';
+            submitBtn.innerText = 'Sign In';
+            errorMsg.style.display = 'none';
+        };
+
+        tabRegister.onclick = () => {
+            isLogin = false;
+            tabRegister.style.color = 'var(--accent-cyan)';
+            tabRegister.style.borderBottom = '2px solid var(--accent-cyan)';
+            tabLogin.style.color = 'var(--text-secondary)';
+            tabLogin.style.borderBottom = 'none';
+            submitBtn.innerText = 'Create Account';
+            errorMsg.style.display = 'none';
+        };
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const endpoint = isLogin ? 'http://127.0.0.1:5000/auth/login' : 'http://127.0.0.1:5000/auth/register';
+
+            try {
+                submitBtn.innerText = 'Loading...';
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.setItem('user_id', data.user_id);
+                    localStorage.setItem('api_key', data.api_key);
+                    window.location.href = 'dashboard-ui/index.html';
+                } else {
+                    errorMsg.innerText = data.error || 'An error occurred';
+                    errorMsg.style.display = 'block';
+                    submitBtn.innerText = isLogin ? 'Sign In' : 'Create Account';
+                }
+            } catch (err) {
+                errorMsg.innerText = 'Cannot connect to server. Is the backend running?';
+                errorMsg.style.display = 'block';
+                submitBtn.innerText = isLogin ? 'Sign In' : 'Create Account';
+            }
+        };
+    </script>
 </body>
 </html>

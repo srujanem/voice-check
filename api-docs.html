@@ -92,6 +92,14 @@ print(response.json())
 
     <script src="theme.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedKey = localStorage.getItem('api_key');
+            if (storedKey) {
+                document.getElementById('apiKeyDisplay').value = storedKey;
+                document.getElementById('btnGenerateKey').style.display = 'none'; // Don't allow regeneration if they have a real key for now
+            }
+        });
+
         document.getElementById('btnGenerateKey').addEventListener('click', () => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let key = 'vc_live_';
