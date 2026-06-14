@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Image Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar or Header -->
+        <header class="app-header" style="flex-wrap: wrap;">
+            <div style="width: 100%; margin-bottom: 15px;">
+                <a href="../index.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Voice Check
+                </a>
+            </div>
+            <div class="logo">
+                <i class="fa-solid fa-expand"></i> <!-- Scanner icon -->
+                <h1>Deepfake Image Detector</h1>
+            </div>
+            <div class="badges">
+                <span class="badge blue">Computer Vision</span>
+                <span class="badge outline-yellow">Intermediate</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="info-section">
+                <h2>Detect AI-Generated Faces</h2>
+                <p class="description">
+                    Upload a face photo to detect whether it is real or AI-generated. Our model spots subtle pixel artifacts left by diffusion and GAN models.
+                </p>
+                <div class="tags">
+                    <span class="tag">EfficientNet</span>
+                    <span class="tag">Transfer Learning</span>
+                    <span class="tag">FaceForensics++</span>
+                </div>
+            </section>
+
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <div class="upload-placeholder" id="uploadPlaceholder">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <h3>Drag & Drop your image here</h3>
+                        <p>or click to browse from your device</p>
+                    </div>
+                    <div class="image-preview-container hidden" id="imagePreviewContainer">
+                        <img id="imagePreview" src="" alt="Preview">
+                        <div class="scanner-line hidden" id="scannerLine"></div>
+                        <button class="btn-remove" id="btnRemove"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+
+                <div class="action-area">
+                    <button class="btn-primary disabled" id="btnAnalyze">
+                        <i class="fa-solid fa-magnifying-glass"></i> Analyze Image
+                    </button>
+                </div>
+            </section>
+
+            <section class="results-section hidden" id="resultsSection">
+                <div class="result-card">
+                    <h3>Analysis Results</h3>
+                    
+                    <div class="score-container">
+                        <div class="score-circle fake" id="scoreCircle">
+                            <svg>
+                                <circle cx="60" cy="60" r="54" stroke-linecap="round"></circle>
+                                <circle class="progress" cx="60" cy="60" r="54" stroke-linecap="round" id="scoreProgress"></circle>
+                            </svg>
+                            <div class="score-text">
+                                <span class="percentage" id="scorePercentage">94%</span>
+                                <span class="label">Fake</span>
+                            </div>
+                        </div>
+                        <div class="score-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Classification:</span>
+                                <span class="detail-value highlight-red" id="classificationResult">AI-Generated</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Confidence:</span>
+                                <span class="detail-value">High</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Detected Artifacts:</span>
+                                <span class="detail-value">Diffusion Pattern Noise</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="heatmap-info">
+                        <p><i class="fa-solid fa-circle-info"></i> The scanner detected inconsistent pixel gradients around the eyes and mouth, typical of diffusion models.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p><i class="fa-solid fa-bolt text-yellow"></i> One of the hottest AI research problems right now — used by governments worldwide</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

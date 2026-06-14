@@ -7,6 +7,7 @@ import numpy as np
 import joblib
 import os
 import tensorflow as tf
+from PIL import Image
 
 app = Flask(__name__)
 CORS(app)
@@ -15,10 +16,18 @@ CORS(app)
 model = tf.keras.models.load_model("model.keras")
 try:
     scaler = joblib.load("scaler.pkl")
-    print("✅ Model and scaler loaded.")
+    print("Model and scaler loaded.")
 except FileNotFoundError:
     scaler = None
-    print("⚠️  scaler.pkl not found — predictions may be less accurate.")
+    print("scaler.pkl not found — predictions may be less accurate.")
+
+# --- Load Image Model ---
+try:
+    model_image = tf.keras.models.load_model("model_image.keras")
+    print("Image model loaded.")
+except Exception as e:
+    model_image = None
+    print("model_image.keras not found. Run train_image.py first.")
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -116,6 +125,47 @@ def predict():
         "prob_human": prob_human,
         "prob_ai":    prob_ai
     })
+
+# ── Predict Image endpoint ────────────────────────────────────────────────────
+@app.route("/predict_image", methods=["POST"])
+def predict_image():
+    if model_image is None:
+        return jsonify({"error": "Image model not loaded. Please run train_image.py first."}), 500
+
+    if "image" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files["image"]
+
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        img = Image.open(file.stream).convert('RGB')
+        img = img.resize((224, 224))
+        img_array = tf.keras.preprocessing.image.img_to_array(img)
+        img_array = tf.expand_dims(img_array, 0) # Create a batch
+
+        pred_prob = float(model_image.predict(img_array, verbose=0)[0][0])
+        is_fake = pred_prob >= 0.5 # Using sigmoid, assuming Fake is 1 and Real is 0.
+
+        result = "AI-Generated" if is_fake else "Authentic"
+        
+        prob_fake = round(pred_prob * 100, 1)
+        prob_real = round((1.0 - pred_prob) * 100, 1)
+        confidence = prob_fake if is_fake else prob_real
+
+        print(f"Image Prediction: {result} | Confidence: {confidence}% | Fake: {prob_fake}%")
+
+        return jsonify({
+            "prediction": result,
+            "confidence": confidence,
+            "prob_real": prob_real,
+            "prob_fake": prob_fake
+        })
+    except Exception as e:
+        print(f"Error processing image: {e}")
+        return jsonify({"error": "Failed to process image"}), 500
 
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.route("/", methods=["GET"])
