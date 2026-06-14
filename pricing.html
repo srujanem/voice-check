@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceCheck Pricing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="global.css?v=5">
+    <style>
+        .pricing-grid { display: flex; gap: 30px; justify-content: center; margin-top: 40px; flex-wrap: wrap; padding-bottom: 50px; }
+        .pricing-card { background: var(--bg-card); padding: 40px 30px; border-radius: 16px; border: 1px solid var(--border-color); width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; transition: transform 0.3s; }
+        .pricing-card:hover { transform: translateY(-10px); }
+        .pricing-card.popular { border-color: var(--accent-cyan); transform: scale(1.05); }
+        .pricing-card.popular:hover { transform: scale(1.05) translateY(-10px); }
+        .popular-badge { position: absolute; top: 15px; right: -35px; background: var(--accent-cyan); color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 12px; font-weight: bold; }
+        .price { font-size: 48px; font-weight: bold; margin: 20px 0; color: var(--text-primary); }
+        .price span { font-size: 16px; color: var(--text-secondary); font-weight: normal; }
+        .features { list-style: none; padding: 0; margin-bottom: 30px; text-align: left; }
+        .features li { margin-bottom: 15px; color: var(--text-secondary); display: flex; align-items: flex-start; font-size: 14px; }
+        .features li i { color: var(--color-success); margin-right: 10px; margin-top: 3px; }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    
+    <header class="app-header" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+        <div class="logo-section">
+            <i class="fa-solid fa-tag app-logo" style="font-size: 32px; color: var(--accent-cyan);"></i>
+            <div>
+                <h2>Pricing Plans</h2>
+                <p style="font-size: 14px;">Choose the right tier for your needs</p>
+            </div>
+        </div>
+        <a href="index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Home</a>
+    </header>
+
+    <div class="pricing-grid">
+        <!-- Free Tier -->
+        <div class="pricing-card">
+            <h3>Starter</h3>
+            <div class="price">$0<span>/mo</span></div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Perfect for individuals verifying occasional content.</p>
+            <ul class="features">
+                <li><i class="fa-solid fa-check"></i> 50 Scans per month</li>
+                <li><i class="fa-solid fa-check"></i> Text & Image Detection</li>
+                <li><i class="fa-solid fa-check"></i> Standard Accuracy</li>
+            </ul>
+            <a href="login.html" class="btn-secondary" style="width: 100%; display: block; text-decoration: none;">Get Started</a>
+        </div>
+
+        <!-- Pro Tier -->
+        <div class="pricing-card popular">
+            <div class="popular-badge">POPULAR</div>
+            <h3>Pro</h3>
+            <div class="price">$29<span>/mo</span></div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">For professionals needing deep analysis and history.</p>
+            <ul class="features">
+                <li><i class="fa-solid fa-check"></i> Unlimited Scans</li>
+                <li><i class="fa-solid fa-check"></i> Video & Voice Detection</li>
+                <li><i class="fa-solid fa-check"></i> Advanced XAI Heatmaps</li>
+                <li><i class="fa-solid fa-check"></i> Chrome Extension Access</li>
+                <li><i class="fa-solid fa-check"></i> Pro Analytics Dashboard</li>
+            </ul>
+            <a href="login.html" class="btn-primary" style="width: 100%; display: block; text-decoration: none;">Upgrade to Pro</a>
+        </div>
+
+        <!-- Enterprise Tier -->
+        <div class="pricing-card">
+            <h3>Enterprise</h3>
+            <div class="price">$99<span>/mo</span></div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">For platforms integrating API detection at scale.</p>
+            <ul class="features">
+                <li><i class="fa-solid fa-check"></i> Everything in Pro</li>
+                <li><i class="fa-solid fa-check"></i> 100,000 API Requests/mo</li>
+                <li><i class="fa-solid fa-check"></i> Custom Webhooks</li>
+                <li><i class="fa-solid fa-check"></i> Priority SLA Support</li>
+            </ul>
+            <a href="api-docs.html" class="btn-secondary" style="width: 100%; display: block; text-decoration: none;">View API Docs</a>
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+</body>
+</html>

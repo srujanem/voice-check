@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "VoiceCheck AI Detector",
+  "version": "1.0",
+  "description": "Instantly detect AI generated text across the web.",
+  "permissions": ["contextMenus", "activeTab", "scripting"],
+  "host_permissions": ["*://*/*", "http://localhost:5000/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
