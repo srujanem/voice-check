@@ -29,6 +29,16 @@ except Exception as e:
     model_image = None
     print("model_image.keras not found. Run train_image.py first.")
 
+# --- Load Text Model ---
+try:
+    text_vectorizer = joblib.load("text_vectorizer.pkl")
+    text_model = joblib.load("text_model.pkl")
+    print("Text model loaded.")
+except Exception as e:
+    text_model = None
+    text_vectorizer = None
+    print("text_model.pkl not found. Run train_text.py first.")
+
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -166,6 +176,43 @@ def predict_image():
     except Exception as e:
         print(f"Error processing image: {e}")
         return jsonify({"error": "Failed to process image"}), 500
+
+# ── Predict Text endpoint ─────────────────────────────────────────────────────
+@app.route("/predict_text", methods=["POST"])
+def predict_text():
+    if text_model is None or text_vectorizer is None:
+        return jsonify({"error": "Text model not loaded. Please run train_text.py first."}), 500
+
+    data = request.json
+    if not data or 'text' not in data:
+        return jsonify({"error": "No text provided"}), 400
+        
+    text = data['text'].strip()
+    if not text:
+        return jsonify({"error": "Empty text provided"}), 400
+
+    try:
+        features = text_vectorizer.transform([text])
+        pred_prob = float(text_model.predict_proba(features)[0][1]) # Probability of class 1 (AI)
+        is_ai = pred_prob >= 0.5
+        
+        result = "AI-Generated" if is_ai else "Human Written"
+        
+        prob_ai = round(pred_prob * 100, 1)
+        prob_human = round((1.0 - pred_prob) * 100, 1)
+        confidence = prob_ai if is_ai else prob_human
+
+        print(f"Text Prediction: {result} | Confidence: {confidence}% | AI: {prob_ai}%")
+
+        return jsonify({
+            "prediction": result,
+            "confidence": confidence,
+            "prob_human": prob_human,
+            "prob_ai": prob_ai
+        })
+    except Exception as e:
+        print(f"Error processing text: {e}")
+        return jsonify({"error": "Failed to process text"}), 500
 
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.route("/", methods=["GET"])

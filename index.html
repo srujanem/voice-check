@@ -17,25 +17,70 @@
     </header>
 
     <div class="cards-grid">
-        <a href="voice-ui/index.html" class="nav-card purple">
+        <a href="voice-ui/index.html" class="nav-card tilt-card">
             <img src="assets/voice_logo.png" alt="Voice Detection">
             <h2>Voice Detection</h2>
             <p>Upload or record audio to detect whether a voice is AI-generated or human.</p>
-            <span class="btn-secondary" style="margin-top: 10px; border:none; background:rgba(255,255,255,0.1)">
-                Launch Tool <i class="fa-solid fa-arrow-right"></i>
-            </span>
+            <div class="card-glare"></div>
         </a>
 
-        <a href="deepfake-ui/index.html" class="nav-card">
+        <a href="deepfake-ui/index.html" class="nav-card tilt-card purple">
             <img src="assets/image_logo.png" alt="Image Detection">
             <h2>Image Detection</h2>
             <p>Spot subtle pixel artifacts to determine if a face photo is real or AI-generated.</p>
-            <span class="btn-secondary" style="margin-top: 10px; border:none; background:rgba(255,255,255,0.1)">
-                Launch Tool <i class="fa-solid fa-arrow-right"></i>
-            </span>
+            <div class="card-glare"></div>
+        </a>
+
+        <a href="text-ui/index.html" class="nav-card tilt-card">
+            <img src="assets/text_logo.png" alt="Text Detection">
+            <h2>Text Detection</h2>
+            <p>Identify ChatGPT & AI writing styles in essays, articles, and documents.</p>
+            <div class="card-glare"></div>
         </a>
     </div>
 
     <script src="theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.tilt-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -15;
+                    const rotateY = ((x - centerX) / centerX) * 15;
+                    
+                    card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    
+                    const glare = card.querySelector('.card-glare');
+                    if (glare) {
+                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 60%)`;
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `translateY(0) rotateX(0) rotateY(0)`;
+                    const glare = card.querySelector('.card-glare');
+                    if (glare) {
+                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)`;
+                        glare.style.opacity = '0';
+                    }
+                });
+
+                card.addEventListener('mouseenter', () => {
+                    const glare = card.querySelector('.card-glare');
+                    if (glare) {
+                        glare.style.opacity = '1';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

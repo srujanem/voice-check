@@ -79,6 +79,9 @@
             <button id="reset-btn" class="btn-secondary" style="width: 100%; margin-top: 20px; justify-content: center;" onclick="document.getElementById('btnRemove').click()">
                 <i class="fa-solid fa-rotate-right"></i> Analyze Another
             </button>
+            <button id="download-btn" class="btn-secondary" style="width: 100%; margin-top: 10px; justify-content: center; background: var(--bg-hover);">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+            </button>
         </div>
 
     </div>
@@ -91,7 +94,9 @@
             100% { top: 100%; opacity: 0; }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../theme.js"></script>
+    <script src="../history.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

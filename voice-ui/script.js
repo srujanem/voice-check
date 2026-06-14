@@ -27,6 +27,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const probHumanEl = document.getElementById('prob-human');
     const probAiEl    = document.getElementById('prob-ai');
 
+    // Handle Reset
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            currentFile = null;
+            if (fileInput) fileInput.value = '';
+            
+            uploadArea.classList.remove('hidden');
+            fileNameDisplay.textContent = '';
+            
+            btnAnalyze.classList.add('disabled');
+            btnAnalyze.disabled = true;
+            resultsSection.classList.add('hidden');
+        });
+    }
+
+    // PDF Download logic
+    const downloadBtn = document.getElementById('download-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            const element = document.getElementById('result-card');
+            const opt = {
+                margin:       10,
+                filename:     `Voice_Report_${Date.now()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1e1e2e' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    }
+
     // --- State Variables ---
     let currentAudioFile = null;
     let currentAudioUrl  = null;
@@ -186,6 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (probHumanEl) animateCountUp(probHumanEl, probHuman, 1500, 'Human: ');
             if (probAiEl)    animateCountUp(probAiEl, probAi, 1500, 'AI: ');
+
+            if (typeof scanHistory !== 'undefined') {
+                const fName = (typeof currentFile !== 'undefined' && currentFile) ? currentFile.name : 'Audio File';
+                scanHistory.addScan('Voice', fName, !isHuman, confidence);
+            }
 
         }, 50);
     }
