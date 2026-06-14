@@ -124,16 +124,45 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
+            const taskId = data.task_id;
             
-            scannerLine.classList.add('hidden');
-            loadingState.classList.add('hidden');
+            // Poll for status
+            loadingState.querySelector('p').innerText = "Processing video in background...";
             
-            showResults(data);
+            const pollInterval = setInterval(async () => {
+                try {
+                    const statusRes = await fetch(`http://localhost:5000/video_status/${taskId}`);
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        if (statusData.status) {
+                            // Still processing
+                            loadingState.querySelector('p').innerText = "Analyzing frames... " + statusData.status;
+                        } else {
+                            // Completed, has results
+                            clearInterval(pollInterval);
+                            scannerLine.classList.add('hidden');
+                            loadingState.classList.add('hidden');
+                            loadingState.querySelector('p').innerText = "Processing..."; // reset
+                            showResults(statusData);
+                        }
+                    } else {
+                        const errData = await statusRes.json();
+                        throw new Error(errData.error || "Failed polling");
+                    }
+                } catch (e) {
+                    clearInterval(pollInterval);
+                    scannerLine.classList.add('hidden');
+                    loadingState.classList.add('hidden');
+                    btnAnalyze.style.display = 'inline-flex';
+                    alert('Background analysis failed: ' + e.message);
+                }
+            }, 2000);
+
         } catch (error) {
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
-            alert('Analysis failed: ' + error.message);
+            alert('Upload failed: ' + error.message);
         }
     });
 

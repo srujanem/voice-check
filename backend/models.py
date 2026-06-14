@@ -17,3 +17,10 @@ class ScanHistory(db.Model):
     is_ai = db.Column(db.Boolean, nullable=False)
     confidence = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class VideoTask(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    status = db.Column(db.String(20), default='PENDING') # PENDING, PROCESSING, COMPLETED, FAILED
+    result_data = db.Column(db.Text, nullable=True) # JSON string of results
+    error_msg = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
