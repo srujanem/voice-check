@@ -127,6 +127,43 @@
                 submitBtn.innerText = isLogin ? 'Sign In' : 'Create Account';
             }
         };
+
+        const btnGoogle = document.querySelector('.btn-google');
+        btnGoogle.onclick = async () => {
+            const email = 'google_user@gmail.com';
+            const password = 'google_oauth_mock_password';
+            try {
+                btnGoogle.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
+                let res = await fetch('http://127.0.0.1:5000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!res.ok) {
+                    res = await fetch('http://127.0.0.1:5000/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                }
+                
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('user_id', data.user_id);
+                    localStorage.setItem('api_key', data.api_key);
+                    window.location.href = 'dashboard-ui/index.html';
+                } else {
+                    errorMsg.innerText = "Google Login failed.";
+                    errorMsg.style.display = 'block';
+                    btnGoogle.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;"> Continue with Google';
+                }
+            } catch(e) {
+                errorMsg.innerText = "Cannot connect to server.";
+                errorMsg.style.display = 'block';
+                btnGoogle.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;"> Continue with Google';
+            }
+        };
     </script>
 </body>
 </html>
