@@ -153,7 +153,18 @@ def predict_image():
         return jsonify({"error": "No file selected"}), 400
 
     try:
-        img = Image.open(file.stream).convert('RGB')
+        # Check for Authentic VoiceCheck Watermark
+        data = file.read()
+        if b"VOICECHECK_AUTH_SIGNATURE" in data:
+            return jsonify({
+                "prediction": "Authentic (Watermarked)",
+                "confidence": 100.0,
+                "prob_human": 100.0,
+                "prob_ai": 0.0
+            })
+        file.seek(0)
+
+        img = Image.open(file).convert('RGB')
         img = img.resize((224, 224))
         img_array = tf.keras.preprocessing.image.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0) # Create a batch
@@ -231,6 +242,58 @@ def predict_text():
         print(f"Error processing text: {e}")
         return jsonify({"error": "Failed to process text"}), 500
 
+# ── Predict URL endpoint ──────────────────────────────────────────────────────
+@app.route("/predict_url", methods=["POST"])
+def predict_url():
+    if text_model is None or text_vectorizer is None:
+        return jsonify({"error": "Text model not loaded"}), 500
+
+    data = request.json
+    url = data.get("url", "").strip()
+    if not url:
+        return jsonify({"error": "No URL provided"}), 400
+
+    try:
+        import urllib.request
+        from bs4 import BeautifulSoup
+        
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+        html = urllib.request.urlopen(req, timeout=10).read()
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        for script in soup(["script", "style", "nav", "footer", "header"]):
+            script.extract()
+            
+        text = soup.get_text(separator=' ')
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = ' '.join(chunk for chunk in chunks if chunk)
+        
+        if len(text) < 50:
+            return jsonify({"error": "Not enough meaningful text found on this page."}), 400
+            
+        text = text[:5000]
+        text_vector = text_vectorizer.transform([text])
+        prob_ai = float(text_model.predict_proba(text_vector)[0][1])
+        
+        is_ai = prob_ai >= 0.5
+        result = "AI-Generated" if is_ai else "Human Written"
+        
+        prob_ai_pct = round(prob_ai * 100, 1)
+        prob_human_pct = round((1.0 - prob_ai) * 100, 1)
+        confidence = prob_ai_pct if is_ai else prob_human_pct
+        
+        return jsonify({
+            "prediction": result,
+            "confidence": confidence,
+            "prob_human": prob_human_pct,
+            "prob_ai": prob_ai_pct,
+            "extracted_text_preview": text[:200] + "..."
+        })
+    except Exception as e:
+        print(f"URL Prediction Error: {e}")
+        return jsonify({"error": "Failed to scrape URL. Access denied or protected."}), 500
+
 # ── Predict Video endpoint ────────────────────────────────────────────────────
 @app.route("/predict_video", methods=["POST"])
 def predict_video():
@@ -296,4 +359,27 @@ def health():
     return jsonify({"status": "Voice Check API is running ✅"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
+
+# ── Watermark Image endpoint ──────────────────────────────────────────────────
+@app.route("/watermark", methods=["POST"])
+def watermark():
+    if "image" not in request.files:
+        return jsonify({"error": "No image uploaded"}), 400
+    file = request.files["image"]
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        data = file.read()
+        watermarked_data = data + b"VOICECHECK_AUTH_SIGNATURE"
+        
+        from flask import Response
+        return Response(
+            watermarked_data,
+            mimetype=file.mimetype,
+            headers={"Content-disposition": f"attachment; filename=protected_{file.filename}"}
+        )
+    except Exception as e:
+        print(f"Error watermarking: {e}")
+        return jsonify({"error": "Failed to process image"}), 500

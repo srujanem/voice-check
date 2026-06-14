@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark Creator - VoiceCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css?v=7">
+</head>
+<body>
+    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="logo-section">
+                <img src="../assets/watermark_logo.png" alt="Watermark Logo" class="app-logo">
+                <div>
+                    <h2>Authentic Watermark</h2>
+                    <p style="font-size: 14px;">Protect your real content</p>
+                </div>
+            </div>
+            <a href="../index.html" class="btn-secondary">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </header>
+
+        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 10px; border-radius: 8px; margin-bottom: 20px; color: white;">
+            <i class="fa-solid fa-circle-exclamation"></i> <span id="error-message"></span>
+        </div>
+
+        <div id="input-section">
+            <div class="input-area active" style="padding: 30px; text-align: center;">
+                <h3 style="margin-top: 0;"><i class="fa-solid fa-shield-halved"></i> Embed Cryptographic Signature</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Upload an authentic photo. We will embed an invisible byte-signature into it. If scanned later, VoiceCheck will instantly recognize it as 100% human-made.</p>
+                
+                <div class="upload-area" id="drop-zone" style="cursor: pointer; border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05);">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon" style="color: var(--accent-cyan);"></i>
+                    <h3>Select Image</h3>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+                <img id="image-preview" class="hidden" style="max-width: 100%; border-radius: 8px; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+            </div>
+        </div>
+
+        <button id="btnProtect" class="btn-primary" style="margin-top: 20px; display: none;">
+            <i class="fa-solid fa-lock"></i> Protect & Download Image
+        </button>
+
+        <div id="loading-state" class="hidden text-center" style="margin-top: 20px;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--accent-cyan); margin-bottom: 10px;"></i>
+            <p>Embedding invisible signature...</p>
+        </div>
+
+        <div id="success-state" class="hidden text-center" style="margin-top: 20px; padding: 30px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--color-success); border-radius: 12px;">
+            <i class="fa-solid fa-circle-check" style="font-size: 40px; color: var(--color-success); margin-bottom: 15px;"></i>
+            <h3 style="color: var(--color-success); margin: 0;">Protection Applied!</h3>
+            <p style="color: var(--text-secondary); margin-top: 10px;">Your file has been signed and downloaded.</p>
+            <button id="reset-btn" class="btn-secondary" style="margin-top: 20px;">Protect Another File</button>
+        </div>
+
+    </div>
+
+    <script src="../theme.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

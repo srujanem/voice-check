@@ -61,6 +61,64 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let currentAudioFile = null;
     let currentAudioUrl  = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    // --- Recording Logic ---
+    const recordBtn = document.getElementById('record-btn');
+    const micIcon = document.getElementById('mic-icon');
+    const recordText = document.getElementById('record-text');
+    const recordSubtext = document.getElementById('record-subtext');
+
+    if (recordBtn) {
+        recordBtn.addEventListener('click', async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const file = new File([audioBlob], `Recording_${Date.now()}.webm`, { type: 'audio/webm' });
+                        currentAudioFile = file;
+                        if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
+                        currentAudioUrl = URL.createObjectURL(file);
+                        showAudioPreview(file.name, currentAudioUrl);
+                        
+                        // Reset UI
+                        isRecording = false;
+                        micIcon.className = 'fa-solid fa-microphone upload-icon';
+                        micIcon.style.color = 'var(--accent-cyan)';
+                        recordText.textContent = 'Record Mic';
+                        recordSubtext.textContent = 'Click to start';
+                        
+                        // Stop all tracks to release mic
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    // Update UI to show recording state
+                    micIcon.className = 'fa-solid fa-circle-dot upload-icon fa-fade';
+                    micIcon.style.color = '#ef4444';
+                    recordText.textContent = 'Recording...';
+                    recordSubtext.textContent = 'Click to stop';
+                    
+                } catch (err) {
+                    alert('Microphone access denied or not available.');
+                }
+            } else {
+                mediaRecorder.stop();
+            }
+        });
+    }
 
     // --- File Upload ---
     dropZone.addEventListener('click', () => fileInput.click());
