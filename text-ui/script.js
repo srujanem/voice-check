@@ -120,6 +120,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (probHuman) animateCountUp(probHuman, data.prob_human, 1500, 'Human: ');
             if (probAi) animateCountUp(probAi, data.prob_ai, 1500, 'AI: ');
 
+            if (data.sentences) {
+                const xaiSection = document.getElementById('xai-section');
+                if (xaiSection) {
+                    xaiSection.innerHTML = '<h4 style="margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;"><i class="fa-solid fa-magnifying-glass"></i> Sentence Analysis</h4>';
+                    data.sentences.forEach(s => {
+                        const span = document.createElement('span');
+                        span.textContent = s.text + ' ';
+                        if (s.ai_prob >= 0.5) {
+                            const alpha = (s.ai_prob - 0.5) * 2; 
+                            span.style.backgroundColor = `rgba(239, 68, 68, ${alpha * 0.4})`;
+                            span.style.color = document.documentElement.getAttribute('data-theme') === 'light' ? '#7f1d1d' : '#fecaca';
+                        } else {
+                            const alpha = (0.5 - s.ai_prob) * 2;
+                            span.style.backgroundColor = `rgba(16, 185, 129, ${alpha * 0.2})`;
+                        }
+                        span.title = `AI Probability: ${(s.ai_prob * 100).toFixed(1)}%`;
+                        span.style.borderRadius = '3px';
+                        span.style.padding = '2px 0';
+                        span.style.cursor = 'help';
+                        xaiSection.appendChild(span);
+                    });
+                }
+            }
+
             if (typeof scanHistory !== 'undefined') {
                 scanHistory.addScan('Text', 'Text Snippet', isAi, confidence);
             }

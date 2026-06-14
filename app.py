@@ -8,6 +8,8 @@ import joblib
 import os
 import tensorflow as tf
 from PIL import Image
+import subprocess
+import glob
 
 app = Flask(__name__)
 CORS(app)
@@ -181,38 +183,112 @@ def predict_image():
 @app.route("/predict_text", methods=["POST"])
 def predict_text():
     if text_model is None or text_vectorizer is None:
-        return jsonify({"error": "Text model not loaded. Please run train_text.py first."}), 500
+        return jsonify({"error": "Text model not loaded"}), 500
 
     data = request.json
-    if not data or 'text' not in data:
+    if not data or "text" not in data:
         return jsonify({"error": "No text provided"}), 400
-        
-    text = data['text'].strip()
+
+    text = data["text"].strip()
     if not text:
-        return jsonify({"error": "Empty text provided"}), 400
+        return jsonify({"error": "Empty text"}), 400
 
     try:
-        features = text_vectorizer.transform([text])
-        pred_prob = float(text_model.predict_proba(features)[0][1]) # Probability of class 1 (AI)
-        is_ai = pred_prob >= 0.5
+        text_vector = text_vectorizer.transform([text])
+        prob_ai = float(text_model.predict_proba(text_vector)[0][1])
         
+        is_ai = prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
         
-        prob_ai = round(pred_prob * 100, 1)
-        prob_human = round((1.0 - pred_prob) * 100, 1)
-        confidence = prob_ai if is_ai else prob_human
+        prob_ai_pct = round(prob_ai * 100, 1)
+        prob_human_pct = round((1.0 - prob_ai) * 100, 1)
+        confidence = prob_ai_pct if is_ai else prob_human_pct
 
-        print(f"Text Prediction: {result} | Confidence: {confidence}% | AI: {prob_ai}%")
+        print(f"Text Prediction: {result} | Confidence: {confidence}% | AI: {prob_ai_pct}%")
+
+        import re
+        sentences = re.split(r'(?<=[.!?])\s+', text)
+        sentences = [s.strip() for s in sentences if s.strip()]
+        
+        sentence_scores = []
+        if sentences:
+            sentence_vectors = text_vectorizer.transform(sentences)
+            sentence_probs = text_model.predict_proba(sentence_vectors)[:, 1]
+            for s, p in zip(sentences, sentence_probs):
+                sentence_scores.append({
+                    "text": s,
+                    "ai_prob": float(p)
+                })
 
         return jsonify({
             "prediction": result,
             "confidence": confidence,
-            "prob_human": prob_human,
-            "prob_ai": prob_ai
+            "prob_human": prob_human_pct,
+            "prob_ai": prob_ai_pct,
+            "sentences": sentence_scores
         })
     except Exception as e:
         print(f"Error processing text: {e}")
         return jsonify({"error": "Failed to process text"}), 500
+
+# ── Predict Video endpoint ────────────────────────────────────────────────────
+@app.route("/predict_video", methods=["POST"])
+def predict_video():
+    if model_image is None:
+        return jsonify({"error": "Image model not loaded. Cannot process video frames."}), 500
+
+    if "video" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files["video"]
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(path)
+
+    try:
+        # Extract up to 5 frames at 1 fps
+        out_pattern = os.path.join(UPLOAD_FOLDER, f"frame_{os.path.basename(path)}_%03d.jpg")
+        cmd = ["ffmpeg", "-y", "-i", path, "-vf", "fps=1", "-vframes", "5", out_pattern]
+        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        frames = glob.glob(os.path.join(UPLOAD_FOLDER, f"frame_{os.path.basename(path)}_*.jpg"))
+        if not frames:
+            return jsonify({"error": "Failed to extract frames from video"}), 500
+
+        total_prob = 0
+        for frame_path in frames:
+            img = Image.open(frame_path).convert('RGB')
+            img = img.resize((224, 224))
+            img_array = tf.keras.preprocessing.image.img_to_array(img)
+            img_array = tf.expand_dims(img_array, 0)
+            pred = float(model_image.predict(img_array, verbose=0)[0][0])
+            total_prob += pred
+            os.remove(frame_path)
+
+        avg_prob = total_prob / len(frames)
+        is_fake = avg_prob >= 0.5
+        
+        result = "AI-Generated" if is_fake else "Authentic"
+        prob_fake = round(avg_prob * 100, 1)
+        prob_real = round((1.0 - avg_prob) * 100, 1)
+        confidence = prob_fake if is_fake else prob_real
+
+        print(f"Video Prediction: {result} | Confidence: {confidence}% | Fake: {prob_fake}%")
+
+        return jsonify({
+            "prediction": result,
+            "confidence": confidence,
+            "prob_real": prob_real,
+            "prob_fake": prob_fake
+        })
+    except Exception as e:
+        print(f"Error processing video: {e}")
+        return jsonify({"error": "Failed to process video"}), 500
+    finally:
+        if os.path.exists(path):
+            os.remove(path)
 
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.route("/", methods=["GET"])
