@@ -25,6 +25,99 @@
     --backdrop-blur: blur(12px);
 }
 
+[data-theme="light"] {
+    --bg-main: #f3f4f6;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-hover: rgba(243, 244, 246, 0.8);
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* ── Specific UI Components ── */
+.tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+[data-theme="light"] .tabs {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.input-area { display: none; }
+.input-area.active { display: block; animation: fadeIn 0.4s ease; }
+
+.record-btn {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid var(--color-error);
+    color: var(--color-error);
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.record-btn.recording {
+    background: var(--color-error);
+    color: white;
+    box-shadow: 0 0 15px var(--color-error);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 100;
+    backdrop-filter: var(--backdrop-blur);
+    transition: all 0.3s ease;
+}
+.theme-toggle:hover { transform: scale(1.1); }
+
 * {
     margin: 0;
     padding: 0;
