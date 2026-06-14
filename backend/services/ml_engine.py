@@ -17,26 +17,25 @@ class MLEngine:
         
         # Load Voice Model
         try:
-            self.voice_model = tf.keras.models.load_model(os.path.join(base_dir, "voice_model.h5"))
-            with open(os.path.join(base_dir, "scaler.pkl"), "rb") as f:
-                self.voice_scaler = pickle.load(f)
+            import joblib
+            self.voice_model = tf.keras.models.load_model(os.path.join(base_dir, "model.keras"))
+            self.voice_scaler = joblib.load(os.path.join(base_dir, "scaler.pkl"))
             print("Voice model and scaler loaded.")
         except Exception as e:
             print(f"Could not load voice model: {e}")
 
         # Load Image Model
         try:
-            self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "image_model.h5"))
+            self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "model_image.keras"))
             print("Image model loaded.")
         except Exception as e:
             print(f"Could not load image model: {e}")
 
         # Load Text Model
         try:
-            with open(os.path.join(base_dir, "text_model.pkl"), "rb") as f:
-                self.text_model = pickle.load(f)
-            with open(os.path.join(base_dir, "text_vectorizer.pkl"), "rb") as f:
-                self.text_vectorizer = pickle.load(f)
+            import joblib
+            self.text_model = joblib.load(os.path.join(base_dir, "text_model.pkl"))
+            self.text_vectorizer = joblib.load(os.path.join(base_dir, "text_vectorizer.pkl"))
             print("Text model loaded.")
         except Exception as e:
             print(f"Could not load text model: {e}")
