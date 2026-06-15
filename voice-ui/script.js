@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('audio', currentAudioFile, filename);
 
         try {
-            const response = await fetch('http://localhost:5000/predict_voice', {
+            const response = await fetch('/predict_voice', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`

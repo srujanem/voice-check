@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
 
         try {
-            const response = await fetch('http://localhost:5000/predict_text', {
+            const response = await fetch('/predict_text', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

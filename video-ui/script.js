@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('video', currentFile);
 
         try {
-            const response = await fetch('http://localhost:5000/predict_video', {
+            const response = await fetch('/predict_video', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`

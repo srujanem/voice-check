@@ -26,7 +26,7 @@ class ScanHistory {
         // Push to Database if logged in
         const userId = localStorage.getItem('user_id');
         if (userId) {
-            fetch('http://localhost:5000/history', {
+            fetch('/history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

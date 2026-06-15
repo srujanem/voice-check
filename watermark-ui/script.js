@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('image', currentFile);
 
         try {
-            const response = await fetch('http://localhost:5000/create_watermark', {
+            const response = await fetch('/create_watermark', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`

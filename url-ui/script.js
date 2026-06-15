@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
 
         try {
-            const response = await fetch('http://localhost:5000/predict_url', {
+            const response = await fetch('/predict_url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

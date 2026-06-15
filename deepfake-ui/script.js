@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('image', currentFile);
 
         try {
-            const response = await fetch('http://localhost:5000/predict_image', {
+            const response = await fetch('/predict_image', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`
