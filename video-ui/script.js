@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const pollInterval = setInterval(async () => {
                 try {
-                    const statusRes = await fetch(`http://localhost:5000/video_status/${taskId}`);
+                    const statusRes = await fetch(`/video_status/${taskId}`);
                     if (statusRes.ok) {
                         const statusData = await statusRes.json();
                         if (statusData.status) {
@@ -219,8 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const offset = circumference - (confidence / 100) * circumference;
             scoreProgress.style.strokeDashoffset = offset;
 
-            if (probReal) animateCountUp(probReal, data.prob_real, 1500, 'Real: ');
-            if (probFake) animateCountUp(probFake, data.prob_fake, 1500, 'Fake: ');
+            if (probReal) animateCountUp(probReal, data.prob_human, 1500, 'Real: ');
+            if (probFake) animateCountUp(probFake, data.prob_ai, 1500, 'Fake: ');
 
             if (typeof scanHistory !== 'undefined') {
                 const fName = currentFile ? currentFile.name : 'Video File';

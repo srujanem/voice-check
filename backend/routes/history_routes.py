@@ -1,20 +1,22 @@
 from flask import Blueprint, request, jsonify
 from backend.firebase_init import get_db
+from backend.decorators import require_api_key
 from datetime import datetime
 from firebase_admin import firestore
 
 history_bp = Blueprint('history', __name__)
 
 @history_bp.route("/history", methods=["POST"])
+@require_api_key
 def save_history():
     data = request.json
     scan_type = data.get("scan_type")
     target_name = data.get("target_name")
     is_ai = data.get("is_ai")
     confidence = data.get("confidence")
-    user_id = data.get("user_id")
+    user_id = request.user['uid']
     
-    if not scan_type or not target_name or not user_id:
+    if not scan_type or not target_name:
         return jsonify({"error": "Missing required fields"}), 400
         
     db = get_db()
@@ -33,10 +35,9 @@ def save_history():
     return jsonify({"message": "Scan saved", "id": doc_ref.id})
 
 @history_bp.route("/history", methods=["GET"])
+@require_api_key
 def get_history():
-    user_id = request.args.get("user_id")
-    if not user_id:
-        return jsonify([])
+    user_id = request.user['uid']
         
     db = get_db()
     

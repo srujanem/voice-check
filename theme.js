@@ -1,27 +1,41 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
+// Theme Toggle — runs once, prevents duplicates
+(function() {
+    if (window.__themeInitialized) return;
+    window.__themeInitialized = true;
+
     const html = document.documentElement;
 
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', currentTheme);
-    updateIcon(currentTheme);
-
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            const isLight = html.getAttribute('data-theme') === 'light';
-            const newTheme = isLight ? 'dark' : 'light';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateIcon(newTheme);
-        });
-    }
+    // Apply saved theme instantly (before paint)
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
 
     function updateIcon(theme) {
-        if (!themeToggle) return;
-        if (theme === 'light') {
-            themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        } else {
-            themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        const toggle = document.getElementById('themeToggle');
+        if (!toggle) return;
+        toggle.innerHTML = theme === 'light'
+            ? '<i class="fa-solid fa-moon"></i>'
+            : '<i class="fa-solid fa-sun"></i>';
+    }
+
+    function init() {
+        updateIcon(html.getAttribute('data-theme') || 'dark');
+
+        const toggle = document.getElementById('themeToggle');
+        if (toggle && !toggle.__themeListenerAttached) {
+            toggle.__themeListenerAttached = true;
+            toggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                const next = current === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateIcon(next);
+            });
         }
     }
-});
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();

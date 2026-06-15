@@ -13,7 +13,11 @@ def verify_watermark():
     file = request.files["image"]
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
-    return jsonify({"status": "verified"})
+    data = file.read()
+    if b'VOICECHECK_AUTH_SIGNATURE' in data:
+        return jsonify({"status": "verified", "authentic": True})
+    else:
+        return jsonify({"status": "not_verified", "authentic": False})
 
 @watermark_bp.route("/create_watermark", methods=["POST"])
 @require_api_key

@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            const isHuman = data.prediction === "Human Voice";
+            const isHuman = data.prediction === "Human";
             showResult(isHuman, data.confidence, data.prob_human, data.prob_ai);
 
         } catch (err) {

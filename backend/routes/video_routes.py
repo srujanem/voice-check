@@ -120,6 +120,7 @@ def predict_video():
 
 
 @video_bp.route("/video_status/<task_id>", methods=["GET"])
+@require_api_key
 def video_status(task_id):
     db = get_db()
     doc = db.collection('video_tasks').document(task_id).get()

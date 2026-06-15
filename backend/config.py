@@ -6,5 +6,3 @@ class Config:
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB max upload
     
     SECRET_KEY = os.environ.get("SECRET_KEY", "voicecheck-super-secret-key")
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'voicecheck.db')}"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False

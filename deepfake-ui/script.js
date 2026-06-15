@@ -59,14 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleFiles(files) {
-        if (files.length > 0) {
+        if (files && files.length > 0) {
             const file = files[0];
-            if (file.type.startsWith('image/')) {
-                currentFile = file;
-                displayPreview(file);
-            } else {
-                alert('Please upload an image file.');
-            }
+            currentFile = file;
+            displayPreview(file);
         }
     }
 
@@ -142,7 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
-            alert('Analysis failed: ' + error.message);
+            if (error.message.includes('Invalid API Key') || error.message.includes('Unauthorized')) {
+                alert('Your login session has expired. Please log out and log back in.');
+                window.location.href = '../login.html';
+            } else {
+                alert('Analysis failed: ' + error.message);
+            }
         }
     });
 
@@ -190,8 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const offset = circumference - (confidence / 100) * circumference;
             scoreProgress.style.strokeDashoffset = offset;
 
-            if (probReal) animateCountUp(probReal, data.prob_real, 1500, 'Real: ');
-            if (probFake) animateCountUp(probFake, data.prob_fake, 1500, 'Fake: ');
+            if (probReal) animateCountUp(probReal, data.prob_human, 1500, 'Real: ');
+            if (probFake) animateCountUp(probFake, data.prob_ai, 1500, 'Fake: ');
 
             if (typeof scanHistory !== 'undefined') {
                 const fName = (typeof currentFile !== 'undefined' && currentFile) ? currentFile.name : 'Image File';

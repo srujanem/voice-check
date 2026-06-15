@@ -1,8 +1,15 @@
 from flask import Blueprint, request, jsonify
+import re
+from urllib.parse import urlparse
 from backend.services.ml_engine import ml
 from backend.decorators import require_api_key
 
 url_bp = Blueprint('url', __name__)
+
+_PRIVATE_IP_RE = re.compile(
+    r'^(127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|localhost)$',
+    re.IGNORECASE,
+)
 
 @url_bp.route("/predict_url", methods=["POST"])
 @require_api_key
@@ -14,6 +21,14 @@ def predict_url():
     url = data.get("url", "").strip()
     if not url:
         return jsonify({"error": "No URL provided"}), 400
+
+    if not url.startswith("http://") and not url.startswith("https://"):
+        return jsonify({"error": "Invalid URL scheme. Only http and https are allowed."}), 400
+
+    parsed = urlparse(url)
+    hostname = parsed.hostname or ""
+    if _PRIVATE_IP_RE.match(hostname):
+        return jsonify({"error": "Access to private/internal addresses is not allowed."}), 400
 
     try:
         import urllib.request

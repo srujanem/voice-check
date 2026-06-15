@@ -26,7 +26,7 @@ class ScanHistory {
         // Push to Database if logged in
         const userId = localStorage.getItem('user_id');
         if (userId) {
-            fetch('http://127.0.0.1:5000/history', {
+            fetch('http://localhost:5000/history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -77,7 +77,7 @@ class ScanHistory {
         const userId = localStorage.getItem('user_id');
         if (!userId) return;
         try {
-            const res = await fetch(`http://127.0.0.1:5000/history?user_id=${userId}`);
+            const res = await fetch(`/history?user_id=${userId}`);
             if (res.ok) {
                 const data = await res.json();
                 const formatted = data.map(scan => ({

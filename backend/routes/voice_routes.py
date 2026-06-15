@@ -10,9 +10,29 @@ voice_bp = Blueprint('voice', __name__)
 
 def extract_features(file_path):
     try:
-        y, sr = librosa.load(file_path, sr=22050)
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        return np.mean(mfccs.T, axis=0)
+        y, sr = librosa.load(file_path, duration=5, sr=22050)
+        if len(y) == 0:
+            return None
+        if len(y) < 2048:
+            y = np.pad(y, (0, 2048 - len(y)))
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+        pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
+        pitch_values = pitches[magnitudes > np.median(magnitudes)]
+        pitch_mean = np.mean(pitch_values) if len(pitch_values) > 0 else 0.0
+        pitch_std  = np.std(pitch_values)  if len(pitch_values) > 0 else 0.0
+        zcr = librosa.feature.zero_crossing_rate(y)
+        rms = librosa.feature.rms(y=y)
+        features = np.hstack([
+            np.mean(mfcc.T, axis=0),
+            np.std(mfcc.T, axis=0),
+            np.mean(chroma.T, axis=0),
+            np.std(chroma.T, axis=0),
+            [pitch_mean, pitch_std],
+            [np.mean(zcr), np.std(zcr)],
+            [np.mean(rms), np.std(rms)],
+        ])
+        return features
     except Exception as e:
         print(f"Error processing audio: {e}")
         return None

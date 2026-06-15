@@ -424,9 +424,187 @@
             .newsletter-form { flex-direction: column; }
             .testimonials-grid { grid-template-columns: 1fr; }
         }
+        /* ===== LIGHT THEME OVERRIDES ===== */
+        [data-theme="light"] #loading-screen { background: var(--bg-main); }
+        [data-theme="light"] .spinner {
+            border-color: rgba(6,182,212,0.15);
+            border-top-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(6,182,212,0.2);
+        }
+        [data-theme="light"] .loading-text { text-shadow: none; }
+
+        [data-theme="light"] .floating-mockup {
+            background: rgba(255,255,255,0.85);
+            border-color: rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        [data-theme="light"] .mockup-header {
+            background: #f1f5f9;
+            border-bottom-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .mockup-chart {
+            background: linear-gradient(90deg, rgba(6,182,212,0.06), rgba(139,92,246,0.06));
+            border-color: rgba(6,182,212,0.2);
+        }
+        [data-theme="light"] .mockup-body .mockup-metric {
+            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .mockup-body .mockup-metric:hover {
+            background: rgba(6,182,212,0.04);
+        }
+        [data-theme="light"] .metric-bar {
+            background: rgba(0,0,0,0.06) !important;
+        }
+        [data-theme="light"] .scan-line { opacity: 0.4; }
+
+        [data-theme="light"] .hero-section::before {
+            background: radial-gradient(circle at 50% 30%, rgba(6,182,212,0.05) 0%, transparent 50%);
+        }
+        [data-theme="light"] .hero-badge {
+            background: rgba(6,182,212,0.08);
+            border-color: rgba(6,182,212,0.15);
+        }
+
+        [data-theme="light"] .navbar {
+            background: rgba(255,255,255,0.85);
+        }
+        [data-theme="light"] .navbar.scrolled {
+            background: rgba(255,255,255,0.92);
+            border-bottom-color: rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        [data-theme="light"] .nav-links a { color: #64748b; }
+        [data-theme="light"] .nav-links a:hover { color: #0f172a; }
+
+        [data-theme="light"] .marquee-section {
+            border-color: rgba(0,0,0,0.06);
+        }
+        [data-theme="light"] .marquee-item { color: #64748b; }
+        [data-theme="light"] .marquee-item i { color: #0891b2; }
+
+        [data-theme="light"] .testimonial-card {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .testimonial-card:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+        }
+        [data-theme="light"] .testimonial-avatar {
+            background: linear-gradient(135deg, #0891b2, #7c3aed);
+        }
+
+        [data-theme="light"] .faq-item {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .faq-question { color: #0f172a; }
+        [data-theme="light"] .faq-question i { color: #0891b2; }
+        [data-theme="light"] .faq-answer p { color: #64748b; }
+
+        [data-theme="light"] .newsletter-box {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .newsletter-form input {
+            background: #f1f5f9;
+            border-color: rgba(0,0,0,0.1);
+            color: #0f172a;
+        }
+
+        [data-theme="light"] .stats-bar {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        [data-theme="light"] .stat-divider { background: rgba(0,0,0,0.08); }
+
+        [data-theme="light"] .feature-card {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+        [data-theme="light"] .feature-card:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+        }
+
+        [data-theme="light"] .step-card {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+
+        [data-theme="light"] .tech-badge {
+            background: #f1f5f9;
+            border-color: rgba(0,0,0,0.08);
+            color: #64748b;
+        }
+        [data-theme="light"] .tech-badge:hover { color: #0891b2; border-color: #0891b2; }
+
+        [data-theme="light"] .feed-container {
+            background: rgba(255,255,255,0.9) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.03) !important;
+        }
+        [data-theme="light"] .feed-container > div:first-child ~ div[style*="linear-gradient(var(--bg-main)"] {
+            background: linear-gradient(var(--bg-main), transparent) !important;
+        }
+
+        [data-theme="light"] .site-footer { border-top-color: rgba(0,0,0,0.06); }
+
+        [data-theme="light"] .back-to-top {
+            box-shadow: 0 4px 20px rgba(6,182,212,0.15);
+        }
+
+        [data-theme="light"] .toast {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+
+        [data-theme="light"] .user-dropdown {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+        }
+        [data-theme="light"] .dropdown-item:hover { background: #f1f5f9; }
+        [data-theme="light"] .dropdown-header { border-bottom-color: rgba(0,0,0,0.06); }
+
+        [data-theme="light"] .subsection-title { border-bottom-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .section-glow-divider { opacity: 0.25; }
+
+        [data-theme="light"] .gradient-text-animated {
+            background: linear-gradient(270deg, #0891b2, #7c3aed, #2563eb, #db2777, #0891b2);
+            background-size: 300% 300%;
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientTextFlow 6s ease infinite;
+        }
+
+        [data-theme="light"] .login-btn {
+            box-shadow: 0 2px 12px rgba(6,182,212,0.15);
+        }
+
+        [data-theme="light"] .section-label { color: #0891b2; }
+        [data-theme="light"] .section-title { color: #0f172a; }
+        [data-theme="light"] .section-subtitle { color: #64748b; }
+
+        [data-theme="light"] #particles-js canvas { opacity: 0.3; }
     </style>
 </head>
 <body>
+    <!-- Premium Background Effects -->
+    <div class="aurora-bg">
+        <div class="aurora-band"></div>
+        <div class="aurora-band"></div>
+        <div class="aurora-band"></div>
+    </div>
+    <div class="floating-orbs">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="cyber-grid"></div>
+
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="spinner"></div>
@@ -484,7 +662,7 @@
 
         <div class="hero-badge" style="position: relative; z-index: 2;"><div class="pulse-dot"></div> AI-Powered Detection Platform</div>
         <header class="landing-header" style="padding: 0; position: relative; z-index: 2;">
-            <h1 data-text="AI Detection Suite">AI Detection Suite</h1>
+            <h1 data-text="AI Detection Suite" class="gradient-text-animated">AI Detection Suite</h1>
             <p>Advanced machine learning tools to distinguish human authenticity from AI generation.</p>
             <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="#tools" class="btn-primary" style="display: inline-flex;"><i class="fa-solid fa-rocket"></i> Explore Tools</a>
@@ -494,16 +672,41 @@
 
         <!-- Floating 3D Mockup -->
         <div class="floating-mockup">
-            <div class="mockup-header"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="scan-line"></div>
+            <div class="mockup-header"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span style="margin-left: auto; font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 1px;">AUTHGUARD v3.2.1</span>
+            </div>
             <div class="mockup-body">
-                <h3 style="color: var(--text-primary); margin: 0;">AI Signature Analysis</h3>
-                <div class="mockup-chart">Scanning neural patterns...</div>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <div style="flex: 1; height: 8px; background: rgba(0,243,255,0.2); border-radius: 4px; overflow: hidden;">
-                        <div style="width: 85%; height: 100%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+                <h3 style="color: var(--text-primary); margin: 0; font-size: 16px;"><i class="fa-solid fa-wave-square" style="color: var(--accent-cyan); margin-right: 8px;"></i>AI Signature Analysis</h3>
+                <div class="mockup-chart" id="mockup-chart-text">Scanning neural patterns...</div>
+                <div style="display: flex; gap: 12px; width: 100%; flex-wrap: wrap;">
+                    <div class="mockup-metric" style="flex: 1; min-width: 140px;">
+                        <div class="metric-dot" style="background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.5);"></div>
+                        <div><div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Spectral</div><div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">92.3%</div></div>
+                        <div class="metric-bar"><div class="metric-bar-fill" style="width: 92%; background: linear-gradient(90deg, #10b981, #06b6d4); box-shadow: 0 0 8px rgba(16,185,129,0.4);"></div></div>
+                    </div>
+                    <div class="mockup-metric" style="flex: 1; min-width: 140px;">
+                        <div class="metric-dot" style="background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.5);"></div>
+                        <div><div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Temporal</div><div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">78.1%</div></div>
+                        <div class="metric-bar"><div class="metric-bar-fill" style="width: 78%; background: linear-gradient(90deg, #f59e0b, #f43f5e); box-shadow: 0 0 8px rgba(245,158,11,0.4);"></div></div>
                     </div>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">Match Probability: 85.4%</p>
+                <div style="display: flex; gap: 12px; width: 100%; flex-wrap: wrap;">
+                    <div class="mockup-metric" style="flex: 1; min-width: 140px;">
+                        <div class="metric-dot" style="background: #8b5cf6; box-shadow: 0 0 8px rgba(139,92,246,0.5);"></div>
+                        <div><div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Neural</div><div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">85.4%</div></div>
+                        <div class="metric-bar"><div class="metric-bar-fill" style="width: 85%; background: linear-gradient(90deg, #8b5cf6, #06b6d4); box-shadow: 0 0 8px rgba(139,92,246,0.4);"></div></div>
+                    </div>
+                    <div class="mockup-metric" style="flex: 1; min-width: 140px;">
+                        <div class="metric-dot" style="background: #06b6d4; box-shadow: 0 0 8px rgba(6,182,212,0.5);"></div>
+                        <div><div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Overall</div><div style="font-size: 14px; font-weight: 700; color: var(--accent-cyan);">85.4%</div></div>
+                        <div class="metric-bar"><div class="metric-bar-fill" style="width: 85%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); box-shadow: 0 0 10px rgba(6,182,212,0.5);"></div></div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
+                    <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                    <span style="font-size: 12px; color: #10b981; font-weight: 600;">Analysis Complete — High Confidence Human Origin</span>
+                </div>
             </div>
         </div>
     </section>
@@ -599,6 +802,7 @@
         <div class="about-container">
             <div class="section-label"><i class="fa-solid fa-circle-info"></i> About</div>
             <h2 class="section-title">What is AuthGuard?</h2>
+            <div class="section-glow-divider"></div>
             <p class="section-subtitle">
                 AuthGuard is an all-in-one AI detection platform built to help individuals, journalists, educators, and businesses verify the authenticity of digital content. As AI-generated media becomes increasingly realistic, our suite of tools provides the critical layer of trust needed in today's digital landscape.
             </p>
@@ -673,6 +877,7 @@
     <section class="testimonials-section" id="testimonials" style="scroll-margin-top: 80px;">
         <div class="section-label"><i class="fa-solid fa-star"></i> Testimonials</div>
         <h2 class="section-title">Trusted by Professionals</h2>
+        <div class="section-glow-divider"></div>
         <p class="section-subtitle">See what journalists, educators, and security experts say about AuthGuard.</p>
         <div class="testimonials-grid">
             <div class="testimonial-card reveal">
@@ -706,6 +911,7 @@
     <section class="faq-section" id="faq" style="scroll-margin-top: 80px;">
         <div class="section-label" style="text-align:center; display:flex; justify-content:center;"><i class="fa-solid fa-circle-question"></i> FAQ</div>
         <h2 class="section-title" style="text-align:center;">Frequently Asked Questions</h2>
+        <div class="section-glow-divider"></div>
         <p class="section-subtitle" style="text-align:center; margin: 0 auto 32px;">Everything you need to know about AuthGuard.</p>
 
         <div class="faq-item">
@@ -737,6 +943,10 @@
     <!-- Newsletter -->
     <section class="newsletter-section">
         <div class="newsletter-box reveal">
+            <div class="nl-particle"></div>
+            <div class="nl-particle"></div>
+            <div class="nl-particle"></div>
+            <div class="nl-particle"></div>
             <h3><i class="fa-solid fa-envelope" style="color: var(--accent-cyan); margin-right: 8px;"></i> Stay Updated</h3>
             <p>Get the latest updates on new detection tools, accuracy improvements, and security tips.</p>
             <form class="newsletter-form" id="newsletter-form">
@@ -1037,6 +1247,5 @@
             }
         });
     </script>
-    <script src="theme.js?v=2"></script>
 </body>
 </html>

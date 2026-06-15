@@ -6,3 +6,5 @@ numpy<2.0.0
 joblib
 tensorflow
 gunicorn
+beautifulsoup4
+firebase-admin
