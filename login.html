@@ -3,88 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - VoiceCheck</title>
+    <title>Login - AuthGuard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="global.css?v=5">
+    <link rel="stylesheet" href="global.css?v=6">
     <style>
-        .auth-container { max-width: 400px; margin: 80px auto; background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header i { font-size: 40px; color: var(--accent-cyan); margin-bottom: 10px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px; }
-        .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: inherit; }
-        .form-group input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2); }
-        .divider { text-align: center; margin: 20px 0; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; position: relative; }
-        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border-color); }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+        .auth-wrapper { width: 100%; max-width: 420px; animation: fadeSlideUp 0.5s ease-out; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-container {
+            background: var(--bg-card);
+            padding: 36px 32px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            backdrop-filter: blur(20px);
+        }
+
+        .auth-header { text-align: center; margin-bottom: 28px; }
+        .auth-header .logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
+        }
+        .auth-header .logo-icon i { font-size: 22px; color: white; }
+        .auth-header h2 { margin: 0 0 4px; font-size: 22px; font-weight: 700; color: var(--text-primary); }
+        .auth-header p { color: var(--text-secondary); font-size: 13px; margin: 0; }
+
+        .btn-google {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: white; color: #333; border: 1px solid #e0e0e0;
+            padding: 11px 16px; border-radius: 10px; cursor: pointer;
+            font-weight: 500; font-size: 14px; font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .btn-google:hover { background: #f5f5f5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .btn-google:active { transform: translateY(0); }
+
+        .divider {
+            text-align: center; margin: 20px 0; color: var(--text-secondary);
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content: ""; position: absolute; top: 50%; width: 38%; height: 1px;
+            background: var(--border-color);
+        }
         .divider::before { left: 0; }
         .divider::after { right: 0; }
-        .btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: #333; border: 1px solid #ddd; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 500; font-family: inherit; transition: background 0.2s; }
-        .btn-google:hover { background: #f9fafb; }
+
+        .auth-tabs {
+            display: flex; margin-bottom: 22px;
+            background: var(--bg-hover); border-radius: 10px; padding: 4px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px; background: transparent; border: none;
+            color: var(--text-secondary); cursor: pointer; border-radius: 8px;
+            font-weight: 500; font-size: 13px; font-family: inherit;
+            transition: all 0.25s ease;
+        }
+        .tab-btn.active {
+            background: var(--bg-card); color: var(--accent-cyan);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+        .form-group input {
+            width: 100%; padding: 11px 14px; border-radius: 10px;
+            border: 1px solid var(--border-color); background: var(--bg-hover);
+            color: var(--text-primary); font-family: inherit; font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .form-group input:focus {
+            outline: none; border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+        }
+
+        #error-message {
+            color: #ef4444; font-size: 12px; margin-bottom: 12px;
+            padding: 8px 12px; background: rgba(239,68,68,0.08);
+            border-radius: 8px; border: 1px solid rgba(239,68,68,0.15);
+        }
+
+        .submit-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; font-size: 15px; font-weight: 600; font-family: inherit;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(6, 182, 212, 0.4); }
+        .submit-btn:active { transform: translateY(0); }
+
+        .auth-footer { text-align: center; margin-top: 20px; }
+        .auth-footer a { color: var(--accent-cyan); text-decoration: none; font-size: 13px; font-weight: 500; transition: opacity 0.2s; }
+        .auth-footer a:hover { opacity: 0.8; }
+
+        .back-link {
+            position: fixed; top: 20px; left: 20px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--text-primary); }
     </style>
 </head>
 <body>
     <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
-    
-    <a href="index.html" class="btn-secondary" style="position: absolute; top: 20px; left: 20px;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
 
-    <div class="auth-container">
-        <div class="auth-header">
-            <i class="fa-solid fa-shield-halved"></i>
-            <h2 style="margin: 0; font-size: 24px;">Welcome Back</h2>
-            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Sign in to VoiceCheck Pro</p>
-        </div>
-
-        <button class="btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;">
-            Continue with Google
-        </button>
-
-        <div class="divider">or</div>
-
-        <div class="auth-tabs" style="display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
-            <button id="tab-login" class="tab-btn active" style="flex:1; padding:10px; background:transparent; border:none; color:var(--accent-cyan); border-bottom: 2px solid var(--accent-cyan); cursor:pointer;">Login</button>
-            <button id="tab-register" class="tab-btn" style="flex:1; padding:10px; background:transparent; border:none; color:var(--text-secondary); cursor:pointer;">Register</button>
-        </div>
-
-        <form id="auth-form">
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="you@example.com" required>
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h2>Welcome Back</h2>
+                <p>Sign in to AuthGuard Pro</p>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
-            </div>
-            
-            <div id="error-message" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; display: none;"></div>
 
-            <button type="submit" id="submit-btn" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px;">Sign In</button>
-        </form>
-        
-        <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
-            <a href="pricing.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500;">View Enterprise Plans</a>
-        </p>
+            <button class="btn-google" id="btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;">
+                Continue with Google
+            </button>
+
+            <div class="divider">or</div>
+
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab-btn active">Login</button>
+                <button id="tab-register" class="tab-btn">Register</button>
+            </div>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <div id="error-message" style="display: none;"></div>
+
+                <button type="submit" id="submit-btn" class="submit-btn">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                <a href="pricing.html">View Enterprise Plans</a>
+            </div>
+        </div>
     </div>
 
     <script src="theme.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // ==========================================
-        // ⚠️ PASTE YOUR FIREBASE CONFIG HERE ⚠️
-        // ==========================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+          projectId: "voicecheck-9bfec",
+          appId: "1:970751051316:web:dc05186496618c33346c61",
+          storageBucket: "voicecheck-9bfec.firebasestorage.app",
+          apiKey: "AIzaSyAKWMsWufQYipRy5kYBTE1R0bgsRBIHlVs",
+          authDomain: "voicecheck-9bfec.firebaseapp.com",
+          messagingSenderId: "970751051316",
+          measurementId: "G-2SWJD9JFZP"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
@@ -94,105 +188,75 @@
         const form = document.getElementById('auth-form');
         const submitBtn = document.getElementById('submit-btn');
         const errorMsg = document.getElementById('error-message');
-        
+
         let isLogin = true;
 
         tabLogin.onclick = () => {
             isLogin = true;
-            tabLogin.style.color = 'var(--accent-cyan)';
-            tabLogin.style.borderBottom = '2px solid var(--accent-cyan)';
-            tabRegister.style.color = 'var(--text-secondary)';
-            tabRegister.style.borderBottom = 'none';
+            tabLogin.classList.add('active');
+            tabRegister.classList.remove('active');
             submitBtn.innerText = 'Sign In';
             errorMsg.style.display = 'none';
         };
 
         tabRegister.onclick = () => {
             isLogin = false;
-            tabRegister.style.color = 'var(--accent-cyan)';
-            tabRegister.style.borderBottom = '2px solid var(--accent-cyan)';
-            tabLogin.style.color = 'var(--text-secondary)';
-            tabLogin.style.borderBottom = 'none';
+            tabRegister.classList.add('active');
+            tabLogin.classList.remove('active');
             submitBtn.innerText = 'Create Account';
             errorMsg.style.display = 'none';
         };
+
+        function saveUserAndRedirect(user) {
+            user.getIdToken().then(token => {
+                localStorage.setItem('user_id', user.uid);
+                localStorage.setItem('api_key', token);
+                localStorage.setItem('user_name', user.displayName || user.email);
+                localStorage.setItem('user_photo', user.photoURL || '');
+                localStorage.setItem('user_email', user.email || '');
+                window.location.href = 'index.html';
+            });
+        }
 
         form.onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const endpoint = isLogin ? 'http://127.0.0.1:5000/auth/login' : 'http://127.0.0.1:5000/auth/register';
 
             try {
                 submitBtn.innerText = 'Loading...';
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                
-                if (res.ok) {
-                    localStorage.setItem('user_id', data.user_id);
-                    localStorage.setItem('api_key', data.api_key);
-                    window.location.href = 'dashboard-ui/index.html';
+                let userCredential;
+                if (isLogin) {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
                 } else {
-                    errorMsg.innerText = data.error || 'An error occurred';
-                    errorMsg.style.display = 'block';
-                    submitBtn.innerText = isLogin ? 'Sign In' : 'Create Account';
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 }
+                saveUserAndRedirect(userCredential.user);
             } catch (err) {
-                errorMsg.innerText = 'Cannot connect to server. Is the backend running?';
+                console.error(err);
+                errorMsg.innerText = err.message || 'Authentication failed.';
                 errorMsg.style.display = 'block';
                 submitBtn.innerText = isLogin ? 'Sign In' : 'Create Account';
             }
         };
 
-        const btnGoogle = document.querySelector('.btn-google');
+        const btnGoogle = document.getElementById('btn-google');
         btnGoogle.onclick = async () => {
             try {
                 btnGoogle.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting to Google...';
-                
-                // 1. Launch Firebase Google Popup
                 const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                
-                // 2. Extract Real Details
-                const email = user.email;
-                const password = user.uid; // Using their secure UID as the password in our DB
-
-                // 3. Register or Login to our SQLite Backend
-                let res = await fetch('http://127.0.0.1:5000/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                if (!res.ok) {
-                    // If login fails, try to register them
-                    res = await fetch('http://127.0.0.1:5000/auth/register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
-                }
-                
-                const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem('user_id', data.user_id);
-                    localStorage.setItem('api_key', data.api_key);
-                    window.location.href = 'dashboard-ui/index.html';
-                } else {
-                    errorMsg.innerText = "Backend Authentication failed.";
-                    errorMsg.style.display = 'block';
-                    btnGoogle.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;"> Continue with Google';
-                }
+                saveUserAndRedirect(result.user);
             } catch(e) {
                 console.error(e);
-                errorMsg.innerText = "Google Sign-In failed or was cancelled.";
-                if (e.code === 'auth/invalid-api-key') {
-                    errorMsg.innerText = "Firebase not configured! Please paste your keys in login.html.";
+                let message = "Google Sign-In failed or was cancelled.";
+                if (e.code === 'auth/unauthorized-domain') {
+                    message = "Domain not authorized. Add your domain in Firebase Console.";
+                } else if (e.code === 'auth/popup-closed-by-user') {
+                    message = "Sign-In popup was closed before completion.";
+                } else if (e.message) {
+                    message = e.message;
                 }
+                errorMsg.innerText = message;
                 errorMsg.style.display = 'block';
                 btnGoogle.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;"> Continue with Google';
             }

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from backend.database import db
-from backend.models import ScanHistory
+from backend.firebase_init import get_db
+from datetime import datetime
+from firebase_admin import firestore
 
 history_bp = Blueprint('history', __name__)
 
@@ -11,39 +12,57 @@ def save_history():
     target_name = data.get("target_name")
     is_ai = data.get("is_ai")
     confidence = data.get("confidence")
-    user_id = data.get("user_id") # optional for now
+    user_id = data.get("user_id")
     
-    if not scan_type or not target_name:
+    if not scan_type or not target_name or not user_id:
         return jsonify({"error": "Missing required fields"}), 400
         
-    new_scan = ScanHistory(
-        user_id=user_id,
-        scan_type=scan_type,
-        target_name=target_name,
-        is_ai=is_ai,
-        confidence=confidence
-    )
-    db.session.add(new_scan)
-    db.session.commit()
+    db = get_db()
     
-    return jsonify({"message": "Scan saved", "id": new_scan.id})
+    doc_ref = db.collection('users').document(user_id).collection('history').document()
+    scan_data = {
+        "id": doc_ref.id,
+        "scan_type": scan_type,
+        "target_name": target_name,
+        "is_ai": is_ai,
+        "confidence": confidence,
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
+    doc_ref.set(scan_data)
+    
+    return jsonify({"message": "Scan saved", "id": doc_ref.id})
 
 @history_bp.route("/history", methods=["GET"])
 def get_history():
     user_id = request.args.get("user_id")
-    query = ScanHistory.query
-    if user_id:
-        query = query.filter_by(user_id=user_id)
+    if not user_id:
+        return jsonify([])
         
-    scans = query.order_by(ScanHistory.timestamp.desc()).limit(50).all()
-    results = []
-    for s in scans:
-        results.append({
-            "id": s.id,
-            "scan_type": s.scan_type,
-            "target_name": s.target_name,
-            "is_ai": s.is_ai,
-            "confidence": s.confidence,
-            "timestamp": s.timestamp.isoformat()
-        })
-    return jsonify(results)
+    db = get_db()
+    
+    try:
+        scans_ref = db.collection('users').document(user_id).collection('history')
+        docs = scans_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).limit(50).stream()
+        
+        results = []
+        for doc in docs:
+            s = doc.to_dict()
+            # Firestore timestamp to string
+            ts = s.get("timestamp")
+            if ts:
+                ts_str = ts.isoformat()
+            else:
+                ts_str = None
+                
+            results.append({
+                "id": s.get("id"),
+                "scan_type": s.get("scan_type"),
+                "target_name": s.get("target_name"),
+                "is_ai": s.get("is_ai"),
+                "confidence": s.get("confidence"),
+                "timestamp": ts_str
+            })
+        return jsonify(results)
+    except Exception as e:
+        print(f"Firestore history error: {e}")
+        return jsonify([])

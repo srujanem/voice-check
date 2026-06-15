@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceCheck Dashboard</title>
+    <title>AuthGuard Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../global.css?v=3">
@@ -87,8 +87,57 @@
             </div>
         </div>
 
-        <div class="chart-container" style="height: 400px; margin-bottom: 50px;">
+        <div class="chart-container" style="height: 400px; margin-bottom: 30px;">
             <canvas id="timelineChart"></canvas>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; margin-bottom: 50px;">
+            <!-- Scan History Table -->
+            <div class="stat-card" style="text-align: left; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: var(--text-primary);">Recent Scans</h3>
+                    <button id="exportPdfBtn" class="btn-secondary" style="padding: 8px 12px; font-size: 12px;">
+                        <i class="fa-solid fa-file-pdf"></i> Export PDF
+                    </button>
+                </div>
+                <div style="overflow-x: auto; flex: 1;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); font-size: 13px;">
+                                <th style="padding: 12px 8px;">Date</th>
+                                <th style="padding: 12px 8px;">Tool Type</th>
+                                <th style="padding: 12px 8px;">Confidence</th>
+                                <th style="padding: 12px 8px;">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" style="font-size: 14px;">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- API Key Management -->
+            <div class="stat-card" style="text-align: left; display: flex; flex-direction: column;">
+                <h3 style="margin-bottom: 20px; color: var(--text-primary);">API Keys</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Use this key to authenticate requests to the AuthGuard API.</p>
+                
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">YOUR SECRET KEY</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                    <input type="password" id="apiKeyInput" value="sk_live_51AuthGuard..." readonly 
+                        style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: monospace;">
+                    <button id="toggleKeyBtn" class="btn-secondary" style="padding: 10px;" title="Show/Hide">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button id="copyKeyBtn" class="btn-secondary" style="padding: 10px;" title="Copy">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+                
+                <button id="generateKeyBtn" class="btn-primary" style="padding: 10px; font-size: 14px; margin-top: auto;">
+                    <i class="fa-solid fa-rotate"></i> Roll API Key
+                </button>
+            </div>
         </div>
     </div>
 

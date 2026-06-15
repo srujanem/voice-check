@@ -8,22 +8,23 @@ import uuid
 import json
 from backend.services.ml_engine import ml
 from backend.config import Config
-from backend.database import db
-from backend.models import VideoTask
+from backend.firebase_init import get_db
 from backend.decorators import require_api_key
 
 video_bp = Blueprint('video', __name__)
 
 def process_video_task(app, task_id, path):
     with app.app_context():
-        task = VideoTask.query.get(task_id)
-        if not task:
+        db = get_db()
+        task_ref = db.collection('video_tasks').document(task_id)
+        
+        doc = task_ref.get()
+        if not doc.exists:
             if os.path.exists(path):
                 os.remove(path)
             return
             
-        task.status = 'PROCESSING'
-        db.session.commit()
+        task_ref.update({"status": "PROCESSING"})
         
         try:
             frames_dir = os.path.join(Config.UPLOAD_FOLDER, f"frames_{task_id}")
@@ -71,15 +72,17 @@ def process_video_task(app, task_id, path):
                 "prob_ai": prob_fake
             }
 
-            task.result_data = json.dumps(result_dict)
-            task.status = 'COMPLETED'
-            db.session.commit()
+            task_ref.update({
+                "result_data": json.dumps(result_dict),
+                "status": "COMPLETED"
+            })
             
         except Exception as e:
             print(f"Error processing video task {task_id}: {e}")
-            task.status = 'FAILED'
-            task.error_msg = str(e)
-            db.session.commit()
+            task_ref.update({
+                "status": "FAILED",
+                "error_msg": str(e)
+            })
         finally:
             if os.path.exists(path):
                 os.remove(path)
@@ -103,10 +106,9 @@ def predict_video():
     path = os.path.join(Config.UPLOAD_FOLDER, f"{task_id}_{file.filename}")
     file.save(path)
 
-    # Insert into database
-    new_task = VideoTask(id=task_id, status='PENDING')
-    db.session.add(new_task)
-    db.session.commit()
+    # Insert into Firestore
+    db = get_db()
+    db.collection('video_tasks').document(task_id).set({"status": "PENDING"})
 
     # Start background thread
     app = current_app._get_current_object()
@@ -119,13 +121,18 @@ def predict_video():
 
 @video_bp.route("/video_status/<task_id>", methods=["GET"])
 def video_status(task_id):
-    task = VideoTask.query.get(task_id)
-    if not task:
+    db = get_db()
+    doc = db.collection('video_tasks').document(task_id).get()
+    
+    if not doc.exists:
         return jsonify({"error": "Task not found"}), 404
         
-    if task.status == 'COMPLETED':
-        return jsonify(json.loads(task.result_data))
-    elif task.status == 'FAILED':
-        return jsonify({"error": task.error_msg or "Task failed"}), 500
+    data = doc.to_dict()
+    status = data.get("status")
+    
+    if status == 'COMPLETED':
+        return jsonify(json.loads(data.get("result_data", "{}")))
+    elif status == 'FAILED':
+        return jsonify({"error": data.get("error_msg", "Task failed")}), 500
     else:
-        return jsonify({"status": task.status})
+        return jsonify({"status": status})

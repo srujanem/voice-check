@@ -112,4 +112,81 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('themeToggle').addEventListener('click', () => {
         setTimeout(() => location.reload(), 300); // Reload to redraw charts with new colors
     });
+
+    // Populate History Table
+    const tableBody = document.getElementById('historyTableBody');
+    if (historyData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-secondary);">No scans recorded yet.</td></tr>';
+    } else {
+        // Sort newest first, take top 10
+        const sortedHistory = [...historyData].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+        sortedHistory.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            
+            const dateStr = new Date(item.timestamp).toLocaleString();
+            const color = item.isFake ? 'var(--color-error)' : 'var(--color-success)';
+            const resultText = item.isFake ? 'Fake (AI)' : 'Authentic';
+            
+            tr.innerHTML = `
+                <td style="padding: 12px 8px;">${dateStr}</td>
+                <td style="padding: 12px 8px;">${item.type}</td>
+                <td style="padding: 12px 8px; color: ${color};">${item.confidence || '99.9%'}</td>
+                <td style="padding: 12px 8px;"><span style="background: ${color}22; color: ${color}; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">${resultText}</span></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    // Export PDF (Mock print for now)
+    document.getElementById('exportPdfBtn').addEventListener('click', () => {
+        window.print();
+    });
+
+    // API Key Management
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const toggleKeyBtn = document.getElementById('toggleKeyBtn');
+    const copyKeyBtn = document.getElementById('copyKeyBtn');
+    const generateKeyBtn = document.getElementById('generateKeyBtn');
+
+    // Retrieve or generate key
+    let savedKey = localStorage.getItem('authGuard_apiKey');
+    if (!savedKey) {
+        savedKey = 'sk_live_' + Math.random().toString(36).substr(2, 24);
+        localStorage.setItem('authGuard_apiKey', savedKey);
+    }
+    apiKeyInput.value = savedKey;
+
+    toggleKeyBtn.addEventListener('click', () => {
+        if (apiKeyInput.type === 'password') {
+            apiKeyInput.type = 'text';
+            toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        } else {
+            apiKeyInput.type = 'password';
+            toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        }
+    });
+
+    copyKeyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(apiKeyInput.value);
+        copyKeyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--color-success);"></i>';
+        setTimeout(() => {
+            copyKeyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        }, 2000);
+    });
+
+    generateKeyBtn.addEventListener('click', () => {
+        if(confirm("Are you sure? This will invalidate your old API key immediately.")) {
+            savedKey = 'sk_live_' + Math.random().toString(36).substr(2, 24);
+            localStorage.setItem('authGuard_apiKey', savedKey);
+            apiKeyInput.value = savedKey;
+            
+            // Show toast if available, else alert
+            if (window.showToast) {
+                window.showToast('success', 'New API key generated successfully.');
+            } else {
+                alert('New API key generated successfully.');
+            }
+        }
+    });
 });

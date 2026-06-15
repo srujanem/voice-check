@@ -600,3 +600,70 @@ p {
 .history-item:hover { transform: translateX(-5px); }
 .history-item.fake { border-left: 4px solid var(--color-error) !important; }
 .history-item.authentic { border-left: 4px solid var(--color-success) !important; }
+
+.hamburger-menu { display: none; }
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+    /* General Padding */
+    .app-container { padding: 15px; margin-top: 60px; }
+    
+    /* Navbar tweaks */
+    .hamburger-menu { display: block; font-size: 24px; cursor: pointer; color: var(--text-primary); }
+    .navbar { flex-wrap: wrap; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; height: auto; }
+    .nav-links { display: none; width: 100%; flex-direction: column; gap: 15px; text-align: center; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+    .nav-links.active { display: flex; }
+    .nav-right { display: none; width: 100%; justify-content: center; margin-top: 10px; padding-bottom: 10px; }
+    .nav-right.active { display: flex; }
+    
+    /* Typography Scaling */
+    .landing-header h1 { font-size: 28px !important; line-height: 1.2; word-wrap: break-word; }
+    .landing-header p { font-size: 15px; }
+    
+    /* Layout Fixes */
+    body { overflow-x: hidden; width: 100%; box-sizing: border-box; }
+    * { max-width: 100vw; box-sizing: border-box; }
+    
+    .floating-mockup { width: 95% !important; margin-top: 30px !important; }
+    .mockup-body { padding: 20px !important; }
+    
+    /* Grids to Stack */
+    .cards-grid, .features-grid, .testimonials-grid, .pricing-grid, .stats-container {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+    
+    /* Layouts with sidebars/split panes */
+    .app-layout { grid-template-columns: 1fr; }
+    .main-content { margin-left: 0; padding-bottom: 80px; }
+    
+    /* Form & Input adjustments */
+    .hero-cta { flex-direction: column; width: 100%; gap: 10px; }
+    .hero-cta .btn-primary { padding: 14px; width: 100%; text-align: center; justify-content: center; }
+    
+    .newsletter-form { flex-direction: column; }
+    .newsletter-form button { padding: 12px; }
+    
+    .api-key-box { flex-direction: column; }
+    .api-key-input { width: 100%; }
+
+    /* Footer */
+    .footer-inner { flex-direction: column; text-align: center; gap: 15px; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+    .footer-links a { font-size: 13px; margin: 0 10px; }
+
+    /* Hall of Fakes specific */
+    .detection-feed { grid-template-columns: 1fr; }
+    
+    /* Deepfake UI / Split columns */
+    div[style*="display: grid"] { grid-template-columns: 1fr !important; }
+
+    /* Auth Box */
+    .auth-container { padding: 25px 20px; margin: 0 10px; }
+    
+    /* Buttons */
+    .btn-primary, .btn-secondary, .btn-google { width: 100%; justify-content: center; }
+
+    /* Marquee speed adjustment */
+    .marquee-content { animation-duration: 20s; }
+}

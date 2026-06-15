@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "VoiceCheck AI Detector",
+  "name": "AuthGuard AI Detector",
   "version": "1.0",
   "description": "Instantly detect AI generated text across the web.",
   "permissions": ["contextMenus", "activeTab", "scripting"],

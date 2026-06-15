@@ -1,0 +1,43 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "AuthGuard",
+        "supportEmail": "srujanem222@gmail.com",
+        "authorizedRedirectUris": ["http://localhost", "http://127.0.0.1", "https://voicecheck-9bfec.web.app", "https://voicecheck-9bfec.firebaseapp.com"]
+      }
+    }
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "backend/**",
+      "dataset/**",
+      "dataset_image/**",
+      "uploads/**",
+      "**/*.py",
+      "**/*.pkl",
+      "**/*.keras",
+      "**/*.db",
+      "**/*.wav",
+      "**/*.webm",
+      "serviceAccountKey.json",
+      "requirements.txt",
+      "package-lock.json"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

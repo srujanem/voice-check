@@ -1,0 +1,11 @@
+{
+  "name": "authguard",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/static"
+    }
+  ]
+}

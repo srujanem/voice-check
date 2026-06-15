@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Scanner - AuthGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css?v=6">
+    <style>
+        .heatmap-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            line-height: 1.8;
+            font-size: 15px;
+            text-align: left;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .heat-high { background-color: rgba(239, 68, 68, 0.25); color: #fca5a5; border-radius: 4px; padding: 0 4px; border-bottom: 1px solid rgba(239, 68, 68, 0.5); }
+        .heat-med { background-color: rgba(245, 158, 11, 0.2); color: #fcd34d; border-radius: 4px; padding: 0 4px; border-bottom: 1px solid rgba(245, 158, 11, 0.5); }
+        .heat-low { background-color: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-radius: 4px; padding: 0 4px; }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    <div class="app-container" style="max-width: 900px;">
+        
+        <header class="app-header">
+            <div class="logo-section">
+                <i class="fa-solid fa-file-lines app-logo" style="font-size: 32px; color: var(--accent-cyan);"></i>
+                <div>
+                    <h2>Document Scanner</h2>
+                    <p style="font-size: 14px;">Upload PDFs or text for sentence-level AI heatmaps.</p>
+                </div>
+            </div>
+            <a href="../index.html" class="btn-secondary">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </header>
+
+        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 10px; border-radius: 8px; margin-bottom: 20px; color: white;">
+            <i class="fa-solid fa-circle-exclamation"></i> <span id="error-message"></span>
+        </div>
+
+        <div id="input-section">
+            <div class="upload-area" id="drop-zone" style="margin-top: 20px;">
+                <i class="fa-solid fa-file-arrow-up upload-icon" style="color: var(--accent-cyan);"></i>
+                <h3>Upload Document (.txt, .pdf, .docx)</h3>
+                <p>Drag & drop or click to browse</p>
+                <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" class="hidden">
+                <button class="btn-secondary" onclick="document.getElementById('fileInput').click()" style="margin-top: 15px;">Browse Files</button>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0; color: var(--text-secondary); font-size: 14px;">OR</div>
+            
+            <div style="text-align: left;">
+                <textarea id="textInput" rows="6" placeholder="Paste your essay, article, or document text here..." 
+                    style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: inherit; font-size: 15px; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+        </div>
+
+        <button id="btnAnalyze" class="btn-primary" style="margin-top: 20px; width: 100%;">
+            <i class="fa-solid fa-microscope"></i> Generate Heatmap
+        </button>
+
+        <div id="loading-state" class="hidden text-center" style="margin-top: 40px;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 40px; color: var(--accent-cyan); margin-bottom: 15px;"></i>
+            <p style="font-size: 16px; color: var(--text-secondary);">Analyzing sentence structures and perplexity...</p>
+        </div>
+
+        <div id="resultsSection" class="hidden" style="margin-top: 30px;">
+            <div class="result-card" id="result-card" style="padding: 30px;">
+                <h3 class="result-title" id="classificationResult" style="margin-bottom: 10px;">Mixed Content Detected</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 25px;">Overall AI Probability: <strong id="overallScore" style="color: var(--color-error); font-size: 18px;">--%</strong></p>
+                
+                <div class="heatmap-container" id="heatmapContent">
+                    <!-- Sentences injected here -->
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-color" style="background: rgba(239, 68, 68, 0.4);"></div> High AI Probability</div>
+                    <div class="legend-item"><div class="legend-color" style="background: rgba(245, 158, 11, 0.4);"></div> Moderate AI</div>
+                    <div class="legend-item"><div class="legend-color" style="background: rgba(16, 185, 129, 0.3);"></div> Likely Human</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button id="reset-btn" class="btn-secondary" style="flex: 1; justify-content: center;">
+                    <i class="fa-solid fa-rotate-right"></i> Scan New Document
+                </button>
+                <button id="download-btn" class="btn-primary" style="flex: 1; justify-content: center;">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../history.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

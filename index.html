@@ -3,111 +3,1040 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Detection Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AuthGuard — AI Detection Suite</title>
+    <meta name="description" content="Advanced AI detection platform to verify the authenticity of voice, image, text, video, and social media content.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="global.css?v=2">
+    <link rel="stylesheet" href="global.css?v=8">
+    <style>
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 60px; height: 60px; border: 4px solid rgba(0, 243, 255, 0.2);
+            border-top: 4px solid var(--accent-cyan); border-radius: 50%;
+            animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-text {
+            color: var(--accent-cyan); font-weight: 600; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
+        }
+
+
+
+        /* ===== FLOATING MOCKUP ===== */
+        .floating-mockup {
+            width: 80%; max-width: 800px; margin: 60px auto 0;
+            background: var(--bg-card); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color); border-radius: 16px;
+            box-shadow: var(--glass-shadow);
+            animation: floatUp 4s ease-in-out infinite; position: relative; z-index: 2; overflow: hidden;
+        }
+        .mockup-header {
+            background: var(--bg-hover); padding: 12px 16px; display: flex; gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .mockup-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .mockup-header .dot:nth-child(1) { background: #ff5f56; }
+        .mockup-header .dot:nth-child(2) { background: #ffbd2e; }
+        .mockup-header .dot:nth-child(3) { background: #27c93f; }
+        .mockup-body { padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .mockup-chart {
+            width: 100%; height: 120px; background: linear-gradient(90deg, rgba(0,243,255,0.1), rgba(188,19,254,0.1));
+            border: 1px dashed rgba(0,243,255,0.3); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-cyan); font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+        }
+        @keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* ===== TEXT REVEAL ===== */
+        .landing-header h1 { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
+        .landing-header p { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; transform: translateY(30px); }
+        .landing-header .btn-primary, .landing-header .btn-secondary { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes slideUpFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== GLITCH EFFECT ===== */
+        .landing-header h1 { position: relative; display: inline-block; }
+        .landing-header h1:hover::before, .landing-header h1:hover::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: -1;
+        }
+        .landing-header h1:hover::before { left: 2px; text-shadow: -2px 0 red; animation: glitch-anim 2s infinite linear alternate-reverse; }
+        .landing-header h1:hover::after { left: -2px; text-shadow: -2px 0 blue; animation: glitch-anim 2.5s infinite linear alternate-reverse; }
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            10% { clip: rect(12px, 9999px, 59px, 0); }
+            20% { clip: rect(48px, 9999px, 29px, 0); }
+            30% { clip: rect(42px, 9999px, 73px, 0); }
+            40% { clip: rect(63px, 9999px, 27px, 0); }
+            50% { clip: rect(34px, 9999px, 55px, 0); }
+            60% { clip: rect(86px, 9999px, 73px, 0); }
+            70% { clip: rect(20px, 9999px, 20px, 0); }
+            80% { clip: rect(26px, 9999px, 60px, 0); }
+            90% { clip: rect(9px, 9999px, 46px, 0); }
+            100% { clip: rect(46px, 9999px, 73px, 0); }
+        }
+
+        /* ===== PARTICLES ===== */
+        #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-card); backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid transparent;
+            transition: all 0.35s ease;
+        }
+        .navbar.scrolled {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--glass-shadow);
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-brand img { width: 32px; height: 32px; border-radius: 8px; }
+        .nav-brand span { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500;
+            transition: color 0.2s; position: relative;
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+            background: var(--accent-cyan); transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+
+        /* ===== USER PROFILE ===== */
+        .user-area { position: relative; z-index: 100; }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+            border: 2px solid var(--accent-cyan); object-fit: cover;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 12px rgba(6, 182, 212, 0.3);
+        }
+        .user-avatar:hover { transform: scale(1.08); box-shadow: 0 4px 20px rgba(6, 182, 212, 0.5); }
+        .user-avatar-placeholder {
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+            border: 2px solid var(--accent-cyan);
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: white;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 12px rgba(6, 182, 212, 0.3);
+        }
+        .user-avatar-placeholder:hover { transform: scale(1.08); }
+        .user-dropdown {
+            position: absolute; top: 48px; right: 0;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 8px; min-width: 220px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+            opacity: 0; visibility: hidden; transform: translateY(-8px) scale(0.96);
+            transition: all 0.2s ease; backdrop-filter: blur(20px);
+        }
+        .user-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .dropdown-header { padding: 12px 14px; border-bottom: 1px solid var(--border-color); margin-bottom: 6px; }
+        .dropdown-header .name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin: 0; }
+        .dropdown-header .email { font-size: 12px; color: var(--text-secondary); margin: 2px 0 0; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 8px;
+            color: var(--text-primary); text-decoration: none;
+            font-size: 13px; font-weight: 500;
+            transition: background 0.15s ease; cursor: pointer;
+            border: none; background: none; width: 100%; font-family: inherit;
+        }
+        .dropdown-item:hover { background: var(--bg-hover); }
+        .dropdown-item i { width: 16px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+        .dropdown-item.logout { color: #ef4444; }
+        .dropdown-item.logout i { color: #ef4444; }
+        .login-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; text-decoration: none;
+            font-size: 13px; font-weight: 600; font-family: inherit;
+            transition: all 0.2s ease; border: none;
+            box-shadow: 0 2px 12px rgba(6, 182, 212, 0.3);
+        }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(6, 182, 212, 0.5); }
+
+        /* ===== HERO ===== */
+        .hero-section { padding: 140px 20px 80px; text-align: center; position: relative; overflow: hidden; }
+        .hero-section::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 30%, rgba(6,182,212,0.08) 0%, transparent 50%);
+            animation: heroGlow 8s ease-in-out infinite alternate;
+        }
+        @keyframes heroGlow { from { opacity: 0.5; } to { opacity: 1; } }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 16px; border-radius: 20px;
+            background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2);
+            font-size: 12px; font-weight: 600; color: var(--accent-cyan);
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .hero-badge .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+
+        /* ===== MARQUEE ===== */
+        .marquee-section { padding: 30px 0; overflow: hidden; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .marquee-track {
+            display: flex; gap: 48px; animation: marqueeScroll 30s linear infinite; width: max-content;
+        }
+        @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .marquee-item {
+            display: flex; align-items: center; gap: 10px; white-space: nowrap;
+            font-size: 14px; font-weight: 500; color: var(--text-secondary); opacity: 0.6;
+        }
+        .marquee-item i { font-size: 18px; color: var(--accent-cyan); }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials-section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .testimonial-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 28px;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .testimonial-card::before {
+            content: '\201C'; position: absolute; top: 12px; right: 20px;
+            font-size: 60px; color: var(--accent-cyan); opacity: 0.1; font-family: serif; line-height: 1;
+        }
+        .testimonial-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+        .testimonial-stars { margin-bottom: 14px; }
+        .testimonial-stars i { color: #fbbf24; font-size: 14px; margin-right: 2px; }
+        .testimonial-text { font-size: 14px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 18px; font-style: italic; }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700; color: white; flex-shrink: 0;
+        }
+        .testimonial-info .t-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin: 0; }
+        .testimonial-info .t-role { font-size: 12px; color: var(--text-secondary); margin: 2px 0 0; }
+
+        /* ===== FAQ ===== */
+        .faq-section { padding: 80px 20px; max-width: 800px; margin: 0 auto; }
+        .faq-item {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover { border-color: rgba(6,182,212,0.2); }
+        .faq-question {
+            width: 100%; padding: 18px 20px; background: transparent; border: none;
+            color: var(--text-primary); font-size: 14px; font-weight: 600; font-family: inherit;
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            text-align: left; gap: 12px;
+        }
+        .faq-question i { color: var(--accent-cyan); font-size: 12px; transition: transform 0.3s ease; flex-shrink: 0; }
+        .faq-item.open .faq-question i { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 20px;
+        }
+        .faq-item.open .faq-answer { max-height: 300px; padding: 0 20px 18px; }
+        .faq-answer p { font-size: 13px; line-height: 1.7; color: var(--text-secondary); margin: 0; }
+
+        /* ===== NEWSLETTER ===== */
+        .newsletter-section {
+            padding: 60px 20px; max-width: 700px; margin: 0 auto 40px; text-align: center;
+        }
+        .newsletter-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 48px 40px;
+            position: relative; overflow: hidden;
+        }
+        .newsletter-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-cyan));
+            background-size: 200% 100%; animation: gradientShift 4s linear infinite;
+        }
+        @keyframes gradientShift { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+        .newsletter-box h3 { font-size: 22px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px; }
+        .newsletter-box > p { font-size: 14px; color: var(--text-secondary); margin: 0 0 24px; }
+        .newsletter-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+        .newsletter-form input {
+            flex: 1; padding: 12px 16px; border-radius: 10px;
+            border: 1px solid var(--border-color); background: var(--bg-hover);
+            color: var(--text-primary); font-family: inherit; font-size: 14px;
+        }
+        .newsletter-form input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
+        .newsletter-form button {
+            padding: 12px 24px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; font-size: 14px; font-weight: 600; font-family: inherit;
+            cursor: pointer; transition: all 0.3s ease; white-space: nowrap;
+        }
+        .newsletter-form button:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(6,182,212,0.4); }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(6,182,212,0.3);
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .back-to-top:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(6,182,212,0.5); }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            padding: 14px 20px; border-radius: 12px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-primary); font-size: 13px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            animation: toastIn 0.4s ease; min-width: 280px;
+            backdrop-filter: blur(20px);
+        }
+        .toast.success { border-left: 3px solid #10b981; }
+        .toast.success i { color: #10b981; }
+        .toast.error { border-left: 3px solid #ef4444; }
+        .toast.error i { color: #ef4444; }
+        .toast.info { border-left: 3px solid var(--accent-cyan); }
+        .toast.info i { color: var(--accent-cyan); }
+        .toast-out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+
+        /* ===== ABOUT (existing) ===== */
+        .about-section { padding: 80px 20px 40px; max-width: 1100px; margin: 0 auto; }
+        .about-container { position: relative; }
+        .section-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--accent-cyan); margin-bottom: 12px;
+        }
+        .section-title { font-size: 32px; font-weight: 700; color: var(--text-primary); margin: 0 0 16px; }
+        .section-subtitle { font-size: 16px; line-height: 1.7; color: var(--text-secondary); max-width: 800px; margin: 0 0 40px; }
+        .stats-bar {
+            display: flex; align-items: center; justify-content: center; gap: 0;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 28px 20px; margin-bottom: 50px;
+            flex-wrap: wrap; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .stat-item { text-align: center; flex: 1; min-width: 120px; padding: 8px 0; }
+        .stat-number {
+            display: block; font-size: 30px; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; display: block; }
+        .stat-divider { width: 1px; height: 40px; background: var(--border-color); flex-shrink: 0; }
+        .subsection-title {
+            font-size: 22px; font-weight: 700; color: var(--text-primary);
+            margin: 0 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--border-color);
+        }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 50px; }
+        .feature-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 24px; transition: all 0.3s ease;
+        }
+        .feature-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+        .feature-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+        }
+        .feature-icon i { font-size: 18px; color: white; }
+        .feature-card h4 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px; }
+        .feature-card p { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin: 0; }
+        .steps-grid {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; margin-bottom: 50px; flex-wrap: wrap;
+        }
+        .step-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 28px 24px; text-align: center;
+            flex: 1; min-width: 200px; max-width: 280px; transition: all 0.3s ease;
+        }
+        .step-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-4px); }
+        .step-number {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; font-size: 18px; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px;
+        }
+        .step-card h4 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px; }
+        .step-card p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+        .step-connector { color: var(--text-secondary); font-size: 16px; padding: 0 16px; opacity: 0.4; }
+        .tech-strip { display: flex; align-items: center; gap: 16px; padding: 20px 0; flex-wrap: wrap; }
+        .tech-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); font-weight: 600; }
+        .tech-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+        .tech-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px;
+            background: var(--bg-hover); border: 1px solid var(--border-color);
+            font-size: 12px; color: var(--text-secondary); font-weight: 500; transition: all 0.2s ease;
+        }
+        .tech-badge:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+        /* ===== FOOTER ===== */
+        .site-footer { margin-top: 0; padding: 40px 20px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-inner { max-width: 600px; margin: 0 auto; }
+        .footer-brand {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;
+        }
+        .footer-brand i { color: var(--accent-cyan); }
+        .footer-tagline { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent-cyan); }
+        .footer-copy { font-size: 12px; color: var(--text-secondary); opacity: 0.6; margin: 0; }
+
+        /* ===== REVEAL ===== */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar { padding: 12px 16px; }
+            .nav-links { display: none; }
+            .hero-section { padding: 120px 16px 60px; }
+            .section-title { font-size: 24px; }
+            .stats-bar { flex-direction: column; gap: 12px; }
+            .stat-divider { width: 60px; height: 1px; }
+            .steps-grid { flex-direction: column; gap: 16px; }
+            .step-connector { transform: rotate(90deg); padding: 8px 0; }
+            .step-card { max-width: 100%; }
+            .newsletter-form { flex-direction: column; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
-    
-    <a href="login.html" class="btn-secondary" style="position: absolute; top: 20px; right: 80px; padding: 10px 15px; border-radius: 8px;"><i class="fa-solid fa-user"></i> Login</a>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div class="loading-text">INITIALIZING SYSTEM...</div>
+    </div>
 
-    <header class="landing-header">
-        <h1>AI Detection Suite</h1>
-        <p>Advanced machine learning tools to distinguish human authenticity from AI generation.</p>
-        <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-            <a href="pricing.html" class="btn-secondary" style="display: inline-flex;"><i class="fa-solid fa-tag"></i> Pricing</a>
-            <a href="dashboard-ui/index.html" class="btn-secondary" style="display: inline-flex;"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-brand">
+            <div class="logo-icon" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px;"><i class="fa-solid fa-shield-halved"></i></div>
+            <span>AuthGuard</span>
+        </a>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <i class="fa-solid fa-bars"></i>
         </div>
-    </header>
+        <div class="nav-links">
+            <a href="#tools">Tools</a>
+            <a href="#about">About</a>
+            <a href="#testimonials">Reviews</a>
+            <a href="#faq">FAQ</a>
+            <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="nav-right">
+            <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
+            <!-- Login (when NOT logged in) -->
+            <div class="user-area" id="login-area">
+                <a href="login.html" class="login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login</a>
+            </div>
+            <!-- User profile (when logged in) -->
+            <div class="user-area" id="user-area" style="display:none;">
+                <div id="avatar-trigger"></div>
+                <div class="user-dropdown" id="user-dropdown">
+                    <div class="dropdown-header">
+                        <p class="name" id="dropdown-name">User</p>
+                        <p class="email" id="dropdown-email">user@example.com</p>
+                    </div>
+                    <a href="dashboard-ui/index.html" class="dropdown-item">
+                        <i class="fa-solid fa-chart-pie"></i> Pro Dashboard
+                    </a>
+                    <button class="dropdown-item logout" id="logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <div class="cards-grid">
+    <!-- Hero -->
+    <section class="hero-section">
+        <!-- Particles Background -->
+        <div id="particles-js"></div>
+
+        <div class="hero-badge" style="position: relative; z-index: 2;"><div class="pulse-dot"></div> AI-Powered Detection Platform</div>
+        <header class="landing-header" style="padding: 0; position: relative; z-index: 2;">
+            <h1 data-text="AI Detection Suite">AI Detection Suite</h1>
+            <p>Advanced machine learning tools to distinguish human authenticity from AI generation.</p>
+            <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="#tools" class="btn-primary" style="display: inline-flex;"><i class="fa-solid fa-rocket"></i> Explore Tools</a>
+                <a href="dashboard-ui/index.html" class="btn-secondary" style="display: inline-flex;"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
+            </div>
+        </header>
+
+        <!-- Floating 3D Mockup -->
+        <div class="floating-mockup">
+            <div class="mockup-header"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="mockup-body">
+                <h3 style="color: var(--text-primary); margin: 0;">AI Signature Analysis</h3>
+                <div class="mockup-chart">Scanning neural patterns...</div>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <div style="flex: 1; height: 8px; background: rgba(0,243,255,0.2); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 85%; height: 100%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">Match Probability: 85.4%</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-section">
+        <div class="marquee-track">
+            <div class="marquee-item"><i class="fa-solid fa-microphone"></i> Voice Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-image"></i> Image Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-font"></i> Text Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-video"></i> Video Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-link"></i> URL Scanner</div>
+            <div class="marquee-item"><i class="fa-solid fa-stamp"></i> Watermark</div>
+            <div class="marquee-item"><i class="fa-solid fa-brain"></i> Deep Learning</div>
+            <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> Tamper Proof</div>
+            <!-- Duplicate for seamless loop -->
+            <div class="marquee-item"><i class="fa-solid fa-microphone"></i> Voice Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-image"></i> Image Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-font"></i> Text Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-video"></i> Video Detection</div>
+            <div class="marquee-item"><i class="fa-solid fa-file-lines"></i> Document Heatmap</div>
+            <div class="marquee-item"><i class="fa-solid fa-link"></i> URL Scanner</div>
+            <div class="marquee-item"><i class="fa-solid fa-stamp"></i> Watermark</div>
+            <div class="marquee-item"><i class="fa-solid fa-brain"></i> Deep Learning</div>
+            <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> Tamper Proof</div>
+        </div>
+    </div>
+
+    <!-- Tools Cards -->
+    <div class="cards-grid" id="tools" style="scroll-margin-top: 80px;">
         <a href="voice-ui/index.html" class="nav-card tilt-card">
-            <img src="assets/voice_logo.png" alt="Voice Detection">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-microphone-lines"></i></div>
             <h2>Voice Detection</h2>
             <p>Upload or record audio to detect whether a voice is AI-generated or human.</p>
             <div class="card-glare"></div>
         </a>
-
         <a href="deepfake-ui/index.html" class="nav-card tilt-card purple">
-            <img src="assets/image_logo.png" alt="Image Detection">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-purple);"><i class="fa-solid fa-image"></i></div>
             <h2>Image Detection</h2>
             <p>Spot subtle pixel artifacts to determine if a face photo is real or AI-generated.</p>
             <div class="card-glare"></div>
         </a>
-
         <a href="text-ui/index.html" class="nav-card tilt-card">
-            <img src="assets/text_logo.png" alt="Text Detection">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-font"></i></div>
             <h2>Text Detection</h2>
             <p>Identify ChatGPT & AI writing styles in essays, articles, and documents.</p>
             <div class="card-glare"></div>
         </a>
-
         <a href="video-ui/index.html" class="nav-card tilt-card purple">
-            <img src="assets/video_logo.png" alt="Video Detection">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-purple);"><i class="fa-solid fa-video"></i></div>
             <h2>Video Detection</h2>
             <p>Analyze video frames and audio tracks to detect deepfakes.</p>
             <div class="card-glare"></div>
         </a>
-
         <a href="url-ui/index.html" class="nav-card tilt-card">
-            <img src="assets/url_logo.png" alt="URL Scanner">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-link"></i></div>
             <h2>Social URL Scanner</h2>
             <p>Paste a Twitter or Reddit link to scan external content instantly.</p>
             <div class="card-glare"></div>
         </a>
-
         <a href="watermark-ui/index.html" class="nav-card tilt-card purple">
-            <img src="assets/watermark_logo.png" alt="Watermark Creator">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-purple);"><i class="fa-solid fa-stamp"></i></div>
             <h2>Authentic Watermark</h2>
             <p>Embed an invisible cryptographic signature to protect your real content.</p>
             <div class="card-glare"></div>
         </a>
+        <a href="document-ui/index.html" class="nav-card tilt-card">
+            <div style="font-size: 48px; margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-file-lines"></i></div>
+            <h2>Document Scanner</h2>
+            <p>Upload PDFs or text for sentence-level AI heatmaps and perplexity scores.</p>
+            <div class="card-glare"></div>
+        </a>
     </div>
 
+    <!-- Hall of Fakes Feed -->
+    <section class="feed-section" id="feed" style="max-width: 1100px; margin: 80px auto 0; padding: 0 20px; scroll-margin-top: 80px;">
+        <div class="section-label"><i class="fa-solid fa-satellite-dish"></i> Live Feed</div>
+        <h2 class="section-title">Hall of Fakes</h2>
+        <p class="section-subtitle" style="margin-bottom: 20px;">Global real-time detections of AI-generated content caught by AuthGuard.</p>
+        
+        <div class="feed-container" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; height: 350px; overflow-y: hidden; position: relative; box-shadow: inset 0 0 30px rgba(0,0,0,0.5);">
+            <div id="live-feed" style="display: flex; flex-direction: column; gap: 12px; transition: transform 0.5s ease;">
+                <!-- Feed items generated by JS -->
+            </div>
+            <!-- Gradient fades top and bottom -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(var(--bg-main), transparent); pointer-events: none; opacity: 0.8; border-radius: 16px 16px 0 0;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, var(--bg-main)); pointer-events: none; opacity: 0.8; border-radius: 0 0 16px 16px;"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about" style="scroll-margin-top: 80px;">
+        <div class="about-container">
+            <div class="section-label"><i class="fa-solid fa-circle-info"></i> About</div>
+            <h2 class="section-title">What is AuthGuard?</h2>
+            <p class="section-subtitle">
+                AuthGuard is an all-in-one AI detection platform built to help individuals, journalists, educators, and businesses verify the authenticity of digital content. As AI-generated media becomes increasingly realistic, our suite of tools provides the critical layer of trust needed in today's digital landscape.
+            </p>
+
+            <div class="stats-bar">
+                <div class="stat-item"><span class="stat-number" data-target="6">0</span><span class="stat-label">Detection Tools</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number" data-target="99">0</span><span class="stat-label">Accuracy Rate %</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number" data-target="5">0</span><span class="stat-label">Sec Avg. Scan</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number" data-target="24">0</span><span class="stat-label">/ 7 Available</span></div>
+            </div>
+
+            <h3 class="subsection-title">Our Detection Tools</h3>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fa-solid fa-microphone"></i></div>
+                    <h4>Voice Detection</h4>
+                    <p>Uses deep learning models trained on thousands of real and synthetic speech samples. Upload any audio clip or record directly — our AI analyzes spectral patterns, pitch variations, and micro-artifacts invisible to the human ear.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-image"></i></div>
+                    <h4>Image Detection</h4>
+                    <p>Detects AI-generated faces and deepfake images by analyzing pixel-level inconsistencies, lighting anomalies, and generative fingerprints left by tools like Stable Diffusion, MidJourney, and DALL·E.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-font"></i></div>
+                    <h4>Text Detection</h4>
+                    <p>Identifies AI-written content from models like ChatGPT, Claude, and Gemini. Analyzes writing patterns including sentence structure, vocabulary distribution, perplexity scores, and burstiness.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f43f5e, #e11d48);"><i class="fa-solid fa-video"></i></div>
+                    <h4>Video Detection</h4>
+                    <p>Frame-by-frame deepfake analysis combined with audio track verification. Detects face-swaps, lip-sync manipulations by examining temporal consistency and facial landmark stability.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-link"></i></div>
+                    <h4>Social URL Scanner</h4>
+                    <p>Paste any Twitter or Reddit link and instantly scan linked content for AI-generated media. Automatically extracts images, text, and audio from social posts and runs them through our detection pipeline.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"><i class="fa-solid fa-stamp"></i></div>
+                    <h4>Authentic Watermark</h4>
+                    <p>Protect your original content with an invisible cryptographic watermark. This tamper-proof digital signature proves ownership and authenticity without altering visual or auditory quality.</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">How It Works</h3>
+            <div class="steps-grid">
+                <div class="step-card reveal"><div class="step-number">1</div><h4>Upload or Record</h4><p>Choose your content type and upload a file, paste a URL, or record directly from your device.</p></div>
+                <div class="step-connector"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="step-card reveal"><div class="step-number">2</div><h4>AI Analysis</h4><p>Our machine learning models process the content in seconds, scanning for patterns unique to AI generation.</p></div>
+                <div class="step-connector"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="step-card reveal"><div class="step-number">3</div><h4>Get Results</h4><p>Receive a detailed confidence score and breakdown showing exactly why the content is classified as real or AI.</p></div>
+            </div>
+
+            <div class="tech-strip">
+                <span class="tech-label">Powered by</span>
+                <div class="tech-badges">
+                    <span class="tech-badge"><i class="fa-brands fa-python"></i> Python</span>
+                    <span class="tech-badge"><i class="fa-solid fa-brain"></i> TensorFlow</span>
+                    <span class="tech-badge"><i class="fa-brands fa-google"></i> Firebase</span>
+                    <span class="tech-badge"><i class="fa-solid fa-flask-vial"></i> Flask</span>
+                    <span class="tech-badge"><i class="fa-solid fa-robot"></i> Keras</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section" id="testimonials" style="scroll-margin-top: 80px;">
+        <div class="section-label"><i class="fa-solid fa-star"></i> Testimonials</div>
+        <h2 class="section-title">Trusted by Professionals</h2>
+        <p class="section-subtitle">See what journalists, educators, and security experts say about AuthGuard.</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p class="testimonial-text">"AuthGuard has become an indispensable tool in our newsroom. We use the voice and image detectors daily to verify sources before publishing. It's fast, accurate, and incredibly easy to use."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">R</div>
+                    <div class="testimonial-info"><p class="t-name">Rahul Mehta</p><p class="t-role">Senior Editor, Digital News Daily</p></div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p class="testimonial-text">"As a university professor, I was struggling with AI-generated essays. AuthGuard's text detection catches ChatGPT content with remarkable precision. It's saved me countless hours of manual review."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">S</div>
+                    <div class="testimonial-info"><p class="t-name">Dr. Sarah Chen</p><p class="t-role">Professor of Computer Science, MIT</p></div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                <p class="testimonial-text">"The watermarking feature is a game-changer for content creators. I can now prove my photos are authentic originals. The URL scanner also helps me quickly verify social media content."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">A</div>
+                    <div class="testimonial-info"><p class="t-name">Ananya Sharma</p><p class="t-role">Freelance Photographer & Creator</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section" id="faq" style="scroll-margin-top: 80px;">
+        <div class="section-label" style="text-align:center; display:flex; justify-content:center;"><i class="fa-solid fa-circle-question"></i> FAQ</div>
+        <h2 class="section-title" style="text-align:center;">Frequently Asked Questions</h2>
+        <p class="section-subtitle" style="text-align:center; margin: 0 auto 32px;">Everything you need to know about AuthGuard.</p>
+
+        <div class="faq-item">
+            <button class="faq-question">How accurate is AuthGuard's AI detection? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>Our models achieve over 99% accuracy on benchmark datasets. We continuously retrain our models with the latest AI-generated samples to stay ahead of new generation techniques from tools like ChatGPT, MidJourney, and ElevenLabs.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">What file formats are supported? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>We support WAV, MP3, WebM, and OGG for audio; PNG, JPG, and WEBP for images; MP4 and MOV for video; and plain text or pasted content for text detection. File size limits depend on your plan (up to 50MB on Pro).</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">Is my uploaded content stored on your servers? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>No. All uploaded files are processed in real-time and immediately deleted after analysis. We never store, share, or use your content for training purposes. Your privacy is our top priority.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">Can I use AuthGuard for free? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>Yes! AuthGuard offers a free tier with limited daily scans across all detection tools. For unlimited access, higher file size limits, and priority processing, check out our Pro and Enterprise plans on the pricing page.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">Do you offer an API for developers? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>Yes, our RESTful API is available on Enterprise plans. You get endpoints for voice, image, text, and video detection with detailed JSON responses. Check our API documentation for integration guides and code examples.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">How does the watermarking feature work? <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="faq-answer"><p>Our watermarking embeds an invisible cryptographic signature into your media files using steganographic techniques. This signature is imperceptible to humans but can be detected and verified by our system, proving content authenticity and ownership.</p></div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter-section">
+        <div class="newsletter-box reveal">
+            <h3><i class="fa-solid fa-envelope" style="color: var(--accent-cyan); margin-right: 8px;"></i> Stay Updated</h3>
+            <p>Get the latest updates on new detection tools, accuracy improvements, and security tips.</p>
+            <form class="newsletter-form" id="newsletter-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><div style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; margin-right: 8px;"><i class="fa-solid fa-shield-halved"></i></div><span>AuthGuard</span></div>
+            <p class="footer-tagline">Defending digital truth with AI-powered authenticity detection.</p>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#testimonials">Reviews</a>
+                <a href="#faq">FAQ</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="dashboard-ui/index.html">Dashboard</a>
+                <a href="login.html">Login</a>
+            </div>
+            <p class="footer-copy">&copy; 2025 AuthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="theme.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+          projectId: "voicecheck-9bfec",
+          appId: "1:970751051316:web:dc05186496618c33346c61",
+          storageBucket: "voicecheck-9bfec.firebasestorage.app",
+          apiKey: "AIzaSyAKWMsWufQYipRy5kYBTE1R0bgsRBIHlVs",
+          authDomain: "voicecheck-9bfec.firebaseapp.com",
+          messagingSenderId: "970751051316",
+          measurementId: "G-2SWJD9JFZP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginArea = document.getElementById('login-area');
+        const userArea = document.getElementById('user-area');
+        const avatarTrigger = document.getElementById('avatar-trigger');
+        const dropdown = document.getElementById('user-dropdown');
+        const dropdownName = document.getElementById('dropdown-name');
+        const dropdownEmail = document.getElementById('dropdown-email');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginArea.style.display = 'none';
+                userArea.style.display = 'block';
+                dropdownName.textContent = user.displayName || 'User';
+                dropdownEmail.textContent = user.email || '';
+                avatarTrigger.innerHTML = '';
+                if (user.photoURL) {
+                    const img = document.createElement('img');
+                    img.src = user.photoURL;
+                    img.alt = 'Profile';
+                    img.className = 'user-avatar';
+                    img.referrerPolicy = 'no-referrer';
+                    avatarTrigger.appendChild(img);
+                } else {
+                    const ph = document.createElement('div');
+                    ph.className = 'user-avatar-placeholder';
+                    ph.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+                    avatarTrigger.appendChild(ph);
+                }
+                localStorage.setItem('user_id', user.uid);
+                user.getIdToken().then(t => localStorage.setItem('api_key', t));
+                localStorage.setItem('user_name', user.displayName || user.email);
+                localStorage.setItem('user_photo', user.photoURL || '');
+                localStorage.setItem('user_email', user.email || '');
+                showToast('success', `Welcome back, ${user.displayName || user.email}!`);
+            } else {
+                loginArea.style.display = 'block';
+                userArea.style.display = 'none';
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('api_key');
+                localStorage.removeItem('user_name');
+                localStorage.removeItem('user_photo');
+                localStorage.removeItem('user_email');
+            }
+        });
+
+        avatarTrigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); });
+        document.addEventListener('click', () => dropdown.classList.remove('show'));
+        dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        logoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            showToast('info', 'You have been signed out.');
+            setTimeout(() => window.location.reload(), 1000);
+        });
+
+        // Toast
+        window.showToast = function(type, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 300); }, 3500);
+        };
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.tilt-card');
-            
-            cards.forEach(card => {
+            // Hide Loading Screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => loadingScreen.style.display = 'none', 500);
+                }
+            }, 1000);
+
+
+            // Initialize Particles JS
+            if(window.particlesJS) {
+                particlesJS("particles-js", {
+                    "particles": {
+                        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                        "color": { "value": "#00f3ff" },
+                        "shape": { "type": "circle" },
+                        "opacity": { "value": 0.5, "random": false },
+                        "size": { "value": 3, "random": true },
+                        "line_linked": { "enable": true, "distance": 150, "color": "#00f3ff", "opacity": 0.4, "width": 1 },
+                        "move": { "enable": true, "speed": 3, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+                    },
+                    "interactivity": {
+                        "detect_on": "canvas",
+                        "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+                        "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 1 } }, "push": { "particles_nb": 4 } }
+                    },
+                    "retina_detect": true
+                });
+            }
+
+            // Tilt Cards
+            document.querySelectorAll('.tilt-card').forEach(card => {
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const rotateX = ((y - centerY) / centerY) * -15;
-                    const rotateY = ((x - centerX) / centerX) * 15;
-                    
+                    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                    const rotateX = ((y - rect.height/2) / (rect.height/2)) * -15;
+                    const rotateY = ((x - rect.width/2) / (rect.width/2)) * 15;
                     card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                    
                     const glare = card.querySelector('.card-glare');
-                    if (glare) {
-                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 60%)`;
-                    }
+                    if (glare) glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 60%)`;
                 });
-                
                 card.addEventListener('mouseleave', () => {
-                    card.style.transform = `translateY(0) rotateX(0) rotateY(0)`;
+                    card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
                     const glare = card.querySelector('.card-glare');
-                    if (glare) {
-                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)`;
-                        glare.style.opacity = '0';
-                    }
+                    if (glare) { glare.style.background = 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)'; glare.style.opacity = '0'; }
                 });
-
                 card.addEventListener('mouseenter', () => {
                     const glare = card.querySelector('.card-glare');
-                    if (glare) {
-                        glare.style.opacity = '1';
-                    }
+                    if (glare) glare.style.opacity = '1';
                 });
             });
+
+            // Scroll Reveal
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+                });
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // Animated Counters
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const target = parseInt(el.dataset.target);
+                        let current = 0;
+                        const step = Math.max(1, Math.floor(target / 40));
+                        const timer = setInterval(() => {
+                            current += step;
+                            if (current >= target) { current = target; clearInterval(timer); }
+                            el.textContent = current + (target === 99 ? '%' : target === 6 ? '+' : '');
+                        }, 30);
+                        counterObserver.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.5 });
+            document.querySelectorAll('.stat-number[data-target]').forEach(el => counterObserver.observe(el));
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+                document.getElementById('back-to-top').classList.toggle('show', window.scrollY > 400);
+            });
+
+            // Back to top
+            document.getElementById('back-to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+            // FAQ Accordion
+            document.querySelectorAll('.faq-question').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.parentElement;
+                    const isOpen = item.classList.contains('open');
+                    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+                    if (!isOpen) item.classList.add('open');
+                });
+            });
+
+            // Newsletter Form
+            document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                showToast('success', 'Thanks for subscribing! You\'ll receive updates soon.');
+                e.target.reset();
+            });
+
+            // Hall of Fakes Feed Logic
+            const feedContainer = document.getElementById('live-feed');
+            const fakeTypes = ['Deepfake Video', 'AI Voice Clone', 'ChatGPT Essay', 'MidJourney Image', 'Synthetic Profile Pic'];
+            const fakeSources = ['Twitter', 'Reddit', 'News Site', 'Dating App', 'University Portal'];
+            
+            function createFeedItem() {
+                const type = fakeTypes[Math.floor(Math.random() * fakeTypes.length)];
+                const source = fakeSources[Math.floor(Math.random() * fakeSources.length)];
+                const confidence = (85 + Math.random() * 14.9).toFixed(1);
+                
+                const item = document.createElement('div');
+                item.style.padding = '14px 20px';
+                item.style.background = 'rgba(239, 68, 68, 0.05)';
+                item.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+                item.style.borderLeft = '4px solid #ef4444';
+                item.style.borderRadius = '8px';
+                item.style.display = 'flex';
+                item.style.justifyContent = 'space-between';
+                item.style.alignItems = 'center';
+                
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; margin-right: 6px;"></i> ${type} Detected
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Source: ${source} • Just now</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #ef4444; font-weight: 700; font-size: 15px;">${confidence}% AI</div>
+                        <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Confidence</div>
+                    </div>
+                `;
+                return item;
+            }
+
+            // Initialize feed
+            for(let i=0; i<6; i++) feedContainer.appendChild(createFeedItem());
+            
+            // Auto scroll and add new
+            setInterval(() => {
+                const newItem = createFeedItem();
+                newItem.style.opacity = '0';
+                newItem.style.transform = 'translateY(-20px)';
+                newItem.style.transition = 'all 0.5s ease';
+                feedContainer.insertBefore(newItem, feedContainer.firstChild);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    newItem.style.opacity = '1';
+                    newItem.style.transform = 'translateY(0)';
+                }, 50);
+
+                if(feedContainer.children.length > 10) {
+                    feedContainer.removeChild(feedContainer.lastChild);
+                }
+            }, 3000);
+            
+            // Hamburger Menu Logic
+            const hamburger = document.getElementById('hamburgerMenu');
+            const navLinks = document.querySelector('.nav-links');
+            const navRight = document.querySelector('.nav-right');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                    navRight.classList.toggle('active');
+                    const icon = hamburger.querySelector('i');
+                    if (navLinks.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    } else {
+                        icon.classList.remove('fa-xmark');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
         });
     </script>
+    <script src="theme.js?v=2"></script>
 </body>
 </html>

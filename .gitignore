@@ -5,3 +5,10 @@ __pycache__/
 *.webm
 *.mp3
 .env
+
+.vercel
+
+serviceAccountKey.json
+.agents/
+.firebase/
+.firebaserc

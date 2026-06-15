@@ -1,0 +1,10 @@
+backend/
+run.py
+requirements.txt
+train.py
+train_image.py
+train_text.py
+*.pkl
+*.keras
+dataset/
+dataset_image/

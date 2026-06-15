@@ -1,7 +1,7 @@
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "scanText",
-        title: "Scan Text with VoiceCheck",
+        title: "Scan Text with AuthGuard",
         contexts: ["selection"]
     });
 });
