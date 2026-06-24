@@ -1170,6 +1170,261 @@
         /* Text Scramble target */
         .scramble-text { display: inline-block; }
 
+        /* ===== CUSTOM CURSOR ===== */
+        *, *::before, *::after { cursor: none !important; }
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; z-index: 999999; pointer-events: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(6,182,212,0.9), rgba(6,182,212,0.2));
+            box-shadow: 0 0 12px rgba(6,182,212,0.8), 0 0 24px rgba(6,182,212,0.4);
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.15s ease, background 0.2s;
+            mix-blend-mode: screen;
+        }
+        #custom-cursor.clicking { transform: translate(-50%, -50%) scale(0.6); }
+        #custom-cursor.hovering { transform: translate(-50%, -50%) scale(1.8); background: radial-gradient(circle, rgba(139,92,246,0.9), rgba(139,92,246,0.2)); }
+        .cursor-trail {
+            position: fixed; width: 6px; height: 6px; border-radius: 50%;
+            pointer-events: none; z-index: 999998;
+            background: rgba(6,182,212,0.5);
+            transform: translate(-50%, -50%);
+            animation: trailFade 0.5s ease forwards;
+        }
+        @keyframes trailFade { to { opacity: 0; transform: translate(-50%, -50%) scale(0); } }
+
+        /* ===== TOOLTIP SYSTEM ===== */
+        [data-tip] { position: relative; cursor: none; }
+        [data-tip]::after {
+            content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%;
+            transform: translateX(-50%) translateY(4px); white-space: nowrap;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-primary); font-size: 12px; font-weight: 500;
+            padding: 6px 12px; border-radius: 8px; pointer-events: none;
+            opacity: 0; transition: all 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 9999;
+            backdrop-filter: blur(10px); max-width: 220px; white-space: normal; text-align: center;
+        }
+        [data-tip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== ACHIEVEMENT POPUP ===== */
+        #achievement-container {
+            position: fixed; bottom: 100px; left: 24px; z-index: 9992;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .achievement-popup {
+            background: var(--bg-card); border: 1px solid rgba(245,158,11,0.4);
+            border-radius: 14px; padding: 14px 18px;
+            display: flex; align-items: center; gap: 12px;
+            min-width: 260px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
+            transform: translateX(-110%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .achievement-popup.show { transform: translateX(0); }
+        .ach-icon { font-size: 28px; }
+        .ach-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #f59e0b; }
+        .ach-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+        .ach-sub { font-size: 11px; color: var(--text-secondary); }
+
+        /* ===== SECTION DOT NAVIGATION ===== */
+        #dot-nav {
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+            z-index: 9990; display: flex; flex-direction: column; gap: 10px;
+        }
+        @media (max-width: 768px) { #dot-nav { display: none; } }
+        .dot-nav-item {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--border-color); cursor: pointer;
+            transition: all 0.3s ease; position: relative;
+        }
+        .dot-nav-item:hover, .dot-nav-item.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6,182,212,0.6);
+            transform: scale(1.4);
+        }
+        .dot-nav-item::before {
+            content: attr(data-label); position: absolute; right: 18px; top: 50%;
+            transform: translateY(-50%); white-space: nowrap;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+            color: var(--text-primary); opacity: 0; transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .dot-nav-item:hover::before { opacity: 1; }
+
+        /* ===== BACK TO TOP CIRCLE ===== */
+        #back-to-top {
+            position: fixed; bottom: 90px; right: 20px; z-index: 9989;
+            width: 48px; height: 48px; cursor: pointer;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        #back-to-top.show { opacity: 1; visibility: visible; }
+        #back-to-top svg { transform: rotate(-90deg); }
+        #btt-progress { stroke-dasharray: 126; stroke-dashoffset: 126; transition: stroke-dashoffset 0.1s; }
+        #btt-icon {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: var(--accent-cyan); font-size: 14px; font-weight: 700;
+        }
+
+        /* ===== CLEAN MODE ===== */
+        body.clean-mode .aurora-bg, body.clean-mode .floating-orbs, body.clean-mode .cyber-grid,
+        body.clean-mode #particles-js, body.clean-mode #dot-nav, body.clean-mode #chat-bubble,
+        body.clean-mode #mobile-bottom-nav, body.clean-mode #back-to-top, body.clean-mode #activity-toast,
+        body.clean-mode .navbar { opacity: 0.2; }
+        body.clean-mode body::after { display: none; }
+        .clean-btn {
+            width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border-color);
+            background: var(--bg-hover); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 13px; transition: all 0.2s; flex-shrink: 0;
+        }
+        .clean-btn:hover { border-color: var(--accent-cyan); }
+
+        /* ===== SCAN TICKER ===== */
+        .ticker-wrap {
+            background: rgba(6,182,212,0.05); border-top: 1px solid rgba(6,182,212,0.15);
+            border-bottom: 1px solid rgba(6,182,212,0.15);
+            overflow: hidden; padding: 10px 0; position: relative;
+        }
+        .ticker-strip {
+            display: flex; gap: 0; width: max-content;
+            animation: tickerScroll 35s linear infinite;
+        }
+        .ticker-strip:hover { animation-play-state: paused; }
+        @keyframes tickerScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .ticker-item {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 0 32px; font-size: 12px; font-weight: 500;
+            color: var(--text-secondary); white-space: nowrap;
+        }
+        .ticker-item i { color: var(--accent-cyan); font-size: 11px; }
+        .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(6,182,212,0.4); }
+
+        /* ===== PARTNERS GRID ===== */
+        .partners-section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; text-align: center; }
+        .partners-grid {
+            display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 36px;
+        }
+        .partner-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 18px 24px;
+            display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s; position: relative; overflow: hidden;
+            min-width: 140px;
+        }
+        .partner-card:hover { border-color: rgba(6,182,212,0.4); transform: translateY(-4px); }
+        .partner-icon { font-size: 22px; }
+        .partner-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+        .partner-tag {
+            position: absolute; top: 6px; right: 8px;
+            font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+            background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);
+        }
+
+        /* ===== API DOCS SECTION ===== */
+        .api-section { padding: 80px 20px; max-width: 1000px; margin: 0 auto; }
+        .api-tabs { display: flex; gap: 4px; margin-bottom: 0; border-bottom: 1px solid var(--border-color); }
+        .api-tab {
+            padding: 10px 18px; font-size: 12px; font-weight: 700; font-family: inherit;
+            border: none; background: none; color: var(--text-secondary);
+            cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+            transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .api-tab.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+        .api-panel {
+            background: #0a0a0f; border: 1px solid var(--border-color); border-top: none;
+            border-radius: 0 0 14px 14px; padding: 24px; position: relative; overflow: hidden;
+            display: none;
+        }
+        .api-panel.active { display: block; }
+        .api-panel pre { margin: 0; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; }
+        .api-copy-btn {
+            position: absolute; top: 12px; right: 12px; padding: 6px 12px;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            background: var(--bg-hover); color: var(--text-secondary);
+            font-size: 11px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s;
+        }
+        .api-copy-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .c-kw { color: #c678dd; } .c-str { color: #98c379; } .c-num { color: #d19a66; }
+        .c-fn { color: #61afef; } .c-key { color: #e06c75; } .c-cmt { color: #5c6370; font-style: italic; }
+
+        /* ===== TYPING CHALLENGE ===== */
+        .typing-section { padding: 80px 20px; max-width: 800px; margin: 0 auto; }
+        .typing-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 36px;
+        }
+        .typing-display {
+            font-size: 18px; line-height: 1.8; color: var(--text-secondary); margin-bottom: 20px;
+            letter-spacing: 0.3px; position: relative; user-select: none;
+        }
+        .typing-display .typed { color: var(--accent-cyan); }
+        .typing-display .current { border-bottom: 2px solid var(--accent-cyan); color: var(--text-primary); }
+        .typing-display .error { color: #ef4444; background: rgba(239,68,68,0.1); border-radius: 2px; }
+        .typing-input-hidden { position: absolute; opacity: 0; pointer-events: none; }
+        .typing-stats { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+        .typing-stat-val { font-size: 28px; font-weight: 800; color: var(--accent-cyan); }
+        .typing-stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .typing-verdict-bar { margin-top: 20px; padding: 16px; border-radius: 12px; display: none; }
+        .typing-verdict-bar.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* ===== EMOJI REACTIONS ===== */
+        .emoji-reactions {
+            display: flex; gap: 8px; align-items: center; margin-top: 20px; flex-wrap: wrap;
+        }
+        .emoji-react {
+            padding: 6px 12px; border-radius: 20px;
+            border: 1px solid var(--border-color); background: var(--bg-hover);
+            font-size: 16px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .emoji-react:hover { transform: scale(1.15); border-color: rgba(6,182,212,0.4); }
+        .emoji-react.reacted { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.4); }
+        .emoji-react span { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+
+        /* ===== ANIMATED GRADIENT BORDERS ===== */
+        @property --border-angle {
+            syntax: '<angle>'; inherits: true; initial-value: 0deg;
+        }
+        .gradient-border {
+            position: relative;
+            background: var(--bg-card);
+        }
+        .gradient-border::before {
+            content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+            background: conic-gradient(from var(--border-angle), transparent 70%, rgba(6,182,212,0.8), rgba(139,92,246,0.8), transparent);
+            animation: spinBorder 4s linear infinite;
+        }
+        @keyframes spinBorder { to { --border-angle: 360deg; } }
+
+        /* ===== DRAG & DROP ZONE ===== */
+        #drag-overlay {
+            position: fixed; inset: 0; z-index: 99995;
+            background: rgba(6,182,212,0.08);
+            border: 3px dashed rgba(6,182,212,0.6);
+            backdrop-filter: blur(4px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+            pointer-events: none;
+        }
+        #drag-overlay.show { opacity: 1; visibility: visible; }
+        .drag-icon { font-size: 64px; animation: dragBounce 0.8s ease-in-out infinite alternate; }
+        @keyframes dragBounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+        .drag-text { font-size: 24px; font-weight: 800; color: var(--accent-cyan); }
+        .drag-sub { font-size: 14px; color: var(--text-secondary); }
+
+        /* ===== LOCATION BANNER ===== */
+        #location-banner {
+            background: linear-gradient(135deg, rgba(6,182,212,0.06), rgba(139,92,246,0.06));
+            border-bottom: 1px solid rgba(6,182,212,0.15);
+            padding: 8px 20px; text-align: center;
+            font-size: 12px; color: var(--text-secondary);
+            display: none;
+        }
+        #location-banner.show { display: block; }
+        #location-banner strong { color: var(--accent-cyan); }
+
+        /* ===== 3D TILT ===== */
+        .tilt-card { transform-style: preserve-3d; transition: transform 0.1s ease; }
+
         /* ===== RIPPLE EFFECT ===== */
         .ripple-circle {
             position: fixed; border-radius: 50%;
@@ -1555,6 +1810,42 @@
     <!-- Scroll Progress Bar -->
     <div id="scroll-progress"></div>
 
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+
+    <!-- Achievement Container -->
+    <div id="achievement-container"></div>
+
+    <!-- Section Dot Nav -->
+    <nav id="dot-nav">
+        <div class="dot-nav-item active" data-label="Home" data-section="body"></div>
+        <div class="dot-nav-item" data-label="Tools" data-section="#tools"></div>
+        <div class="dot-nav-item" data-label="About" data-section="#about"></div>
+        <div class="dot-nav-item" data-label="Pricing" data-section="#pricing-home"></div>
+        <div class="dot-nav-item" data-label="Quiz" data-section=".quiz-section"></div>
+        <div class="dot-nav-item" data-label="FAQ" data-section="#faq"></div>
+        <div class="dot-nav-item" data-label="Reviews" data-section="#testimonials"></div>
+    </nav>
+
+    <!-- Back To Top Circle -->
+    <div id="back-to-top" title="Back to top">
+        <svg width="48" height="48" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+            <circle cx="24" cy="24" r="20" fill="none" stroke="var(--accent-cyan)" stroke-width="3" id="btt-progress" stroke-linecap="round"/>
+        </svg>
+        <div id="btt-icon">↑</div>
+    </div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="drag-overlay">
+        <div class="drag-icon">📥</div>
+        <div class="drag-text">Drop to Scan!</div>
+        <div class="drag-sub">Release your file and we'll analyze it instantly</div>
+    </div>
+
+    <!-- Location Banner -->
+    <div id="location-banner">📡 Protecting users in <strong id="location-city">your city</strong> and <strong>128K+</strong> others worldwide</div>
+
     <!-- Offline Banner -->
     <div id="offline-banner">📡 You're offline. Some features may be unavailable.</div>
 
@@ -1721,6 +2012,7 @@
         </div>
         <div class="nav-right">
             <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
+            <button class="clean-btn" id="clean-mode-btn" title="Clean Mode (Screenshot)">📷</button>
             <div class="theme-switcher" id="theme-switcher" title="Change accent color">
                 <div class="theme-dot cyan active" data-theme-color="cyan" title="Cyan"></div>
                 <div class="theme-dot purple" data-theme-color="purple" title="Purple"></div>
@@ -2210,6 +2502,121 @@
                     <p class="timeline-desc">Live threat map, 7-tool suite, and API platform serving 128K+ active users daily.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Live Scan Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker-strip" id="ticker-strip">
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> AI Voice Clone blocked 🇺🇸<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> Deepfake Image detected 🇮🇳<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> ChatGPT text flagged 🇬🇧<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> Synthetic video caught 🇧🇷<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-check" style="color:#10b981"></i> Real voice verified 🇩🇪<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> ElevenLabs clone blocked 🇯🇵<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> MidJourney image flagged 🇦🇺<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-check" style="color:#10b981"></i> Human-written text cleared 🇨🇦<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> Sora video detected 🇷🇺<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> DALL-E image caught 🇫🇷<div class="ticker-dot"></div></div>
+            <!-- Duplicate for seamless loop -->
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> AI Voice Clone blocked 🇺🇸<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> Deepfake Image detected 🇮🇳<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> ChatGPT text flagged 🇬🇧<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> Synthetic video caught 🇧🇷<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-check" style="color:#10b981"></i> Real voice verified 🇩🇪<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> ElevenLabs clone blocked 🇯🇵<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-xmark"></i> MidJourney image flagged 🇦🇺<div class="ticker-dot"></div></div>
+            <div class="ticker-item"><i class="fa-solid fa-circle-check" style="color:#10b981"></i> Human-written text cleared 🇨🇦<div class="ticker-dot"></div></div>
+        </div>
+    </div>
+
+    <!-- Partners / Integrations -->
+    <section class="partners-section reveal">
+        <div class="section-label"><i class="fa-solid fa-plug"></i> Integrations</div>
+        <h2 class="section-title">Works With Your Stack</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">AuthGuard plugs into the tools you already use.</p>
+        <div class="partners-grid">
+            <div class="partner-card" data-tip="Real-time alerts when AI content is detected"><div class="partner-icon">💬</div><div class="partner-name">Slack</div></div>
+            <div class="partner-card" data-tip="Scan documents directly inside Notion"><div class="partner-icon">📓</div><div class="partner-name">Notion</div></div>
+            <div class="partner-card" data-tip="Chrome Extension for one-click scanning"><div class="partner-icon">🌐</div><div class="partner-name">Chrome</div></div>
+            <div class="partner-card" data-tip="Scan shared files in your Discord server"><div class="partner-icon">🎮</div><div class="partner-name">Discord</div></div>
+            <div class="partner-card" data-tip="Check documents in Google Drive"><div class="partner-icon">📁</div><div class="partner-name">Drive</div><div class="partner-tag">Soon</div></div>
+            <div class="partner-card" data-tip="WordPress plugin for blog scanning"><div class="partner-icon">📝</div><div class="partner-name">WordPress</div><div class="partner-tag">Soon</div></div>
+            <div class="partner-card" data-tip="REST API for custom integrations"><div class="partner-icon">⚡</div><div class="partner-name">REST API</div></div>
+            <div class="partner-card" data-tip="Zapier automation workflows"><div class="partner-icon">🔗</div><div class="partner-name">Zapier</div><div class="partner-tag">Soon</div></div>
+        </div>
+    </section>
+
+    <!-- API Docs Preview -->
+    <section class="api-section reveal">
+        <div class="section-label"><i class="fa-solid fa-code"></i> Developer API</div>
+        <h2 class="section-title">Simple. Powerful. API.</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Integrate AI detection into your app in minutes.</p>
+        <div class="api-tabs">
+            <button class="api-tab active" data-tab="voice">Voice</button>
+            <button class="api-tab" data-tab="image">Image</button>
+            <button class="api-tab" data-tab="text">Text</button>
+        </div>
+        <div class="api-panel active" id="api-voice">
+            <button class="api-copy-btn" data-copy="voice"><i class="fa-solid fa-copy"></i> Copy</button>
+            <pre><span class="c-cmt"># Detect AI voice clone</span>
+<span class="c-kw">import</span> requests
+
+response = requests.<span class="c-fn">post</span>(
+    <span class="c-str">"https://api.authguard.ai/v1/voice"</span>,
+    headers={<span class="c-str">"Authorization"</span>: <span class="c-str">"Bearer YOUR_API_KEY"</span>},
+    files={<span class="c-str">"audio"</span>: open(<span class="c-str">"sample.wav"</span>, <span class="c-str">"rb"</span>)}
+)
+
+result = response.<span class="c-fn">json</span>()
+<span class="c-cmt"># { "is_ai": true, "confidence": 0.984, "model": "ElevenLabs" }</span>
+<span class="c-fn">print</span>(result[<span class="c-str">"confidence"</span>])</pre>
+        </div>
+        <div class="api-panel" id="api-image">
+            <button class="api-copy-btn" data-copy="image"><i class="fa-solid fa-copy"></i> Copy</button>
+            <pre><span class="c-cmt">// Detect AI-generated image</span>
+<span class="c-kw">const</span> formData = <span class="c-kw">new</span> <span class="c-fn">FormData</span>();
+formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, imageFile);
+
+<span class="c-kw">const</span> res = <span class="c-kw">await</span> <span class="c-fn">fetch</span>(<span class="c-str">'https://api.authguard.ai/v1/image'</span>, {
+  method: <span class="c-str">'POST'</span>,
+  headers: { <span class="c-str">'Authorization'</span>: <span class="c-str">`Bearer ${API_KEY}`</span> },
+  body: formData
+});
+
+<span class="c-kw">const</span> { is_ai, confidence, generator } = <span class="c-kw">await</span> res.<span class="c-fn">json</span>();
+<span class="c-cmt">// { is_ai: true, confidence: 0.991, generator: "MidJourney" }</span></pre>
+        </div>
+        <div class="api-panel" id="api-text">
+            <button class="api-copy-btn" data-copy="text"><i class="fa-solid fa-copy"></i> Copy</button>
+            <pre><span class="c-cmt">// Detect AI-written text (curl)</span>
+<span class="c-kw">curl</span> -X POST https://api.authguard.ai/v1/text \
+  -H <span class="c-str">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span class="c-str">"Content-Type: application/json"</span> \
+  -d <span class="c-str">'{"text": "The utilization of advanced frameworks..."}'</span>
+
+<span class="c-cmt"># Response:</span>
+<span class="c-cmt"># { "is_ai": true, "score": 0.94, "model": "gpt-4" }</span></pre>
+        </div>
+    </section>
+
+    <!-- Typing Speed Challenge -->
+    <section class="typing-section reveal">
+        <div class="section-label"><i class="fa-solid fa-keyboard"></i> Human Verification</div>
+        <h2 class="section-title">Type Like a Human</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Type the text below — we analyze your patterns to see if you type like a real human or a bot.</p>
+        <div class="typing-box" id="typing-box" tabindex="0">
+            <div class="typing-display" id="typing-display"></div>
+            <input type="text" class="typing-input-hidden" id="typing-input" autocomplete="off" autocorrect="off" spellcheck="false">
+            <div class="typing-stats">
+                <div><div class="typing-stat-val" id="type-wpm">0</div><div class="typing-stat-label">WPM</div></div>
+                <div><div class="typing-stat-val" id="type-acc">100%</div><div class="typing-stat-label">Accuracy</div></div>
+                <div><div class="typing-stat-val" id="type-iq" style="color:#f59e0b">?</div><div class="typing-stat-label">Human Score</div></div>
+            </div>
+            <div class="typing-verdict-bar" id="type-verdict"></div>
         </div>
     </section>
 
@@ -3190,6 +3597,284 @@
                 transitionEl.classList.add('active');
                 setTimeout(() => { window.location.href = href; }, 300);
             });
+        });
+
+        // ===== CUSTOM CURSOR =====
+        const cursor = document.getElementById('custom-cursor');
+        let trailCount = 0;
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            if (trailCount++ % 3 === 0) {
+                const t = document.createElement('div');
+                t.className = 'cursor-trail';
+                t.style.left = e.clientX + 'px'; t.style.top = e.clientY + 'px';
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 500);
+            }
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            cursor.classList.toggle('hovering', el && (el.tagName === 'A' || el.tagName === 'BUTTON' || el.closest('a,button,[data-tip]') !== null));
+        });
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+        document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+        document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+
+        // ===== KONAMI CODE EASTER EGG =====
+        const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let konamiIdx = 0;
+        document.addEventListener('keydown', e => {
+            if (e.key === konamiCode[konamiIdx]) {
+                konamiIdx++;
+                if (konamiIdx === konamiCode.length) {
+                    konamiIdx = 0;
+                    // Rain shields down the screen
+                    for (let i = 0; i < 30; i++) {
+                        setTimeout(() => {
+                            const shield = document.createElement('div');
+                            shield.style.cssText = `position:fixed;top:-60px;left:${Math.random()*100}vw;font-size:${24+Math.random()*32}px;z-index:99999;pointer-events:none;animation:burstFly 2s ease-in forwards;--dx:${(Math.random()-0.5)*100}px;--dy:${window.innerHeight+100}px;`;
+                            shield.textContent = '🛡️';
+                            document.body.appendChild(shield);
+                            setTimeout(() => shield.remove(), 2100);
+                        }, i * 80);
+                    }
+                    showToast('success', '🛡️ KONAMI CODE! AuthGuard Mode Activated!');
+                    if (window.launchConfetti) window.launchConfetti();
+                }
+            } else { konamiIdx = 0; }
+        });
+
+        // ===== SOUND EFFECTS (Web Audio API) =====
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let soundEnabled = localStorage.getItem('sound_enabled') !== 'false';
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                if (type === 'click') { o.frequency.value = 800; g.gain.setValueAtTime(0.05, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1); }
+                else if (type === 'success') { o.frequency.value = 523; o.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.06, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); }
+                else if (type === 'error') { o.frequency.value = 220; g.gain.setValueAtTime(0.06, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); }
+                else if (type === 'hover') { o.frequency.value = 1200; g.gain.setValueAtTime(0.02, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); }
+                o.start(); o.stop(audioCtx.currentTime + 0.4);
+            } catch(e) {}
+        }
+        document.querySelectorAll('button, a').forEach(el => el.addEventListener('click', () => playSound('click')));
+        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(el => el.addEventListener('mouseenter', () => playSound('hover')));
+
+        // ===== ACHIEVEMENTS =====
+        const achievementContainer = document.getElementById('achievement-container');
+        const unlockedAch = new Set(JSON.parse(localStorage.getItem('achievements') || '[]'));
+        const achievements = {
+            firstScroll: { icon: '📜', title: 'Achievement Unlocked', name: 'Explorer', sub: 'You scrolled the page!' },
+            firstQuiz: { icon: '🧠', title: 'Achievement Unlocked', name: 'Quiz Taker', sub: 'Completed a quiz!' },
+            nightOwl: { icon: '🌙', title: 'Achievement Unlocked', name: 'Night Owl', sub: 'Toggled dark mode' },
+            themeChanger: { icon: '🎨', title: 'Achievement Unlocked', name: 'Stylist', sub: 'Changed the accent color' },
+            konamiKing: { icon: '🕹️', title: 'Achievement Unlocked', name: 'Konami King', sub: 'Found the Easter egg!' },
+            typingPro: { icon: '⌨️', title: 'Achievement Unlocked', name: 'Typing Pro', sub: 'Typed 40+ WPM!' },
+        };
+        function unlockAchievement(key) {
+            if (unlockedAch.has(key)) return;
+            unlockedAch.add(key); localStorage.setItem('achievements', JSON.stringify([...unlockedAch]));
+            const a = achievements[key]; if (!a) return;
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup';
+            popup.innerHTML = `<div class="ach-icon">${a.icon}</div><div><div class="ach-title">${a.title}</div><div class="ach-name">${a.name}</div><div class="ach-sub">${a.sub}</div></div>`;
+            achievementContainer.appendChild(popup);
+            playSound('success');
+            requestAnimationFrame(() => { requestAnimationFrame(() => popup.classList.add('show')); });
+            setTimeout(() => { popup.classList.remove('show'); setTimeout(() => popup.remove(), 400); }, 4000);
+        }
+        window.addEventListener('scroll', () => { if (window.scrollY > 100) unlockAchievement('firstScroll'); }, { once: true });
+        document.querySelectorAll('.theme-dot').forEach(d => d.addEventListener('click', () => unlockAchievement('themeChanger')));
+        document.getElementById('themeToggle').addEventListener('click', () => unlockAchievement('nightOwl'));
+
+        // ===== SECTION DOT NAV =====
+        const dotNavItems = document.querySelectorAll('.dot-nav-item');
+        const sections = ['body', '#tools', '#about', '#pricing-home', '.quiz-section', '#faq', '#testimonials'];
+        function updateDotNav() {
+            const scrollY = window.scrollY + window.innerHeight / 2;
+            sections.forEach((sel, i) => {
+                const el = sel === 'body' ? document.body : document.querySelector(sel);
+                if (!el) return;
+                const top = el === document.body ? 0 : el.getBoundingClientRect().top + window.scrollY;
+                const bot = top + (el.offsetHeight || 200);
+                dotNavItems[i]?.classList.toggle('active', scrollY >= top && scrollY < bot);
+            });
+        }
+        window.addEventListener('scroll', updateDotNav);
+        dotNavItems.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                const sel = sections[i];
+                const el = sel === 'body' ? document.body : document.querySelector(sel);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // ===== BACK TO TOP CIRCLE =====
+        const bttBtn = document.getElementById('back-to-top');
+        const bttProgress = document.getElementById('btt-progress');
+        const circumference = 2 * Math.PI * 20;
+        window.addEventListener('scroll', () => {
+            const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            bttProgress.style.strokeDashoffset = circumference - pct * circumference;
+            bttBtn.classList.toggle('show', window.scrollY > 300);
+        });
+        bttBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ===== CLEAN MODE =====
+        const cleanBtn = document.getElementById('clean-mode-btn');
+        cleanBtn.addEventListener('click', () => {
+            document.body.classList.toggle('clean-mode');
+            cleanBtn.textContent = document.body.classList.contains('clean-mode') ? '👁️' : '📷';
+            showToast('info', document.body.classList.contains('clean-mode') ? '📷 Clean mode on — perfect for screenshots' : '👁️ Clean mode off');
+        });
+
+        // ===== API DOCS TABS =====
+        document.querySelectorAll('.api-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.api-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.api-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('api-' + tab.dataset.tab)?.classList.add('active');
+            });
+        });
+        document.querySelectorAll('.api-copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.closest('.api-panel').querySelector('pre').innerText;
+                navigator.clipboard.writeText(code).then(() => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!'; setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy', 2000); });
+            });
+        });
+
+        // ===== 3D TILT CARDS =====
+        document.querySelectorAll('.nav-card, .feature-card, .testimonial-card').forEach(card => {
+            card.classList.add('tilt-card');
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - 0.5;
+                const y = (e.clientY - r.top) / r.height - 0.5;
+                card.style.transform = `perspective(600px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateZ(10px)`;
+            });
+            card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+        });
+
+        // ===== ANIMATED GRADIENT BORDER on Featured Cards =====
+        document.querySelectorAll('.pricing-card.popular, .trust-section').forEach(el => el.classList.add('gradient-border'));
+
+        // ===== DRAG & DROP FILE ZONE =====
+        const dragOverlay = document.getElementById('drag-overlay');
+        let dragCounter = 0;
+        document.addEventListener('dragenter', e => { e.preventDefault(); dragCounter++; dragOverlay.classList.add('show'); });
+        document.addEventListener('dragleave', () => { dragCounter--; if (dragCounter <= 0) { dragCounter = 0; dragOverlay.classList.remove('show'); } });
+        document.addEventListener('dragover', e => e.preventDefault());
+        document.addEventListener('drop', e => {
+            e.preventDefault(); dragCounter = 0; dragOverlay.classList.remove('show');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                showToast('info', `⚡ Scanning ${file.name}...`);
+                setTimeout(() => {
+                    const isAI = Math.random() > 0.45;
+                    showToast(isAI ? 'error' : 'success', isAI ? `🤖 AI content detected in ${file.name} (96.1%)` : `✅ ${file.name} appears authentic (94.7%)`);
+                }, 2200);
+            }
+        });
+
+        // ===== LOCATION DETECTION =====
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async pos => {
+                try {
+                    const { latitude, longitude } = pos.coords;
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                    const d = await r.json();
+                    const city = d.address.city || d.address.town || d.address.state || 'your area';
+                    document.getElementById('location-city').textContent = city;
+                    document.getElementById('location-banner').classList.add('show');
+                } catch(e) {}
+            }, () => {});
+        }
+
+        // ===== TYPING CHALLENGE =====
+        const typingTexts = [
+            'The quick brown fox jumps over the lazy dog near the river bank every single morning.',
+            'Artificial intelligence cannot yet replicate the beautiful chaos of human thought.',
+            'AuthGuard protects the truth in a world flooded with synthetic voices and faces.'
+        ];
+        let typingTarget = typingTexts[Math.floor(Math.random() * typingTexts.length)];
+        let typingPos = 0, typingErrors = 0, typingStartTime = null, typingDone = false;
+        function renderTyping() {
+            const display = document.getElementById('typing-display');
+            if (!display) return;
+            let html = '';
+            for (let i = 0; i < typingTarget.length; i++) {
+                if (i < typingPos) html += `<span class="typed">${typingTarget[i]}</span>`;
+                else if (i === typingPos) html += `<span class="current">${typingTarget[i]}</span>`;
+                else html += typingTarget[i];
+            }
+            display.innerHTML = html;
+        }
+        renderTyping();
+        const typingBox = document.getElementById('typing-box');
+        const typingInput = document.getElementById('typing-input');
+        if (typingBox && typingInput) {
+            typingBox.addEventListener('click', () => typingInput.focus());
+            typingInput.addEventListener('keydown', e => {
+                if (typingDone) return;
+                if (!typingStartTime) typingStartTime = Date.now();
+                if (e.key === 'Backspace') { if (typingPos > 0) typingPos--; renderTyping(); return; }
+                if (e.key.length !== 1) return;
+                const expected = typingTarget[typingPos];
+                if (e.key !== expected) typingErrors++;
+                typingPos = Math.min(typingPos + 1, typingTarget.length);
+                renderTyping();
+                // Stats
+                const elapsed = (Date.now() - typingStartTime) / 60000;
+                const wpm = elapsed > 0 ? Math.round((typingPos / 5) / elapsed) : 0;
+                const acc = Math.max(0, Math.round(((typingPos - typingErrors) / typingPos) * 100));
+                document.getElementById('type-wpm').textContent = wpm;
+                document.getElementById('type-acc').textContent = acc + '%';
+                const humanScore = Math.min(99, Math.max(10, acc * 0.6 + Math.min(wpm, 80) * 0.5));
+                document.getElementById('type-iq').textContent = Math.round(humanScore) + '%';
+                if (typingPos >= typingTarget.length) {
+                    typingDone = true;
+                    const verdict = document.getElementById('type-verdict');
+                    const isHuman = humanScore > 50;
+                    verdict.style.background = isHuman ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
+                    verdict.style.border = isHuman ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)';
+                    verdict.innerHTML = isHuman
+                        ? `✅ <strong>Human Detected!</strong> WPM: ${wpm}, Accuracy: ${acc}%. Your typing pattern is organic and natural.`
+                        : `⚠️ <strong>Bot-like Pattern!</strong> Very fast or very slow typing can indicate automation.`;
+                    verdict.classList.add('show');
+                    if (wpm >= 40) unlockAchievement('typingPro');
+                    unlockAchievement('firstQuiz');
+                }
+            });
+        }
+
+        // ===== EMOJI REACTIONS =====
+        const reactionSections = document.querySelectorAll('.game-section, .try-section, .quiz-section');
+        reactionSections.forEach(section => {
+            const emojiBar = document.createElement('div');
+            emojiBar.className = 'emoji-reactions';
+            const emojis = [['🔥','Fire'], ['😮','Wow'], ['👏','Clap'], ['🤔','Think'], ['💎','Gem']];
+            const key = section.className.split(' ')[0];
+            emojis.forEach(([emoji, label]) => {
+                const stored = parseInt(localStorage.getItem(`react_${key}_${emoji}`) || String(Math.floor(Math.random()*20)+5));
+                const btn = document.createElement('button');
+                btn.className = 'emoji-react';
+                btn.innerHTML = `${emoji} <span>${stored}</span>`;
+                btn.addEventListener('click', () => {
+                    const reacted = btn.classList.toggle('reacted');
+                    const current = parseInt(btn.querySelector('span').textContent);
+                    const newVal = reacted ? current + 1 : current - 1;
+                    btn.querySelector('span').textContent = newVal;
+                    localStorage.setItem(`react_${key}_${emoji}`, newVal);
+                });
+                emojiBar.appendChild(btn);
+            });
+            section.appendChild(emojiBar);
         });
 
         // ===== TIMELINE ANIMATION =====
