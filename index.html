@@ -1422,6 +1422,100 @@
         #location-banner.show { display: block; }
         #location-banner strong { color: var(--accent-cyan); }
 
+        /* ===== WAVE 5 CSS ===== */
+        /* Hacker Mode */
+        body.hacker-mode { background: #000; color: #0f0 !important; font-family: monospace !important; }
+        body.hacker-mode * { color: #0f0 !important; border-color: #0f0 !important; box-shadow: none !important; text-shadow: 0 0 5px #0f0 !important; background: transparent !important; }
+        .hacker-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-hover); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s; flex-shrink: 0; }
+        .hacker-btn:hover { border-color: #0f0; color: #0f0; }
+
+        /* Profile Leveling */
+        .level-container { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-right: 10px; }
+        @media (max-width: 768px) { .level-container { display: none; } }
+        .level-badge { background: rgba(6,182,212,0.1); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(6,182,212,0.3); }
+        .level-bar-bg { width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; position: relative; }
+        .level-bar-fill { height: 100%; background: var(--accent-cyan); width: 10%; transition: width 0.3s ease; }
+
+        /* Social Proof Popups */
+        #social-proof-container { position: fixed; bottom: 20px; left: 20px; z-index: 9991; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .social-proof-toast { background: rgba(10,10,15,0.85); border: 1px solid rgba(6,182,212,0.3); border-left: 3px solid var(--accent-cyan); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(10px); transform: translateX(-120%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto; }
+        .social-proof-toast.show { transform: translateX(0); }
+        .sp-icon { font-size: 18px; color: var(--accent-cyan); }
+        .sp-text { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+        .sp-time { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+        /* Breaking News Sidebar */
+        #news-sidebar { position: fixed; right: 0; top: 100px; width: 240px; background: rgba(10,10,15,0.8); border: 1px solid var(--border-color); border-right: none; border-radius: 12px 0 0 12px; padding: 16px; backdrop-filter: blur(10px); z-index: 990; transform: translateX(100%); transition: transform 0.3s ease; }
+        #news-sidebar.show { transform: translateX(0); }
+        .news-toggle { position: absolute; left: -30px; top: 20px; width: 30px; height: 30px; background: var(--bg-card); border: 1px solid var(--border-color); border-right: none; border-radius: 8px 0 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; }
+        .news-toggle:hover { color: var(--accent-cyan); }
+        .news-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .news-title .pulse { width: 6px; height: 6px; background: #f59e0b; border-radius: 50%; animation: pulse 1.5s infinite; }
+        .news-item { font-size: 12px; color: var(--text-primary); line-height: 1.4; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .news-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .news-date { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
+
+        /* Magnetic Buttons */
+        .magnetic { transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1); }
+
+        /* Spotlight Cards */
+        .spotlight-card { position: relative; overflow: hidden; }
+        .spotlight-card::before { content: ''; position: absolute; top: var(--y, 0); left: var(--x, 0); transform: translate(-50%, -50%); width: 250px; height: 250px; background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 0; }
+        .spotlight-card:hover::before { opacity: 1; }
+        .spotlight-card > * { position: relative; z-index: 1; }
+
+        /* Heatmap Analyzer */
+        .heatmap-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; font-size: 14px; line-height: 1.8; color: var(--text-secondary); min-height: 150px; }
+        .heatmap-word.ai { background: rgba(239,68,68,0.2); color: #fca5a5; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #ef4444; }
+        .heatmap-word.sus { background: rgba(245,158,11,0.2); color: #fcd34d; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #f59e0b; }
+        .heatmap-word.human { background: rgba(16,185,129,0.2); color: #6ee7b7; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #10b981; }
+        
+        /* Spot the Fake Slider */
+        .slider-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; border-radius: 16px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--border-color); }
+        .slider-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .slider-overlay { position: absolute; inset: 0; width: 50%; overflow: hidden; }
+        .slider-overlay img { width: 600px; height: 100%; object-fit: cover; }
+        .slider-handle { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--accent-cyan); cursor: ew-resize; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .slider-handle-btn { width: 32px; height: 32px; background: var(--accent-cyan); border-radius: 50%; color: #000; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 0 10px rgba(6,182,212,0.5); }
+        .slider-label { position: absolute; bottom: 12px; padding: 4px 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border-radius: 6px; font-size: 12px; font-weight: 700; color: #fff; z-index: 5; border: 1px solid rgba(255,255,255,0.2); }
+        .slider-label.left { left: 12px; } .slider-label.right { right: 12px; }
+
+        /* Webcam Scanner */
+        .webcam-container { width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 4/3; background: #000; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border-color); }
+        #webcam-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        .webcam-hud { position: absolute; inset: 0; pointer-events: none; border: 2px solid transparent; transition: all 0.3s; }
+        .webcam-hud.scanning { border-color: rgba(6,182,212,0.5); background: linear-gradient(180deg, transparent 0%, rgba(6,182,212,0.1) 50%, transparent 100%); background-size: 100% 200%; animation: scanLine 2s linear infinite; }
+        @keyframes scanLine { 0% { background-position: 0 -100%; } 100% { background-position: 0 200%; } }
+        .face-box { position: absolute; top: 20%; left: 25%; width: 50%; height: 60%; border: 2px dashed rgba(6,182,212,0.8); display: none; box-shadow: 0 0 20px rgba(6,182,212,0.2) inset; }
+        .webcam-hud.scanning .face-box { display: block; animation: pulseBox 1s infinite alternate; }
+        @keyframes pulseBox { to { border-color: rgba(6,182,212,0.3); transform: scale(1.02); } }
+        .webcam-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; padding: 10px 20px; }
+
+        /* Threat Globe Placeholder */
+        .threat-globe { width: 300px; height: 300px; margin: 0 auto; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #1a1a2e, #0a0a0f); border: 1px solid rgba(6,182,212,0.3); position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(6,182,212,0.1) inset; display: flex; align-items: center; justify-content: center; }
+        .globe-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(6,182,212,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.2) 1px, transparent 1px); background-size: 20px 20px; border-radius: 50%; animation: rotateGlobe 20s linear infinite; }
+        @keyframes rotateGlobe { from { background-position: 0 0; } to { background-position: 20px 20px; } }
+        .globe-ping { position: absolute; width: 6px; height: 6px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444; }
+        .globe-ping::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; border-radius: 50%; border: 1px solid #ef4444; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+        /* Scratch Card */
+        .scratch-card-wrap { position: relative; width: 300px; height: 150px; margin: 0 auto; border-radius: 12px; overflow: hidden; }
+        .scratch-content { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)); border: 1px solid var(--accent-cyan); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; }
+        .scratch-code { font-size: 24px; font-family: monospace; font-weight: 800; color: #fff; letter-spacing: 2px; }
+        .scratch-canvas { position: absolute; inset: 0; z-index: 5; cursor: crosshair; }
+
+        /* Spin the Wheel */
+        .wheel-container { position: relative; width: 200px; height: 200px; margin: 0 auto; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--border-color); background: conic-gradient(var(--bg-hover) 0 60deg, var(--bg-card) 60deg 120deg, var(--bg-hover) 120deg 180deg, rgba(6,182,212,0.2) 180deg 240deg, var(--bg-hover) 240deg 300deg, var(--bg-card) 300deg 360deg); transition: transform 4s cubic-bezier(0.1, 2.7, 0.58, 1); }
+        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--accent-cyan); z-index: 10; }
+        .wheel-btn { margin-top: 20px; }
+
+        /* T-Rex Offline */
+        #trex-game { display: none; width: 100%; height: 150px; background: #111; border-radius: 12px; border: 1px solid var(--border-color); position: relative; overflow: hidden; margin-top: 10px; cursor: pointer; }
+        #trex-dino { position: absolute; bottom: 20px; left: 40px; font-size: 24px; transition: transform 0.1s; }
+        #trex-cactus { position: absolute; bottom: 20px; right: -20px; font-size: 24px; }
+        .trex-score { position: absolute; top: 10px; right: 15px; font-family: monospace; font-size: 14px; color: var(--text-secondary); }
+
         /* ===== 3D TILT ===== */
         .tilt-card { transform-style: preserve-3d; transition: transform 0.1s ease; }
 
@@ -1847,6 +1941,19 @@
     <div id="location-banner">📡 Protecting users in <strong id="location-city">your city</strong> and <strong>128K+</strong> others worldwide</div>
 
     <!-- Offline Banner -->
+    <!-- Social Proof Container -->
+    <div id="social-proof-container"></div>
+
+    <!-- Breaking News Sidebar -->
+    <div id="news-sidebar">
+        <div class="news-toggle" id="news-toggle"><i class="fa-solid fa-newspaper"></i></div>
+        <div class="news-title"><div class="pulse"></div> Live Intel</div>
+        <div class="news-item"><div class="news-date">Just now</div>Deepfake voice scam thwarted in banking sector.</div>
+        <div class="news-item"><div class="news-date">2 hrs ago</div>New generative model 'Sora-X' flagged by AuthGuard.</div>
+        <div class="news-item"><div class="news-date">5 hrs ago</div>Enterprise security update: API v2.4 deployed.</div>
+    </div>
+
+    <!-- Offline Banner -->
     <div id="offline-banner">📡 You're offline. Some features may be unavailable.</div>
 
     <!-- Smart Search Modal -->
@@ -2010,9 +2117,14 @@
             <a href="#faq">FAQ</a>
             <a href="pricing.html">Pricing</a>
         </div>
+        <div class="level-container" title="Profile Level">
+            <div class="level-badge">LVL <span id="user-level">1</span></div>
+            <div class="level-bar-bg"><div class="level-bar-fill" id="user-level-bar"></div></div>
+        </div>
         <div class="nav-right">
             <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
             <button class="clean-btn" id="clean-mode-btn" title="Clean Mode (Screenshot)">📷</button>
+            <button class="hacker-btn" id="hacker-mode-btn" title="Terminal Mode">👨‍💻</button>
             <div class="theme-switcher" id="theme-switcher" title="Change accent color">
                 <div class="theme-dot cyan active" data-theme-color="cyan" title="Cyan"></div>
                 <div class="theme-dot purple" data-theme-color="purple" title="Purple"></div>
@@ -2617,6 +2729,86 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                 <div><div class="typing-stat-val" id="type-iq" style="color:#f59e0b">?</div><div class="typing-stat-label">Human Score</div></div>
             </div>
             <div class="typing-verdict-bar" id="type-verdict"></div>
+        </div>
+    </section>
+
+    <!-- Threat Globe Section -->
+    <section class="game-section reveal">
+        <div class="section-label"><i class="fa-solid fa-earth-americas"></i> Live Threats</div>
+        <h2 class="section-title">Global Interceptions</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Real-time simulation of deepfakes being blocked worldwide.</p>
+        <div class="threat-globe" id="threat-globe">
+            <div class="globe-grid"></div>
+        </div>
+    </section>
+
+    <!-- Webcam Scanner -->
+    <section class="game-section reveal">
+        <div class="section-label"><i class="fa-solid fa-camera"></i> Live Scan</div>
+        <h2 class="section-title">Webcam Biometrics</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Simulate a real-time deepfake facial scan using your camera.</p>
+        <div class="webcam-container">
+            <video id="webcam-video" autoplay muted playsinline></video>
+            <div class="webcam-hud" id="webcam-hud">
+                <div class="face-box"></div>
+            </div>
+            <button class="btn-primary webcam-btn" id="webcam-start-btn"><i class="fa-solid fa-video"></i> Start Scan</button>
+        </div>
+    </section>
+
+    <!-- Spot the Fake Slider -->
+    <section class="game-section reveal">
+        <div class="section-label"><i class="fa-solid fa-images"></i> Compare</div>
+        <h2 class="section-title">Spot the Fake</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Drag the slider to compare a real photo with an AI generation.</p>
+        <div class="slider-container" id="img-slider">
+            <div class="slider-img" style="background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover;"></div>
+            <div class="slider-overlay" id="slider-overlay">
+                <div style="width:600px;height:100%;background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; filter: hue-rotate(45deg) saturate(1.5);"></div>
+            </div>
+            <div class="slider-handle" id="slider-handle"><div class="slider-handle-btn"><i class="fa-solid fa-arrows-left-right"></i></div></div>
+            <div class="slider-label left">AI Generated</div>
+            <div class="slider-label right">Authentic</div>
+        </div>
+    </section>
+
+    <!-- Text Heatmap Analyzer -->
+    <section class="game-section reveal">
+        <div class="section-label"><i class="fa-solid fa-fire"></i> Heatmap</div>
+        <h2 class="section-title">Text Analyzer</h2>
+        <div class="section-glow-divider"></div>
+        <p class="section-subtitle">Paste text to see AI probability per word.</p>
+        <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+            <textarea id="heatmap-input" style="width:100%;height:100px;background:var(--bg-card);border:1px solid var(--border-color);color:#fff;padding:12px;border-radius:12px;margin-bottom:12px;font-family:inherit;" placeholder="Paste an article here..."></textarea>
+            <button class="btn-primary" id="heatmap-btn" style="width:100%;margin-bottom:20px;">Generate Heatmap</button>
+            <div class="heatmap-box" id="heatmap-output">Analysis will appear here. Red = AI, Yellow = Suspicious, Green = Human.</div>
+        </div>
+    </section>
+
+    <!-- Rewards Section -->
+    <section class="game-section reveal" style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:900px;margin:0 auto;padding:60px 20px;">
+        <!-- Scratch Card -->
+        <div style="flex:1;min-width:300px;">
+            <h3 style="font-size:16px;margin-bottom:16px;text-align:center;"><i class="fa-solid fa-ticket"></i> Scratch for 50% Off</h3>
+            <div class="scratch-card-wrap">
+                <div class="scratch-content">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">PROMO CODE</div>
+                    <div class="scratch-code">AUTH50</div>
+                </div>
+                <canvas class="scratch-canvas" id="scratch-canvas" width="300" height="150"></canvas>
+            </div>
+        </div>
+        <!-- Spin the Wheel -->
+        <div style="flex:1;min-width:300px;text-align:center;">
+            <h3 style="font-size:16px;margin-bottom:16px;"><i class="fa-solid fa-dharmachakra"></i> Daily Spin</h3>
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="spin-wheel"></div>
+            </div>
+            <button class="btn-secondary wheel-btn" id="spin-btn">Spin to Win</button>
         </div>
     </section>
 
@@ -3876,6 +4068,224 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             });
             section.appendChild(emojiBar);
         });
+
+        // ===== WAVE 5 JS =====
+        
+        // Leveling System
+        let userXP = parseInt(localStorage.getItem('user_xp') || '0');
+        const updateLevel = () => {
+            const level = Math.floor(userXP / 100) + 1;
+            const progress = userXP % 100;
+            document.getElementById('user-level').textContent = level;
+            document.getElementById('user-level-bar').style.width = progress + '%';
+        };
+        updateLevel();
+        const addXP = (amt) => { userXP += amt; localStorage.setItem('user_xp', userXP); updateLevel(); };
+        document.body.addEventListener('click', () => { if(Math.random()>0.7) addXP(2); });
+
+        // Hacker Mode Toggle
+        document.getElementById('hacker-mode-btn').addEventListener('click', () => {
+            document.body.classList.toggle('hacker-mode');
+            showToast('info', document.body.classList.contains('hacker-mode') ? '👨‍💻 System breach simulated.' : '🛡️ Firewall restored.');
+            addXP(15);
+        });
+
+        // Magnetic Buttons
+        document.querySelectorAll('.btn-primary, .btn-secondary, .nav-links a').forEach(btn => {
+            btn.classList.add('magnetic');
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0px, 0px)'; });
+        });
+
+        // Spotlight Cards
+        document.querySelectorAll('.feature-card, .tool-card, .pricing-card').forEach(card => {
+            card.classList.add('spotlight-card');
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            });
+        });
+
+        // Social Proof Toasts
+        const spNames = ['Alex in NY', 'Maria in Madrid', 'Team Alpha', 'User_992', 'SecureCorp'];
+        const spActions = ['scanned a video', 'upgraded to Pro', 'intercepted a voice clone', 'completed the IQ Quiz'];
+        setInterval(() => {
+            if(Math.random() > 0.6) {
+                const container = document.getElementById('social-proof-container');
+                if(!container) return;
+                const t = document.createElement('div');
+                t.className = 'social-proof-toast';
+                t.innerHTML = `<i class="fa-solid fa-shield-check sp-icon"></i><div><div class="sp-text">${spNames[Math.floor(Math.random()*spNames.length)]} ${spActions[Math.floor(Math.random()*spActions.length)]}</div><div class="sp-time">Just now</div></div>`;
+                container.appendChild(t);
+                requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+                setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4000);
+            }
+        }, 8000);
+
+        // News Sidebar
+        document.getElementById('news-toggle')?.addEventListener('click', () => {
+            document.getElementById('news-sidebar').classList.toggle('show');
+            addXP(5);
+        });
+
+        // Threat Globe Pings
+        const globe = document.getElementById('threat-globe');
+        if (globe) {
+            setInterval(() => {
+                const ping = document.createElement('div');
+                ping.className = 'globe-ping';
+                ping.style.left = `${10 + Math.random()*80}%`;
+                ping.style.top = `${10 + Math.random()*80}%`;
+                globe.appendChild(ping);
+                setTimeout(() => ping.remove(), 2000);
+            }, 1200);
+        }
+
+        // Spot the Fake Slider
+        const slider = document.getElementById('img-slider');
+        const overlay = document.getElementById('slider-overlay');
+        const handle = document.getElementById('slider-handle');
+        if (slider) {
+            let isDown = false;
+            const moveSlider = (e) => {
+                if(!isDown) return;
+                const rect = slider.getBoundingClientRect();
+                let x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+                x = Math.max(0, Math.min(x, rect.width));
+                const pct = (x / rect.width) * 100;
+                overlay.style.width = `${pct}%`;
+                handle.style.left = `${pct}%`;
+            };
+            handle.addEventListener('mousedown', () => isDown = true);
+            slider.addEventListener('mouseup', () => isDown = false);
+            slider.addEventListener('mouseleave', () => isDown = false);
+            slider.addEventListener('mousemove', moveSlider);
+            slider.addEventListener('touchstart', () => isDown = true);
+            slider.addEventListener('touchend', () => isDown = false);
+            slider.addEventListener('touchmove', moveSlider);
+        }
+
+        // Heatmap Analyzer
+        const heatBtn = document.getElementById('heatmap-btn');
+        if(heatBtn) {
+            heatBtn.addEventListener('click', () => {
+                const val = document.getElementById('heatmap-input').value;
+                if(!val) return showToast('error', 'Paste some text first!');
+                heatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+                setTimeout(() => {
+                    const words = val.split(' ');
+                    const out = words.map(w => {
+                        const r = Math.random();
+                        if(r < 0.2) return `<span class="heatmap-word ai" data-tip="98% AI Prob">${w}</span>`;
+                        if(r < 0.4) return `<span class="heatmap-word sus" data-tip="65% Suspicious">${w}</span>`;
+                        return `<span class="heatmap-word human" data-tip="99% Human">${w}</span>`;
+                    }).join(' ');
+                    document.getElementById('heatmap-output').innerHTML = out;
+                    heatBtn.innerHTML = 'Generate Heatmap';
+                    addXP(25);
+                }, 1500);
+            });
+        }
+
+        // Webcam Scanner
+        const webBtn = document.getElementById('webcam-start-btn');
+        const videoEl = document.getElementById('webcam-video');
+        const hudEl = document.getElementById('webcam-hud');
+        if(webBtn) {
+            webBtn.addEventListener('click', async () => {
+                if(!navigator.mediaDevices) return showToast('error', 'Webcam not supported.');
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoEl.srcObject = stream;
+                    webBtn.style.display = 'none';
+                    hudEl.classList.add('scanning');
+                    showToast('info', 'Analyzing facial biometrics...');
+                    setTimeout(() => {
+                        const stream = videoEl.srcObject;
+                        const tracks = stream.getTracks();
+                        tracks.forEach(track => track.stop());
+                        videoEl.srcObject = null;
+                        hudEl.classList.remove('scanning');
+                        webBtn.style.display = 'block';
+                        webBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Scan Again';
+                        showToast('success', '✅ Liveness Confirmed. 99.8% Human match.');
+                        addXP(50);
+                    }, 5000);
+                } catch(e) {
+                    showToast('error', 'Camera access denied.');
+                }
+            });
+        }
+
+        // Scratch Card
+        const sCanvas = document.getElementById('scratch-canvas');
+        if(sCanvas) {
+            const ctx = sCanvas.getContext('2d');
+            ctx.fillStyle = '#94a3b8'; ctx.fillRect(0,0,300,150);
+            ctx.font = '20px sans-serif'; ctx.fillStyle = '#cbd5e1'; ctx.textAlign = 'center';
+            ctx.fillText('Scratch Here', 150, 80);
+            let isScratching = false;
+            const scratch = (e) => {
+                if(!isScratching) return;
+                const rect = sCanvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI*2); ctx.fill();
+            };
+            sCanvas.addEventListener('mousedown', () => isScratching = true);
+            sCanvas.addEventListener('mouseup', () => { isScratching = false; addXP(10); });
+            sCanvas.addEventListener('mousemove', scratch);
+            sCanvas.addEventListener('touchstart', () => isScratching = true);
+            sCanvas.addEventListener('touchend', () => isScratching = false);
+            sCanvas.addEventListener('touchmove', scratch);
+        }
+
+        // Spin Wheel
+        const spinBtn = document.getElementById('spin-btn');
+        if(spinBtn) {
+            let rotation = 0;
+            spinBtn.addEventListener('click', () => {
+                rotation += 1800 + Math.floor(Math.random() * 360);
+                document.getElementById('spin-wheel').style.transform = `rotate(${rotation}deg)`;
+                spinBtn.disabled = true;
+                setTimeout(() => {
+                    spinBtn.disabled = false;
+                    showToast('success', '🎁 You won a 20% discount on Pro!');
+                    addXP(20);
+                }, 4000);
+            });
+        }
+
+        // Offline T-Rex Game logic
+        const offlineBanner = document.getElementById('offline-banner');
+        if(offlineBanner) {
+            window.addEventListener('offline', () => {
+                if(!document.getElementById('trex-game')) {
+                    const g = document.createElement('div');
+                    g.id = 'trex-game';
+                    g.innerHTML = `<div class="trex-score" id="trex-score">00000</div><div id="trex-dino">🦖</div><div id="trex-cactus">🌵</div>`;
+                    offlineBanner.appendChild(g);
+                    offlineBanner.style.cursor = 'pointer';
+                    offlineBanner.innerHTML = '📡 You are offline. Click to play. <br>' + g.outerHTML;
+                    // Game logic is simplified for demo
+                    let isJumping = false;
+                    offlineBanner.addEventListener('click', () => {
+                        const dino = document.getElementById('trex-dino');
+                        if(!isJumping && dino) {
+                            isJumping = true; dino.style.transform = 'translateY(-60px)';
+                            setTimeout(() => { dino.style.transform = 'translateY(0)'; isJumping = false; }, 400);
+                        }
+                    });
+                }
+            });
+        }
 
         // ===== TIMELINE ANIMATION =====
         const timelineObs = new IntersectionObserver(entries => {
