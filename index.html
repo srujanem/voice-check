@@ -4264,19 +4264,19 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         }
 
         // Offline T-Rex Game logic
-        const offlineBanner = document.getElementById('offline-banner');
-        if(offlineBanner) {
+        const offlineBannerGame = document.getElementById('offline-banner');
+        if(offlineBannerGame) {
             window.addEventListener('offline', () => {
                 if(!document.getElementById('trex-game')) {
                     const g = document.createElement('div');
                     g.id = 'trex-game';
                     g.innerHTML = `<div class="trex-score" id="trex-score">00000</div><div id="trex-dino">🦖</div><div id="trex-cactus">🌵</div>`;
-                    offlineBanner.appendChild(g);
-                    offlineBanner.style.cursor = 'pointer';
-                    offlineBanner.innerHTML = '📡 You are offline. Click to play. <br>' + g.outerHTML;
+                    offlineBannerGame.appendChild(g);
+                    offlineBannerGame.style.cursor = 'pointer';
+                    offlineBannerGame.innerHTML = '📡 You are offline. Click to play. <br>' + g.outerHTML;
                     // Game logic is simplified for demo
                     let isJumping = false;
-                    offlineBanner.addEventListener('click', () => {
+                    offlineBannerGame.addEventListener('click', () => {
                         const dino = document.getElementById('trex-dino');
                         if(!isJumping && dino) {
                             isJumping = true; dino.style.transform = 'translateY(-60px)';
