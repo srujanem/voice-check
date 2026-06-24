@@ -1169,11 +1169,432 @@
 
         /* Text Scramble target */
         .scramble-text { display: inline-block; }
+
+        /* ===== RIPPLE EFFECT ===== */
+        .ripple-circle {
+            position: fixed; border-radius: 50%;
+            pointer-events: none; z-index: 99990;
+            transform: scale(0); animation: rippleOut 0.6s ease-out forwards;
+            background: radial-gradient(circle, rgba(6,182,212,0.3), transparent);
+        }
+        @keyframes rippleOut {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ===== PARTICLE BURST ===== */
+        .burst-particle {
+            position: fixed; border-radius: 50%;
+            pointer-events: none; z-index: 99989;
+            animation: burstFly 0.7s ease-out forwards;
+        }
+        @keyframes burstFly {
+            to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+
+        /* ===== COLOR THEME SWITCHER ===== */
+        .theme-switcher {
+            display: flex; gap: 6px; align-items: center;
+            padding: 4px 8px; border-radius: 20px;
+            background: var(--bg-hover); border: 1px solid var(--border-color);
+        }
+        .theme-dot {
+            width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+        .theme-dot:hover { transform: scale(1.3); }
+        .theme-dot.active { border-color: white; box-shadow: 0 0 8px currentColor; transform: scale(1.2); }
+        .theme-dot.cyan  { background: #06b6d4; }
+        .theme-dot.purple { background: #8b5cf6; }
+        .theme-dot.green { background: #10b981; }
+        .theme-dot.orange { background: #f59e0b; }
+
+        /* ===== LIVE USER COUNT ===== */
+        .live-user-count {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: var(--text-secondary);
+            padding: 4px 10px; border-radius: 20px;
+            background: var(--bg-hover); border: 1px solid var(--border-color);
+        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; flex-shrink: 0; }
+        .live-count-num { font-weight: 700; color: #10b981; }
+
+        /* ===== SMART SEARCH MODAL ===== */
+        #smart-search-modal {
+            position: fixed; inset: 0; z-index: 99998;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 80px;
+            opacity: 0; visibility: hidden; transition: all 0.2s;
+        }
+        #smart-search-modal.show { opacity: 1; visibility: visible; }
+        .search-box {
+            width: 90%; max-width: 580px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+            transform: translateY(-10px); transition: transform 0.2s;
+        }
+        #smart-search-modal.show .search-box { transform: translateY(0); }
+        .search-input-row {
+            display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-input-row i { color: var(--text-secondary); font-size: 16px; }
+        #smart-search-input {
+            flex: 1; background: none; border: none; outline: none;
+            font-size: 16px; color: var(--text-primary); font-family: inherit;
+        }
+        .search-results { max-height: 300px; overflow-y: auto; padding: 8px; }
+        .search-result-item {
+            padding: 12px 16px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            transition: background 0.15s;
+        }
+        .search-result-item:hover { background: var(--bg-hover); }
+        .search-result-icon { font-size: 18px; width: 32px; text-align: center; flex-shrink: 0; }
+        .search-result-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .search-result-sub { font-size: 12px; color: var(--text-secondary); }
+        .search-hint {
+            padding: 10px 20px; font-size: 11px; color: var(--text-secondary);
+            border-top: 1px solid var(--border-color); display: flex; gap: 16px;
+        }
+        .search-hint kbd { padding: 2px 6px; border-radius: 4px; background: var(--bg-hover); border: 1px solid var(--border-color); font-size: 10px; }
+
+        /* ===== SECURITY BADGES ===== */
+        .badges-section {
+            padding: 60px 20px; max-width: 1100px; margin: 0 auto; text-align: center;
+        }
+        .badges-grid {
+            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 40px;
+        }
+        .badge-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 24px 28px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            min-width: 130px; transition: all 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .badge-card::before {
+            content: ''; position: absolute; inset: 0; border-radius: 16px;
+            background: radial-gradient(circle at 50% 0%, rgba(6,182,212,0.08), transparent 60%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .badge-card:hover { transform: translateY(-6px); border-color: rgba(6,182,212,0.4); }
+        .badge-card:hover::before { opacity: 1; }
+        .badge-icon { font-size: 32px; }
+        .badge-name { font-size: 12px; font-weight: 700; color: var(--text-primary); text-align: center; }
+        .badge-sub { font-size: 10px; color: var(--text-secondary); text-align: center; }
+        .badge-check { font-size: 10px; color: #10b981; font-weight: 600; }
+
+        /* ===== LEADERBOARD ===== */
+        .leaderboard-section {
+            padding: 80px 20px; max-width: 800px; margin: 0 auto;
+        }
+        .leaderboard-table {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; overflow: hidden; margin-top: 36px;
+        }
+        .lb-row {
+            display: flex; align-items: center; gap: 16px;
+            padding: 16px 24px; border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-row:hover { background: var(--bg-hover); }
+        .lb-rank { font-size: 18px; font-weight: 800; width: 36px; text-align: center; }
+        .lb-rank.gold { color: #f59e0b; }
+        .lb-rank.silver { color: #94a3b8; }
+        .lb-rank.bronze { color: #cd7c4a; }
+        .lb-icon { font-size: 24px; }
+        .lb-info { flex: 1; }
+        .lb-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+        .lb-desc { font-size: 12px; color: var(--text-secondary); }
+        .lb-count { font-size: 13px; font-weight: 700; color: var(--accent-cyan); }
+        .lb-bar-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+        .lb-bar-fill { height: 100%; border-radius: 3px; }
+
+        /* ===== PRICING TABLE ===== */
+        .pricing-section {
+            padding: 80px 20px; max-width: 1100px; margin: 0 auto;
+        }
+        .pricing-toggle {
+            display: flex; align-items: center; gap: 12px; justify-content: center; margin: 32px 0;
+        }
+        .pricing-toggle-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+        .pricing-toggle-label.active { color: var(--text-primary); }
+        .toggle-switch {
+            width: 48px; height: 26px; border-radius: 13px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            position: relative; cursor: pointer; transition: all 0.3s;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 20px; height: 20px; border-radius: 50%; background: white;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.yearly::after { transform: translateX(22px); }
+        .savings-badge {
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);
+        }
+        .pricing-cards {
+            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 8px;
+        }
+        .pricing-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 32px; flex: 1; min-width: 240px; max-width: 320px;
+            position: relative; transition: all 0.3s; text-align: center;
+        }
+        .pricing-card.popular {
+            border-color: rgba(6,182,212,0.5);
+            background: linear-gradient(180deg, rgba(6,182,212,0.06) 0%, var(--bg-card) 100%);
+        }
+        .pricing-popular-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            padding: 4px 16px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white; white-space: nowrap;
+        }
+        .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(0,0,0,0.2); }
+        .pricing-name { font-size: 14px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .pricing-price { font-size: 42px; font-weight: 800; color: var(--text-primary); margin: 12px 0 4px; }
+        .pricing-price span { font-size: 18px; font-weight: 500; vertical-align: top; margin-top: 10px; display: inline-block; }
+        .pricing-period { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .pricing-features { list-style: none; padding: 0; margin: 0 0 24px; text-align: left; }
+        .pricing-features li { padding: 8px 0; font-size: 13px; color: var(--text-secondary); display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .pricing-features li:last-child { border-bottom: none; }
+        .pricing-features li i { color: #10b981; font-size: 12px; flex-shrink: 0; }
+        .pricing-features li.no i { color: #ef4444; }
+        .pricing-features li.no { opacity: 0.5; }
+        .pricing-cta {
+            display: block; width: 100%; padding: 12px; border-radius: 12px;
+            font-size: 14px; font-weight: 700; font-family: inherit;
+            cursor: pointer; transition: all 0.3s; text-decoration: none; text-align: center;
+            border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary);
+        }
+        .pricing-cta.primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none; color: white;
+        }
+        .pricing-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6,182,212,0.3); }
+
+        /* ===== DETECTION IQ QUIZ ===== */
+        .quiz-section {
+            padding: 80px 20px; max-width: 700px; margin: 0 auto;
+        }
+        .quiz-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 40px;
+        }
+        .quiz-progress { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; margin-bottom: 28px; overflow: hidden; }
+        .quiz-progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); transition: width 0.5s ease; }
+        .quiz-q { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; line-height: 1.5; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        .quiz-option {
+            padding: 14px 18px; border-radius: 12px;
+            border: 1px solid var(--border-color); background: var(--bg-hover);
+            font-size: 14px; color: var(--text-primary); cursor: pointer;
+            transition: all 0.2s; text-align: left; font-family: inherit;
+        }
+        .quiz-option:hover { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.05); }
+        .quiz-option.correct { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #ef4444; }
+        .quiz-result-card {
+            text-align: center; padding: 20px; display: none;
+        }
+        .quiz-result-card.show { display: block; animation: fadeIn 0.5s ease; }
+        .quiz-iq-score { font-size: 72px; font-weight: 900; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .quiz-iq-label { font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 8px 0 4px; }
+        .quiz-iq-sub { font-size: 14px; color: var(--text-secondary); }
+
+        /* ===== DAILY CHALLENGE ===== */
+        .daily-section {
+            padding: 60px 20px; max-width: 700px; margin: 0 auto;
+        }
+        .daily-box {
+            background: linear-gradient(135deg, rgba(6,182,212,0.06), rgba(139,92,246,0.06));
+            border: 1px solid rgba(6,182,212,0.2);
+            border-radius: 20px; padding: 32px; position: relative; overflow: hidden;
+        }
+        .daily-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+        }
+        .daily-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .daily-badge-pill {
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            background: rgba(6,182,212,0.15); color: var(--accent-cyan);
+            border: 1px solid rgba(6,182,212,0.3);
+        }
+        .daily-timer { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+        .daily-timer span { color: var(--accent-cyan); font-weight: 700; }
+        .daily-question { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; }
+        .daily-options { display: flex; flex-direction: column; gap: 8px; }
+        .daily-option {
+            padding: 12px 16px; border-radius: 10px;
+            border: 1px solid var(--border-color); background: var(--bg-card);
+            font-size: 13px; color: var(--text-primary); cursor: pointer;
+            transition: all 0.2s; text-align: left; font-family: inherit;
+        }
+        .daily-option:hover { border-color: rgba(6,182,212,0.4); }
+        .daily-option.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .daily-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .daily-streak { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 13px; color: var(--text-secondary); }
+        .streak-fire { font-size: 20px; }
+
+        /* ===== SHARE RESULT CARD ===== */
+        #share-modal {
+            position: fixed; inset: 0; z-index: 99997;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.2s;
+        }
+        #share-modal.show { opacity: 1; visibility: visible; }
+        .share-card {
+            background: linear-gradient(135deg, #0a0a0f, #0d1a2a);
+            border: 1px solid rgba(6,182,212,0.3);
+            border-radius: 24px; padding: 40px; text-align: center;
+            max-width: 380px; width: 90%;
+            box-shadow: 0 0 60px rgba(6,182,212,0.2);
+        }
+        .share-logo { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .share-score-big { font-size: 80px; font-weight: 900; line-height: 1; }
+        .share-score-label { font-size: 14px; color: rgba(255,255,255,0.6); margin: 8px 0 24px; }
+        .share-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .share-btn {
+            padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); color: white; font-size: 13px; font-weight: 600;
+            font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .share-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .share-close { margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.4); cursor: pointer; }
+        .share-close:hover { color: rgba(255,255,255,0.7); }
+
+        /* ===== MATRIX RAIN SECTION ===== */
+        .matrix-section {
+            position: relative; overflow: hidden;
+            padding: 80px 20px; text-align: center;
+        }
+        #matrix-canvas {
+            position: absolute; inset: 0; opacity: 0.12; pointer-events: none;
+        }
+        .matrix-content { position: relative; z-index: 2; }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        #mobile-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9990;
+            background: rgba(14,14,20,0.95); border-top: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            display: none; justify-content: space-around; padding: 8px 0 env(safe-area-inset-bottom);
+        }
+        @media (max-width: 768px) { #mobile-bottom-nav { display: flex; } }
+        .mob-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            text-decoration: none; padding: 6px 12px; border-radius: 12px;
+            color: var(--text-secondary); transition: all 0.2s; border: none; background: none; font-family: inherit; cursor: pointer;
+        }
+        .mob-nav-item.active, .mob-nav-item:hover { color: var(--accent-cyan); }
+        .mob-nav-item i { font-size: 18px; }
+        .mob-nav-item span { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ===== OFFLINE BANNER ===== */
+        #offline-banner {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-80px);
+            z-index: 9994; padding: 12px 24px; border-radius: 12px;
+            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+            backdrop-filter: blur(20px); color: var(--text-primary);
+            font-size: 13px; font-weight: 600; white-space: nowrap;
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: none;
+        }
+        #offline-banner.show { transform: translateX(-50%) translateY(0); }
+
+        /* ===== OLED MODE ===== */
+        body.oled-mode {
+            --bg-main: #000000;
+            --bg-card: #080808;
+            --bg-hover: #111111;
+        }
+        .oled-toggle {
+            width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border-color);
+            background: var(--bg-hover); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: all 0.2s; flex-shrink: 0;
+        }
+        .oled-toggle:hover { border-color: var(--accent-cyan); }
+        .oled-toggle.active { background: black; border-color: white; }
+
+        /* ===== VOICE RECORD BUTTON ===== */
+        .voice-record-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border-radius: 12px;
+            border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.08);
+            color: #f87171; font-size: 13px; font-weight: 700; font-family: inherit;
+            cursor: pointer; transition: all 0.3s; margin-top: 16px;
+        }
+        .voice-record-btn:hover { background: rgba(239,68,68,0.15); transform: translateY(-2px); }
+        .voice-record-btn.recording {
+            background: rgba(239,68,68,0.2); border-color: #ef4444;
+            animation: recordPulse 1s ease-in-out infinite;
+        }
+        @keyframes recordPulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+        .voice-bars { display: flex; align-items: center; gap: 2px; height: 16px; }
+        .voice-bar {
+            width: 3px; border-radius: 2px; background: #f87171;
+            animation: voiceBar 0.8s ease-in-out infinite;
+        }
+        .voice-bar:nth-child(2) { animation-delay: 0.1s; }
+        .voice-bar:nth-child(3) { animation-delay: 0.2s; }
+        .voice-bar:nth-child(4) { animation-delay: 0.15s; }
+        .voice-bar:nth-child(5) { animation-delay: 0.05s; }
+        @keyframes voiceBar { 0%,100%{height:4px} 50%{height:14px} }
     </style>
 </head>
 <body>
     <!-- Scroll Progress Bar -->
     <div id="scroll-progress"></div>
+
+    <!-- Offline Banner -->
+    <div id="offline-banner">📡 You're offline. Some features may be unavailable.</div>
+
+    <!-- Smart Search Modal -->
+    <div id="smart-search-modal">
+        <div class="search-box">
+            <div class="search-input-row">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="smart-search-input" placeholder="Search tools, features, FAQ..." autocomplete="off">
+                <span class="kbd" style="flex-shrink:0">Esc</span>
+            </div>
+            <div class="search-results" id="search-results"></div>
+            <div class="search-hint"><span><kbd>/</kbd> to open</span><span><kbd>↑↓</kbd> navigate</span><span><kbd>Enter</kbd> select</span></div>
+        </div>
+    </div>
+
+    <!-- Share Result Modal -->
+    <div id="share-modal">
+        <div class="share-card">
+            <div class="share-logo">🛡️ AuthGuard</div>
+            <div class="share-score-big" id="share-score-display">🤖</div>
+            <div class="share-score-label" id="share-score-label">AI Probability Score</div>
+            <div style="height:1px;background:rgba(255,255,255,0.08);margin:16px 0"></div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.4)">authguard.vercel.app</div>
+            <div class="share-btns">
+                <button class="share-btn" id="share-twitter"><i class="fa-brands fa-x-twitter"></i> Share on X</button>
+                <button class="share-btn" id="share-copy"><i class="fa-solid fa-copy"></i> Copy Link</button>
+            </div>
+            <div class="share-close" id="share-close">× Close</div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="mobile-bottom-nav">
+        <a href="#" class="mob-nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="voice-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-microphone"></i><span>Voice</span></a>
+        <a href="deepfake-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-image"></i><span>Image</span></a>
+        <a href="text-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-file-lines"></i><span>Text</span></a>
+        <button class="mob-nav-item" onclick="document.getElementById('smart-search-modal').classList.add('show');document.getElementById('smart-search-input').focus();"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    </nav>
 
     <!-- Cursor Spotlight -->
     <div id="cursor-spotlight"></div>
@@ -1300,6 +1721,18 @@
         </div>
         <div class="nav-right">
             <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
+            <div class="theme-switcher" id="theme-switcher" title="Change accent color">
+                <div class="theme-dot cyan active" data-theme-color="cyan" title="Cyan"></div>
+                <div class="theme-dot purple" data-theme-color="purple" title="Purple"></div>
+                <div class="theme-dot green" data-theme-color="green" title="Green"></div>
+                <div class="theme-dot orange" data-theme-color="orange" title="Orange"></div>
+            </div>
+            <button class="oled-toggle" id="oled-toggle" title="OLED Mode">🌑</button>
+            <div class="live-user-count" title="People using AuthGuard right now">
+                <div class="live-dot"></div>
+                <span class="live-count-num" id="live-count">1,247</span>
+                <span>online</span>
+            </div>
             <!-- Login (when NOT logged in) -->
             <div class="user-area" id="login-area">
                 <a href="login.html" class="login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login</a>
@@ -1335,6 +1768,7 @@
             <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="#tools" class="btn-primary" style="display: inline-flex;"><i class="fa-solid fa-rocket"></i> Explore Tools</a>
                 <a href="dashboard-ui/index.html" class="btn-secondary" style="display: inline-flex;"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
+                <button class="voice-record-btn" id="voice-record-btn"><i class="fa-solid fa-microphone"></i> <span id="voice-btn-text">Record 5s Demo</span></button>
             </div>
         </header>
 
@@ -2768,6 +3202,342 @@
             });
         }, { threshold: 0.3 });
         document.querySelectorAll('.timeline-item').forEach(item => timelineObs.observe(item));
+
+        // ===== RIPPLE EFFECT =====
+        document.addEventListener('click', e => {
+            const r = document.createElement('div');
+            r.className = 'ripple-circle';
+            const size = 80;
+            r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - size/2}px;top:${e.clientY - size/2}px`;
+            document.body.appendChild(r);
+            setTimeout(() => r.remove(), 700);
+        });
+
+        // ===== PARTICLE BURST =====
+        const burstColors = ['#06b6d4','#8b5cf6','#10b981','#f59e0b','#f43f5e'];
+        document.querySelectorAll('.btn-primary, .btn-secondary, .try-btn, .game-next-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                for (let i = 0; i < 12; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'burst-particle';
+                    const angle = (i / 12) * 360;
+                    const dist = 40 + Math.random() * 40;
+                    const dx = Math.cos(angle * Math.PI / 180) * dist;
+                    const dy = Math.sin(angle * Math.PI / 180) * dist;
+                    const size = 4 + Math.random() * 6;
+                    p.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX}px;top:${e.clientY}px;background:${burstColors[i%burstColors.length]};--dx:${dx}px;--dy:${dy}px`;
+                    document.body.appendChild(p);
+                    setTimeout(() => p.remove(), 800);
+                }
+            });
+        });
+
+        // ===== COLOR THEME SWITCHER =====
+        const themeColors = {
+            cyan:   { primary: '#06b6d4', secondary: '#8b5cf6' },
+            purple: { primary: '#8b5cf6', secondary: '#ec4899' },
+            green:  { primary: '#10b981', secondary: '#06b6d4' },
+            orange: { primary: '#f59e0b', secondary: '#f43f5e' }
+        };
+        document.querySelectorAll('.theme-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const color = dot.dataset.themeColor;
+                const c = themeColors[color];
+                document.documentElement.style.setProperty('--accent-cyan', c.primary);
+                document.documentElement.style.setProperty('--accent-purple', c.secondary);
+                document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                localStorage.setItem('accent_theme', color);
+                showToast('success', `Theme switched to ${color} mode!`);
+            });
+        });
+        // Restore saved theme
+        const savedAccent = localStorage.getItem('accent_theme');
+        if (savedAccent && themeColors[savedAccent]) {
+            const c = themeColors[savedAccent];
+            document.documentElement.style.setProperty('--accent-cyan', c.primary);
+            document.documentElement.style.setProperty('--accent-purple', c.secondary);
+            document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.themeColor === savedAccent));
+        }
+
+        // ===== LIVE USER COUNT =====
+        const liveCountEl = document.getElementById('live-count');
+        let liveBase = 1200 + Math.floor(Math.random() * 200);
+        setInterval(() => {
+            liveBase += Math.floor(Math.random() * 7) - 3;
+            liveBase = Math.max(900, Math.min(2000, liveBase));
+            liveCountEl.textContent = liveBase.toLocaleString();
+        }, 4000);
+
+        // ===== OLED MODE =====
+        const oledBtn = document.getElementById('oled-toggle');
+        if (localStorage.getItem('oled_mode') === '1') document.body.classList.add('oled-mode');
+        oledBtn.addEventListener('click', () => {
+            document.body.classList.toggle('oled-mode');
+            const on = document.body.classList.contains('oled-mode');
+            localStorage.setItem('oled_mode', on ? '1' : '0');
+            oledBtn.classList.toggle('active', on);
+            showToast('info', on ? '🌑 OLED mode on — pure black background' : '🌕 OLED mode off');
+        });
+
+        // ===== SMART SEARCH =====
+        const searchData = [
+            { icon: '🎙️', title: 'Voice Detection', sub: 'Detect AI-generated voice clones', url: 'voice-ui/index.html' },
+            { icon: '🖼️', title: 'Deepfake Image', sub: 'Detect AI-generated images', url: 'deepfake-ui/index.html' },
+            { icon: '📝', title: 'Text Detection', sub: 'Detect ChatGPT / Claude text', url: 'text-ui/index.html' },
+            { icon: '🎥', title: 'Video Detection', sub: 'Detect synthetic video content', url: 'video-ui/index.html' },
+            { icon: '📄', title: 'Document Scanner', sub: 'Scan PDFs and documents', url: 'document-ui/index.html' },
+            { icon: '📱', title: 'Social Media Check', sub: 'Verify social profiles', url: 'social-ui/index.html' },
+            { icon: '📊', title: 'Pro Dashboard', sub: 'View your scan history', url: 'dashboard-ui/index.html' },
+            { icon: '💰', title: 'Pricing', sub: 'View plans and pricing', url: 'pricing.html' },
+            { icon: '🔐', title: 'Login / Sign Up', sub: 'Create or access your account', url: 'login.html' },
+            { icon: '❓', title: 'FAQ', sub: 'Frequently asked questions', url: '#faq' },
+        ];
+        const searchModal = document.getElementById('smart-search-modal');
+        const searchInput = document.getElementById('smart-search-input');
+        const searchResults = document.getElementById('search-results');
+        function renderSearch(query) {
+            const q = query.toLowerCase();
+            const matches = q ? searchData.filter(d => d.title.toLowerCase().includes(q) || d.sub.toLowerCase().includes(q)) : searchData;
+            searchResults.innerHTML = matches.map(d =>
+                `<div class="search-result-item" onclick="window.location.href='${d.url}'"><div class="search-result-icon">${d.icon}</div><div><div class="search-result-title">${d.title}</div><div class="search-result-sub">${d.sub}</div></div></div>`
+            ).join('') || '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:13px">No results found</div>';
+        }
+        renderSearch('');
+        searchInput.addEventListener('input', e => renderSearch(e.target.value));
+        document.addEventListener('keydown', e => {
+            if ((e.key === '/') && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                searchModal.classList.add('show');
+                searchInput.focus();
+            }
+        });
+        searchModal.addEventListener('click', e => { if(e.target === searchModal) { searchModal.classList.remove('show'); searchInput.value = ''; renderSearch(''); } });
+
+        // ===== OFFLINE DETECTION =====
+        const offlineBanner = document.getElementById('offline-banner');
+        window.addEventListener('offline', () => offlineBanner.classList.add('show'));
+        window.addEventListener('online', () => { offlineBanner.classList.remove('show'); showToast('success', '✅ Back online!'); });
+
+        // ===== WELCOME BACK ANIMATION =====
+        const storedName = localStorage.getItem('user_name');
+        if (storedName) {
+            const heroP = document.querySelector('.landing-header p');
+            if (heroP) {
+                const greeting = document.createElement('div');
+                greeting.style.cssText = 'font-size:14px;color:var(--accent-cyan);font-weight:600;margin-bottom:8px;animation:slideUpFadeIn 0.8s ease forwards;opacity:0';
+                greeting.innerHTML = `👋 Welcome back, <strong>${storedName.split(' ')[0]}</strong>!`;
+                heroP.parentNode.insertBefore(greeting, heroP);
+            }
+        }
+
+        // ===== PRICING TOGGLE =====
+        const pricingToggle = document.getElementById('pricing-toggle-sw');
+        let isYearly = false;
+        if (pricingToggle) {
+            pricingToggle.addEventListener('click', () => {
+                isYearly = !isYearly;
+                pricingToggle.classList.toggle('yearly', isYearly);
+                document.getElementById('pt-monthly').classList.toggle('active', !isYearly);
+                document.getElementById('pt-yearly').classList.toggle('active', isYearly);
+                document.getElementById('price-pro').textContent = isYearly ? '11' : '19';
+                document.getElementById('price-ent').textContent = isYearly ? '59' : '99';
+                document.getElementById('period-pro').textContent = isYearly ? 'per month, billed yearly' : 'per month';
+                document.getElementById('period-ent').textContent = isYearly ? 'per month, billed yearly' : 'per month';
+            });
+        }
+
+        // ===== VOICE RECORDING DEMO =====
+        const voiceBtn = document.getElementById('voice-record-btn');
+        const voiceBtnText = document.getElementById('voice-btn-text');
+        if (voiceBtn) {
+            let recording = false, recTimer = null, secs = 5;
+            voiceBtn.addEventListener('click', () => {
+                if (recording) return;
+                recording = true;
+                secs = 5;
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = `<div class="voice-bars">${'<div class="voice-bar"></div>'.repeat(5)}</div> <span id="voice-btn-text">Recording... ${secs}s</span>`;
+                recTimer = setInterval(() => {
+                    secs--;
+                    const t = voiceBtn.querySelector('span');
+                    if(t) t.textContent = `Recording... ${secs}s`;
+                    if (secs <= 0) {
+                        clearInterval(recTimer);
+                        voiceBtn.classList.remove('recording');
+                        voiceBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Analyzing...</span>';
+                        setTimeout(() => {
+                            recording = false;
+                            const result = Math.random() > 0.5 ? 'Human' : 'AI Voice Clone';
+                            const color = result === 'Human' ? '#10b981' : '#ef4444';
+                            showToast(result === 'Human' ? 'success' : 'error', `Result: ${result} detected with 98.2% confidence`);
+                            voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span id="voice-btn-text">Record 5s Demo</span>';
+                        }, 1500);
+                    }
+                }, 1000);
+            });
+        }
+
+        // ===== SHARE RESULT CARD =====
+        const shareModal = document.getElementById('share-modal');
+        window.showShareCard = function(score, label) {
+            document.getElementById('share-score-display').textContent = score;
+            document.getElementById('share-score-label').textContent = label;
+            shareModal.classList.add('show');
+        };
+        document.getElementById('share-close').addEventListener('click', () => shareModal.classList.remove('show'));
+        document.getElementById('share-twitter').addEventListener('click', () => {
+            const score = document.getElementById('share-score-display').textContent;
+            window.open(`https://twitter.com/intent/tweet?text=I+just+tested+this+text+on+AuthGuard+AI+Detection+and+got+${encodeURIComponent(score)}+AI+probability!+Check+yours+at+https://authguard.vercel.app`, '_blank');
+        });
+        document.getElementById('share-copy').addEventListener('click', () => {
+            navigator.clipboard.writeText('https://authguard.vercel.app').then(() => showToast('success', '🔗 Link copied to clipboard!'));
+        });
+        // Hook into try-it-live
+        const origTryBtn = document.getElementById('try-btn');
+        if (origTryBtn) {
+            const origHandler = origTryBtn.onclick;
+            origTryBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    const scoreEl = document.getElementById('try-score-val');
+                    if (scoreEl && scoreEl.textContent && scoreEl.textContent !== '—') {
+                        const shareBtn = document.createElement('button');
+                        shareBtn.className = 'try-btn';
+                        shareBtn.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid var(--border-color);margin-left:10px';
+                        shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i> Share Result';
+                        shareBtn.onclick = () => showShareCard(scoreEl.textContent, 'AI Probability Score');
+                        const existing = document.getElementById('share-result-btn');
+                        if (!existing) { shareBtn.id = 'share-result-btn'; origTryBtn.parentNode.appendChild(shareBtn); }
+                    }
+                }, 2500);
+            });
+        }
+
+        // ===== DETECTION IQ QUIZ =====
+        const quizQuestions = [
+            { q: 'ChatGPT tends to use which of these patterns more often?', opts: ['Short, choppy sentences with typos', 'Structured paragraphs with smooth transitions', 'All-caps emphasis', 'Excessive punctuation!!!'], ans: 1 },
+            { q: 'What is the key telltale sign of an AI voice clone?', opts: ['It speaks too slowly', 'Perfect pitch and zero background noise', 'Heavy accent', 'Too many pauses'], ans: 1 },
+            { q: 'Deepfake images often fail on which body part?', opts: ['Elbows', 'Knees', 'Hands and fingers', 'Ears'], ans: 2 },
+            { q: 'Which metric do AI text detectors primarily analyze?', opts: ['Word count', 'Perplexity and burstiness', 'Sentence length only', 'Number of adverbs'], ans: 1 },
+            { q: 'What is "burstiness" in AI text detection?', opts: ['How often the AI crashes', 'Variation in sentence complexity (humans vary more)', 'The speed of text generation', 'Number of exclamation marks'], ans: 1 },
+            { q: 'EXIF metadata in images can help detect fakes because:', opts: ['AI tools always add fake GPS data', 'AI-generated images often have no or inconsistent camera metadata', 'Real photos never have EXIF data', 'EXIF data is encrypted'], ans: 1 },
+            { q: 'Which deepfake video technique replaces a person\'s face in video?', opts: ['Neural Style Transfer', 'Face Swap (GAN-based)', 'JPEG Compression', 'Optical Flow'], ans: 1 },
+            { q: 'What does "hallucination" mean in AI context?', opts: ['The AI becomes self-aware', 'The AI generates plausible but incorrect facts', 'A display glitch', 'Memory overflow error'], ans: 1 },
+            { q: 'ElevenLabs is known for creating:', opts: ['Image deepfakes', 'AI-generated voices', 'Synthetic video', 'Bot social profiles'], ans: 1 },
+            { q: 'Which is the MOST reliable way to verify if a voice is real?', opts: ['Ask them to say something random', 'Check frequency analysis and breath patterns', 'Compare to old recordings', 'Both B and C'], ans: 3 }
+        ];
+        let quizIdx = 0, quizCorrect = 0, quizAnswered = false;
+        function startQuiz() {
+            quizIdx = 0; quizCorrect = 0; quizAnswered = false;
+            document.getElementById('quiz-result-card').classList.remove('show');
+            document.getElementById('quiz-content').style.display = 'block';
+            loadQuizQ();
+        }
+        function loadQuizQ() {
+            if (quizIdx >= quizQuestions.length) { showQuizResult(); return; }
+            const qd = quizQuestions[quizIdx];
+            document.getElementById('quiz-q').textContent = `Q${quizIdx+1}. ${qd.q}`;
+            document.getElementById('quiz-progress-fill').style.width = ((quizIdx/quizQuestions.length)*100)+'%';
+            const optsEl = document.getElementById('quiz-options');
+            optsEl.innerHTML = '';
+            qd.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option'; btn.textContent = opt;
+                btn.addEventListener('click', () => {
+                    if (quizAnswered) return;
+                    quizAnswered = true;
+                    if (i === qd.ans) { quizCorrect++; btn.classList.add('correct'); }
+                    else { btn.classList.add('wrong'); optsEl.children[qd.ans].classList.add('correct'); }
+                    setTimeout(() => { quizIdx++; quizAnswered = false; loadQuizQ(); }, 900);
+                });
+                optsEl.appendChild(btn);
+            });
+        }
+        function showQuizResult() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-progress-fill').style.width = '100%';
+            const iqScores = [70,85,95,105,112,120,128,135,142,155,165];
+            const iq = iqScores[quizCorrect];
+            const labels = ['Needs Practice 📚','Getting There 🔍','Average Detector 👀','Good Eye 🎯','Sharp Detector ⚡','Expert Detector 🌟','AI Whisperer 🧠','Detection Master 🏆','Elite Analyst 💎','Supreme Guardian 🛡️','Legendary 🔱'];
+            document.getElementById('quiz-iq-num').textContent = iq;
+            document.getElementById('quiz-iq-label').textContent = labels[quizCorrect];
+            document.getElementById('quiz-iq-sub').textContent = `You got ${quizCorrect}/10 correct. ${quizCorrect >= 8 ? 'Outstanding work! You have elite detection skills.' : quizCorrect >= 5 ? 'Good job! Keep practicing to sharpen your skills.' : 'Keep learning — the AI threat landscape is evolving fast.'}`;
+            document.getElementById('quiz-result-card').classList.add('show');
+        }
+        window.shareQuizResult = function() { showShareCard(document.getElementById('quiz-iq-num').textContent + ' IQ', 'My AuthGuard Detection IQ Score'); };
+        startQuiz();
+
+        // ===== DAILY CHALLENGE =====
+        const dailyChallenges = [
+            { q: 'Which company made ElevenLabs, a popular AI voice tool?', opts: ['Google', 'OpenAI', 'ElevenLabs Inc.', 'Meta'], ans: 2 },
+            { q: 'MidJourney is primarily used to generate:', opts: ['AI voices', 'AI images', 'AI text', 'AI video'], ans: 1 },
+            { q: 'Which AI model is behind ChatGPT?', opts: ['BERT', 'GPT-4 (OpenAI)', 'LLaMA', 'Gemini'], ans: 1 },
+            { q: 'Deepfake videos are primarily created using:', opts: ['Photoshop filters', 'GANs (Generative Adversarial Networks)', 'Video compression', 'CGI rendering'], ans: 1 },
+            { q: 'What does "GAN" stand for?', opts: ['General AI Network', 'Generative Adversarial Network', 'Global Artificial Node', 'Graphic Animation Node'], ans: 1 },
+            { q: 'Which is NOT an AI text generator?', opts: ['ChatGPT', 'Claude', 'Photoshop', 'Gemini'], ans: 2 },
+            { q: 'AI voice clones can be created from as little as how much audio?', opts: ['1 hour', '30 minutes', '3-5 seconds (modern tools)', '24 hours'], ans: 2 }
+        ];
+        const today = new Date().getDay();
+        const todayChallenge = dailyChallenges[today % dailyChallenges.length];
+        let dailyAnswered = localStorage.getItem('daily_answered_' + new Date().toDateString());
+        document.getElementById('daily-num').textContent = today + 1;
+        document.getElementById('daily-q').textContent = todayChallenge.q;
+        const dailyOpts = document.getElementById('daily-opts');
+        todayChallenge.opts.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'daily-option';
+            btn.textContent = opt;
+            if (dailyAnswered) {
+                btn.disabled = true;
+                if (i === todayChallenge.ans) btn.classList.add('correct');
+            }
+            btn.addEventListener('click', () => {
+                if (dailyAnswered) return;
+                dailyAnswered = 'yes';
+                localStorage.setItem('daily_answered_' + new Date().toDateString(), 'yes');
+                const streak = parseInt(localStorage.getItem('daily_streak') || '0') + 1;
+                localStorage.setItem('daily_streak', streak);
+                document.getElementById('streak-count').textContent = streak;
+                if (i === todayChallenge.ans) { btn.classList.add('correct'); showToast('success', '🔥 Correct! Streak: ' + streak + ' days'); }
+                else { btn.classList.add('wrong'); dailyOpts.children[todayChallenge.ans].classList.add('correct'); showToast('error', '❌ Not quite! Come back tomorrow.'); }
+                dailyOpts.querySelectorAll('.daily-option').forEach(b => b.disabled = true);
+            });
+            dailyOpts.appendChild(btn);
+        });
+        document.getElementById('streak-count').textContent = localStorage.getItem('daily_streak') || '0';
+        // Daily countdown timer
+        function updateDailyTimer() {
+            const now = new Date(); const midnight = new Date(); midnight.setHours(24,0,0,0);
+            const diff = midnight - now;
+            const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+            const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+            const el = document.getElementById('daily-timer');
+            if (el) el.textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateDailyTimer, 1000); updateDailyTimer();
+
+        // ===== MATRIX RAIN =====
+        const matrixCanvas = document.getElementById('matrix-canvas');
+        if (matrixCanvas) {
+            const mCtx = matrixCanvas.getContext('2d');
+            function resizeMatrix() { matrixCanvas.width = matrixCanvas.offsetWidth; matrixCanvas.height = matrixCanvas.offsetHeight; }
+            resizeMatrix(); window.addEventListener('resize', resizeMatrix);
+            const cols = Math.floor(matrixCanvas.width / 14);
+            const drops = Array(cols).fill(1);
+            setInterval(() => {
+                mCtx.fillStyle = 'rgba(0,0,0,0.05)';
+                mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                mCtx.fillStyle = '#06b6d4';
+                mCtx.font = '12px monospace';
+                drops.forEach((y, i) => {
+                    const char = Math.random() > 0.5 ? '1' : '0';
+                    mCtx.fillText(char, i * 14, y * 14);
+                    if (y * 14 > matrixCanvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                });
+            }, 50);
+        }
 
     </script>
 </body>
