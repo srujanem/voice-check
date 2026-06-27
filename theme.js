@@ -29,6 +29,8 @@
                 html.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
                 updateIcon(next);
+                toggle.classList.add('spin');
+                setTimeout(() => toggle.classList.remove('spin'), 500);
             });
         }
     }

@@ -23,6 +23,51 @@
     --border-radius: 16px;
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     --backdrop-blur: blur(12px);
+
+    /* Dark-specific UI tokens */
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --divider-color: rgba(255, 255, 255, 0.06);
+    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Smooth Theme Transition ── */
+html, body,
+.app-container, .nav-card, .feature-card, .testimonial-card,
+.faq-item, .step-card, .stats-bar, .navbar, .site-footer,
+.newsletter-box, .result-card, .upload-area, .btn-primary,
+.btn-secondary, .theme-toggle, .floating-history-btn,
+.history-sidebar, .toast, .user-dropdown, h1, h2, p {
+    transition: background-color 0.4s ease,
+                color 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
+}
+
+/* ── Custom Scrollbar — Dark ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+[data-theme="light"]::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-theme="light"]::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #0891b2, #7c3aed);
+}
+[data-theme="light"]::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+
+/* ── Text Selection ── */
+::selection {
+    background: rgba(6, 182, 212, 0.35);
+    color: #ffffff;
+}
+[data-theme="light"] ::selection {
+    background: rgba(8, 145, 178, 0.25);
+    color: #0f172a;
 }
 
 [data-theme="light"] {
@@ -34,6 +79,25 @@
     --border-color: rgba(15, 23, 42, 0.1);
     --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
     --backdrop-blur: blur(20px);
+
+    /* Light-tuned accents */
+    --accent-blue: #2563eb;
+    --accent-blue-glow: rgba(37, 99, 235, 0.2);
+    --accent-purple: #7c3aed;
+    --accent-purple-glow: rgba(124, 58, 237, 0.15);
+    --accent-cyan: #0891b2;
+
+    /* Light semantic */
+    --color-success: #059669;
+    --color-error: #dc2626;
+    --color-warning: #d97706;
+
+    /* Light-specific UI tokens */
+    --input-bg: #f1f5f9;
+    --input-border: rgba(15, 23, 42, 0.12);
+    --divider-color: rgba(15, 23, 42, 0.06);
+    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* ── Specific UI Components ── */
@@ -120,9 +184,33 @@
     cursor: pointer;
     z-index: 100;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
-.theme-toggle:hover { transform: scale(1.1); background: var(--bg-hover); }
+.theme-toggle:hover {
+    transform: scale(1.15) rotate(15deg);
+    background: var(--bg-hover);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    border-color: var(--accent-cyan);
+}
+.theme-toggle:active { transform: scale(0.9); }
+.theme-toggle i {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle.spin i {
+    transform: rotate(360deg);
+}
+[data-theme="light"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    color: #334155;
+}
+[data-theme="light"] .theme-toggle:hover {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
 
 /* ── Result Animations ── */
 @keyframes floatIcon {
@@ -206,6 +294,23 @@ body {
     background-color: var(--bg-main);
     background-attachment: fixed;
     transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+[data-theme="light"] body {
+    background: radial-gradient(circle at 20% 50%, rgba(8, 145, 178, 0.06), transparent 40%),
+                radial-gradient(circle at 80% 30%, rgba(124, 58, 237, 0.05), transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(245, 158, 11, 0.04), transparent 50%);
+    background-color: var(--bg-main);
+}
+
+/* ── Focus Visible (Accessibility) ── */
+:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+[data-theme="light"] :focus-visible {
+    outline-color: #0891b2;
 }
 
 /* ══════ PREMIUM VISUAL EFFECTS ══════ */
