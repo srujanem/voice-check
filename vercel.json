@@ -2,6 +2,9 @@
   "name": "authguard",
   "cleanUrls": true,
   "trailingSlash": false,
+  "toolbar": {
+    "enabled": false
+  },
   "builds": [
     {
       "src": "**",
