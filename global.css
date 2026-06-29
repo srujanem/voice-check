@@ -71,21 +71,21 @@ html, body,
 }
 
 [data-theme="light"] {
-    --bg-main: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.9);
-    --bg-hover: #f1f5f9;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border-color: rgba(15, 23, 42, 0.1);
-    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
-    --backdrop-blur: blur(20px);
+    --bg-main: #fafafa;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-hover: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: rgba(17, 24, 39, 0.08);
+    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+    --backdrop-blur: blur(24px);
 
-    /* Light-tuned accents */
-    --accent-blue: #2563eb;
-    --accent-blue-glow: rgba(37, 99, 235, 0.2);
-    --accent-purple: #7c3aed;
-    --accent-purple-glow: rgba(124, 58, 237, 0.15);
-    --accent-cyan: #0891b2;
+    /* Light-tuned accents - Sophisticated Palette */
+    --accent-blue: #3b82f6;
+    --accent-blue-glow: rgba(59, 130, 246, 0.15);
+    --accent-purple: #6366f1;
+    --accent-purple-glow: rgba(99, 102, 241, 0.12);
+    --accent-cyan: #0ea5e9;
 
     /* Light semantic */
     --color-success: #059669;
@@ -93,11 +93,11 @@ html, body,
     --color-warning: #d97706;
 
     /* Light-specific UI tokens */
-    --input-bg: #f1f5f9;
-    --input-border: rgba(15, 23, 42, 0.12);
-    --divider-color: rgba(15, 23, 42, 0.06);
-    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    --input-bg: #ffffff;
+    --input-border: rgba(17, 24, 39, 0.1);
+    --divider-color: rgba(17, 24, 39, 0.06);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --card-hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Specific UI Components ── */
