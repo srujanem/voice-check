@@ -1347,12 +1347,6 @@
 
 
 
-        /* Profile Leveling */
-        .level-container { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-right: 10px; }
-        @media (max-width: 768px) { .level-container { display: none; } }
-        .level-badge { background: rgba(6,182,212,0.1); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(6,182,212,0.3); }
-        .level-bar-bg { width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; position: relative; }
-        .level-bar-fill { height: 100%; background: var(--accent-cyan); width: 10%; transition: width 0.3s ease; }
 
         /* Social Proof Popups */
         #social-proof-container { position: fixed; bottom: 20px; left: 20px; z-index: 9991; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
@@ -1705,17 +1699,6 @@
         .mob-nav-item i { font-size: 18px; }
         .mob-nav-item span { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* ===== OFFLINE BANNER ===== */
-        #offline-banner {
-            position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-80px);
-            z-index: 9994; padding: 12px 24px; border-radius: 12px;
-            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
-            backdrop-filter: blur(20px); color: var(--text-primary);
-            font-size: 13px; font-weight: 600; white-space: nowrap;
-            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-            pointer-events: none;
-        }
-        #offline-banner.show { transform: translateX(-50%) translateY(0); }
 
 
 
@@ -1798,8 +1781,6 @@
         <div class="news-item"><div class="news-date">5 hrs ago</div>Enterprise security update: API v2.4 deployed.</div>
     </div>
 
-    <!-- Offline Banner -->
-    <div id="offline-banner">📡 You're offline. Some features may be unavailable.</div>
 
     <!-- Smart Search Modal -->
     <div id="smart-search-modal">
@@ -1962,10 +1943,7 @@
             <a href="#faq">FAQ</a>
             <a href="pricing.html">Pricing</a>
         </div>
-        <div class="level-container" title="Profile Level">
-            <div class="level-badge">LVL <span id="user-level">1</span></div>
-            <div class="level-bar-bg"><div class="level-bar-fill" id="user-level-bar"></div></div>
-        </div>
+
         <div class="nav-right">
             <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
 
@@ -3661,17 +3639,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
 
         // ===== WAVE 5 JS =====
         
-        // Leveling System
-        let userXP = parseInt(localStorage.getItem('user_xp') || '0');
-        const updateLevel = () => {
-            const level = Math.floor(userXP / 100) + 1;
-            const progress = userXP % 100;
-            document.getElementById('user-level').textContent = level;
-            document.getElementById('user-level-bar').style.width = progress + '%';
-        };
-        updateLevel();
-        const addXP = (amt) => { userXP += amt; localStorage.setItem('user_xp', userXP); updateLevel(); };
-        document.body.addEventListener('click', () => { if(Math.random()>0.7) addXP(2); });
 
 
 
@@ -3716,34 +3683,10 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         // News Sidebar
         document.getElementById('news-toggle')?.addEventListener('click', () => {
             document.getElementById('news-sidebar').classList.toggle('show');
-            addXP(5);
         });
 
 
 
-        // Offline T-Rex Game logic
-        const offlineBannerGame = document.getElementById('offline-banner');
-        if(offlineBannerGame) {
-            window.addEventListener('offline', () => {
-                if(!document.getElementById('trex-game')) {
-                    const g = document.createElement('div');
-                    g.id = 'trex-game';
-                    g.innerHTML = `<div class="trex-score" id="trex-score">00000</div><div id="trex-dino">🦖</div><div id="trex-cactus">🌵</div>`;
-                    offlineBannerGame.appendChild(g);
-                    offlineBannerGame.style.cursor = 'pointer';
-                    offlineBannerGame.innerHTML = '📡 You are offline. Click to play. <br>' + g.outerHTML;
-                    // Game logic is simplified for demo
-                    let isJumping = false;
-                    offlineBannerGame.addEventListener('click', () => {
-                        const dino = document.getElementById('trex-dino');
-                        if(!isJumping && dino) {
-                            isJumping = true; dino.style.transform = 'translateY(-60px)';
-                            setTimeout(() => { dino.style.transform = 'translateY(0)'; isJumping = false; }, 400);
-                        }
-                    });
-                }
-            });
-        }
 
         // ===== TIMELINE ANIMATION =====
         const timelineObs = new IntersectionObserver(entries => {
