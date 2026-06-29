@@ -209,30 +209,7 @@
             transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ===== THREAT MAP ===== */
-        .threat-map-section {
-            padding: 80px 20px; max-width: 1100px; margin: 0 auto;
-        }
-        .threat-map-container {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 32px; position: relative; overflow: hidden;
-        }
-        .threat-map-container::before {
-            content: ''; position: absolute; inset: 0; border-radius: 20px;
-            background: radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.04) 0%, transparent 70%);
-        }
-        #threat-map-canvas { width: 100%; height: 340px; display: block; border-radius: 12px; }
-        .threat-map-stats {
-            display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap;
-        }
-        .threat-map-stat {
-            flex: 1; min-width: 140px; background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px;
-            display: flex; align-items: center; gap: 12px;
-        }
-        .tms-icon { font-size: 20px; }
-        .tms-num { font-size: 20px; font-weight: 800; color: var(--text-primary); display: block; }
-        .tms-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+
 
         /* ===== FAQ SEARCH ===== */
         .faq-search-wrap {
@@ -2318,34 +2295,6 @@
         </div>
     </section>
 
-    <!-- Threat Map Section -->
-    <section class="threat-map-section">
-        <div class="section-label"><i class="fa-solid fa-globe"></i> Global Threat Intelligence</div>
-        <h2 class="section-title">Live Threat Map</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Real-time visualization of AI-generated content detections across the globe.</p>
-        <div class="threat-map-container">
-            <canvas id="threat-map-canvas"></canvas>
-            <div class="threat-map-stats">
-                <div class="threat-map-stat">
-                    <div class="tms-icon">🔴</div>
-                    <div><span class="tms-num" id="tms-active">0</span><span class="tms-label">Active Threats</span></div>
-                </div>
-                <div class="threat-map-stat">
-                    <div class="tms-icon">✅</div>
-                    <div><span class="tms-num" id="tms-blocked">0</span><span class="tms-label">Blocked Today</span></div>
-                </div>
-                <div class="threat-map-stat">
-                    <div class="tms-icon">🌍</div>
-                    <div><span class="tms-num" id="tms-countries">0</span><span class="tms-label">Countries Monitored</span></div>
-                </div>
-                <div class="threat-map-stat">
-                    <div class="tms-icon">⚡</div>
-                    <div><span class="tms-num" id="tms-speed">0ms</span><span class="tms-label">Avg. Response Time</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Before/After Demo Slider -->
     <section class="demo-section reveal">
@@ -2846,130 +2795,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                 }
             }, { threshold: 0.3 });
             if (trustSection) trustObs.observe(trustSection);
-
-            // ===== THREAT MAP =====
-            (function() {
-                const canvas = document.getElementById('threat-map-canvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                function resize() {
-                    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-                    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-                }
-                resize();
-                window.addEventListener('resize', resize);
-
-                const W = () => canvas.offsetWidth, H = () => canvas.offsetHeight;
-                // Draw world outline (simplified dot grid representing earth)
-                const hotspots = [
-                    {x:0.15,y:0.38},{x:0.18,y:0.42},{x:0.22,y:0.35},{x:0.25,y:0.50},
-                    {x:0.30,y:0.32},{x:0.35,y:0.45},{x:0.48,y:0.38},{x:0.50,y:0.30},
-                    {x:0.52,y:0.42},{x:0.55,y:0.35},{x:0.58,y:0.55},{x:0.60,y:0.48},
-                    {x:0.65,y:0.38},{x:0.68,y:0.45},{x:0.72,y:0.52},{x:0.75,y:0.40},
-                    {x:0.80,y:0.35},{x:0.82,y:0.48},{x:0.88,y:0.42},{x:0.90,y:0.55}
-                ];
-                let pulses = hotspots.map(h => ({ ...h, r: Math.random() * 20, maxR: 28 + Math.random() * 20, alpha: 0.6 + Math.random() * 0.4, speed: 0.3 + Math.random() * 0.4 }));
-                let packets = [];
-
-                function spawnPacket() {
-                    const a = hotspots[Math.floor(Math.random() * hotspots.length)];
-                    const b = hotspots[Math.floor(Math.random() * hotspots.length)];
-                    if (a !== b) packets.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, t: 0 });
-                }
-
-                function drawGrid() {
-                    const cols = 60, rows = 28;
-                    for (let c = 0; c <= cols; c++) {
-                        for (let r = 0; r <= rows; r++) {
-                            const px = (c / cols) * W(), py = (r / rows) * H();
-                            ctx.beginPath();
-                            ctx.arc(px, py, 1, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(6,182,212,0.12)';
-                            ctx.fill();
-                        }
-                    }
-                }
-
-                function draw() {
-                    ctx.clearRect(0, 0, W(), H());
-                    drawGrid();
-
-                    // Draw packets (data travel lines)
-                    packets = packets.filter(p => p.t <= 1);
-                    packets.forEach(p => {
-                        p.t += 0.008;
-                        const cx = p.ax + (p.bx - p.ax) * p.t;
-                        const cy = p.ay + (p.by - p.ay) * p.t;
-                        // trail line
-                        ctx.beginPath();
-                        ctx.moveTo(p.ax * W(), p.ay * H());
-                        ctx.lineTo(cx * W(), cy * H());
-                        ctx.strokeStyle = 'rgba(139,92,246,0.25)';
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                        // packet dot
-                        ctx.beginPath();
-                        ctx.arc(cx * W(), cy * H(), 3, 0, Math.PI * 2);
-                        ctx.fillStyle = '#8b5cf6';
-                        ctx.fill();
-                    });
-
-                    // Draw hotspots
-                    pulses.forEach(p => {
-                        p.r += p.speed;
-                        if (p.r > p.maxR) { p.r = 0; p.alpha = 0.6 + Math.random() * 0.4; }
-                        // outer ring
-                        ctx.beginPath();
-                        ctx.arc(p.x * W(), p.y * H(), p.r, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(239,68,68,${0.5 * (1 - p.r / p.maxR)})`;
-                        ctx.lineWidth = 1.5;
-                        ctx.stroke();
-                        // core dot
-                        ctx.beginPath();
-                        ctx.arc(p.x * W(), p.y * H(), 4, 0, Math.PI * 2);
-                        ctx.fillStyle = '#ef4444';
-                        ctx.shadowBlur = 10;
-                        ctx.shadowColor = '#ef4444';
-                        ctx.fill();
-                        ctx.shadowBlur = 0;
-                    });
-
-                    requestAnimationFrame(draw);
-                }
-                draw();
-                setInterval(spawnPacket, 1200);
-
-                // Animate threat map stats
-                function animTMS(id, target, suffix) {
-                    let v = 0;
-                    const timer = setInterval(() => {
-                        v += Math.ceil(target / 60);
-                        if (v >= target) { v = target; clearInterval(timer); }
-                        document.getElementById(id).textContent = v.toLocaleString() + suffix;
-                    }, 25);
-                }
-                const tmsObs = new IntersectionObserver(entries => {
-                    if (entries[0].isIntersecting) {
-                        animTMS('tms-active', 1247, '');
-                        animTMS('tms-blocked', 84320, '');
-                        animTMS('tms-countries', 138, '');
-                        document.getElementById('tms-speed').textContent = '142ms';
-                        tmsObs.disconnect();
-                    }
-                }, { threshold: 0.3 });
-                const tmsSec = document.querySelector('.threat-map-section');
-                if (tmsSec) tmsObs.observe(tmsSec);
-
-                // Keep active threats ticking
-                setInterval(() => {
-                    const el = document.getElementById('tms-active');
-                    if (el && parseInt(el.textContent) > 0) {
-                        const cur = parseInt(el.textContent.replace(/,/g,''));
-                        el.textContent = (cur + (Math.random() > 0.5 ? 1 : -1)).toLocaleString();
-                    }
-                }, 2000);
-            })();
 
             // ===== FAQ LIVE SEARCH =====
             const faqSearch = document.getElementById('faq-search');
