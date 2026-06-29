@@ -956,44 +956,6 @@
         }
         .cookie-decline:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
-        /* ===== SPOT THE FAKE GAME ===== */
-        .game-section {
-            padding: 80px 20px; max-width: 1100px; margin: 0 auto;
-        }
-        .game-box {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 40px; text-align: center;
-        }
-        .game-cards {
-            display: flex; gap: 24px; margin: 32px 0; justify-content: center; flex-wrap: wrap;
-        }
-        .game-card {
-            flex: 1; min-width: 220px; max-width: 300px;
-            background: var(--bg-hover); border: 2px solid var(--border-color);
-            border-radius: 16px; padding: 32px 20px; cursor: pointer;
-            transition: all 0.3s ease; position: relative; overflow: hidden;
-        }
-        .game-card:hover { transform: translateY(-6px); border-color: rgba(6,182,212,0.5); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
-        .game-card-icon { font-size: 56px; margin-bottom: 16px; display: block; }
-        .game-card-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
-        .game-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-        .game-card.correct { border-color: #10b981 !important; background: rgba(16,185,129,0.08) !important; animation: correctPop 0.4s ease; }
-        .game-card.wrong { border-color: #ef4444 !important; background: rgba(239,68,68,0.08) !important; animation: wrongShake 0.4s ease; }
-        @keyframes correctPop { 0%,100%{transform:scale(1)}50%{transform:scale(1.06)} }
-        @keyframes wrongShake { 0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)} }
-        .game-result {
-            padding: 20px; border-radius: 14px; margin-top: 12px;
-            font-size: 15px; font-weight: 600; display: none;
-        }
-        .game-result.show { display: block; animation: fadeIn 0.4s ease; }
-        .game-score { font-size: 22px; font-weight: 800; color: var(--accent-cyan); margin-top: 12px; }
-        .game-next-btn {
-            padding: 12px 28px; border: none; border-radius: 12px; margin-top: 16px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            color: white; font-size: 14px; font-weight: 700; font-family: inherit;
-            cursor: pointer; transition: all 0.3s;
-        }
-        .game-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,182,212,0.4); }
 
         /* ===== KEYBOARD SHORTCUT MODAL ===== */
         #shortcuts-modal {
@@ -1335,39 +1297,6 @@
         .c-kw { color: #c678dd; } .c-str { color: #98c379; } .c-num { color: #d19a66; }
         .c-fn { color: #61afef; } .c-key { color: #e06c75; } .c-cmt { color: #5c6370; font-style: italic; }
 
-        /* ===== TYPING CHALLENGE ===== */
-        .typing-section { padding: 80px 20px; max-width: 800px; margin: 0 auto; }
-        .typing-box {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 36px;
-        }
-        .typing-display {
-            font-size: 18px; line-height: 1.8; color: var(--text-secondary); margin-bottom: 20px;
-            letter-spacing: 0.3px; position: relative; user-select: none;
-        }
-        .typing-display .typed { color: var(--accent-cyan); }
-        .typing-display .current { border-bottom: 2px solid var(--accent-cyan); color: var(--text-primary); }
-        .typing-display .error { color: #ef4444; background: rgba(239,68,68,0.1); border-radius: 2px; }
-        .typing-input-hidden { position: absolute; opacity: 0; pointer-events: none; }
-        .typing-stats { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
-        .typing-stat-val { font-size: 28px; font-weight: 800; color: var(--accent-cyan); }
-        .typing-stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
-        .typing-verdict-bar { margin-top: 20px; padding: 16px; border-radius: 12px; display: none; }
-        .typing-verdict-bar.show { display: block; animation: fadeIn 0.4s ease; }
-
-        /* ===== EMOJI REACTIONS ===== */
-        .emoji-reactions {
-            display: flex; gap: 8px; align-items: center; margin-top: 20px; flex-wrap: wrap;
-        }
-        .emoji-react {
-            padding: 6px 12px; border-radius: 20px;
-            border: 1px solid var(--border-color); background: var(--bg-hover);
-            font-size: 16px; cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .emoji-react:hover { transform: scale(1.15); border-color: rgba(6,182,212,0.4); }
-        .emoji-react.reacted { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.4); }
-        .emoji-react span { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
 
         /* ===== ANIMATED GRADIENT BORDERS ===== */
         @property --border-angle {
@@ -1448,51 +1377,6 @@
         .spotlight-card:hover::before { opacity: 1; }
         .spotlight-card > * { position: relative; z-index: 1; }
 
-        /* Heatmap Analyzer */
-        .heatmap-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; font-size: 14px; line-height: 1.8; color: var(--text-secondary); min-height: 150px; }
-        .heatmap-word.ai { background: rgba(239,68,68,0.2); color: #fca5a5; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #ef4444; }
-        .heatmap-word.sus { background: rgba(245,158,11,0.2); color: #fcd34d; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #f59e0b; }
-        .heatmap-word.human { background: rgba(16,185,129,0.2); color: #6ee7b7; border-radius: 3px; padding: 0 2px; border-bottom: 1px solid #10b981; }
-        
-        /* Spot the Fake Slider */
-        .slider-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; border-radius: 16px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--border-color); }
-        .slider-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        .slider-overlay { position: absolute; inset: 0; width: 50%; overflow: hidden; }
-        .slider-overlay img { width: 600px; height: 100%; object-fit: cover; }
-        .slider-handle { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--accent-cyan); cursor: ew-resize; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 10; }
-        .slider-handle-btn { width: 32px; height: 32px; background: var(--accent-cyan); border-radius: 50%; color: #000; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 0 10px rgba(6,182,212,0.5); }
-        .slider-label { position: absolute; bottom: 12px; padding: 4px 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border-radius: 6px; font-size: 12px; font-weight: 700; color: #fff; z-index: 5; border: 1px solid rgba(255,255,255,0.2); }
-        .slider-label.left { left: 12px; } .slider-label.right { right: 12px; }
-
-        /* Webcam Scanner */
-        .webcam-container { width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 4/3; background: #000; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border-color); }
-        #webcam-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-        .webcam-hud { position: absolute; inset: 0; pointer-events: none; border: 2px solid transparent; transition: all 0.3s; }
-        .webcam-hud.scanning { border-color: rgba(6,182,212,0.5); background: linear-gradient(180deg, transparent 0%, rgba(6,182,212,0.1) 50%, transparent 100%); background-size: 100% 200%; animation: scanLine 2s linear infinite; }
-        @keyframes scanLine { 0% { background-position: 0 -100%; } 100% { background-position: 0 200%; } }
-        .face-box { position: absolute; top: 20%; left: 25%; width: 50%; height: 60%; border: 2px dashed rgba(6,182,212,0.8); display: none; box-shadow: 0 0 20px rgba(6,182,212,0.2) inset; }
-        .webcam-hud.scanning .face-box { display: block; animation: pulseBox 1s infinite alternate; }
-        @keyframes pulseBox { to { border-color: rgba(6,182,212,0.3); transform: scale(1.02); } }
-        .webcam-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; padding: 10px 20px; }
-
-        /* Threat Globe Placeholder */
-        .threat-globe { width: 300px; height: 300px; margin: 0 auto; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #1a1a2e, #0a0a0f); border: 1px solid rgba(6,182,212,0.3); position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(6,182,212,0.1) inset; display: flex; align-items: center; justify-content: center; }
-        .globe-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(6,182,212,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.2) 1px, transparent 1px); background-size: 20px 20px; border-radius: 50%; animation: rotateGlobe 20s linear infinite; }
-        @keyframes rotateGlobe { from { background-position: 0 0; } to { background-position: 20px 20px; } }
-        .globe-ping { position: absolute; width: 6px; height: 6px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444; }
-        .globe-ping::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; border-radius: 50%; border: 1px solid #ef4444; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
-
-        /* Scratch Card */
-        .scratch-card-wrap { position: relative; width: 300px; height: 150px; margin: 0 auto; border-radius: 12px; overflow: hidden; }
-        .scratch-content { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)); border: 1px solid var(--accent-cyan); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; }
-        .scratch-code { font-size: 24px; font-family: monospace; font-weight: 800; color: #fff; letter-spacing: 2px; }
-        .scratch-canvas { position: absolute; inset: 0; z-index: 5; cursor: crosshair; }
-
-        /* Spin the Wheel */
-        .wheel-container { position: relative; width: 200px; height: 200px; margin: 0 auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--border-color); background: conic-gradient(var(--bg-hover) 0 60deg, var(--bg-card) 60deg 120deg, var(--bg-hover) 120deg 180deg, rgba(6,182,212,0.2) 180deg 240deg, var(--bg-hover) 240deg 300deg, var(--bg-card) 300deg 360deg); transition: transform 4s cubic-bezier(0.1, 2.7, 0.58, 1); }
-        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--accent-cyan); z-index: 10; }
-        .wheel-btn { margin-top: 20px; }
 
         /* T-Rex Offline */
         #trex-game { display: none; width: 100%; height: 150px; background: #111; border-radius: 12px; border: 1px solid var(--border-color); position: relative; overflow: hidden; margin-top: 10px; cursor: pointer; }
@@ -2512,20 +2396,6 @@
         </div>
     </section>
 
-    <!-- Spot the Fake Game -->
-    <section class="game-section reveal">
-        <div class="section-label"><i class="fa-solid fa-gamepad"></i> Interactive Challenge</div>
-        <h2 class="section-title">Spot the Fake!</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Think you can tell AI from real? Test your skills below.</p>
-        <div class="game-box">
-            <div id="game-question" style="font-size:15px;font-weight:600;color:var(--text-primary);">Which of these was written by an AI?</div>
-            <div class="game-cards" id="game-cards"></div>
-            <div class="game-result" id="game-result"></div>
-            <div class="game-score" id="game-score">Score: 0 / 0</div>
-        </div>
-    </section>
-
     <!-- Try It Live -->
     <section class="try-section reveal">
         <div class="section-label"><i class="fa-solid fa-flask"></i> Instant Demo</div>
@@ -2689,104 +2559,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
 
 <span class="c-cmt"># Response:</span>
 <span class="c-cmt"># { "is_ai": true, "score": 0.94, "model": "gpt-4" }</span></pre>
-        </div>
-    </section>
-
-    <!-- Typing Speed Challenge -->
-    <section class="typing-section reveal">
-        <div class="section-label"><i class="fa-solid fa-keyboard"></i> Human Verification</div>
-        <h2 class="section-title">Type Like a Human</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Type the text below — we analyze your patterns to see if you type like a real human or a bot.</p>
-        <div class="typing-box" id="typing-box" tabindex="0">
-            <div class="typing-display" id="typing-display"></div>
-            <input type="text" class="typing-input-hidden" id="typing-input" autocomplete="off" autocorrect="off" spellcheck="false">
-            <div class="typing-stats">
-                <div><div class="typing-stat-val" id="type-wpm">0</div><div class="typing-stat-label">WPM</div></div>
-                <div><div class="typing-stat-val" id="type-acc">100%</div><div class="typing-stat-label">Accuracy</div></div>
-                <div><div class="typing-stat-val" id="type-iq" style="color:#f59e0b">?</div><div class="typing-stat-label">Human Score</div></div>
-            </div>
-            <div class="typing-verdict-bar" id="type-verdict"></div>
-        </div>
-    </section>
-
-    <!-- Threat Globe Section -->
-    <section class="game-section reveal">
-        <div class="section-label"><i class="fa-solid fa-earth-americas"></i> Live Threats</div>
-        <h2 class="section-title">Global Interceptions</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Real-time simulation of deepfakes being blocked worldwide.</p>
-        <div class="threat-globe" id="threat-globe">
-            <div class="globe-grid"></div>
-        </div>
-    </section>
-
-    <!-- Webcam Scanner -->
-    <section class="game-section reveal">
-        <div class="section-label"><i class="fa-solid fa-camera"></i> Live Scan</div>
-        <h2 class="section-title">Webcam Biometrics</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Simulate a real-time deepfake facial scan using your camera.</p>
-        <div class="webcam-container">
-            <video id="webcam-video" autoplay muted playsinline></video>
-            <div class="webcam-hud" id="webcam-hud">
-                <div class="face-box"></div>
-            </div>
-            <button class="btn-primary webcam-btn" id="webcam-start-btn"><i class="fa-solid fa-video"></i> Start Scan</button>
-        </div>
-    </section>
-
-    <!-- Spot the Fake Slider -->
-    <section class="game-section reveal">
-        <div class="section-label"><i class="fa-solid fa-images"></i> Compare</div>
-        <h2 class="section-title">Spot the Fake</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Drag the slider to compare a real photo with an AI generation.</p>
-        <div class="slider-container" id="img-slider">
-            <div class="slider-img" style="background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover;"></div>
-            <div class="slider-overlay" id="slider-overlay">
-                <div style="width:600px;height:100%;background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; filter: hue-rotate(45deg) saturate(1.5);"></div>
-            </div>
-            <div class="slider-handle" id="slider-handle"><div class="slider-handle-btn"><i class="fa-solid fa-arrows-left-right"></i></div></div>
-            <div class="slider-label left">AI Generated</div>
-            <div class="slider-label right">Authentic</div>
-        </div>
-    </section>
-
-    <!-- Text Heatmap Analyzer -->
-    <section class="game-section reveal">
-        <div class="section-label"><i class="fa-solid fa-fire"></i> Heatmap</div>
-        <h2 class="section-title">Text Analyzer</h2>
-        <div class="section-glow-divider"></div>
-        <p class="section-subtitle">Paste text to see AI probability per word.</p>
-        <div style="max-width: 600px; margin: 0 auto; text-align: left;">
-            <textarea id="heatmap-input" style="width:100%;height:100px;background:var(--bg-card);border:1px solid var(--border-color);color:#fff;padding:12px;border-radius:12px;margin-bottom:12px;font-family:inherit;" placeholder="Paste an article here..."></textarea>
-            <button class="btn-primary" id="heatmap-btn" style="width:100%;margin-bottom:20px;">Generate Heatmap</button>
-            <div class="heatmap-box" id="heatmap-output">Analysis will appear here. Red = AI, Yellow = Suspicious, Green = Human.</div>
-        </div>
-    </section>
-
-    <!-- Rewards Section -->
-    <section class="game-section reveal" style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:900px;margin:0 auto;padding:60px 20px;">
-        <!-- Scratch Card -->
-        <div style="flex:1;min-width:300px;">
-            <h3 style="font-size:16px;margin-bottom:16px;text-align:center;"><i class="fa-solid fa-ticket"></i> Scratch for 50% Off</h3>
-            <div class="scratch-card-wrap">
-                <div class="scratch-content">
-                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">PROMO CODE</div>
-                    <div class="scratch-code">AUTH50</div>
-                </div>
-                <canvas class="scratch-canvas" id="scratch-canvas" width="300" height="150"></canvas>
-            </div>
-        </div>
-        <!-- Spin the Wheel -->
-        <div style="flex:1;min-width:300px;text-align:center;">
-            <h3 style="font-size:16px;margin-bottom:16px;"><i class="fa-solid fa-dharmachakra"></i> Daily Spin</h3>
-            <div class="wheel-container">
-                <div class="wheel-pointer"></div>
-                <div class="wheel" id="spin-wheel"></div>
-            </div>
-            <button class="btn-secondary wheel-btn" id="spin-btn">Spin to Win</button>
         </div>
     </section>
 
@@ -3556,69 +3328,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             sliderClip.style.width = '50%';
         }
 
-        // ===== SPOT THE FAKE GAME =====
-        const gameData = [
-            {
-                q: 'Which of these was written by an AI?',
-                cards: [
-                    { icon: '🤖', title: 'Option A', desc: 'The utilization of advanced algorithmic frameworks facilitates the optimization of multifaceted computational paradigms.', isAI: true },
-                    { icon: '✍️', title: 'Option B', desc: 'She grabbed her keys off the counter, noticed they were cold, and wondered how long she\'d been standing there.', isAI: false }
-                ]
-            },
-            {
-                q: 'Which image description sounds AI-generated?',
-                cards: [
-                    { icon: '📷', title: 'Photo A', desc: 'A candid shot of my nephew at the beach, slightly blurry because he wouldn\'t stop moving.', isAI: false },
-                    { icon: '🎨', title: 'Photo B', desc: 'A hyper-realistic digital artwork of a futuristic cityscape at golden hour with intricate architectural details.', isAI: true }
-                ]
-            },
-            {
-                q: 'Which audio clip is more likely AI-generated?',
-                cards: [
-                    { icon: '🎙️', title: 'Voice A', desc: 'Clear, perfectly modulated speech with zero background noise, impeccable pacing and no hesitations whatsoever.', isAI: true },
-                    { icon: '🗣️', title: 'Voice B', desc: 'Someone recording a voice note — you can hear them clear their throat and pause to think mid-sentence.', isAI: false }
-                ]
-            }
-        ];
-        let gameIdx = 0, gameScore = 0, gamePlayed = 0, gameAnswered = false;
-        function loadGameRound() {
-            const round = gameData[gameIdx % gameData.length];
-            gameAnswered = false;
-            document.getElementById('game-question').textContent = round.q;
-            const container = document.getElementById('game-cards');
-            container.innerHTML = '';
-            document.getElementById('game-result').className = 'game-result';
-            round.cards.forEach((card, i) => {
-                const div = document.createElement('div');
-                div.className = 'game-card';
-                div.innerHTML = `<span class="game-card-icon">${card.icon}</span><div class="game-card-title">${card.title}</div><div class="game-card-desc">${card.desc}</div>`;
-                div.addEventListener('click', () => {
-                    if (gameAnswered) return;
-                    gameAnswered = true; gamePlayed++;
-                    const res = document.getElementById('game-result');
-                    if (card.isAI) {
-                        gameScore++;
-                        div.classList.add('correct');
-                        res.style.background = 'rgba(16,185,129,0.1)';
-                        res.style.border = '1px solid rgba(16,185,129,0.3)';
-                        res.innerHTML = `✅ <strong>Correct!</strong> That was AI-generated. Your pattern recognition is spot on!<br><button class="game-next-btn" onclick="nextGameRound()">Next Round →</button>`;
-                    } else {
-                        const aiCard = container.children[round.cards.findIndex(c => c.isAI)];
-                        if(aiCard) aiCard.classList.add('correct');
-                        div.classList.add('wrong');
-                        res.style.background = 'rgba(239,68,68,0.1)';
-                        res.style.border = '1px solid rgba(239,68,68,0.3)';
-                        res.innerHTML = `❌ <strong>Not quite!</strong> That was written by a human. The other option was the AI. Keep practicing!<br><button class="game-next-btn" onclick="nextGameRound()">Try Again →</button>`;
-                    }
-                    res.classList.add('show');
-                    document.getElementById('game-score').textContent = `Score: ${gameScore} / ${gamePlayed}`;
-                });
-                container.appendChild(div);
-            });
-        }
-        window.nextGameRound = function() { gameIdx = (gameIdx + 1) % gameData.length; loadGameRound(); };
-        loadGameRound();
-
         // ===== TRY IT LIVE =====
         const tryBtn = document.getElementById('try-btn');
         const tryTextarea = document.getElementById('try-textarea');
@@ -3840,11 +3549,8 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         const unlockedAch = new Set(JSON.parse(localStorage.getItem('achievements') || '[]'));
         const achievements = {
             firstScroll: { icon: '📜', title: 'Achievement Unlocked', name: 'Explorer', sub: 'You scrolled the page!' },
-            firstQuiz: { icon: '🧠', title: 'Achievement Unlocked', name: 'Quiz Taker', sub: 'Completed a quiz!' },
             nightOwl: { icon: '🌙', title: 'Achievement Unlocked', name: 'Night Owl', sub: 'Toggled dark mode' },
-            themeChanger: { icon: '🎨', title: 'Achievement Unlocked', name: 'Stylist', sub: 'Changed the accent color' },
             konamiKing: { icon: '🕹️', title: 'Achievement Unlocked', name: 'Konami King', sub: 'Found the Easter egg!' },
-            typingPro: { icon: '⌨️', title: 'Achievement Unlocked', name: 'Typing Pro', sub: 'Typed 40+ WPM!' },
         };
         function unlockAchievement(key) {
             if (unlockedAch.has(key)) return;
@@ -3946,100 +3652,7 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             }
         });
 
-        // ===== LOCATION DETECTION =====
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async pos => {
-                try {
-                    const { latitude, longitude } = pos.coords;
-                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                    const d = await r.json();
-                    const city = d.address.city || d.address.town || d.address.state || 'your area';
-                    document.getElementById('location-city').textContent = city;
-                    document.getElementById('location-banner').classList.add('show');
-                } catch(e) {}
-            }, () => {});
-        }
 
-        // ===== TYPING CHALLENGE =====
-        const typingTexts = [
-            'The quick brown fox jumps over the lazy dog near the river bank every single morning.',
-            'Artificial intelligence cannot yet replicate the beautiful chaos of human thought.',
-            'AuthGuard protects the truth in a world flooded with synthetic voices and faces.'
-        ];
-        let typingTarget = typingTexts[Math.floor(Math.random() * typingTexts.length)];
-        let typingPos = 0, typingErrors = 0, typingStartTime = null, typingDone = false;
-        function renderTyping() {
-            const display = document.getElementById('typing-display');
-            if (!display) return;
-            let html = '';
-            for (let i = 0; i < typingTarget.length; i++) {
-                if (i < typingPos) html += `<span class="typed">${typingTarget[i]}</span>`;
-                else if (i === typingPos) html += `<span class="current">${typingTarget[i]}</span>`;
-                else html += typingTarget[i];
-            }
-            display.innerHTML = html;
-        }
-        renderTyping();
-        const typingBox = document.getElementById('typing-box');
-        const typingInput = document.getElementById('typing-input');
-        if (typingBox && typingInput) {
-            typingBox.addEventListener('click', () => typingInput.focus());
-            typingInput.addEventListener('keydown', e => {
-                if (typingDone) return;
-                if (!typingStartTime) typingStartTime = Date.now();
-                if (e.key === 'Backspace') { if (typingPos > 0) typingPos--; renderTyping(); return; }
-                if (e.key.length !== 1) return;
-                const expected = typingTarget[typingPos];
-                if (e.key !== expected) typingErrors++;
-                typingPos = Math.min(typingPos + 1, typingTarget.length);
-                renderTyping();
-                // Stats
-                const elapsed = (Date.now() - typingStartTime) / 60000;
-                const wpm = elapsed > 0 ? Math.round((typingPos / 5) / elapsed) : 0;
-                const acc = Math.max(0, Math.round(((typingPos - typingErrors) / typingPos) * 100));
-                document.getElementById('type-wpm').textContent = wpm;
-                document.getElementById('type-acc').textContent = acc + '%';
-                const humanScore = Math.min(99, Math.max(10, acc * 0.6 + Math.min(wpm, 80) * 0.5));
-                document.getElementById('type-iq').textContent = Math.round(humanScore) + '%';
-                if (typingPos >= typingTarget.length) {
-                    typingDone = true;
-                    const verdict = document.getElementById('type-verdict');
-                    const isHuman = humanScore > 50;
-                    verdict.style.background = isHuman ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
-                    verdict.style.border = isHuman ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)';
-                    verdict.innerHTML = isHuman
-                        ? `✅ <strong>Human Detected!</strong> WPM: ${wpm}, Accuracy: ${acc}%. Your typing pattern is organic and natural.`
-                        : `⚠️ <strong>Bot-like Pattern!</strong> Very fast or very slow typing can indicate automation.`;
-                    verdict.classList.add('show');
-                    if (wpm >= 40) unlockAchievement('typingPro');
-                    unlockAchievement('firstQuiz');
-                }
-            });
-        }
-
-        // ===== EMOJI REACTIONS =====
-        const reactionSections = document.querySelectorAll('.game-section, .try-section, .quiz-section');
-        reactionSections.forEach(section => {
-            const emojiBar = document.createElement('div');
-            emojiBar.className = 'emoji-reactions';
-            const emojis = [['🔥','Fire'], ['😮','Wow'], ['👏','Clap'], ['🤔','Think'], ['💎','Gem']];
-            const key = section.className.split(' ')[0];
-            emojis.forEach(([emoji, label]) => {
-                const stored = parseInt(localStorage.getItem(`react_${key}_${emoji}`) || String(Math.floor(Math.random()*20)+5));
-                const btn = document.createElement('button');
-                btn.className = 'emoji-react';
-                btn.innerHTML = `${emoji} <span>${stored}</span>`;
-                btn.addEventListener('click', () => {
-                    const reacted = btn.classList.toggle('reacted');
-                    const current = parseInt(btn.querySelector('span').textContent);
-                    const newVal = reacted ? current + 1 : current - 1;
-                    btn.querySelector('span').textContent = newVal;
-                    localStorage.setItem(`react_${key}_${emoji}`, newVal);
-                });
-                emojiBar.appendChild(btn);
-            });
-            section.appendChild(emojiBar);
-        });
 
         // ===== WAVE 5 JS =====
         
@@ -4101,134 +3714,7 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             addXP(5);
         });
 
-        // Threat Globe Pings
-        const globe = document.getElementById('threat-globe');
-        if (globe) {
-            setInterval(() => {
-                const ping = document.createElement('div');
-                ping.className = 'globe-ping';
-                ping.style.left = `${10 + Math.random()*80}%`;
-                ping.style.top = `${10 + Math.random()*80}%`;
-                globe.appendChild(ping);
-                setTimeout(() => ping.remove(), 2000);
-            }, 1200);
-        }
 
-        // Spot the Fake Slider
-        const slider = document.getElementById('img-slider');
-        const overlay = document.getElementById('slider-overlay');
-        const handle = document.getElementById('slider-handle');
-        if (slider) {
-            let isDown = false;
-            const moveSlider = (e) => {
-                if(!isDown) return;
-                const rect = slider.getBoundingClientRect();
-                let x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-                x = Math.max(0, Math.min(x, rect.width));
-                const pct = (x / rect.width) * 100;
-                overlay.style.width = `${pct}%`;
-                handle.style.left = `${pct}%`;
-            };
-            handle.addEventListener('mousedown', () => isDown = true);
-            slider.addEventListener('mouseup', () => isDown = false);
-            slider.addEventListener('mouseleave', () => isDown = false);
-            slider.addEventListener('mousemove', moveSlider);
-            slider.addEventListener('touchstart', () => isDown = true);
-            slider.addEventListener('touchend', () => isDown = false);
-            slider.addEventListener('touchmove', moveSlider);
-        }
-
-        // Heatmap Analyzer
-        const heatBtn = document.getElementById('heatmap-btn');
-        if(heatBtn) {
-            heatBtn.addEventListener('click', () => {
-                const val = document.getElementById('heatmap-input').value;
-                if(!val) return showToast('error', 'Paste some text first!');
-                heatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
-                setTimeout(() => {
-                    const words = val.split(' ');
-                    const out = words.map(w => {
-                        const r = Math.random();
-                        if(r < 0.2) return `<span class="heatmap-word ai" data-tip="98% AI Prob">${w}</span>`;
-                        if(r < 0.4) return `<span class="heatmap-word sus" data-tip="65% Suspicious">${w}</span>`;
-                        return `<span class="heatmap-word human" data-tip="99% Human">${w}</span>`;
-                    }).join(' ');
-                    document.getElementById('heatmap-output').innerHTML = out;
-                    heatBtn.innerHTML = 'Generate Heatmap';
-                    addXP(25);
-                }, 1500);
-            });
-        }
-
-        // Webcam Scanner
-        const webBtn = document.getElementById('webcam-start-btn');
-        const videoEl = document.getElementById('webcam-video');
-        const hudEl = document.getElementById('webcam-hud');
-        if(webBtn) {
-            webBtn.addEventListener('click', async () => {
-                if(!navigator.mediaDevices) return showToast('error', 'Webcam not supported.');
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    videoEl.srcObject = stream;
-                    webBtn.style.display = 'none';
-                    hudEl.classList.add('scanning');
-                    showToast('info', 'Analyzing facial biometrics...');
-                    setTimeout(() => {
-                        const stream = videoEl.srcObject;
-                        const tracks = stream.getTracks();
-                        tracks.forEach(track => track.stop());
-                        videoEl.srcObject = null;
-                        hudEl.classList.remove('scanning');
-                        webBtn.style.display = 'block';
-                        webBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Scan Again';
-                        showToast('success', '✅ Liveness Confirmed. 99.8% Human match.');
-                        addXP(50);
-                    }, 5000);
-                } catch(e) {
-                    showToast('error', 'Camera access denied.');
-                }
-            });
-        }
-
-        // Scratch Card
-        const sCanvas = document.getElementById('scratch-canvas');
-        if(sCanvas) {
-            const ctx = sCanvas.getContext('2d');
-            ctx.fillStyle = '#94a3b8'; ctx.fillRect(0,0,300,150);
-            ctx.font = '20px sans-serif'; ctx.fillStyle = '#cbd5e1'; ctx.textAlign = 'center';
-            ctx.fillText('Scratch Here', 150, 80);
-            let isScratching = false;
-            const scratch = (e) => {
-                if(!isScratching) return;
-                const rect = sCanvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI*2); ctx.fill();
-            };
-            sCanvas.addEventListener('mousedown', () => isScratching = true);
-            sCanvas.addEventListener('mouseup', () => { isScratching = false; addXP(10); });
-            sCanvas.addEventListener('mousemove', scratch);
-            sCanvas.addEventListener('touchstart', () => isScratching = true);
-            sCanvas.addEventListener('touchend', () => isScratching = false);
-            sCanvas.addEventListener('touchmove', scratch);
-        }
-
-        // Spin Wheel
-        const spinBtn = document.getElementById('spin-btn');
-        if(spinBtn) {
-            let rotation = 0;
-            spinBtn.addEventListener('click', () => {
-                rotation += 1800 + Math.floor(Math.random() * 360);
-                document.getElementById('spin-wheel').style.transform = `rotate(${rotation}deg)`;
-                spinBtn.disabled = true;
-                setTimeout(() => {
-                    spinBtn.disabled = false;
-                    showToast('success', '🎁 You won a 20% discount on Pro!');
-                    addXP(20);
-                }, 4000);
-            });
-        }
 
         // Offline T-Rex Game logic
         const offlineBannerGame = document.getElementById('offline-banner');
