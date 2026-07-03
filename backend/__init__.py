@@ -23,6 +23,8 @@ def create_app():
     from backend.routes.url_routes import url_bp
     from backend.routes.watermark_routes import watermark_bp
     from backend.routes.history_routes import history_bp
+    from backend.routes.external_db_routes import external_db_bp
+    from backend.routes.admin_routes import admin_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -31,6 +33,8 @@ def create_app():
     app.register_blueprint(url_bp)
     app.register_blueprint(watermark_bp)
     app.register_blueprint(history_bp)
+    app.register_blueprint(external_db_bp)
+    app.register_blueprint(admin_bp)
 
     @app.route("/", methods=["GET"])
     def home():

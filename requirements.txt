@@ -8,3 +8,4 @@ tensorflow
 gunicorn
 beautifulsoup4
 firebase-admin
+requests

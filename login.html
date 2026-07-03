@@ -117,6 +117,61 @@
             transition: color 0.2s;
         }
         .back-link:hover { color: var(--text-primary); }
+
+        /* ── External Database Section ── */
+        .ext-db-divider {
+            text-align: center; margin: 28px 0 18px; color: var(--text-secondary);
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+            position: relative;
+        }
+        .ext-db-divider::before, .ext-db-divider::after {
+            content: ""; position: absolute; top: 50%; width: 28%; height: 1px;
+            background: var(--border-color);
+        }
+        .ext-db-divider::before { left: 0; }
+        .ext-db-divider::after { right: 0; }
+
+        .ext-db-toggle {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--bg-hover); color: var(--text-secondary);
+            border: 1px solid var(--border-color); padding: 10px 16px;
+            border-radius: 10px; cursor: pointer; font-weight: 500;
+            font-size: 13px; font-family: inherit; transition: all 0.25s ease;
+        }
+        .ext-db-toggle:hover { color: var(--text-primary); border-color: var(--accent-cyan); }
+        .ext-db-toggle .chevron { transition: transform 0.3s ease; font-size: 11px; }
+        .ext-db-toggle.open .chevron { transform: rotate(180deg); }
+
+        .ext-db-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .ext-db-body.open { max-height: 320px; opacity: 1; }
+
+        .ext-db-form { padding-top: 16px; }
+
+        .ext-db-connect-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white; font-size: 15px; font-weight: 600; font-family: inherit;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+        .ext-db-connect-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(245, 158, 11, 0.4); }
+        .ext-db-connect-btn:active { transform: translateY(0); }
+
+        .ext-db-status {
+            margin-top: 12px; padding: 8px 12px; border-radius: 8px;
+            font-size: 12px; text-align: center; display: none;
+        }
+        .ext-db-status.success {
+            display: block; color: #22c55e;
+            background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.15);
+        }
+        .ext-db-status.error {
+            display: block; color: #ef4444;
+            background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -160,6 +215,30 @@
 
             <div class="auth-footer">
                 <a href="pricing.html">View Enterprise Plans</a>
+            </div>
+
+            <!-- ── External Database Connection ── -->
+            <div class="ext-db-divider">External Database</div>
+
+            <button type="button" class="ext-db-toggle" id="ext-db-toggle">
+                <i class="fa-solid fa-database"></i>
+                Connect to Friend's Database
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </button>
+
+            <div class="ext-db-body" id="ext-db-body">
+                <div class="ext-db-form">
+                    <div class="form-group">
+                        <label>Server URL</label>
+                        <input type="url" id="ext-db-url" placeholder="https://xxxxx.shares.zrok.io">
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" id="ext-db-key" placeholder="Enter your friend's API key">
+                    </div>
+                    <button type="button" class="ext-db-connect-btn" id="ext-db-connect">Connect</button>
+                    <div class="ext-db-status" id="ext-db-status"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -261,6 +340,73 @@
                 btnGoogle.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 18px;"> Continue with Google';
             }
         };
+    </script>
+
+    <!-- External Database connection logic (non-module) -->
+    <script>
+        (function () {
+            const toggle = document.getElementById('ext-db-toggle');
+            const body   = document.getElementById('ext-db-body');
+            const urlIn  = document.getElementById('ext-db-url');
+            const keyIn  = document.getElementById('ext-db-key');
+            const btn    = document.getElementById('ext-db-connect');
+            const status = document.getElementById('ext-db-status');
+
+            // Toggle expand / collapse
+            toggle.addEventListener('click', function () {
+                toggle.classList.toggle('open');
+                body.classList.toggle('open');
+            });
+
+            // Auto-fill from localStorage on page load
+            const savedUrl = localStorage.getItem('external_db_url');
+            const savedKey = localStorage.getItem('external_db_api_key');
+            if (savedUrl) urlIn.value = savedUrl;
+            if (savedKey) keyIn.value = savedKey;
+
+            // Connect button handler
+            btn.addEventListener('click', async function () {
+                const baseUrl = urlIn.value.trim();
+                const apiKey  = keyIn.value.trim();
+
+                if (!baseUrl || !apiKey) {
+                    status.textContent = 'Please fill in both fields.';
+                    status.className   = 'ext-db-status error';
+                    return;
+                }
+
+                btn.textContent = 'Connecting...';
+                btn.disabled    = true;
+                status.className = 'ext-db-status';
+                status.style.display = 'none';
+
+                try {
+                    const res = await fetch('/api/external/connect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ base_url: baseUrl, api_key: apiKey })
+                    });
+
+                    if (res.ok) {
+                        localStorage.setItem('external_db_url', baseUrl);
+                        localStorage.setItem('external_db_api_key', apiKey);
+                        status.textContent = 'Connected to external database!';
+                        status.className   = 'ext-db-status success';
+                    } else {
+                        const data = await res.json().catch(() => ({}));
+                        status.textContent = data.error || 'Connection failed (HTTP ' + res.status + ').';
+                        status.className   = 'ext-db-status error';
+                    }
+                } catch (err) {
+                    console.error('External DB connect error:', err);
+                    status.textContent = 'Network error – could not reach the server.';
+                    status.className   = 'ext-db-status error';
+                } finally {
+                    btn.textContent = 'Connect';
+                    btn.disabled    = false;
+                }
+            });
+        })();
     </script>
 </body>
 </html>

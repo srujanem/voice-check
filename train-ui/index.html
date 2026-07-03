@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Training | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css">
+    <style>
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 i {
+            color: var(--accent-cyan);
+        }
+        .action-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .console {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            color: #38bdf8;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1><i class="fa-solid fa-brain"></i> Model Training Hub</h1>
+            <a href="../index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Back to Home</a>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-database"></i> External Data Pipeline</h2>
+            <p style="color: var(--text-secondary);">Sync datasets from the external Backend-as-a-Service to your local environment for training.</p>
+            <div class="action-row">
+                <button class="btn-primary" id="btn-sync"><i class="fa-solid fa-cloud-arrow-down"></i> Sync Data from External DB</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-microchip"></i> Training Engines</h2>
+            <p style="color: var(--text-secondary);">Run the local ML scripts to update the deepfake detection models.</p>
+            <div class="action-row">
+                <button class="btn-primary" id="btn-train-voice" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);"><i class="fa-solid fa-microphone"></i> Train Voice Model</button>
+                <button class="btn-primary" id="btn-train-image" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"><i class="fa-solid fa-image"></i> Train Image Model</button>
+                <button class="btn-primary" id="btn-train-text" style="background: linear-gradient(135deg, #10b981, #3b82f6);"><i class="fa-solid fa-file-lines"></i> Train Text Model</button>
+            </div>
+            
+            <div class="console" id="terminal">System initialized. Waiting for commands...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            projectId: "voicecheck-9bfec",
+            appId: "1:970751051316:web:dc05186496618c33346c61",
+            storageBucket: "voicecheck-9bfec.firebasestorage.app",
+            apiKey: "AIzaSyAKWMsWufQYipRy5kYBTE1R0bgsRBIHlVs",
+            authDomain: "voicecheck-9bfec.firebaseapp.com",
+            messagingSenderId: "970751051316",
+            measurementId: "G-2SWJD9JFZP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const term = document.getElementById('terminal');
+
+        function log(msg) {
+            term.textContent += '\n> ' + msg;
+            term.scrollTop = term.scrollHeight;
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== 'srujanem222@gmail.com') {
+                window.location.href = '../index.html'; // Kick out non-admins
+            }
+        });
+
+        async function runAdminTask(endpoint, data = {}) {
+            const token = localStorage.getItem('api_key');
+            if (!token) return log('Error: No API token found. Please login.');
+            
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const json = await res.json();
+                if (res.ok) {
+                    log('Success: ' + (json.message || JSON.stringify(json)));
+                    if (json.logs) {
+                        log(json.logs);
+                    }
+                } else {
+                    log('Error: ' + (json.error || 'Request failed.'));
+                }
+            } catch (err) {
+                log('Network Error: ' + err.message);
+            }
+        }
+
+        document.getElementById('btn-sync').onclick = () => {
+            log('Starting external data sync...');
+            runAdminTask('/api/admin/sync-data');
+        };
+
+        document.getElementById('btn-train-voice').onclick = () => {
+            log('Triggering voice model training...');
+            runAdminTask('/api/admin/train-model', { type: 'voice' });
+        };
+
+        document.getElementById('btn-train-image').onclick = () => {
+            log('Triggering image model training...');
+            runAdminTask('/api/admin/train-model', { type: 'image' });
+        };
+
+        document.getElementById('btn-train-text').onclick = () => {
+            log('Triggering text model training...');
+            runAdminTask('/api/admin/train-model', { type: 'text' });
+        };
+    </script>
+</body>
+</html>

@@ -2011,6 +2011,9 @@
                     <a href="dashboard-ui/index.html" class="dropdown-item">
                         <i class="fa-solid fa-chart-pie"></i> Pro Dashboard
                     </a>
+                    <a href="train-ui/index.html" class="dropdown-item" id="admin-train-btn" style="display:none;">
+                        <i class="fa-solid fa-brain"></i> Train Models
+                    </a>
                     <button class="dropdown-item logout" id="logout-btn">
                         <i class="fa-solid fa-right-from-bracket"></i> Sign Out
                     </button>
@@ -2024,14 +2027,13 @@
         <!-- Particles Background -->
         <div id="particles-js"></div>
 
-        <div class="hero-badge" style="position: relative; z-index: 2;"><div class="pulse-dot"></div> AI-Powered Detection Platform</div>
+        <div class="hero-badge" style="position: relative; z-index: 2;"><div class="pulse-dot"></div> AuthGuard Enterprise v3.0 Live</div>
         <header class="landing-header" style="padding: 0; position: relative; z-index: 2;">
-            <h1 data-text="AI Detection Suite" class="gradient-text-animated">AI Detection Suite</h1>
-            <p>Detecting <span class="typewriter-wrap"><span class="typewriter-word" id="typewriter-word">Voice Clones</span><span class="typewriter-cursor"></span></span> with 99% accuracy.</p>
+            <h1 data-text="AI Detection Suite" class="gradient-text-animated">Absolute Security</h1>
+            <p>Verifying <span class="typewriter-wrap"><span class="typewriter-word" id="typewriter-word">Voice Clones</span><span class="typewriter-cursor"></span></span> with 99.9% accuracy.</p>
             <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                <a href="#tools" class="btn-primary" style="display: inline-flex;"><i class="fa-solid fa-rocket"></i> Explore Tools</a>
+                <a href="#tools" class="btn-primary" style="display: inline-flex;"><i class="fa-solid fa-shield-halved"></i> Start Scanning</a>
                 <a href="dashboard-ui/index.html" class="btn-secondary" style="display: inline-flex;"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
-                <button class="voice-record-btn" id="voice-record-btn"><i class="fa-solid fa-microphone"></i> <span id="voice-btn-text">Record 5s Demo</span></button>
             </div>
         </header>
 
@@ -2712,28 +2714,27 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginArea.style.display = 'none';
-                userArea.style.display = 'block';
+                userArea.style.display = 'flex';
                 dropdownName.textContent = user.displayName || 'User';
                 dropdownEmail.textContent = user.email || '';
-                avatarTrigger.innerHTML = '';
+                
                 if (user.photoURL) {
-                    const img = document.createElement('img');
-                    img.src = user.photoURL;
-                    img.alt = 'Profile';
-                    img.className = 'user-avatar';
-                    img.referrerPolicy = 'no-referrer';
-                    avatarTrigger.appendChild(img);
+                    avatarTrigger.innerHTML = `<img src="${user.photoURL}" alt="Profile" class="user-avatar" referrerPolicy="no-referrer">`;
                 } else {
-                    const ph = document.createElement('div');
-                    ph.className = 'user-avatar-placeholder';
-                    ph.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
-                    avatarTrigger.appendChild(ph);
+                    avatarTrigger.innerHTML = `<div class="user-avatar-placeholder">${(user.displayName || user.email || 'U').charAt(0).toUpperCase()}</div>`;
                 }
+
                 localStorage.setItem('user_id', user.uid);
                 user.getIdToken().then(t => localStorage.setItem('api_key', t));
                 localStorage.setItem('user_name', user.displayName || user.email);
                 localStorage.setItem('user_photo', user.photoURL || '');
                 localStorage.setItem('user_email', user.email || '');
+
+                const adminBtn = document.getElementById('admin-train-btn');
+                if (adminBtn) {
+                    adminBtn.style.display = (user.email === 'srujanem222@gmail.com') ? 'flex' : 'none';
+                }
+                
                 showToast('success', `Welcome back, ${user.displayName || user.email}!`);
             } else {
                 loginArea.style.display = 'block';
