@@ -5,7 +5,7 @@ import requests
 
 # Add the parent directory to the path so we can import from backend
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from backend.services.external_db import external_db
+from backend.routes.external_db_routes import _get_db
 
 def ensure_dirs():
     os.makedirs("dataset/human", exist_ok=True)
@@ -14,8 +14,9 @@ def ensure_dirs():
     os.makedirs("dataset_image/fake", exist_ok=True)
 
 def sync_data():
-    if not external_db.is_configured():
-        return False, "External DB is not configured."
+    db_instance = _get_db()
+    if not db_instance.is_configured():
+        return False, "External DB is not configured. Please go to the Login page and connect to the database first!"
 
     ensure_dirs()
     log_output = []
@@ -25,7 +26,7 @@ def sync_data():
         # 'audio_dataset' and 'image_dataset'
         
         # 1. Sync Audio
-        audio_docs = external_db.list_documents("audio_dataset")
+        audio_docs = db_instance.list_documents("audio_dataset")
         if audio_docs and isinstance(audio_docs, list):
             log_output.append(f"Found {len(audio_docs)} audio documents.")
             for i, doc in enumerate(audio_docs):
@@ -47,7 +48,7 @@ def sync_data():
                         log_output.append(f"Failed to decode audio doc {i}: {e}")
         
         # 2. Sync Images
-        image_docs = external_db.list_documents("image_dataset")
+        image_docs = db_instance.list_documents("image_dataset")
         if image_docs and isinstance(image_docs, list):
             log_output.append(f"Found {len(image_docs)} image documents.")
             for i, doc in enumerate(image_docs):

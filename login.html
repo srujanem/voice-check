@@ -358,14 +358,13 @@
                 body.classList.toggle('open');
             });
 
-            // Auto-fill from localStorage on page load
+            // Auto-fill and auto-connect from localStorage on page load
             const savedUrl = localStorage.getItem('external_db_url');
             const savedKey = localStorage.getItem('external_db_api_key');
             if (savedUrl) urlIn.value = savedUrl;
             if (savedKey) keyIn.value = savedKey;
 
-            // Connect button handler
-            btn.addEventListener('click', async function () {
+            async function doConnect() {
                 const baseUrl = urlIn.value.trim();
                 const apiKey  = keyIn.value.trim();
 
@@ -378,7 +377,7 @@
                 btn.textContent = 'Connecting...';
                 btn.disabled    = true;
                 status.className = 'ext-db-status';
-                status.style.display = 'none';
+                status.style.display = 'block';
 
                 try {
                     const res = await fetch('/api/external/connect', {
@@ -405,7 +404,15 @@
                     btn.textContent = 'Connect';
                     btn.disabled    = false;
                 }
-            });
+            }
+
+            if (savedUrl && savedKey) {
+                // Silently auto-connect on load
+                doConnect();
+            }
+
+            // Connect button handler
+            btn.addEventListener('click', doConnect);
         })();
     </script>
 </body>
