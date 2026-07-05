@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Load history from localStorage
-    const historyData = JSON.parse(localStorage.getItem('voiceCheckHistory') || '[]');
+    // Load history from localStorage (key matches history.js STORAGE_KEY)
+    const historyData = JSON.parse(localStorage.getItem('ai_detection_history') || '[]');
     
     // Update Stat Cards
     const totalScans = historyData.length;
@@ -11,10 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateCount = {};
 
     historyData.forEach(item => {
-        if (item.isFake) aiCount++;
+        if (item.isAi) aiCount++;  // history.js stores 'isAi', not 'isFake'
         typeCount[item.type] = (typeCount[item.type] || 0) + 1;
         
-        const d = new Date(item.timestamp).toLocaleDateString();
+        // history.js stores 'id' as a timestamp number and 'date' as a locale string
+        const d = new Date(item.id).toLocaleDateString();
         dateCount[d] = (dateCount[d] || 0) + 1;
     });
 
@@ -118,22 +119,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if (historyData.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-secondary);">No scans recorded yet.</td></tr>';
     } else {
-        // Sort newest first, take top 10
-        const sortedHistory = [...historyData].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+        // Sort newest first (id = Date.now()), take top 10
+        const sortedHistory = [...historyData].sort((a, b) => b.id - a.id).slice(0, 10);
         sortedHistory.forEach(item => {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
-            
-            const dateStr = new Date(item.timestamp).toLocaleString();
-            const color = item.isFake ? 'var(--color-error)' : 'var(--color-success)';
-            const resultText = item.isFake ? 'Fake (AI)' : 'Authentic';
-            
-            tr.innerHTML = `
-                <td style="padding: 12px 8px;">${dateStr}</td>
-                <td style="padding: 12px 8px;">${item.type}</td>
-                <td style="padding: 12px 8px; color: ${color};">${item.confidence || '99.9%'}</td>
-                <td style="padding: 12px 8px;"><span style="background: ${color}22; color: ${color}; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">${resultText}</span></td>
-            `;
+
+            // history.js stores 'date' as a pre-formatted locale string, 'isAi' (not isFake)
+            const dateStr = item.date || new Date(item.id).toLocaleString();
+            const color = item.isAi ? 'var(--color-error)' : 'var(--color-success)';
+            const resultText = item.isAi ? 'Fake (AI)' : 'Authentic';
+            const confidenceText = (item.confidence !== undefined && item.confidence !== null) ? item.confidence + '%' : '--';
+
+            // Use textContent for all user-data fields to prevent XSS
+            const tdDate = document.createElement('td');
+            tdDate.style.padding = '12px 8px';
+            tdDate.textContent = dateStr;
+
+            const tdType = document.createElement('td');
+            tdType.style.padding = '12px 8px';
+            tdType.textContent = item.type || 'Unknown';
+
+            const tdConf = document.createElement('td');
+            tdConf.style.cssText = `padding: 12px 8px; color: ${color};`;
+            tdConf.textContent = confidenceText;
+
+            const badge = document.createElement('span');
+            badge.style.cssText = `background: ${color}22; color: ${color}; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;`;
+            badge.textContent = resultText;
+            const tdResult = document.createElement('td');
+            tdResult.style.padding = '12px 8px';
+            tdResult.appendChild(badge);
+
+            tr.appendChild(tdDate);
+            tr.appendChild(tdType);
+            tr.appendChild(tdConf);
+            tr.appendChild(tdResult);
             tableBody.appendChild(tr);
         });
     }
@@ -149,26 +170,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyKeyBtn = document.getElementById('copyKeyBtn');
     const generateKeyBtn = document.getElementById('generateKeyBtn');
 
-    // Retrieve or generate key
-    let savedKey = localStorage.getItem('authGuard_apiKey');
+    // Retrieve the real API key set by login.html (Firebase ID token)
+    let savedKey = localStorage.getItem('api_key') || localStorage.getItem('authGuard_apiKey');
     if (!savedKey) {
-        savedKey = 'sk_live_' + Math.random().toString(36).substr(2, 24);
-        localStorage.setItem('authGuard_apiKey', savedKey);
+        savedKey = 'Not logged in — please sign in first.';
     }
-    apiKeyInput.value = savedKey;
+    // Show a masked version for security (first 12 chars + ***)
+    apiKeyInput.value = savedKey.length > 12 ? savedKey.substring(0, 12) + '••••••••••••••••••••' : savedKey;
+    apiKeyInput.dataset.realKey = savedKey;  // store for copy
 
     toggleKeyBtn.addEventListener('click', () => {
+        const realKey = apiKeyInput.dataset.realKey || '';
         if (apiKeyInput.type === 'password') {
             apiKeyInput.type = 'text';
+            apiKeyInput.value = realKey;  // show real key
             toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
         } else {
             apiKeyInput.type = 'password';
+            // re-mask
+            apiKeyInput.value = realKey.length > 12 ? realKey.substring(0, 12) + '••••••••••••••••••••' : realKey;
             toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
         }
     });
 
     copyKeyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(apiKeyInput.value);
+        // Copy the real key, not the masked display value
+        const realKey = apiKeyInput.dataset.realKey || apiKeyInput.value;
+        navigator.clipboard.writeText(realKey);
         copyKeyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--color-success);"></i>';
         setTimeout(() => {
             copyKeyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
@@ -176,17 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     generateKeyBtn.addEventListener('click', () => {
-        if(confirm("Are you sure? This will invalidate your old API key immediately.")) {
-            savedKey = 'sk_live_' + Math.random().toString(36).substr(2, 24);
-            localStorage.setItem('authGuard_apiKey', savedKey);
-            apiKeyInput.value = savedKey;
-            
-            // Show toast if available, else alert
-            if (window.showToast) {
-                window.showToast('success', 'New API key generated successfully.');
-            } else {
-                alert('New API key generated successfully.');
-            }
-        }
+        alert('Your API key is your Firebase login token. To refresh it, please log out and log back in — your token will be renewed automatically.');
     });
 });

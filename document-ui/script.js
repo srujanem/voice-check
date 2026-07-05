@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         errorAlert.classList.add('hidden');
+        heatmapContent.innerHTML = '';  // Clear previous heatmap before new analysis
         inputSection.style.display = 'none';
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
@@ -76,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
         
         let totalScore = 0;
-        let htmlOutput = "";
 
         sentences.forEach(sentence => {
             // Assign a random fake probability for demo
@@ -94,13 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (prob > 0.7) heatClass = "heat-high";
             else if (prob > 0.35) heatClass = "heat-med";
 
-            htmlOutput += `<span class="${heatClass}" title="${(prob*100).toFixed(1)}% AI">${sentence}</span> `;
+            // Use textContent (not innerHTML) to prevent XSS from user-supplied text
+            const span = document.createElement('span');
+            span.className = heatClass;
+            span.title = `${(prob*100).toFixed(1)}% AI`;
+            span.textContent = sentence + ' ';
+            heatmapContent.appendChild(span);
         });
 
         const avgProb = totalScore / sentences.length;
         const finalPercentage = (avgProb * 100).toFixed(1);
 
-        heatmapContent.innerHTML = htmlOutput;
+        // heatmapContent already populated via DOM nodes above
         overallScore.textContent = finalPercentage + '%';
         
         if (avgProb > 0.7) {
@@ -114,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
             classificationResult.style.color = "var(--text-primary)";
         }
 
-        // Save to History
-        if (window.saveScanToHistory) {
-            window.saveScanToHistory('Document', text.substring(0, 50) + '...', avgProb > 0.5, finalPercentage + '%');
+        // Save to History using the global scanHistory from history.js
+        if (typeof scanHistory !== 'undefined') {
+            scanHistory.addScan('Document', text.substring(0, 50) + '...', avgProb > 0.5, finalPercentage);
         }
 
         loadingState.classList.add('hidden');

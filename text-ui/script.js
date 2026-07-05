@@ -79,6 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
         btnAnalyze.style.display = 'inline-flex';
         scoreProgress.style.strokeDashoffset = '339.292';
+        // Clear previous sentence highlights so they don't show on next scan
+        const xaiSection = document.getElementById('xai-section');
+        if (xaiSection) xaiSection.innerHTML = '';
+        if (probHuman) probHuman.textContent = 'Human: --';
+        if (probAi) probAi.textContent = 'AI: --';
     });
 
     function animateCountUp(element, target, duration, prefix = '', suffix = '%') {

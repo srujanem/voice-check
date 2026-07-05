@@ -27,20 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const probHumanEl = document.getElementById('prob-human');
     const probAiEl    = document.getElementById('prob-ai');
 
-    // Handle Reset
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            currentFile = null;
-            if (fileInput) fileInput.value = '';
-            
-            uploadArea.classList.remove('hidden');
-            fileNameDisplay.textContent = '';
-            
-            btnAnalyze.classList.add('disabled');
-            btnAnalyze.disabled = true;
-            resultsSection.classList.add('hidden');
-        });
-    }
+    // Handle Reset (duplicate listener removed — the one at line ~303 is the canonical one)
+    // This block was referencing non-existent variables; it is intentionally left empty
+    // The actual reset logic is handled by the resetBtn listener defined at the bottom.
 
     // PDF Download logic
     const downloadBtn = document.getElementById('download-btn');
@@ -199,17 +188,13 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeBtn.style.display   = 'none';
         hideError();
         loadingState.classList.remove('hidden');
+
         const apiKey = localStorage.getItem('api_key');
         if (!apiKey) {
             alert('Please log in to use the Voice Analysis tool.');
             window.location.href = '../login.html';
             return;
         }
-
-        scannerLine.classList.remove('hidden');
-        btnAnalyze.style.display = 'none';
-        loadingState.classList.remove('hidden');
-        resultsSection.classList.add('hidden');
 
         const formData = new FormData();
         const filename = currentAudioFile.recordedName || currentAudioFile.name || 'recorded_audio.webm';
@@ -292,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (probAiEl)    animateCountUp(probAiEl, probAi, 1500, 'AI: ');
 
             if (typeof scanHistory !== 'undefined') {
-                const fName = (typeof currentFile !== 'undefined' && currentFile) ? currentFile.name : 'Audio File';
+                const fName = currentAudioFile ? currentAudioFile.name : 'Audio File';
                 scanHistory.addScan('Voice', fName, !isHuman, confidence);
             }
 

@@ -144,11 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const statusRes = await fetch(`/video_status/${taskId}`);
                     if (statusRes.ok) {
                         const statusData = await statusRes.json();
-                        if (statusData.status) {
+                        // Check for completion: backend returns 'prediction' when done
+                        if (statusData.prediction !== undefined) {
+                            // Completed, has results
+                            clearInterval(pollInterval);
+                            scannerLine.classList.add('hidden');
+                            loadingState.classList.add('hidden');
+                            loadingState.querySelector('p').innerText = "Processing..."; // reset
+                            showResults(statusData);
+                        } else if (statusData.status && statusData.status !== 'done') {
                             // Still processing
                             loadingState.querySelector('p').innerText = "Analyzing frames... " + statusData.status;
                         } else {
-                            // Completed, has results
+                            // Fallback: 'done' status string or no more fields = done
                             clearInterval(pollInterval);
                             scannerLine.classList.add('hidden');
                             loadingState.classList.add('hidden');

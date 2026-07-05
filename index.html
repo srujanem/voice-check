@@ -3635,12 +3635,14 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
 
         // ===== LIVE USER COUNT =====
         const liveCountEl = document.getElementById('live-count');
+        if (liveCountEl) {
         let liveBase = 1200 + Math.floor(Math.random() * 200);
         setInterval(() => {
             liveBase += Math.floor(Math.random() * 7) - 3;
             liveBase = Math.max(900, Math.min(2000, liveBase));
             liveCountEl.textContent = liveBase.toLocaleString();
         }, 4000);
+        }
 
         // ===== SMART SEARCH =====
         const searchData = [
@@ -3747,12 +3749,12 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             document.getElementById('share-score-label').textContent = label;
             shareModal.classList.add('show');
         };
-        document.getElementById('share-close').addEventListener('click', () => shareModal.classList.remove('show'));
-        document.getElementById('share-twitter').addEventListener('click', () => {
+        document.getElementById('share-close')?.addEventListener('click', () => shareModal.classList.remove('show'));
+        document.getElementById('share-twitter')?.addEventListener('click', () => {
             const score = document.getElementById('share-score-display').textContent;
             window.open(`https://twitter.com/intent/tweet?text=I+just+tested+this+text+on+AuthGuard+AI+Detection+and+got+${encodeURIComponent(score)}+AI+probability!+Check+yours+at+https://authguard.vercel.app`, '_blank');
         });
-        document.getElementById('share-copy').addEventListener('click', () => {
+        document.getElementById('share-copy')?.addEventListener('click', () => {
             navigator.clipboard.writeText('https://authguard.vercel.app').then(() => showToast('success', '🔗 Link copied to clipboard!'));
         });
         // Hook into try-it-live

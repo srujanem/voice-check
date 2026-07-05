@@ -47,14 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
         btnAnalyze.style.display = 'inline-flex';
         btnAnalyze.classList.add('disabled');
+        btnAnalyze.disabled = true;  // also set the HTML attribute, not just the CSS class
+        if (probHuman) probHuman.textContent = 'Human: --';
+        if (probAi) probAi.textContent = 'AI: --';
+        if (previewSection) previewSection.textContent = '';
         hideError();
     });
 
     urlInput.addEventListener('input', () => {
         if (urlInput.value.trim().length > 5) {
             btnAnalyze.classList.remove('disabled');
+            btnAnalyze.disabled = false;
         } else {
             btnAnalyze.classList.add('disabled');
+            btnAnalyze.disabled = true;
         }
     });
 
@@ -71,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        scannerLine.classList.remove('hidden');
         hideError();
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');

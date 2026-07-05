@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetBtn.addEventListener('click', () => {
         currentFile = null;
+        // Revoke the old object URL to free memory
+        if (imagePreview.src && imagePreview.src.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreview.src);
+        }
         imagePreview.src = '';
         imagePreview.classList.add('hidden');
         dropZone.style.display = 'block';
