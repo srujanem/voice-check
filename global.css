@@ -326,31 +326,6 @@ a,
     contain: layout style;
 }
 
-/* ── Reduced Motion — respect system preference ──
-   Covers both accessibility and battery-saving
-   Low Power Mode on iPhone.                       */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-    /* Keep functional transitions that communicate state change */
-    .faq-answer {
-        transition: max-height 0.1s ease, padding 0.1s ease !important;
-    }
-    .user-dropdown,
-    .history-sidebar {
-        transition: none !important;
-    }
-    .floating-mockup { animation: none !important; transform: none; }
-    .aurora-bg .aurora-band { animation: none !important; }
-    .marquee-track, .ticker-strip { animation: none !important; }
-    .scan-line { animation: none !important; }
-}
 
 /* ── Mobile-specific smoothness overrides ── */
 @media (max-width: 768px) {
