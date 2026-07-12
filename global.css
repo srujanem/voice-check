@@ -362,14 +362,6 @@ a,
         -webkit-backdrop-filter: blur(12px) !important;
     }
 
-    /* Reduce aurora bands opacity/blur on mobile */
-    .aurora-bg .aurora-band {
-        filter: blur(60px);
-        opacity: 0.07;
-    }
-
-    /* Grain overlay — disable on mobile (expensive setInterval paint) */
-    body::after { display: none !important; }
 
     /* Disable 3D perspective on cards (costly on mobile GPU) */
     .nav-card, .feature-card, .testimonial-card {
@@ -1404,10 +1396,9 @@ p {
 
 /* ── Mobile Responsiveness ── */
 @media (max-width: 768px) {
-    /* Safe area body padding for iOS notch + bottom bar */
+    /* Safe area body padding for iOS notch */
     body {
         overflow-x: hidden; width: 100%;
-        padding-bottom: calc(64px + env(safe-area-inset-bottom));
     }
 
     /* Box sizing */
@@ -1459,6 +1450,9 @@ p {
         flex-direction: column !important;
         gap: 10px !important;
     }
+    
+    /* ── Footer ── */
+    .footer { padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
     .landing-header .btn-primary,
     .landing-header .btn-secondary {
         width: 100%; justify-content: center; padding: 14px 20px !important;
@@ -1597,8 +1591,6 @@ p {
         top: calc(68px + env(safe-area-inset-top)) !important;
     }
 
-    /* ── News sidebar — hide on mobile ── */
-    #news-sidebar { display: none !important; }
 
     /* ── Smart search modal ── */
     #smart-search-modal .search-box {
