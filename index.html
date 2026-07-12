@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AuthGuard — AI Detection Suite</title>
     <meta name="description" content="Advanced AI detection platform to verify the authenticity of voice, image, text, video, and social media content.">
     <meta name="theme-color" content="#0a0a0f">
@@ -87,8 +87,7 @@
             100% { clip: rect(46px, 9999px, 73px, 0); }
         }
 
-        /* ===== PARTICLES ===== */
-        #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
+
 
         html { scroll-behavior: smooth; }
 
@@ -143,7 +142,7 @@
         body { transition: background-color 0.5s ease, color 0.5s ease; }
         * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease; }
         /* exclude transform/opacity transitions being overridden */
-        .tilt-card, .floating-mockup, .orb, .aurora-band {
+        .tilt-card, .floating-mockup {
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
         }
 
@@ -764,7 +763,6 @@
         [data-theme="light"] .section-title { color: #111827; }
         [data-theme="light"] .section-subtitle { color: #4b5563; }
 
-        [data-theme="light"] #particles-js canvas { opacity: 0.3; }
 
         /* ===== NOISE / GRAIN OVERLAY ===== */
         body::after {
@@ -1033,61 +1031,6 @@
             color: var(--accent-cyan); letter-spacing: 0.5px;
         }
 
-        /* ===== FLOATING CHAT BUBBLE ===== */
-        #chat-bubble {
-            position: fixed; bottom: 24px; right: 24px; z-index: 9991;
-        }
-        .chat-btn {
-            width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: white;
-            box-shadow: 0 4px 20px rgba(6,182,212,0.4);
-            transition: all 0.3s ease;
-            animation: chatPulse 3s ease-in-out infinite;
-        }
-        @keyframes chatPulse {
-            0%,100% { box-shadow: 0 4px 20px rgba(6,182,212,0.4); }
-            50% { box-shadow: 0 4px 32px rgba(6,182,212,0.7), 0 0 0 8px rgba(6,182,212,0.1); }
-        }
-        .chat-btn:hover { transform: scale(1.1) rotate(8deg); }
-        .chat-panel {
-            position: absolute; bottom: 68px; right: 0;
-            width: 300px; background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-            backdrop-filter: blur(20px);
-            transform: scale(0.9) translateY(10px); transform-origin: bottom right;
-            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-        }
-        .chat-panel.show { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
-        .chat-panel-header {
-            padding: 16px 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .chat-online-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
-        .chat-panel-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
-        .chat-panel-sub { font-size: 11px; color: var(--text-secondary); }
-        .chat-messages {
-            padding: 16px 20px; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
-        }
-        .chat-msg {
-            padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; max-width: 85%;
-        }
-        .chat-msg.bot {
-            background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.15);
-            color: var(--text-primary); align-self: flex-start; border-radius: 4px 12px 12px 12px;
-        }
-        .chat-msg.user {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            color: white; align-self: flex-end; border-radius: 12px 4px 12px 12px;
-        }
-        .chat-quick-btns { padding: 0 20px 12px; display: flex; flex-wrap: wrap; gap: 6px; }
-        .chat-quick {
-            padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);
-            background: transparent; color: var(--text-secondary); font-size: 11px;
-            font-family: inherit; cursor: pointer; transition: all 0.2s;
-        }
-        .chat-quick:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
         /* ===== CUSTOM CONTEXT MENU ===== */
         #ctx-menu {
@@ -1439,16 +1382,6 @@
         }
         @keyframes rippleOut {
             to { transform: scale(4); opacity: 0; }
-        }
-
-        /* ===== PARTICLE BURST ===== */
-        .burst-particle {
-            position: fixed; border-radius: 50%;
-            pointer-events: none; z-index: 99989;
-            animation: burstFly 0.7s ease-out forwards;
-        }
-        @keyframes burstFly {
-            to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
 
 
@@ -1925,42 +1858,8 @@
         <div class="ctx-item" id="ctx-top"><i class="fa-solid fa-arrow-up"></i> Back to Top</div>
     </div>
 
-    <!-- Floating Chat Bubble -->
-    <div id="chat-bubble">
-        <div class="chat-panel" id="chat-panel">
-            <div class="chat-panel-header">
-                <div class="chat-online-dot"></div>
-                <div>
-                    <div class="chat-panel-title">AuthGuard Assistant</div>
-                    <div class="chat-panel-sub">Usually replies instantly</div>
-                </div>
-            </div>
-            <div class="chat-messages" id="chat-messages">
-                <div class="chat-msg bot">👋 Hi! I'm the AuthGuard assistant. How can I help you today?</div>
-            </div>
-            <div class="chat-quick-btns">
-                <button class="chat-quick" data-q="How accurate is detection?">Accuracy?</button>
-                <button class="chat-quick" data-q="Is it free?">Free plan?</button>
-                <button class="chat-quick" data-q="What formats are supported?">Formats?</button>
-                <button class="chat-quick" data-q="How do I get started?">Get started</button>
-            </div>
-        </div>
-        <button class="chat-btn" id="chat-toggle-btn"><i class="fa-solid fa-comment-dots"></i></button>
-    </div>
 
-    <!-- Premium Background Effects -->
-    <div class="aurora-bg">
-        <div class="aurora-band"></div>
-        <div class="aurora-band"></div>
-        <div class="aurora-band"></div>
-    </div>
-    <div class="floating-orbs">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
-    <div class="cyber-grid"></div>
+
 
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -2024,8 +1923,6 @@
 
     <!-- Hero -->
     <section class="hero-section">
-        <!-- Particles Background -->
-        <div id="particles-js"></div>
 
         <div class="hero-badge" style="position: relative; z-index: 2;"><div class="pulse-dot"></div> AuthGuard Enterprise v3.0 Live</div>
         <header class="landing-header" style="padding: 0; position: relative; z-index: 2;">
@@ -2651,10 +2548,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
     <!-- Newsletter -->
     <section class="newsletter-section">
         <div class="newsletter-box reveal">
-            <div class="nl-particle"></div>
-            <div class="nl-particle"></div>
-            <div class="nl-particle"></div>
-            <div class="nl-particle"></div>
             <h3><i class="fa-solid fa-envelope" style="color: var(--accent-cyan); margin-right: 8px;"></i> Stay Updated</h3>
             <p>Get the latest updates on new detection tools, accuracy improvements, and security tips.</p>
             <form class="newsletter-form" id="newsletter-form">
@@ -2684,7 +2577,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
     <!-- Back to Top -->
     <button class="back-to-top" id="back-to-top"><i class="fa-solid fa-arrow-up"></i></button>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="theme.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -2779,21 +2671,58 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                 }
             }, 1000);
 
-            // ===== SCROLL PROGRESS BAR =====
+            // ===== DETECT TOUCH DEVICE =====
+            // Disable heavy desktop effects on touch/coarse-pointer devices
+            const isTouch = window.matchMedia('(pointer: coarse)').matches ||
+                            ('ontouchstart' in window) ||
+                            (navigator.maxTouchPoints > 0);
+
+            // Detect high-refresh-rate screen (90/120 Hz)
+            // We pass this to JS animations so they can scale timing
+            let deviceFPS = 60;
+            (function detectFPS() {
+                let last = 0, count = 0;
+                function tick(ts) {
+                    if (last) count++;
+                    if (ts - last < 1000) { requestAnimationFrame(tick); }
+                    else { deviceFPS = Math.min(Math.round(count / ((ts - last) / 1000)), 120); }
+                    last = ts;
+                }
+                requestAnimationFrame(tick);
+            })();
+
+            // ===== SCROLL PROGRESS BAR — rAF throttled =====
             const progressBar = document.getElementById('scroll-progress');
+            let _scrollRAF = null;
             window.addEventListener('scroll', () => {
-                const scrollTop = window.scrollY;
-                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-                const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-                progressBar.style.width = pct + '%';
+                if (_scrollRAF) return;
+                _scrollRAF = requestAnimationFrame(() => {
+                    const scrollTop = window.scrollY;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                    progressBar.style.width = pct + '%';
+                    _scrollRAF = null;
+                });
             }, { passive: true });
 
-            // ===== CURSOR SPOTLIGHT =====
+            // ===== CURSOR SPOTLIGHT — disabled on touch =====
             const spotlight = document.getElementById('cursor-spotlight');
-            document.addEventListener('mousemove', e => {
-                spotlight.style.left = e.clientX + 'px';
-                spotlight.style.top = e.clientY + 'px';
-            });
+            if (isTouch) {
+                if (spotlight) spotlight.style.display = 'none';
+            } else {
+                let _spotX = 0, _spotY = 0, _spotRAF = false;
+                document.addEventListener('mousemove', e => {
+                    _spotX = e.clientX; _spotY = e.clientY;
+                    if (!_spotRAF) {
+                        _spotRAF = true;
+                        requestAnimationFrame(() => {
+                            spotlight.style.left = _spotX + 'px';
+                            spotlight.style.top  = _spotY + 'px';
+                            _spotRAF = false;
+                        });
+                    }
+                });
+            }
 
             // ===== TYPEWRITER EFFECT =====
             const words = ['Voice Clones', 'Deepfake Images', 'AI-Written Text', 'Synthetic Videos', 'Fake Profiles', 'AI Audio'];
@@ -2951,48 +2880,40 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             setTimeout(() => { showActivityToast(); setInterval(showActivityToast, 9000); }, 5000);
 
 
-            // Initialize Particles JS
-            if(window.particlesJS) {
-                particlesJS("particles-js", {
-                    "particles": {
-                        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
-                        "color": { "value": "#00f3ff" },
-                        "shape": { "type": "circle" },
-                        "opacity": { "value": 0.5, "random": false },
-                        "size": { "value": 3, "random": true },
-                        "line_linked": { "enable": true, "distance": 150, "color": "#00f3ff", "opacity": 0.4, "width": 1 },
-                        "move": { "enable": true, "speed": 3, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
-                    },
-                    "interactivity": {
-                        "detect_on": "canvas",
-                        "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
-                        "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 1 } }, "push": { "particles_nb": 4 } }
-                    },
-                    "retina_detect": true
+
+            // Tilt Cards — disabled on touch, rAF-throttled on desktop
+            if (!isTouch) {
+                document.querySelectorAll('.tilt-card').forEach(card => {
+                    let _tiltRAF = false;
+                    let _tx = 0, _ty = 0;
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        _tx = e.clientX - rect.left;
+                        _ty = e.clientY - rect.top;
+                        if (!_tiltRAF) {
+                            _tiltRAF = true;
+                            requestAnimationFrame(() => {
+                                const rect2 = card.getBoundingClientRect();
+                                const rotateX = ((_ty - rect2.height/2) / (rect2.height/2)) * -12;
+                                const rotateY = ((_tx - rect2.width/2)  / (rect2.width/2))  *  12;
+                                card.style.transform = `translateY(-8px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                                const glare = card.querySelector('.card-glare');
+                                if (glare) glare.style.background = `radial-gradient(circle at ${_tx}px ${_ty}px, rgba(255,255,255,0.13), transparent 60%)`;
+                                _tiltRAF = false;
+                            });
+                        }
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+                        const glare = card.querySelector('.card-glare');
+                        if (glare) { glare.style.background = 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.13), transparent 60%)'; glare.style.opacity = '0'; }
+                    });
+                    card.addEventListener('mouseenter', () => {
+                        const glare = card.querySelector('.card-glare');
+                        if (glare) glare.style.opacity = '1';
+                    });
                 });
             }
-
-            // Tilt Cards
-            document.querySelectorAll('.tilt-card').forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-                    const rotateX = ((y - rect.height/2) / (rect.height/2)) * -15;
-                    const rotateY = ((x - rect.width/2) / (rect.width/2)) * 15;
-                    card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                    const glare = card.querySelector('.card-glare');
-                    if (glare) glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 60%)`;
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
-                    const glare = card.querySelector('.card-glare');
-                    if (glare) { glare.style.background = 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)'; glare.style.opacity = '0'; }
-                });
-                card.addEventListener('mouseenter', () => {
-                    const glare = card.querySelector('.card-glare');
-                    if (glare) glare.style.opacity = '1';
-                });
-            });
 
             // Scroll Reveal
             const observer = new IntersectionObserver((entries) => {
@@ -3002,30 +2923,40 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             }, { threshold: 0.15 });
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Animated Counters
+            // Animated Counters — rAF-based, no setInterval
             const counterObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const el = entry.target;
                         const target = parseInt(el.dataset.target);
-                        let current = 0;
-                        const step = Math.max(1, Math.floor(target / 40));
-                        const timer = setInterval(() => {
-                            current += step;
-                            if (current >= target) { current = target; clearInterval(timer); }
-                            el.textContent = current + (target === 99 ? '%' : target === 6 ? '+' : '');
-                        }, 30);
+                        const suffix = target === 99 ? '%' : target === 6 ? '+' : '';
+                        let startTs = null;
+                        const duration = 1400; // ms
+                        function step(ts) {
+                            if (!startTs) startTs = ts;
+                            const progress = Math.min((ts - startTs) / duration, 1);
+                            const ease = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
+                            el.textContent = Math.floor(ease * target) + suffix;
+                            if (progress < 1) requestAnimationFrame(step);
+                            else el.textContent = target + suffix;
+                        }
+                        requestAnimationFrame(step);
                         counterObserver.unobserve(el);
                     }
                 });
             }, { threshold: 0.5 });
             document.querySelectorAll('.stat-number[data-target]').forEach(el => counterObserver.observe(el));
 
-            // Navbar scroll effect
+            // Navbar scroll effect — rAF throttled
+            let _navRAF = null;
             window.addEventListener('scroll', () => {
-                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-                document.getElementById('back-to-top').classList.toggle('show', window.scrollY > 400);
-            });
+                if (_navRAF) return;
+                _navRAF = requestAnimationFrame(() => {
+                    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+                    document.getElementById('back-to-top').classList.toggle('show', window.scrollY > 400);
+                    _navRAF = null;
+                });
+            }, { passive: true });
 
             // Back to top
             document.getElementById('back-to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -3304,37 +3235,6 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         });
         shortcutsModal.addEventListener('click', e => { if(e.target === shortcutsModal) shortcutsModal.classList.remove('show'); });
 
-        // ===== FLOATING CHAT BUBBLE =====
-        const chatToggle = document.getElementById('chat-toggle-btn');
-        const chatPanel = document.getElementById('chat-panel');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatAnswers = {
-            'How accurate is detection?': 'Our models achieve over 99% accuracy on benchmark datasets, continuously retrained against the latest AI tools like ChatGPT, MidJourney, and ElevenLabs. 🎯',
-            'Is it free?': 'Yes! AuthGuard has a generous free tier. For unlimited scans, higher file limits, and API access, check out our Pro and Enterprise plans. 💎',
-            'What formats are supported?': 'Audio: WAV, MP3, WebM. Images: PNG, JPG, WEBP. Video: MP4, MOV. Text: plain text or paste directly. PDFs via our Document Scanner! 📁',
-            'How do I get started?': 'Just click any tool card below — no signup needed for basic scans! For history tracking and Pro features, create a free account. 🚀'
-        };
-        chatToggle.addEventListener('click', () => chatPanel.classList.toggle('show'));
-        document.querySelectorAll('.chat-quick').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const q = btn.dataset.q;
-                const userMsg = document.createElement('div');
-                userMsg.className = 'chat-msg user';
-                userMsg.textContent = q;
-                chatMessages.appendChild(userMsg);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                setTimeout(() => {
-                    const botMsg = document.createElement('div');
-                    botMsg.className = 'chat-msg bot';
-                    botMsg.textContent = chatAnswers[q] || 'Great question! Please visit our FAQ section for detailed answers. 😊';
-                    chatMessages.appendChild(botMsg);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 600);
-            });
-        });
-        document.addEventListener('click', e => {
-            if (!document.getElementById('chat-bubble').contains(e.target)) chatPanel.classList.remove('show');
-        });
 
         // ===== CUSTOM CONTEXT MENU =====
         const ctxMenu = document.getElementById('ctx-menu');
@@ -3366,26 +3266,47 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             });
         });
 
-        // ===== CUSTOM CURSOR =====
+        // ===== CUSTOM CURSOR — rAF-driven, disabled on touch =====
         const cursor = document.getElementById('custom-cursor');
-        let trailCount = 0;
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            if (trailCount++ % 3 === 0) {
-                const t = document.createElement('div');
-                t.className = 'cursor-trail';
-                t.style.left = e.clientX + 'px'; t.style.top = e.clientY + 'px';
-                document.body.appendChild(t);
-                setTimeout(() => t.remove(), 500);
-            }
-            const el = document.elementFromPoint(e.clientX, e.clientY);
-            cursor.classList.toggle('hovering', el && (el.tagName === 'A' || el.tagName === 'BUTTON' || el.closest('a,button,[data-tip]') !== null));
-        });
-        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
-        document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
-        document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+        if (isTouch) {
+            // On touch devices: hide custom cursor, restore system cursor
+            if (cursor) cursor.style.display = 'none';
+            // Remove the global cursor:none rule that was injected via CSS
+            const styleEl = document.createElement('style');
+            styleEl.textContent = '*, *::before, *::after { cursor: auto !important; }';
+            document.head.appendChild(styleEl);
+        } else {
+            let _curX = 0, _curY = 0, _curRAF = false;
+            let _curFrameCount = 0;
+            document.addEventListener('mousemove', e => {
+                _curX = e.clientX; _curY = e.clientY;
+                if (!_curRAF) {
+                    _curRAF = true;
+                    requestAnimationFrame(() => {
+                        cursor.style.left = _curX + 'px';
+                        cursor.style.top  = _curY + 'px';
+                        // Spawn trail every 4 frames instead of every 3 mousemoves
+                        // (frequency scales naturally with mousemove rate)
+                        if (_curFrameCount++ % 4 === 0) {
+                            const t = document.createElement('div');
+                            t.className = 'cursor-trail';
+                            t.style.cssText = `left:${_curX}px;top:${_curY}px`;
+                            document.body.appendChild(t);
+                            setTimeout(() => t.remove(), 500);
+                        }
+                        const el = document.elementFromPoint(_curX, _curY);
+                        cursor.classList.toggle('hovering',
+                            el && (el.tagName === 'A' || el.tagName === 'BUTTON' ||
+                                   el.closest('a,button,[data-tip]') !== null));
+                        _curRAF = false;
+                    });
+                }
+            });
+            document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+            document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+            document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+            document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+        }
 
         // ===== KONAMI CODE EASTER EGG =====
         const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
@@ -3456,9 +3377,10 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
 
         document.getElementById('themeToggle').addEventListener('click', () => unlockAchievement('nightOwl'));
 
-        // ===== SECTION DOT NAV =====
+        // ===== SECTION DOT NAV — rAF throttled =====
         const dotNavItems = document.querySelectorAll('.dot-nav-item');
         const sections = ['body', '#tools', '#about', '#pricing-home', '.quiz-section', '#faq', '#testimonials'];
+        let _dotNavRAF = null;
         function updateDotNav() {
             const scrollY = window.scrollY + window.innerHeight / 2;
             sections.forEach((sel, i) => {
@@ -3469,7 +3391,10 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                 dotNavItems[i]?.classList.toggle('active', scrollY >= top && scrollY < bot);
             });
         }
-        window.addEventListener('scroll', updateDotNav);
+        window.addEventListener('scroll', () => {
+            if (_dotNavRAF) return;
+            _dotNavRAF = requestAnimationFrame(() => { updateDotNav(); _dotNavRAF = null; });
+        }, { passive: true });
         dotNavItems.forEach((dot, i) => {
             dot.addEventListener('click', () => {
                 const sel = sections[i];
@@ -3478,15 +3403,20 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             });
         });
 
-        // ===== BACK TO TOP CIRCLE =====
+        // ===== BACK TO TOP CIRCLE — rAF throttled =====
         const bttBtn = document.getElementById('back-to-top');
         const bttProgress = document.getElementById('btt-progress');
         const circumference = 2 * Math.PI * 20;
+        let _bttRAF = null;
         window.addEventListener('scroll', () => {
-            const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-            bttProgress.style.strokeDashoffset = circumference - pct * circumference;
-            bttBtn.classList.toggle('show', window.scrollY > 300);
-        });
+            if (_bttRAF) return;
+            _bttRAF = requestAnimationFrame(() => {
+                const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+                bttProgress.style.strokeDashoffset = circumference - pct * circumference;
+                bttBtn.classList.toggle('show', window.scrollY > 300);
+                _bttRAF = null;
+            });
+        }, { passive: true });
         bttBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 
@@ -3507,17 +3437,26 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             });
         });
 
-        // ===== 3D TILT CARDS =====
-        document.querySelectorAll('.nav-card, .feature-card, .testimonial-card').forEach(card => {
-            card.classList.add('tilt-card');
-            card.addEventListener('mousemove', e => {
-                const r = card.getBoundingClientRect();
-                const x = (e.clientX - r.left) / r.width - 0.5;
-                const y = (e.clientY - r.top) / r.height - 0.5;
-                card.style.transform = `perspective(600px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateZ(10px)`;
+        // ===== 3D TILT CARDS — rAF-throttled, disabled on touch =====
+        if (!isTouch) {
+            document.querySelectorAll('.nav-card, .feature-card, .testimonial-card').forEach(card => {
+                card.classList.add('tilt-card');
+                let _tx = 0.5, _ty = 0.5, _tRaf = false;
+                card.addEventListener('mousemove', e => {
+                    const r = card.getBoundingClientRect();
+                    _tx = (e.clientX - r.left) / r.width - 0.5;
+                    _ty = (e.clientY - r.top)  / r.height - 0.5;
+                    if (!_tRaf) {
+                        _tRaf = true;
+                        requestAnimationFrame(() => {
+                            card.style.transform = `perspective(700px) rotateY(${_tx * 10}deg) rotateX(${-_ty * 10}deg) translateZ(8px)`;
+                            _tRaf = false;
+                        });
+                    }
+                });
+                card.addEventListener('mouseleave', () => { card.style.transform = ''; });
             });
-            card.addEventListener('mouseleave', () => { card.style.transform = ''; });
-        });
+        }
 
         // ===== ANIMATED GRADIENT BORDER on Featured Cards =====
         document.querySelectorAll('.pricing-card.popular, .trust-section').forEach(el => el.classList.add('gradient-border'));
@@ -3547,27 +3486,45 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
 
 
 
-        // Magnetic Buttons
-        document.querySelectorAll('.btn-primary, .btn-secondary, .nav-links a').forEach(btn => {
-            btn.classList.add('magnetic');
-            btn.addEventListener('mousemove', e => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        // Magnetic Buttons — disabled on touch, rAF-throttled on desktop
+        if (!isTouch) {
+            document.querySelectorAll('.btn-primary, .btn-secondary, .nav-links a').forEach(btn => {
+                btn.classList.add('magnetic');
+                let _mx = 0, _my = 0, _mRaf = false;
+                btn.addEventListener('mousemove', e => {
+                    const rect = btn.getBoundingClientRect();
+                    _mx = e.clientX - rect.left - rect.width / 2;
+                    _my = e.clientY - rect.top  - rect.height / 2;
+                    if (!_mRaf) {
+                        _mRaf = true;
+                        requestAnimationFrame(() => {
+                            btn.style.transform = `translate(${_mx * 0.18}px, ${_my * 0.18}px)`;
+                            _mRaf = false;
+                        });
+                    }
+                });
+                btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
             });
-            btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0px, 0px)'; });
-        });
 
-        // Spotlight Cards
-        document.querySelectorAll('.feature-card, .tool-card, .pricing-card').forEach(card => {
-            card.classList.add('spotlight-card');
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
-                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            // Spotlight Cards — disabled on touch
+            document.querySelectorAll('.feature-card, .tool-card, .pricing-card').forEach(card => {
+                card.classList.add('spotlight-card');
+                let _sx = 0, _sy = 0, _sRaf = false;
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    _sx = e.clientX - rect.left;
+                    _sy = e.clientY - rect.top;
+                    if (!_sRaf) {
+                        _sRaf = true;
+                        requestAnimationFrame(() => {
+                            card.style.setProperty('--x', `${_sx}px`);
+                            card.style.setProperty('--y', `${_sy}px`);
+                            _sRaf = false;
+                        });
+                    }
+                });
             });
-        });
+        }
 
         // Social Proof Toasts
         const spNames = ['Alex in NY', 'Maria in Madrid', 'Team Alpha', 'User_992', 'SecureCorp'];
@@ -3604,34 +3561,18 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         }, { threshold: 0.3 });
         document.querySelectorAll('.timeline-item').forEach(item => timelineObs.observe(item));
 
-        // ===== RIPPLE EFFECT =====
-        document.addEventListener('click', e => {
-            const r = document.createElement('div');
-            r.className = 'ripple-circle';
-            const size = 80;
-            r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - size/2}px;top:${e.clientY - size/2}px`;
-            document.body.appendChild(r);
-            setTimeout(() => r.remove(), 700);
-        });
-
-        // ===== PARTICLE BURST =====
-        const burstColors = ['#06b6d4','#8b5cf6','#10b981','#f59e0b','#f43f5e'];
-        document.querySelectorAll('.btn-primary, .btn-secondary, .try-btn, .game-next-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
-                for (let i = 0; i < 12; i++) {
-                    const p = document.createElement('div');
-                    p.className = 'burst-particle';
-                    const angle = (i / 12) * 360;
-                    const dist = 40 + Math.random() * 40;
-                    const dx = Math.cos(angle * Math.PI / 180) * dist;
-                    const dy = Math.sin(angle * Math.PI / 180) * dist;
-                    const size = 4 + Math.random() * 6;
-                    p.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX}px;top:${e.clientY}px;background:${burstColors[i%burstColors.length]};--dx:${dx}px;--dy:${dy}px`;
-                    document.body.appendChild(p);
-                    setTimeout(() => p.remove(), 800);
-                }
+        // ===== RIPPLE EFFECT — disabled on touch (tap already has native feedback) =====
+        if (!isTouch) {
+            document.addEventListener('click', e => {
+                const r = document.createElement('div');
+                r.className = 'ripple-circle';
+                const size = 80;
+                r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - size/2}px;top:${e.clientY - size/2}px`;
+                document.body.appendChild(r);
+                setTimeout(() => r.remove(), 700);
             });
-        });
+        }
+
 
         // ===== LIVE USER COUNT =====
         const liveCountEl = document.getElementById('live-count');
@@ -3881,15 +3822,25 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         }
         setInterval(updateDailyTimer, 1000); updateDailyTimer();
 
-        // ===== MATRIX RAIN =====
+        // ===== MATRIX RAIN — rAF-driven, skips frames on mobile for perf =====
         const matrixCanvas = document.getElementById('matrix-canvas');
-        if (matrixCanvas) {
+        if (matrixCanvas && !isTouch) {
+            // Only run on desktop — too expensive on mobile GPU
             const mCtx = matrixCanvas.getContext('2d');
-            function resizeMatrix() { matrixCanvas.width = matrixCanvas.offsetWidth; matrixCanvas.height = matrixCanvas.offsetHeight; }
-            resizeMatrix(); window.addEventListener('resize', resizeMatrix);
+            function resizeMatrix() {
+                matrixCanvas.width  = matrixCanvas.offsetWidth;
+                matrixCanvas.height = matrixCanvas.offsetHeight;
+            }
+            resizeMatrix();
+            window.addEventListener('resize', resizeMatrix, { passive: true });
             const cols = Math.floor(matrixCanvas.width / 14);
             const drops = Array(cols).fill(1);
-            setInterval(() => {
+            let _matrixLast = 0;
+            const MATRIX_INTERVAL = 1000 / 24; // target 24 fps for matrix rain
+            function drawMatrix(ts) {
+                requestAnimationFrame(drawMatrix);
+                if (ts - _matrixLast < MATRIX_INTERVAL) return;
+                _matrixLast = ts;
                 mCtx.fillStyle = 'rgba(0,0,0,0.05)';
                 mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
                 mCtx.fillStyle = '#06b6d4';
@@ -3900,7 +3851,12 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                     if (y * 14 > matrixCanvas.height && Math.random() > 0.975) drops[i] = 0;
                     drops[i]++;
                 });
-            }, 50);
+            }
+            requestAnimationFrame(drawMatrix);
+        } else if (matrixCanvas && isTouch) {
+            // Hide the canvas section on mobile — saves GPU memory
+            const matrixSection = matrixCanvas.closest('.matrix-section');
+            if (matrixSection) matrixSection.style.display = 'none';
         }
 
     </script>

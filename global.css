@@ -45,6 +45,370 @@ html, body,
                 box-shadow 0.4s ease;
 }
 
+/* ══════════════════════════════════════════════
+   SMOOTH MOTION SYSTEM — Android & iOS
+   All animations and scroll interactions are
+   synced to the device refresh rate via
+   requestAnimationFrame in JS and CSS properties
+   that the compositor thread can handle without
+   touching the main thread (transform, opacity).
+   ══════════════════════════════════════════════ */
+
+/* ── Native Momentum Scrolling (iOS Safari) ── */
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+body {
+    -webkit-overflow-scrolling: touch;   /* iOS kinetic scroll */
+    overscroll-behavior-y: contain;      /* prevent pull-to-refresh jank on Android */
+}
+
+/* ── GPU Promotion for Animated Layers ──
+   Only promote elements that actually animate.
+   Blanket will-change: transform on everything
+   causes memory pressure — we target precisely. */
+.navbar,
+.history-sidebar,
+.floating-history-btn,
+#mobile-bottom-nav,
+.hero-section,
+.floating-mockup {
+    will-change: transform;
+    transform: translateZ(0);           /* force composited layer */
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Cards — only promote on hover to avoid idle memory pressure */
+.nav-card:hover,
+.feature-card:hover,
+.testimonial-card:hover,
+.pricing-card:hover,
+.step-card:hover {
+    will-change: transform;
+}
+
+/* Animated overlays — always composited */
+.aurora-bg .aurora-band,
+.scan-line,
+.marquee-track,
+.ticker-strip,
+#scroll-progress,
+.page-transition-overlay {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* ── Smooth CSS Transitions — eased for 60/90/120 Hz ──
+   cubic-bezier(0.25, 0.46, 0.45, 0.94) = "ease-out-quad"
+   feels soft and natural at any refresh rate.            */
+.btn-primary,
+.btn-secondary {
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                background-color 0.25s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.nav-card,
+.feature-card,
+.testimonial-card,
+.step-card,
+.pricing-card,
+.partner-card,
+.badge-card,
+.quiz-option,
+.daily-option {
+    transition: transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                border-color 0.2s ease,
+                background-color 0.3s ease;
+}
+
+/* Modals and overlays — spring-like entrance */
+.user-dropdown,
+#smart-search-modal .search-box,
+.shortcuts-box,
+#share-modal .share-card {
+    transition: opacity 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.22s;
+}
+
+/* Sidebar slide — spring out */
+.history-sidebar {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Toasts — slide in with spring, fade out linearly */
+.activity-toast,
+.social-proof-toast,
+.achievement-popup {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s linear;
+}
+
+/* Floating button */
+.floating-history-btn {
+    transition: transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.28s ease,
+                border-color 0.2s ease,
+                color 0.2s ease;
+}
+
+/* FAQ accordion max-height expansion */
+.faq-answer {
+    transition: max-height 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                padding 0.3s ease;
+}
+
+/* ── Touch-action: let the browser decide panning ── */
+* {
+    touch-action: pan-y;    /* allow vertical scroll on all elements */
+}
+
+/* Sliders & horizontal carousels need horizontal freedom */
+.creative-slider,
+.marquee-section,
+.ticker-wrap,
+.press-logos,
+.partners-grid,
+.badges-grid,
+.pricing-cards {
+    touch-action: pan-x pan-y;
+}
+
+/* Interactive buttons/cards should respond to tap without scroll delay */
+button,
+a,
+.nav-card,
+.quiz-option,
+.daily-option,
+.mob-nav-item,
+.dot-nav-item,
+.faq-question,
+.tab-btn,
+.api-tab,
+.pricing-cta,
+.ctx-item,
+.dropdown-item,
+.share-btn,
+.record-btn,
+.upload-area {
+    touch-action: manipulation;  /* removes 300ms tap delay on iOS/Android */
+    -webkit-tap-highlight-color: transparent; /* remove grey flash on tap */
+}
+
+/* ── CSS Animation Smoothness Tweaks ──
+   Use steps() for grain/flicker, cubic-bezier for everything
+   that needs to feel physically real.                       */
+
+/* Floating mockup — softer float arc */
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50%       { transform: translateY(-16px) translateZ(0); }
+}
+.floating-mockup {
+    animation: floatUp 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+/* Aurora — slower, smoother shift */
+@keyframes auroraShift {
+    0%   { transform: translateX(-10%) rotate(-2deg) scaleY(1) translateZ(0); }
+    50%  { transform: translateX(10%) rotate(1deg) scaleY(1.15) translateZ(0); }
+    100% { transform: translateX(-5%) rotate(-1deg) scaleY(0.92) translateZ(0); }
+}
+
+/* Marquee — GPU only, no layout changes */
+@keyframes marqueeScroll {
+    from { transform: translateX(0) translateZ(0); }
+    to   { transform: translateX(-50%) translateZ(0); }
+}
+
+/* Ticker — same */
+@keyframes tickerScroll {
+    from { transform: translateX(0) translateZ(0); }
+    to   { transform: translateX(-50%) translateZ(0); }
+}
+
+/* Spin — smooth rotation */
+@keyframes spin {
+    to { transform: rotate(360deg) translateZ(0); }
+}
+
+/* Pulse — opacity + scale on compositor thread */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1) translateZ(0); }
+    50%       { opacity: 0.5; transform: scale(0.82) translateZ(0); }
+}
+
+/* Scan line — translateY only (no layout reflow) */
+@keyframes scanDown {
+    0%   { transform: translateY(0) translateZ(0); opacity: 0; }
+    8%   { opacity: 0.7; }
+    92%  { opacity: 0.7; }
+    100% { transform: translateY(100%) translateZ(0); opacity: 0; }
+}
+.scan-line {
+    top: 0; /* use transform instead of top in JS if possible */
+}
+
+/* Record button pulse — scale+shadow on compositor */
+@keyframes pulse {
+    0%   { transform: scale(0.96) translateZ(0); box-shadow: 0 0 0 0 rgba(239,68,68,0.7); }
+    70%  { transform: scale(1) translateZ(0);    box-shadow: 0 0 0 18px rgba(239,68,68,0); }
+    100% { transform: scale(0.96) translateZ(0); box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+/* pulseRed / pulseGreen result icons */
+@keyframes pulseRed {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+    70%  { box-shadow: 0 0 0 22px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+@keyframes pulseGreen {
+    0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+    70%  { box-shadow: 0 0 0 22px rgba(16,185,129,0); }
+    100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+
+/* Float icon — smooth translateY only */
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50%       { transform: translateY(-8px) translateZ(0); }
+}
+
+/* Slide-up reveal — opacity + transform (compositor-safe) */
+@keyframes slideUpFadeIn {
+    from { opacity: 0; transform: translateY(24px) translateZ(0); }
+    to   { opacity: 1; transform: translateY(0) translateZ(0); }
+}
+
+/* Confetti ripple ring */
+@keyframes pulseRing {
+    0%   { transform: scale(0.82) translateZ(0); opacity: 1; }
+    100% { transform: scale(1.45) translateZ(0); opacity: 0; }
+}
+
+/* Ripple click — scale only */
+@keyframes rippleOut {
+    to { transform: scale(4) translateZ(0); opacity: 0; }
+}
+
+/* Voice bar animation — height only (layout but lightweight) */
+@keyframes voiceBar {
+    0%, 100% { height: 4px; }
+    50%       { height: 14px; }
+}
+
+/* Gradient shift — background-position (paint but not layout) */
+@keyframes gradientShift {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+}
+
+/* Record pulse */
+@keyframes recordPulse {
+    0%,  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+    50%        { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+}
+
+/* ── Scroll-Linked Progress Bar Optimisation ──
+   Applied inline; ensure the element itself
+   uses will-change: width for smooth paint.   */
+#scroll-progress {
+    will-change: width;
+    contain: layout style;
+}
+
+/* ── Reduced Motion — respect system preference ──
+   Covers both accessibility and battery-saving
+   Low Power Mode on iPhone.                       */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    /* Keep functional transitions that communicate state change */
+    .faq-answer {
+        transition: max-height 0.1s ease, padding 0.1s ease !important;
+    }
+    .user-dropdown,
+    .history-sidebar {
+        transition: none !important;
+    }
+    .floating-mockup { animation: none !important; transform: none; }
+    .aurora-bg .aurora-band { animation: none !important; }
+    .marquee-track, .ticker-strip { animation: none !important; }
+    .scan-line { animation: none !important; }
+}
+
+/* ── Mobile-specific smoothness overrides ── */
+@media (max-width: 768px) {
+    /* On mobile, reduce blur radius — blur is GPU-expensive on mobile GPUs */
+    .navbar,
+    .history-sidebar,
+    #mobile-bottom-nav {
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+    }
+
+    /* Reduce aurora bands opacity/blur on mobile */
+    .aurora-bg .aurora-band {
+        filter: blur(60px);
+        opacity: 0.07;
+    }
+
+    /* Grain overlay — disable on mobile (expensive setInterval paint) */
+    body::after { display: none !important; }
+
+    /* Disable 3D perspective on cards (costly on mobile GPU) */
+    .nav-card, .feature-card, .testimonial-card {
+        transform-style: flat !important;
+        perspective: none !important;
+    }
+
+    /* Shorter but still smooth card transitions on mobile */
+    .nav-card,
+    .feature-card,
+    .testimonial-card,
+    .step-card,
+    .pricing-card {
+        transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    box-shadow 0.2s ease,
+                    border-color 0.15s ease !important;
+    }
+
+    /* Disable hover transform on touch (no hover state anyway) */
+    .nav-card:hover,
+    .feature-card:hover,
+    .testimonial-card:hover,
+    .step-card:hover,
+    .pricing-card:hover {
+        transform: none;
+        will-change: auto;
+    }
+
+    /* Floating mockup — gentler float on mobile */
+    .floating-mockup {
+        animation-duration: 5s;
+    }
+
+    /* Shimmer — reduce to once per 8s on mobile */
+    .stats-bar::after {
+        animation-duration: 8s;
+    }
+}
+
 /* ── Custom Scrollbar — Dark ── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #0a0a0f; }
@@ -345,40 +709,6 @@ body {
 }
 [data-theme="light"] .aurora-bg .aurora-band { opacity: 0.06; }
 
-/* ── Floating Orbs ── */
-.floating-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-.orb {
-    position: absolute; border-radius: 50%; filter: blur(80px);
-    animation: orbFloat 20s ease-in-out infinite;
-}
-.orb:nth-child(1) {
-    width: 400px; height: 400px; top: 10%; left: 5%;
-    background: radial-gradient(circle, rgba(6,182,212,0.2), transparent 70%);
-    animation-duration: 18s;
-}
-.orb:nth-child(2) {
-    width: 350px; height: 350px; top: 60%; right: 5%;
-    background: radial-gradient(circle, rgba(139,92,246,0.2), transparent 70%);
-    animation-delay: -6s; animation-duration: 22s;
-}
-.orb:nth-child(3) {
-    width: 300px; height: 300px; top: 30%; left: 50%;
-    background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%);
-    animation-delay: -12s; animation-duration: 25s;
-}
-.orb:nth-child(4) {
-    width: 250px; height: 250px; top: 80%; left: 20%;
-    background: radial-gradient(circle, rgba(236,72,153,0.12), transparent 70%);
-    animation-delay: -3s; animation-duration: 28s;
-}
-@keyframes orbFloat {
-    0% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(40px, -60px) scale(1.1); }
-    50% { transform: translate(-30px, 30px) scale(0.9); }
-    75% { transform: translate(50px, 40px) scale(1.05); }
-    100% { transform: translate(0, 0) scale(1); }
-}
-[data-theme="light"] .orb { opacity: 0.4; }
 
 /* ── Cyber Grid Overlay ── */
 .cyber-grid {
@@ -482,38 +812,6 @@ body {
 }
 .testimonial-card:hover::after { width: 100%; }
 
-/* ── Newsletter Floating Particles ── */
-.newsletter-box { position: relative; }
-.newsletter-box .nl-particle {
-    position: absolute; border-radius: 50%; pointer-events: none;
-    background: var(--accent-cyan); opacity: 0.15;
-}
-.newsletter-box .nl-particle:nth-child(1) {
-    width: 6px; height: 6px; top: 20%; left: 10%;
-    animation: nlFloat 6s ease-in-out infinite;
-}
-.newsletter-box .nl-particle:nth-child(2) {
-    width: 4px; height: 4px; top: 70%; right: 15%;
-    background: var(--accent-purple);
-    animation: nlFloat 8s ease-in-out infinite reverse;
-}
-.newsletter-box .nl-particle:nth-child(3) {
-    width: 5px; height: 5px; top: 40%; right: 8%;
-    animation: nlFloat 7s ease-in-out infinite;
-    animation-delay: -3s;
-}
-.newsletter-box .nl-particle:nth-child(4) {
-    width: 3px; height: 3px; bottom: 25%; left: 20%;
-    background: var(--accent-purple);
-    animation: nlFloat 9s ease-in-out infinite reverse;
-    animation-delay: -5s;
-}
-@keyframes nlFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
-    25% { transform: translate(15px, -20px) scale(1.5); opacity: 0.3; }
-    50% { transform: translate(-10px, 10px) scale(0.8); opacity: 0.1; }
-    75% { transform: translate(20px, 15px) scale(1.3); opacity: 0.25; }
-}
 
 /* ── Glowing Dot Decorators ── */
 .glow-dot {
