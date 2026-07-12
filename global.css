@@ -1012,7 +1012,6 @@ p {
     gap: 10px;
     transition: all 0.3s ease;
     box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-    width: 100%;
 }
 
 .btn-primary:hover:not(:disabled):not(.disabled) {
@@ -1445,12 +1444,7 @@ p {
         gap: 12px !important;
         padding: 0 16px !important;
     }
-    .nav-card {
-        padding: 22px 14px !important;
-        border-radius: 16px !important;
-    }
-    .nav-card h2 { font-size: 13px !important; margin-top: 8px !important; }
-    .nav-card p { font-size: 11px !important; line-height: 1.5 !important; }
+    .nav-card { padding: 15px !important; }
     .nav-card > div[style*="48px"] { font-size: 32px !important; margin-bottom: 10px !important; }
 
     /* ── Press states for cards ── */
@@ -1622,7 +1616,6 @@ p {
 
 /* Very small screens (iPhone SE, older Androids) */
 @media (max-width: 375px) {
-    .landing-header h1 { font-size: 23px !important; }
     .cards-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
     .nav-card { padding: 18px 12px !important; }
     .hero-counter-strip { grid-template-columns: repeat(2, 1fr) !important; }
