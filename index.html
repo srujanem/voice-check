@@ -13,24 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="global.css?v=8">
     <style>
-        /* ===== LOADING SCREEN ===== */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-main); z-index: 99999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 60px; height: 60px; border: 4px solid rgba(0, 243, 255, 0.2);
-            border-top: 4px solid var(--accent-cyan); border-radius: 50%;
-            animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .loading-text {
-            color: var(--accent-cyan); font-weight: 600; letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
-        }
 
 
 
@@ -596,13 +578,6 @@
             .testimonials-grid { grid-template-columns: 1fr; }
         }
         /* ===== LIGHT THEME OVERRIDES ===== */
-        [data-theme="light"] #loading-screen { background: var(--bg-main); }
-        [data-theme="light"] .spinner {
-            border-color: rgba(6,182,212,0.15);
-            border-top-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(6,182,212,0.2);
-        }
-        [data-theme="light"] .loading-text { text-shadow: none; }
 
         [data-theme="light"] .floating-mockup {
             background: rgba(255,255,255,0.85);
@@ -2020,11 +1995,6 @@
 
 
 
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <div class="loading-text">INITIALIZING SYSTEM...</div>
-    </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
@@ -2821,14 +2791,7 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Hide Loading Screen
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => loadingScreen.style.display = 'none', 500);
-                }
-            }, 1000);
+
 
             // ===== DETECT TOUCH DEVICE =====
             // Disable heavy desktop effects on touch/coarse-pointer devices
