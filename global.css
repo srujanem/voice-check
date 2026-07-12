@@ -1411,7 +1411,7 @@ p {
     }
 
     /* Box sizing */
-    * { max-width: 100vw; box-sizing: border-box; }
+    * { box-sizing: border-box; }
 
     /* ── App Container ── */
     .app-container { padding: 16px; margin-top: 64px; border-radius: 16px; }

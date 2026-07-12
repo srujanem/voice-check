@@ -1885,9 +1885,12 @@
                 <i class="fa-solid fa-shield-halved"></i>
                 AuthGuard
             </div>
-            <button class="drawer-close" id="drawer-close-btn" aria-label="Close menu">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="theme-toggle" style="position:static;"><i class="fa-solid fa-sun"></i></div>
+                <button class="drawer-close" id="drawer-close-btn" aria-label="Close menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         </div>
 
         <nav class="drawer-nav">
@@ -3384,7 +3387,10 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             if (key === 't') { window.location.href = 'text-ui/index.html'; }
             if (key === 'w') { window.location.href = 'video-ui/index.html'; }
             if (key === 'd') { window.location.href = 'dashboard-ui/index.html'; }
-            if (key === 'm') { document.getElementById('themeToggle').click(); }
+            if (key === 'm') { 
+                const tt = document.querySelector('.theme-toggle');
+                if (tt) tt.click(); 
+            }
             if (e.key === 'Home') { window.scrollTo({ top: 0, behavior: 'smooth' }); }
         });
         shortcutsModal.addEventListener('click', e => { if(e.target === shortcutsModal) shortcutsModal.classList.remove('show'); });
@@ -3529,7 +3535,10 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         }
         window.addEventListener('scroll', () => { if (window.scrollY > 100) unlockAchievement('firstScroll'); }, { once: true });
 
-        document.getElementById('themeToggle').addEventListener('click', () => unlockAchievement('nightOwl'));
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => unlockAchievement('nightOwl'));
+        }
 
         // ===== SECTION DOT NAV — rAF throttled =====
         const dotNavItems = document.querySelectorAll('.dot-nav-item');
