@@ -1659,22 +1659,87 @@
         }
         .matrix-content { position: relative; z-index: 2; }
 
-        /* ===== MOBILE BOTTOM NAV ===== */
+
+        /* ========================================
+           PREMIUM MOBILE BOTTOM NAV
+           iOS-style pill indicator + gradient icons
+        ======================================== */
         #mobile-bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 9990;
-            background: rgba(14,14,20,0.95); border-top: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
-            display: none; justify-content: space-around; padding: 8px 0 env(safe-area-inset-bottom);
+            background: rgba(10, 10, 18, 0.92);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 8px;
+            padding-bottom: calc(6px + env(safe-area-inset-bottom));
+            height: calc(64px + env(safe-area-inset-bottom));
+        }
+        [data-theme="light"] #mobile-bottom-nav {
+            background: rgba(248,250,252,0.94);
+            border-top-color: rgba(0,0,0,0.06);
         }
         @media (max-width: 768px) { #mobile-bottom-nav { display: flex; } }
+
         .mob-nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 3px;
-            text-decoration: none; padding: 6px 12px; border-radius: 12px;
-            color: var(--text-secondary); transition: all 0.2s; border: none; background: none; font-family: inherit; cursor: pointer;
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px; flex: 1;
+            text-decoration: none; padding: 6px 4px; border-radius: 14px;
+            color: var(--text-secondary);
+            transition: color 0.22s cubic-bezier(0.25,0.46,0.45,0.94);
+            border: none; background: none; font-family: inherit; cursor: pointer;
+            min-height: 48px; /* iOS minimum tap target */
         }
-        .mob-nav-item.active, .mob-nav-item:hover { color: var(--accent-cyan); }
-        .mob-nav-item i { font-size: 18px; }
-        .mob-nav-item span { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Active background pill */
+        .mob-nav-item.active::before {
+            content: '';
+            position: absolute; top: 2px; left: 6px; right: 6px; bottom: 2px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.12));
+            border: 1px solid rgba(6,182,212,0.2);
+            backdrop-filter: blur(8px);
+        }
+        [data-theme="light"] .mob-nav-item.active::before {
+            background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(99,102,241,0.08));
+            border-color: rgba(14,165,233,0.2);
+        }
+        .mob-nav-item.active { color: var(--accent-cyan); }
+        [data-theme="light"] .mob-nav-item.active { color: #0ea5e9; }
+
+        /* Icon wrapper with gradient on active */
+        .mob-nav-item .mn-icon {
+            position: relative; z-index: 1;
+            font-size: 19px;
+            transition: transform 0.28s cubic-bezier(0.16,1,0.3,1);
+            line-height: 1;
+        }
+        .mob-nav-item.active .mn-icon {
+            transform: translateY(-1px) scale(1.12);
+        }
+        /* Dot indicator */
+        .mob-nav-item.active .mn-dot {
+            display: block;
+        }
+        .mn-dot {
+            display: none;
+            width: 4px; height: 4px; border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan);
+            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+        }
+        .mob-nav-item span {
+            position: relative; z-index: 1;
+            font-size: 9.5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.4px;
+            transition: opacity 0.2s;
+        }
+        /* Press state — iOS-like scale tap feedback */
+        .mob-nav-item:active { transform: scale(0.9); transition: transform 0.1s ease; }
+
+
 
 
 
@@ -1788,14 +1853,35 @@
         </div>
     </div>
 
-    <!-- Mobile Bottom Nav -->
+    <!-- Mobile Bottom Nav - Premium redesign -->
     <nav id="mobile-bottom-nav">
-        <a href="#" class="mob-nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="voice-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-microphone"></i><span>Voice</span></a>
-        <a href="deepfake-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-image"></i><span>Image</span></a>
-        <a href="text-ui/index.html" class="mob-nav-item"><i class="fa-solid fa-file-lines"></i><span>Text</span></a>
-        <button class="mob-nav-item" onclick="document.getElementById('smart-search-modal').classList.add('show');document.getElementById('smart-search-input').focus();"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+        <a href="#" class="mob-nav-item active" id="mnav-home">
+            <i class="fa-solid fa-house mn-icon"></i>
+            <span>Home</span>
+            <span class="mn-dot"></span>
+        </a>
+        <a href="voice-ui/index.html" class="mob-nav-item" id="mnav-voice">
+            <i class="fa-solid fa-microphone mn-icon"></i>
+            <span>Voice</span>
+            <span class="mn-dot"></span>
+        </a>
+        <a href="deepfake-ui/index.html" class="mob-nav-item" id="mnav-image">
+            <i class="fa-solid fa-image mn-icon"></i>
+            <span>Image</span>
+            <span class="mn-dot"></span>
+        </a>
+        <a href="text-ui/index.html" class="mob-nav-item" id="mnav-text">
+            <i class="fa-solid fa-file-lines mn-icon"></i>
+            <span>Text</span>
+            <span class="mn-dot"></span>
+        </a>
+        <button class="mob-nav-item" id="mnav-search" onclick="document.getElementById('smart-search-modal').classList.add('show');document.getElementById('smart-search-input').focus();">
+            <i class="fa-solid fa-magnifying-glass mn-icon"></i>
+            <span>Search</span>
+            <span class="mn-dot"></span>
+        </button>
     </nav>
+
 
     <!-- Cursor Spotlight -->
     <div id="cursor-spotlight"></div>
@@ -1815,6 +1901,79 @@
 
     <!-- Page Transition Overlay -->
     <div class="page-transition-overlay" id="page-transition"></div>
+
+    <!-- Mobile Slide-Over Drawer -->
+    <div id="mobile-drawer-overlay"></div>
+    <div id="mobile-drawer">
+        <div class="drawer-header">
+            <div class="drawer-brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                AuthGuard
+            </div>
+            <button class="drawer-close" id="drawer-close-btn" aria-label="Close menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <nav class="drawer-nav">
+            <a href="#tools" class="drawer-nav-item" id="drawer-tools">
+                <i class="fa-solid fa-grid-2"></i> Tools
+            </a>
+            <a href="#about" class="drawer-nav-item" id="drawer-about">
+                <i class="fa-solid fa-circle-info"></i> About
+            </a>
+            <a href="#testimonials" class="drawer-nav-item" id="drawer-reviews">
+                <i class="fa-solid fa-star"></i> Reviews
+            </a>
+            <a href="#faq" class="drawer-nav-item" id="drawer-faq">
+                <i class="fa-solid fa-circle-question"></i> FAQ
+            </a>
+            <a href="pricing.html" class="drawer-nav-item" id="drawer-pricing">
+                <i class="fa-solid fa-tag"></i> Pricing
+            </a>
+        </nav>
+
+        <div class="drawer-divider"></div>
+        <div class="drawer-section-label">Detection Tools</div>
+
+        <div class="drawer-tools-grid">
+            <a href="voice-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-microphone-lines" style="color:#06b6d4"></i>
+                Voice
+            </a>
+            <a href="deepfake-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-image" style="color:#8b5cf6"></i>
+                Image
+            </a>
+            <a href="text-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-font" style="color:#06b6d4"></i>
+                Text
+            </a>
+            <a href="video-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-video" style="color:#8b5cf6"></i>
+                Video
+            </a>
+            <a href="url-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-link" style="color:#06b6d4"></i>
+                URL Scan
+            </a>
+            <a href="document-ui/index.html" class="drawer-tool-card">
+                <i class="fa-solid fa-file-lines" style="color:#8b5cf6"></i>
+                Document
+            </a>
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <div class="drawer-actions">
+            <a href="login.html" class="drawer-action-btn" id="drawer-login">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+            </a>
+            <a href="dashboard-ui/index.html" class="drawer-action-btn solid">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </a>
+        </div>
+    </div>
 
     <!-- Milestone Popup -->
     <div class="milestone-popup" id="milestone-popup">
@@ -3036,26 +3195,58 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                 }
             }, 3000);
             
-            // Hamburger Menu Logic
+            // ===== MOBILE SLIDE-OVER DRAWER =====
             const hamburger = document.getElementById('hamburgerMenu');
-            const navLinks = document.querySelector('.nav-links');
-            const navRight = document.querySelector('.nav-right');
-            
+            const drawer = document.getElementById('mobile-drawer');
+            const drawerOverlay = document.getElementById('mobile-drawer-overlay');
+            const drawerCloseBtn = document.getElementById('drawer-close-btn');
+
+            function openDrawer() {
+                drawerOverlay.style.display = 'block';
+                requestAnimationFrame(() => {
+                    drawerOverlay.classList.add('open');
+                    drawer.classList.add('open');
+                });
+                document.body.style.overflow = 'hidden'; // prevent scroll behind
+            }
+            function closeDrawer() {
+                drawerOverlay.classList.remove('open');
+                drawer.classList.remove('open');
+                document.body.style.overflow = '';
+                setTimeout(() => { drawerOverlay.style.display = 'none'; }, 400);
+                const icon = hamburger?.querySelector('i');
+                if (icon) { icon.classList.remove('fa-xmark'); icon.classList.add('fa-bars'); }
+            }
+
             if (hamburger) {
                 hamburger.addEventListener('click', () => {
-                    navLinks.classList.toggle('active');
-                    navRight.classList.toggle('active');
-                    const icon = hamburger.querySelector('i');
-                    if (navLinks.classList.contains('active')) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-xmark');
-                    } else {
-                        icon.classList.remove('fa-xmark');
-                        icon.classList.add('fa-bars');
+                    if (drawer.classList.contains('open')) { closeDrawer(); }
+                    else {
+                        openDrawer();
+                        const icon = hamburger.querySelector('i');
+                        if (icon) { icon.classList.remove('fa-bars'); icon.classList.add('fa-xmark'); }
                     }
                 });
             }
-        });
+            if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+            if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+            // Close drawer on nav link click (smooth scroll)
+            document.querySelectorAll('.drawer-nav-item[href^="#"]').forEach(link => {
+                link.addEventListener('click', () => {
+                    closeDrawer();
+                });
+            });
+
+            // Swipe right to close gesture
+            let _dTouchX = 0;
+            if (drawer) {
+                drawer.addEventListener('touchstart', e => { _dTouchX = e.touches[0].clientX; }, { passive: true });
+                drawer.addEventListener('touchend', e => {
+                    if (e.changedTouches[0].clientX - _dTouchX > 60) closeDrawer();
+                }, { passive: true });
+            }
+
 
         // ===== MAGNETIC BUTTONS =====
         document.querySelectorAll('.btn-primary, .btn-secondary, .login-btn').forEach(btn => {
