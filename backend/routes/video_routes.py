@@ -8,23 +8,15 @@ import uuid
 import json
 from backend.services.ml_engine import ml
 from backend.config import Config
-from backend.firebase_init import get_db
+from backend.services.external_db import external_db
 from backend.decorators import require_api_key
 
 video_bp = Blueprint('video', __name__)
 
 def process_video_task(app, task_id, path):
     with app.app_context():
-        db = get_db()
-        task_ref = db.collection('video_tasks').document(task_id)
-        
-        doc = task_ref.get()
-        if not doc.exists:
-            if os.path.exists(path):
-                os.remove(path)
-            return
-            
-        task_ref.update({"status": "PROCESSING"})
+        # Update status to PROCESSING
+        external_db.update_document('video_tasks', task_id, {"status": "PROCESSING"})
         
         try:
             frames_dir = os.path.join(Config.UPLOAD_FOLDER, f"frames_{task_id}")
@@ -72,14 +64,14 @@ def process_video_task(app, task_id, path):
                 "prob_ai": prob_fake
             }
 
-            task_ref.update({
+            external_db.update_document('video_tasks', task_id, {
                 "result_data": json.dumps(result_dict),
                 "status": "COMPLETED"
             })
             
         except Exception as e:
             print(f"Error processing video task {task_id}: {e}")
-            task_ref.update({
+            external_db.update_document('video_tasks', task_id, {
                 "status": "FAILED",
                 "error_msg": str(e)
             })
@@ -106,9 +98,8 @@ def predict_video():
     path = os.path.join(Config.UPLOAD_FOLDER, f"{task_id}_{file.filename}")
     file.save(path)
 
-    # Insert into Firestore
-    db = get_db()
-    db.collection('video_tasks').document(task_id).set({"status": "PENDING"})
+    # Insert into External DB
+    external_db.create_document('video_tasks', {"id": task_id, "status": "PENDING"})
 
     # Start background thread
     app = current_app._get_current_object()
@@ -122,18 +113,21 @@ def predict_video():
 @video_bp.route("/video_status/<task_id>", methods=["GET"])
 @require_api_key
 def video_status(task_id):
-    db = get_db()
-    doc = db.collection('video_tasks').document(task_id).get()
+    resp = external_db.list_documents('video_tasks')
+    if not resp.get("success"):
+        return jsonify({"error": "Could not fetch task status"}), 500
+        
+    tasks = resp.get("data", [])
+    task_data = next((t for t in tasks if t.get("id") == task_id or t.get("_id") == task_id), None)
     
-    if not doc.exists:
+    if not task_data:
         return jsonify({"error": "Task not found"}), 404
         
-    data = doc.to_dict()
-    status = data.get("status")
+    status = task_data.get("status")
     
     if status == 'COMPLETED':
-        return jsonify(json.loads(data.get("result_data", "{}")))
+        return jsonify(json.loads(task_data.get("result_data", "{}")))
     elif status == 'FAILED':
-        return jsonify({"error": data.get("error_msg", "Task failed")}), 500
+        return jsonify({"error": task_data.get("error_msg", "Task failed")}), 500
     else:
         return jsonify({"status": status})

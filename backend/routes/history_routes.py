@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from backend.firebase_init import get_db
+from backend.services.external_db import external_db
 from backend.decorators import require_api_key
 from datetime import datetime
-from firebase_admin import firestore
+import uuid
 
 history_bp = Blueprint('history', __name__)
 
@@ -19,51 +19,38 @@ def save_history():
     if not scan_type or not target_name:
         return jsonify({"error": "Missing required fields"}), 400
         
-    db = get_db()
-    
-    doc_ref = db.collection('users').document(user_id).collection('history').document()
     scan_data = {
-        "id": doc_ref.id,
+        "id": str(uuid.uuid4()),
         "scan_type": scan_type,
         "target_name": target_name,
         "is_ai": is_ai,
         "confidence": confidence,
-        "timestamp": firestore.SERVER_TIMESTAMP
+        "timestamp": datetime.utcnow().isoformat()
     }
-    doc_ref.set(scan_data)
     
-    return jsonify({"message": "Scan saved", "id": doc_ref.id})
+    collection_name = f"history_{user_id}"
+    result = external_db.create_document(collection_name, scan_data)
+    
+    if result.get("success"):
+        return jsonify({"message": "Scan saved", "id": scan_data["id"]})
+    return jsonify({"error": "Failed to save history"}), 500
 
 @history_bp.route("/history", methods=["GET"])
 @require_api_key
 def get_history():
     user_id = request.user['uid']
         
-    db = get_db()
-    
     try:
-        scans_ref = db.collection('users').document(user_id).collection('history')
-        docs = scans_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).limit(50).stream()
+        collection_name = f"history_{user_id}"
+        result = external_db.list_documents(collection_name)
         
-        results = []
-        for doc in docs:
-            s = doc.to_dict()
-            # Firestore timestamp to string
-            ts = s.get("timestamp")
-            if ts:
-                ts_str = ts.isoformat()
-            else:
-                ts_str = None
-                
-            results.append({
-                "id": s.get("id"),
-                "scan_type": s.get("scan_type"),
-                "target_name": s.get("target_name"),
-                "is_ai": s.get("is_ai"),
-                "confidence": s.get("confidence"),
-                "timestamp": ts_str
-            })
-        return jsonify(results)
+        if result.get("success"):
+            docs = result.get("data", [])
+            # Sort by timestamp descending
+            docs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+            return jsonify(docs[:50])
+            
+        return jsonify([])
     except Exception as e:
-        print(f"Firestore history error: {e}")
+        print(f"External DB history error: {e}")
         return jsonify([])

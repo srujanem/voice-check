@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyKeyBtn = document.getElementById('copyKeyBtn');
     const generateKeyBtn = document.getElementById('generateKeyBtn');
 
-    // Retrieve the real API key set by login.html (Firebase ID token)
+    // Retrieve the real API key set by login.html
     let savedKey = localStorage.getItem('api_key') || localStorage.getItem('authGuard_apiKey');
     if (!savedKey) {
         savedKey = 'Not logged in — please sign in first.';
@@ -204,6 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     generateKeyBtn.addEventListener('click', () => {
-        alert('Your API key is your Firebase login token. To refresh it, please log out and log back in — your token will be renewed automatically.');
+        alert('To change your API key, please log out and log back in with your new VK Cloud key.');
     });
 });

@@ -30,8 +30,11 @@ def predict_image():
             })
         file.seek(0)
 
-        img = Image.open(file).convert('RGB')
-        img = img.resize((224, 224))
+        try:
+            img = Image.open(file).convert('RGB')
+            img = img.resize((224, 224))
+        except Exception as e:
+            return jsonify({"error": "Invalid or corrupted image file."}), 400
         img_array = tf.keras.preprocessing.image.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0)
 

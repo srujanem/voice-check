@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showResults(data) {
         resultsSection.classList.remove('hidden');
         
-        const isAi = data.prediction === "AI";
+        const isAi = data.prediction === "AI-Generated";
         const confidence = Math.round(data.confidence);
         
         resultCard.className = 'result-card';

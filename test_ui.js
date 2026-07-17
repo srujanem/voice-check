@@ -23,10 +23,11 @@ const fs = require('fs');
 
   // Upload file
   const fileInput = await page.$('#fileInput');
-  await fileInput.uploadFile('dummy.jpg');
+  await fileInput.uploadFile('sample_ai_face.png');
   console.log("Uploaded file");
 
   // Check if button is enabled
+  await page.waitForFunction(() => !document.getElementById('btnAnalyze').disabled);
   const btnDisabled = await page.evaluate(() => document.getElementById('btnAnalyze').disabled);
   console.log("Is analyze button disabled?", btnDisabled);
 

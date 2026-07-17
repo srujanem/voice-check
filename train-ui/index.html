@@ -132,34 +132,9 @@
             <a href="../index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Back to Home</a>
         </div>
 
-        <div class="card" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2);">
-            <h2 style="color: #f59e0b; margin-bottom: 20px;"><i class="fa-solid fa-link"></i> External Database Connection</h2>
-            
-            <button type="button" class="ext-db-toggle" id="ext-db-toggle">
-                <i class="fa-solid fa-database"></i>
-                Connect to Friend's Database
-                <i class="fa-solid fa-chevron-down chevron"></i>
-            </button>
-
-            <div class="ext-db-body" id="ext-db-body">
-                <div class="ext-db-form">
-                    <div class="form-group">
-                        <label>Server URL</label>
-                        <input type="url" id="ext-db-url" placeholder="https://xxxxx.shares.zrok.io">
-                    </div>
-                    <div class="form-group">
-                        <label>API Key</label>
-                        <input type="text" id="ext-db-key" placeholder="Enter your friend's API key">
-                    </div>
-                    <button type="button" class="ext-db-connect-btn" id="ext-db-connect">Connect</button>
-                    <div class="ext-db-status" id="ext-db-status"></div>
-                </div>
-            </div>
-        </div>
-
         <div class="card">
             <h2><i class="fa-solid fa-database"></i> External Data Pipeline</h2>
-            <p style="color: var(--text-secondary);">Sync datasets from the external Backend-as-a-Service to your local environment for training.</p>
+            <p style="color: var(--text-secondary);">Sync datasets from the VKServer database to your local environment for training.</p>
             <div class="action-row">
                 <button class="btn-primary" id="btn-sync"><i class="fa-solid fa-cloud-arrow-down"></i> Sync Data from External DB</button>
             </div>
@@ -179,21 +154,6 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-        const firebaseConfig = {
-            projectId: "voicecheck-9bfec",
-            appId: "1:970751051316:web:dc05186496618c33346c61",
-            storageBucket: "voicecheck-9bfec.firebasestorage.app",
-            apiKey: "AIzaSyAKWMsWufQYipRy5kYBTE1R0bgsRBIHlVs",
-            authDomain: "voicecheck-9bfec.firebaseapp.com",
-            messagingSenderId: "970751051316",
-            measurementId: "G-2SWJD9JFZP"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const term = document.getElementById('terminal');
 
         function log(msg) {
@@ -201,11 +161,9 @@
             term.scrollTop = term.scrollHeight;
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user || user.email !== 'srujanem222@gmail.com') {
-                window.location.href = '../index.html'; // Kick out non-admins
-            }
-        });
+        if (!localStorage.getItem('api_key')) {
+            window.location.href = '../login.html'; // Kick out unauthenticated users
+        }
 
         async function runAdminTask(endpoint, data = {}) {
             const token = localStorage.getItem('api_key');
@@ -254,79 +212,6 @@
             log('Triggering text model training...');
             runAdminTask('/api/admin/train-model', { type: 'text' });
         };
-    </script>
-    <script>
-        (function () {
-            const toggle = document.getElementById('ext-db-toggle');
-            const body   = document.getElementById('ext-db-body');
-            const urlIn  = document.getElementById('ext-db-url');
-            const keyIn  = document.getElementById('ext-db-key');
-            const btn    = document.getElementById('ext-db-connect');
-            const status = document.getElementById('ext-db-status');
-
-            // Toggle expand / collapse
-            toggle.addEventListener('click', function () {
-                toggle.classList.toggle('open');
-                body.classList.toggle('open');
-            });
-
-            // Auto-fill and auto-connect from localStorage on page load
-            const savedUrl = localStorage.getItem('external_db_url');
-            const savedKey = localStorage.getItem('external_db_api_key');
-            if (savedUrl) urlIn.value = savedUrl;
-            if (savedKey) keyIn.value = savedKey;
-
-            async function doConnect() {
-                const baseUrl = urlIn.value.trim();
-                const apiKey  = keyIn.value.trim();
-
-                if (!baseUrl || !apiKey) {
-                    status.textContent = 'Please fill in both fields.';
-                    status.className   = 'ext-db-status error';
-                    return;
-                }
-
-                btn.textContent = 'Connecting...';
-                btn.disabled    = true;
-                status.className = 'ext-db-status';
-                status.style.display = 'block';
-
-                try {
-                    const res = await fetch('/api/external/connect', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ base_url: baseUrl, api_key: apiKey })
-                    });
-
-                    if (res.ok) {
-                        localStorage.setItem('external_db_url', baseUrl);
-                        localStorage.setItem('external_db_api_key', apiKey);
-                        status.textContent = 'Connected to external database!';
-                        status.className   = 'ext-db-status success';
-                        document.getElementById('terminal').textContent += '\n> Success: Connected to external DB.';
-                    } else {
-                        const data = await res.json().catch(() => ({}));
-                        status.textContent = data.error || 'Connection failed (HTTP ' + res.status + ').';
-                        status.className   = 'ext-db-status error';
-                    }
-                } catch (err) {
-                    console.error('External DB connect error:', err);
-                    status.textContent = 'Network error – could not reach the server.';
-                    status.className   = 'ext-db-status error';
-                } finally {
-                    btn.textContent = 'Connect';
-                    btn.disabled    = false;
-                }
-            }
-
-            if (savedUrl && savedKey) {
-                // Silently auto-connect on load
-                doConnect();
-            }
-
-            // Connect button handler
-            btn.addEventListener('click', doConnect);
-        })();
     </script>
 </body>
 </html>

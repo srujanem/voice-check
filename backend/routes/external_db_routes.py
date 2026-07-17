@@ -1,8 +1,6 @@
 from flask import Blueprint, request, jsonify
 from backend.decorators import require_api_key
-from backend.firebase_init import get_db
 from backend.services.external_db import ExternalDB, external_db as _external_db
-from firebase_admin import firestore
 
 external_db_bp = Blueprint("external_db", __name__)
 
@@ -20,33 +18,28 @@ def _get_db():
 # ------------------------------------------------------------------
 @external_db_bp.route("/api/external/connect", methods=["POST"])
 def connect_external_db():
-    """Accept base_url + api_key, reinitialise the ExternalDB singleton."""
-    data = request.get_json(silent=True)
-    if not data:
-        return jsonify({"error": "Request body must be JSON"}), 400
-
+    data = request.json
     base_url = data.get("base_url")
     api_key = data.get("api_key")
 
     if not base_url or not api_key:
-        return jsonify({"error": "Both 'base_url' and 'api_key' are required"}), 400
+        return jsonify({"error": "base_url and api_key are required"}), 400
 
-    new_instance = ExternalDB(base_url=base_url, api_key=api_key)
-
-    # Quick connectivity test
-    test = new_instance.list_documents("_ping")
-    if not test["success"] and "Could not connect" in test.get("error", ""):
+    new_db = ExternalDB(base_url, api_key)
+    
+    # Test connection by listing a dummy collection
+    test = new_db.list_documents("system_test_conn")
+    if test["success"] or test.get("status_code") in [200, 404]:
+        _db_ref["instance"] = new_db
         return jsonify({
-            "error": "Could not reach the external database",
-            "details": test.get("error"),
-        }), 502
-
-    _db_ref["instance"] = new_instance
-
-    return jsonify({
-        "message": "External DB connected successfully",
-        "resolved_url": new_instance.base_url
-    }), 200
+            "message": "External DB connected successfully",
+            "resolved_url": new_db.base_url
+        }), 200
+    else:
+        return jsonify({
+            "error": "Failed to connect to the external DB",
+            "details": test.get("details", test.get("error"))
+        }), 400
 
 
 # ------------------------------------------------------------------
@@ -56,70 +49,24 @@ def connect_external_db():
 def external_db_status():
     """Return connection status for the external database."""
     db = _get_db()
-    configured = db.is_configured()
-
-    masked_url = None
-    if db.base_url:
-        # Show scheme + first 12 chars then mask the rest
-        visible = db.base_url[:min(len(db.base_url), 20)]
-        masked_url = visible + "****" if len(db.base_url) > 20 else db.base_url
-
-    test_result = None
-    if configured:
-        test = db.list_documents("_ping")
-        test_result = "ok" if test["success"] else test.get("error")
-
-    return jsonify({
-        "configured": configured,
-        "base_url": masked_url,
-        "connection_test": test_result,
-    }), 200
-
-
-# ------------------------------------------------------------------
-# POST /api/external/sync-history
-# ------------------------------------------------------------------
-@external_db_bp.route("/api/external/sync-history", methods=["POST"])
-@require_api_key
-def sync_history():
-    """Read the user's scan history from Firebase and push it to the
-    external DB's ``scan_history`` collection."""
-    db = _get_db()
+    
     if not db.is_configured():
-        return jsonify({"error": "External DB is not configured. Use /api/external/connect first."}), 400
+        return jsonify({"configured": False}), 200
 
-    user_id = request.user["uid"]
-
-    try:
-        fb = get_db()
-        scans_ref = fb.collection("users").document(user_id).collection("history")
-        docs = scans_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
-
-        synced = 0
-        errors = 0
-        for doc in docs:
-            record = doc.to_dict()
-            # Convert Firestore timestamps to ISO strings for JSON compat
-            ts = record.get("timestamp")
-            if ts:
-                record["timestamp"] = ts.isoformat()
-            record["firebase_uid"] = user_id
-
-            result = db.create_document("scan_history", record)
-            if result["success"]:
-                synced += 1
-            else:
-                errors += 1
-
+    test = db.list_documents("system_test_conn")
+    if test["success"] or test.get("status_code") in [200, 404]:
         return jsonify({
-            "message": "History sync complete",
-            "synced": synced,
-            "errors": errors,
+            "configured": True,
+            "base_url": db.base_url,
+            "connection_test": "ok",
         }), 200
 
-    except Exception as e:
-        print(f"sync-history error: {e}")
-        return jsonify({"error": f"Failed to sync history: {str(e)}"}), 500
+    return jsonify({
+        "configured": True,
+        "base_url": db.base_url,
+        "connection_test": "failed",
+        "details": test.get("details", test.get("error")),
+    }), 200
 
 
 # ------------------------------------------------------------------
@@ -129,9 +76,6 @@ def sync_history():
 def list_collection(collection):
     """Proxy: list documents from the external DB."""
     db = _get_db()
-    if not db.is_configured():
-        return jsonify({"error": "External DB is not configured. Use /api/external/connect first."}), 400
-
     result = db.list_documents(collection)
     if result["success"]:
         return jsonify(result["data"]), result.get("status_code", 200)
@@ -145,9 +89,6 @@ def list_collection(collection):
 def create_in_collection(collection):
     """Proxy: create a document in the external DB."""
     db = _get_db()
-    if not db.is_configured():
-        return jsonify({"error": "External DB is not configured. Use /api/external/connect first."}), 400
-
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be JSON"}), 400

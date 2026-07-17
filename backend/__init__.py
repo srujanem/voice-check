@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from backend.config import Config
-from backend.firebase_init import init_firebase
 import os
 
 def create_app():
@@ -11,9 +10,6 @@ def create_app():
     app.config.from_object(Config)
 
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-    
-    # Initialize Firebase Admin SDK
-    init_firebase()
 
     # Register Blueprints
     from backend.routes.voice_routes import voice_bp
@@ -25,6 +21,7 @@ def create_app():
     from backend.routes.history_routes import history_bp
     from backend.routes.external_db_routes import external_db_bp
     from backend.routes.admin_routes import admin_bp
+    from backend.routes.auth_routes import auth_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -35,6 +32,7 @@ def create_app():
     app.register_blueprint(history_bp)
     app.register_blueprint(external_db_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)
 
     @app.route("/", methods=["GET"])
     def home():
