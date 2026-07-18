@@ -2751,21 +2751,39 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
         const dropdownEmail = document.getElementById('dropdown-email');
         const logoutBtn = document.getElementById('logout-btn');
 
-        function checkAuth() {
+        async function checkAuth() {
             const apiKey = localStorage.getItem('api_key');
             if (apiKey) {
-                loginArea.style.display = 'none';
-                userArea.style.display = 'flex';
-                // Using API Key prefix as a display name
-                const displayName = 'User ' + apiKey.substring(0, 8);
-                dropdownName.textContent = displayName;
-                dropdownEmail.textContent = 'API Key Auth';
-                
-                avatarTrigger.innerHTML = `<div class="user-avatar-placeholder">U</div>`;
+                try {
+                    const res = await fetch('http://localhost:8000/api/auth/me', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`
+                        }
+                    });
+                    
+                    if (!res.ok) throw new Error('Invalid token');
+                    
+                    const user = await res.json();
+                    
+                    loginArea.style.display = 'none';
+                    userArea.style.display = 'flex';
+                    
+                    dropdownName.textContent = user.username || 'User';
+                    dropdownEmail.textContent = user.email || '';
+                    
+                    const firstLetter = (user.username || 'U').charAt(0).toUpperCase();
+                    avatarTrigger.innerHTML = `<div class="user-avatar-placeholder">${firstLetter}</div>`;
 
-                const adminBtn = document.getElementById('admin-train-btn');
-                if (adminBtn) {
-                    adminBtn.style.display = 'none'; // Only available for superadmins maybe
+                    const adminBtn = document.getElementById('admin-train-btn');
+                    if (adminBtn) {
+                        adminBtn.style.display = 'none'; // Only available for superadmins maybe
+                    }
+                } catch (err) {
+                    console.error('Auth verification failed:', err);
+                    localStorage.removeItem('api_key');
+                    loginArea.style.display = 'block';
+                    userArea.style.display = 'none';
                 }
             } else {
                 loginArea.style.display = 'block';

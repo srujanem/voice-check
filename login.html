@@ -113,19 +113,19 @@
             </div>
 
             <form id="auth-form">
-                <div class="form-group" id="email-group">
+                <div class="form-group" id="username-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="your_username" required>
+                </div>
+
+                <div class="form-group" id="email-group" style="display: none;">
                     <label>Email Address</label>
-                    <input type="email" id="email" placeholder="you@example.com" required>
+                    <input type="email" id="email" placeholder="you@example.com">
                 </div>
                 
                 <div class="form-group" id="password-group">
                     <label>Password</label>
                     <input type="password" id="password" placeholder="••••••••" required>
-                </div>
-                
-                <div class="form-group" id="otp-group" style="display: none;">
-                    <label>Enter OTP</label>
-                    <input type="text" id="otp" placeholder="123456" maxlength="6">
                 </div>
 
                 <div id="error-message" style="display: none;"></div>
@@ -139,21 +139,18 @@
     <script src="theme.js"></script>
     <script>
         const form = document.getElementById('auth-form');
+        const usernameInput = document.getElementById('username');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
-        const otpInput = document.getElementById('otp');
-        const passwordGroup = document.getElementById('password-group');
-        const otpGroup = document.getElementById('otp-group');
+        const emailGroup = document.getElementById('email-group');
         const submitBtn = document.getElementById('submit-btn');
         const errorMsg = document.getElementById('error-message');
         const successMsg = document.getElementById('success-message');
         const title = document.getElementById('auth-title');
         
         let mode = 'login'; // 'login' or 'signup'
-        let signupStep = 1; // 1: Email, 2: OTP + Password
 
-        const API_KEY = 'ais_8f293b4a2e5c89d107a6f2b1d3e8a49c';
-        const BASE_URL = 'http://localhost:8000/api/db';
+        const BASE_URL = 'http://localhost:8000/api';
 
         function switchTab(newMode) {
             mode = newMode;
@@ -162,23 +159,17 @@
             
             errorMsg.style.display = 'none';
             successMsg.style.display = 'none';
-            emailInput.disabled = false;
             
             if (mode === 'login') {
                 title.innerText = 'Welcome Back';
-                passwordGroup.style.display = 'block';
-                passwordInput.required = true;
-                otpGroup.style.display = 'none';
-                otpInput.required = false;
+                emailGroup.style.display = 'none';
+                emailInput.required = false;
                 submitBtn.innerText = 'Login';
             } else {
                 title.innerText = 'Create Account';
-                signupStep = 1;
-                passwordGroup.style.display = 'none';
-                passwordInput.required = false;
-                otpGroup.style.display = 'none';
-                otpInput.required = false;
-                submitBtn.innerText = 'Send OTP';
+                emailGroup.style.display = 'block';
+                emailInput.required = true;
+                submitBtn.innerText = 'Sign Up';
             }
         }
 
@@ -187,10 +178,10 @@
             errorMsg.style.display = 'none';
             successMsg.style.display = 'none';
             
-            const email = emailInput.value.trim();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
 
             if (mode === 'login') {
-                const password = passwordInput.value;
                 submitBtn.innerText = 'Logging in...';
                 submitBtn.disabled = true;
                 
@@ -198,18 +189,16 @@
                     const res = await fetch(`${BASE_URL}/auth/login`, {
                         method: 'POST',
                         headers: { 
-                            'x-api-key': API_KEY,
                             'Content-Type': 'application/json' 
                         },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({ username, password })
                     });
                     
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
                     
-                    localStorage.setItem('api_key', data.token || API_KEY);
-                    localStorage.setItem('user_id', email);
-                    localStorage.setItem('user_name', email);
+                    localStorage.setItem('api_key', data.access_token);
+                    localStorage.setItem('user_name', username);
                     
                     successMsg.innerText = 'Login successful! Redirecting...';
                     successMsg.style.display = 'block';
@@ -222,73 +211,31 @@
                     submitBtn.disabled = false;
                 }
             } else if (mode === 'signup') {
-                if (signupStep === 1) {
-                    submitBtn.innerText = 'Sending...';
-                    submitBtn.disabled = true;
+                const email = emailInput.value.trim();
+                submitBtn.innerText = 'Signing up...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const res = await fetch(`${BASE_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({ username, email, password })
+                    });
                     
-                    try {
-                        const res = await fetch(`${BASE_URL}/auth/signup`, {
-                            method: 'POST',
-                            headers: { 
-                                'x-api-key': API_KEY,
-                                'Content-Type': 'application/json' 
-                            },
-                            body: JSON.stringify({ email })
-                        });
-                        
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || data.error || 'Failed to send OTP');
-                        
-                        successMsg.innerText = `OTP sent to ${email}`;
-                        successMsg.style.display = 'block';
-                        
-                        emailInput.disabled = true;
-                        otpGroup.style.display = 'block';
-                        otpInput.required = true;
-                        passwordGroup.style.display = 'block';
-                        passwordInput.required = true;
-                        submitBtn.innerText = 'Verify & Create Account';
-                        signupStep = 2;
-                    } catch (err) {
-                        errorMsg.innerText = err.message;
-                        errorMsg.style.display = 'block';
-                        submitBtn.innerText = 'Send OTP';
-                    } finally {
-                        submitBtn.disabled = false;
-                    }
-                } else if (signupStep === 2) {
-                    const otp = otpInput.value.trim();
-                    const password = passwordInput.value;
-                    submitBtn.innerText = 'Verifying...';
-                    submitBtn.disabled = true;
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || data.error || 'Signup failed');
                     
-                    try {
-                        const res = await fetch(`${BASE_URL}/auth/verify`, {
-                            method: 'POST',
-                            headers: { 
-                                'x-api-key': API_KEY,
-                                'Content-Type': 'application/json' 
-                            },
-                            body: JSON.stringify({ email, otp, password })
-                        });
-                        
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || data.error || 'Verification failed');
-                        
-                        localStorage.setItem('api_key', data.token || API_KEY);
-                        localStorage.setItem('user_id', email);
-                        localStorage.setItem('user_name', email);
-                        
-                        successMsg.innerText = 'Account created successfully! Redirecting...';
-                        successMsg.style.display = 'block';
-                        setTimeout(() => window.location.href = 'index.html', 1000);
-                    } catch (err) {
-                        errorMsg.innerText = err.message;
-                        errorMsg.style.display = 'block';
-                        submitBtn.innerText = 'Verify & Create Account';
-                    } finally {
-                        submitBtn.disabled = false;
-                    }
+                    successMsg.innerText = 'Account created successfully! Please log in.';
+                    successMsg.style.display = 'block';
+                    switchTab('login');
+                } catch (err) {
+                    errorMsg.innerText = err.message;
+                    errorMsg.style.display = 'block';
+                    submitBtn.innerText = 'Sign Up';
+                } finally {
+                    submitBtn.disabled = false;
                 }
             }
         };
