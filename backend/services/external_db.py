@@ -9,21 +9,7 @@ class ExternalDB:
         self.base_url = (base_url or "https://vkserver.vercel.app").rstrip("/")
         self.api_key = api_key or os.environ.get("VKSERVER_API_KEY", "ais_8f293b4a2e5c89d107a6f2b1d3e8a49c")
         self.scraper = cloudscraper.create_scraper()
-        self._resolve_base_url()
-
-    def _resolve_base_url(self):
-        if not self.base_url:
-            return
-        try:
-            if 'vercel.app' in self.base_url:
-                resp = self.scraper.get(f"{self.base_url}/api/zrok", timeout=10)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    if data.get('url'):
-                        self.base_url = data['url'].rstrip('/')
-                        print(f"Resolved middleman to real backend: {self.base_url}")
-        except Exception as e:
-            print(f"Could not resolve middleman URL: {e}")
+        pass
 
     @classmethod
     def from_config(cls):
