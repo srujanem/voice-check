@@ -7,7 +7,7 @@ class ExternalDB:
 
     def __init__(self, base_url=None, api_key=None):
         self.base_url = (base_url or "https://vkserver.vercel.app").rstrip("/")
-        self.api_key = api_key or os.environ.get("VKSERVER_API_KEY", "sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5")
+        self.api_key = api_key or os.environ.get("VKSERVER_API_KEY", "ais_8f293b4a2e5c89d107a6f2b1d3e8a49c")
         self.scraper = cloudscraper.create_scraper()
         self._resolve_base_url()
 
