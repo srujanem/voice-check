@@ -2755,10 +2755,11 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             const apiKey = localStorage.getItem('api_key');
             if (apiKey) {
                 try {
-                    const res = await fetch('http://localhost:8000/api/auth/me', {
+                    const res = await fetch('https://cute-paws-rule.loca.lt/api/db/auth/me', {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${apiKey}`
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Bypass-Tunnel-Reminder': 'true'
                         }
                     });
                     
