@@ -150,7 +150,7 @@
         
         let mode = 'login'; // 'login' or 'signup'
 
-        const BASE_URL = 'https://cute-paws-rule.loca.lt/api/db';
+        const BASE_URL = 'https://a375d5af0eb7b5.lhr.life/api/db';
 
         function switchTab(newMode) {
             mode = newMode;
@@ -189,8 +189,7 @@
                     const res = await fetch(`${BASE_URL}/auth/login`, {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/json',
-                            'Bypass-Tunnel-Reminder': 'true'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ username, password })
                     });
@@ -220,8 +219,7 @@
                     const res = await fetch(`${BASE_URL}/auth/signup`, {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/json',
-                            'Bypass-Tunnel-Reminder': 'true'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ username, email, password })
                     });
