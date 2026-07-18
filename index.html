@@ -2758,7 +2758,8 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
                     const res = await fetch('https://blitz-untimed-yiddish.ngrok-free.dev/api/db/auth/me', {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${apiKey}`
+                            'Authorization': `Bearer ${apiKey}`,
+                            'ngrok-skip-browser-warning': 'true'
                         }
                     });
                     
