@@ -189,13 +189,19 @@
                     const res = await fetch(`${BASE_URL}/auth/login`, {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true'
                         },
                         body: JSON.stringify({ username, password })
                     });
                     
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
+                    if (!res.ok) {
+                        if (data.detail && Array.isArray(data.detail)) {
+                            throw new Error(data.detail[0].msg);
+                        }
+                        throw new Error(data.message || data.error || data.detail || 'Login failed');
+                    }
                     
                     localStorage.setItem('api_key', data.access_token);
                     localStorage.setItem('user_name', username);
@@ -219,13 +225,19 @@
                     const res = await fetch(`${BASE_URL}/auth/signup`, {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true'
                         },
                         body: JSON.stringify({ username, email, password })
                     });
                     
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || data.error || 'Signup failed');
+                    if (!res.ok) {
+                        if (data.detail && Array.isArray(data.detail)) {
+                            throw new Error(data.detail[0].msg);
+                        }
+                        throw new Error(data.message || data.error || data.detail || 'Signup failed');
+                    }
                     
                     successMsg.innerText = 'Account created successfully! Please log in.';
                     successMsg.style.display = 'block';
