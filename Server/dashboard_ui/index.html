@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Shield Dashboard</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons for a clean look -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg-base: #050505;
+            --bg-surface: #121212;
+            --bg-elevated: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+        }
+
+        /* Top Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(5, 5, 5, 0.6);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .logo i {
+            color: var(--accent-primary);
+            font-size: 1.5rem;
+        }
+
+        .server-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            padding: 0.4rem 1rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.online {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        /* Main Content */
+        main {
+            padding: 3rem;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header i {
+            font-size: 1.2rem;
+        }
+
+        /* Controls */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.95rem;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        /* Table */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        td {
+            padding: 1.2rem 1rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: background 0.2s;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Animations */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fade-in 0.5s ease backwards;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="ph-fill ph-shield-check"></i>
+            AI Shield
+        </div>
+        <div class="server-status-badge">
+            <div id="nav-dot" class="status-indicator"></div>
+            <span id="nav-text">API Offline</span>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>System Overview</h1>
+            <p>Monitor your machine learning backend and active users.</p>
+        </div>
+
+        <div class="grid">
+            <!-- Left Column: Controls & GPU -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ph ph-terminal-window"></i> Server Control
+                    </div>
+                    <div class="control-group">
+                        <div class="stat-row">
+                            <span class="stat-label">Main Port</span>
+                            <span class="stat-value">8000</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">API Docs</span>
+                            <span class="stat-value" id="docs-link" style="color: var(--text-secondary)">Not available</span>
+                        </div>
+                        <div class="button-group">
+                            <button id="btn-start" class="btn-primary" onclick="startServer()">
+                                <i class="ph ph-play"></i> Start
+                            </button>
+                            <button id="btn-stop" class="btn-danger" onclick="stopServer()" disabled>
+                                <i class="ph ph-stop"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ph ph-cpu"></i> Hardware Metrics
+                    </div>
+                    <div class="control-group" id="gpu-content">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Gathering telemetry...</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Users -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="ph ph-users"></i> Recent Logins & Signups
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr><td colspan="4" style="color: var(--text-secondary)">Loading database records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data polling
+        setInterval(fetchStatus, 2000);
+        setInterval(fetchGPU, 4000);
+        setInterval(fetchUsers, 5000);
+
+        let isOnline = false;
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                isOnline = data.status === 'online';
+                
+                const dot = document.getElementById('nav-dot');
+                const txt = document.getElementById('nav-text');
+                const docsLink = document.getElementById('docs-link');
+                const btnStart = document.getElementById('btn-start');
+                const btnStop = document.getElementById('btn-stop');
+
+                if(isOnline) {
+                    dot.classList.add('online');
+                    txt.innerText = 'API Online';
+                    docsLink.innerHTML = '<a href="http://localhost:8000/docs" target="_blank" style="color:var(--accent-primary); text-decoration:none;">View Swagger</a>';
+                    btnStart.disabled = true;
+                    btnStop.disabled = false;
+                } else {
+                    dot.classList.remove('online');
+                    txt.innerText = 'API Offline';
+                    docsLink.innerHTML = '<span style="color: var(--text-secondary)">Not available</span>';
+                    btnStart.disabled = false;
+                    btnStop.disabled = true;
+                }
+            } catch (e) {
+                console.error("Status check failed", e);
+            }
+        }
+
+        async function fetchGPU() {
+            try {
+                const res = await fetch('/api/gpu');
+                const data = await res.json();
+                const container = document.getElementById('gpu-content');
+                
+                if(!data.cuda_available) {
+                    container.innerHTML = `<div class="stat-row"><span class="stat-label">GPU</span><span class="stat-value" style="color:var(--warning)">Not Detected</span></div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="stat-row">
+                        <span class="stat-label">Device</span>
+                        <span class="stat-value">${data.device_name || 'NVIDIA GPU'}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total VRAM</span>
+                        <span class="stat-value">${data.total_memory_gb ? data.total_memory_gb + ' GB' : '--'}</span>
+                    </div>
+                    ${data.status ? `
+                    <div class="stat-row">
+                        <span class="stat-label">Activity</span>
+                        <span class="stat-value" style="color:var(--text-secondary)">${data.status}</span>
+                    </div>` : ''}
+                    ${data.memory_allocated_gb !== undefined ? `
+                    <div class="stat-row">
+                        <span class="stat-label">Allocated</span>
+                        <span class="stat-value" style="color:var(--accent-primary)">${data.memory_allocated_gb} GB</span>
+                    </div>` : ''}
+                `;
+            } catch (e) {
+                console.error("GPU check failed");
+            }
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/users');
+                const users = await res.json();
+                const tbody = document.getElementById('users-tbody');
+                
+                if(users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-secondary)">No users found in the database.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = users.map(u => {
+                    const initials = u.username.substring(0, 2).toUpperCase();
+                    const date = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    
+                    return `
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="avatar">${initials}</div>
+                                <span style="font-weight: 500">${u.username}</span>
+                            </div>
+                        </td>
+                        <td style="color: var(--text-secondary)">${u.email}</td>
+                        <td><span class="badge">Verified</span></td>
+                        <td style="color: var(--text-secondary)">${date}</td>
+                    </tr>
+                `}).join('');
+            } catch (e) {
+                console.error("User fetch failed");
+            }
+        }
+
+        async function startServer() {
+            const btn = document.getElementById('btn-start');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Starting...';
+            btn.disabled = true;
+            try {
+                await fetch('/api/server/start', {method: 'POST'});
+                setTimeout(fetchStatus, 1500);
+            } catch(e) {}
+            setTimeout(() => { btn.innerHTML = original; }, 2000);
+        }
+
+        async function stopServer() {
+            const btn = document.getElementById('btn-stop');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Stopping...';
+            btn.disabled = true;
+            try {
+                await fetch('/api/server/stop', {method: 'POST'});
+                setTimeout(fetchStatus, 1000);
+            } catch(e) {}
+            setTimeout(() => { btn.innerHTML = original; }, 2000);
+        }
+
+        // Initialize
+        fetchStatus();
+        fetchGPU();
+        fetchUsers();
+    </script>
+</body>
+</html>

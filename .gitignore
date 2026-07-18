@@ -12,3 +12,11 @@ serviceAccountKey.json
 .agents/
 .firebase/
 .firebaserc
+
+# Server files to ignore
+Server/trained_models/
+Server/data/
+Server/database/*.db
+Server/logs/
+Server/.env
+Server/__pycache__/
