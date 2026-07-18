@@ -63,9 +63,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (recordBtn) {
         recordBtn.addEventListener('click', async () => {
             if (!isRecording) {
+                // Guard: mediaDevices not available on HTTP or very old Android
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Microphone recording is not supported on this browser or connection (requires HTTPS).');
+                    return;
+                }
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
+
+                    // iOS Safari does not support audio/webm — detect the right MIME type
+                    const mimeType = [
+                        'audio/webm;codecs=opus',
+                        'audio/webm',
+                        'audio/mp4',
+                        'audio/ogg;codecs=opus',
+                        ''
+                    ].find(type => type === '' || MediaRecorder.isTypeSupported(type));
+
+                    mediaRecorder = mimeType
+                        ? new MediaRecorder(stream, { mimeType })
+                        : new MediaRecorder(stream);
                     audioChunks = [];
                     
                     mediaRecorder.ondataavailable = e => {
@@ -73,8 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const file = new File([audioBlob], `Recording_${Date.now()}.webm`, { type: 'audio/webm' });
+                        const usedMime = mediaRecorder.mimeType || 'audio/webm';
+                        const ext = usedMime.includes('mp4') ? 'mp4' : usedMime.includes('ogg') ? 'ogg' : 'webm';
+                        const audioBlob = new Blob(audioChunks, { type: usedMime });
+                        const file = new File([audioBlob], `Recording_${Date.now()}.${ext}`, { type: usedMime });
                         currentAudioFile = file;
                         if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
                         currentAudioUrl = URL.createObjectURL(file);

@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>URL Scanner - AuthGuard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,7 +37,7 @@
             <div class="input-area active" style="padding: 30px;">
                 <h3 style="margin-top: 0;"><i class="fa-solid fa-link"></i> Scan External Link</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 20px;">Paste a news article or blog URL below to extract and scan its text.</p>
-                <input type="url" id="urlInput" placeholder="https://..." style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: inherit; font-size: 16px;">
+                <input type="url" id="urlInput" placeholder="https://..." inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: inherit; font-size: 16px;">
             </div>
         </div>
 

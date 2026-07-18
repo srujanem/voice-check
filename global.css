@@ -258,12 +258,7 @@ a,
     top: 0; /* use transform instead of top in JS if possible */
 }
 
-/* Record button pulse — scale+shadow on compositor */
-@keyframes pulse {
-    0%   { transform: scale(0.96) translateZ(0); box-shadow: 0 0 0 0 rgba(239,68,68,0.7); }
-    70%  { transform: scale(1) translateZ(0);    box-shadow: 0 0 0 18px rgba(239,68,68,0); }
-    100% { transform: scale(0.96) translateZ(0); box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-}
+/* Record button pulse — defined once below in the .record-btn section */
 
 /* pulseRed / pulseGreen result icons */
 @keyframes pulseRed {
@@ -623,7 +618,7 @@ body {
     background: radial-gradient(circle at 15% 50%, var(--accent-purple-glow), transparent 30%),
                 radial-gradient(circle at 85% 30%, var(--accent-blue-glow), transparent 30%);
     background-color: var(--bg-main);
-    background-attachment: fixed;
+    background-attachment: fixed;   /* overridden to scroll on mobile — see @media 768px */
     transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -669,11 +664,7 @@ body {
     background: linear-gradient(90deg, transparent, #8b5cf6, #ec4899, transparent);
     animation-delay: -8s; animation-duration: 20s; opacity: 0.08;
 }
-@keyframes auroraShift {
-    0% { transform: translateX(-10%) rotate(-2deg) scaleY(1); }
-    50% { transform: translateX(10%) rotate(1deg) scaleY(1.2); }
-    100% { transform: translateX(-5%) rotate(-1deg) scaleY(0.9); }
-}
+/* auroraShift defined once above (line ~221) — no duplicate needed */
 [data-theme="light"] .aurora-bg .aurora-band { opacity: 0.06; }
 
 
@@ -1373,6 +1364,8 @@ p {
     /* Safe area body padding for iOS notch */
     body {
         overflow-x: hidden; width: 100%;
+        /* Fix: background-attachment:fixed breaks iOS Safari (white flicker) */
+        background-attachment: scroll !important;
     }
 
     /* Box sizing */
