@@ -143,6 +143,12 @@
         <div class="card">
             <h2><i class="fa-solid fa-microchip"></i> Training Engines</h2>
             <p style="color: var(--text-secondary);">Run the local ML scripts to update the deepfake detection models.</p>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Zrok Tunnel URL (Optional - For Remote Training)</label>
+                <input type="text" id="zrok-tunnel-url" placeholder="https://xxxx.share.zrok.io (Leave blank if running on the same PC)">
+            </div>
+
             <div class="action-row">
                 <button class="btn-primary" id="btn-train-voice" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);"><i class="fa-solid fa-microphone"></i> Train Voice Model</button>
                 <button class="btn-primary" id="btn-train-image" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"><i class="fa-solid fa-image"></i> Train Image Model</button>
@@ -169,8 +175,21 @@
             const token = localStorage.getItem('api_key');
             if (!token) return log('Error: No API token found. Please login.');
             
+            // Map the Vercel endpoint to our local PyTorch Node API
+            let targetUrl = endpoint;
+            if (endpoint === '/api/admin/train-model') {
+                const zrokInput = document.getElementById('zrok-tunnel-url');
+                const baseUrl = zrokInput && zrokInput.value.trim() !== '' 
+                    ? zrokInput.value.trim() 
+                    : 'http://localhost:8000';
+                    
+                targetUrl = `${baseUrl}/api/train`;
+                // Add epochs for our PyTorch script
+                data.epochs = 5; 
+            }
+            
             try {
-                const res = await fetch(endpoint, {
+                const res = await fetch(targetUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -189,7 +208,7 @@
                     log('Error: ' + (json.error || 'Request failed.'));
                 }
             } catch (err) {
-                log('Network Error: ' + err.message);
+                log('Network Error: ' + err.message + '\n(Make sure the Node Server or Zrok Tunnel is running!)');
             }
         }
 

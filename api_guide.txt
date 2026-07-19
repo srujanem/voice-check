@@ -1,0 +1,119 @@
+<USER_REQUEST>
+API Documentation
+Interactive API reference for your Backend-as-a-Service.
+
+
+voice cheak (sk_test_CRlz...)
+Base URL: https://vkserver.vercel.app
+Database
+IoT
+AI Chat
+VK Cloud - BaaS API Guide
+Welcome to the VK Cloud Backend-as-a-Service (BaaS) API. As a developer, you can use these endpoints to instantly link your web applications (React, Vue, Vanilla JS, etc.) to your isolated, secure database without writing any backend code.
+
+Authentication
+Every request to the database requires your unique API Key. You must pass this key in the headers of your HTTP request.
+
+x-api-key: sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5
+TIP: You can pass ANY JSON object. The database is schemaless, so it will adapt to whatever data you send it.
+POST
+/api/db/{collection}
+1. Saving Data (Create)
+To save data (like a new user, a product, or a high score), make a POST request to the collection you want to save it in. If the collection doesn't exist, it will be automatically created for you.
+
+ Copy
+fetch('https://vkserver.vercel.app/api/db/users', {
+  method: 'POST',
+  headers: {
+    'x-api-key': 'sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: "John Doe",
+    email: "john@example.com",
+    age: 28,
+    preferences: { theme: "dark" }
+  })
+})
+.then(res => res.json())
+.then(data => console.log("Saved Document:", data));
+GET
+/api/db/{collection}
+2. Fetching All Data in a Collection (Read)
+To retrieve all the documents you saved in a specific collection (e.g., getting a list of all your users).
+
+ Copy
+fetch('https://vkserver.vercel.app/api/db/users', {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5'
+  }
+})
+.then(res => res.json())
+.then(users => {
+  console.log("All Users:", users);
+  // Example: loop through users and display them on your webpage
+  users.forEach(user => {
+    console.log(`User: ${user.name} (${user.email})`);
+  });
+});
+GET
+/api/db/{collection}/{id}
+3. Fetching a Specific Document (Read One)
+If you know the id of a specific document (e.g., the currently logged-in user on your dashboard), you can fetch just that document.
+
+ Copy
+const userId = "d5c4e3b2-a1b2-4c3d-8e9f-0a1b2c3d4e5f"; // Example ID
+
+fetch('https://vkserver.vercel.app/api/db/users/${userId}', {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5'
+  }
+})
+.then(res => res.json())
+.then(user => console.log("Specific User Profile:", user));
+WARNING: This will replace the data of the document with the new JSON object provided. Make sure to send the full updated object.
+PUT
+/api/db/{collection}/{id}
+4. Updating Data (Update)
+To modify an existing document, make a PUT request with the updated JSON object.
+
+ Copy
+const userId = "d5c4e3b2-a1b2-4c3d-8e9f-0a1b2c3d4e5f";
+
+fetch('https://vkserver.vercel.app/api/db/users/${userId}', {
+  method: 'PUT',
+  headers: {
+    'x-api-key': 'sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: "John Doe",
+    email: "john.new@example.com",
+    age: 29
+  })
+})
+.then(res => res.json())
+.then(data => console.log("Updated Document:", data));
+CAUTION: This action cannot be undone. Once deleted, the document is permanently removed from your tenant database.
+DELETE
+/api/db/{collection}/{id}
+5. Deleting Data (Delete)
+To remove a document permanently from your isolated database.
+
+ Copy
+const userId = "d5c4e3b2-a1b2-4c3d-8e9f-0a1b2c3d4e5f";
+
+fetch('https://vkserver.vercel.app/api/db/users/${userId}', {
+  method: 'DELETE',
+  headers: {
+    'x-api-key': 'sk_test_CRlzyngFryWvSo0kA06JpI1tDPFTZgL5'
+  }
+})
+.then(res => res.json())
+.then(data => console.log(data.message)); // "Document deleted"   replace this database with firebase
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-12T22:13:35+05:30.
+</ADDITIONAL_METADATA>

@@ -44,7 +44,7 @@ def extract_features(path):
         return None
 
 X, y = [], []
-SUPPORTED = ('.wav', '.mp3', '.flac', '.webm', '.m4a', '.ogg')
+SUPPORTED = ('.wav', '.mp3', '.flac', '.webm', '.m4a', '.ogg', '.mpeg', '.mp4', '.aac')
 
 print("Loading human voices...")
 for f in os.listdir("dataset/human"):
