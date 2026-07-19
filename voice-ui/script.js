@@ -220,10 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('audio', currentAudioFile, filename);
 
         try {
-            const response = await fetch('/predict_voice', {
+            const response = await fetch('https://blitz-untimed-yiddish.ngrok-free.dev/predict_voice', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${apiKey}`
+                    'Authorization': `Bearer ${apiKey}`,
+                    'ngrok-skip-browser-warning': 'true'
                 },
                 body: formData
             });
