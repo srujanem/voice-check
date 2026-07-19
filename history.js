@@ -148,7 +148,13 @@ class ScanHistory {
 
 const scanHistory = new ScanHistory();
 
-document.addEventListener('DOMContentLoaded', () => {
+function initHistory() {
     scanHistory.initSidebar();
     scanHistory.fetchHistoryFromDB();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHistory);
+} else {
+    initHistory();
+}

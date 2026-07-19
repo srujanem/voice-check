@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initVoiceUI() {
     // --- DOM Elements ---
     const uploadArea    = document.getElementById('upload-area');
     const dropZone      = document.getElementById('drop-zone');
@@ -324,4 +324,10 @@ document.addEventListener('DOMContentLoaded', () => {
         errorAlert.classList.add('hidden');
     }
 
-});
+} // end initVoiceUI
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVoiceUI);
+} else {
+    initVoiceUI();
+}
