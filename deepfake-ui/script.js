@@ -99,27 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnAnalyze.classList.contains('disabled')) return;
         if (!currentFile) return;
         
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the Image Analysis tool.');
-            window.location.href = '../login.html';
-            return;
-        }
-
         scannerLine.classList.remove('hidden');
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
         const formData = new FormData();
-        formData.append('image', currentFile);
+        formData.append('file', currentFile);
+        formData.append('type', 'image');
 
         try {
-            const response = await fetch('/predict_image', {
+            const zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+            const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`
-                },
                 body: formData
             });
 
@@ -128,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errData.error || 'Server error');
             }
 
-            const data = await response.json();
+            let data = await response.json();
             
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
@@ -138,12 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
-            if (error.message.includes('Invalid API Key') || error.message.includes('Unauthorized')) {
-                alert('Your login session has expired. Please log out and log back in.');
-                window.location.href = '../login.html';
-            } else {
-                alert('Analysis failed: ' + error.message);
-            }
+            alert('Analysis failed: ' + error.message);
         }
     });
 
@@ -193,6 +180,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (probReal) animateCountUp(probReal, data.prob_human, 1500, 'Real: ');
             if (probFake) animateCountUp(probFake, data.prob_ai, 1500, 'Fake: ');
+
+            // ── Animate confidence chart bars ─────────────────────────────────
+            const chartRealBar   = document.getElementById('chart-real-bar');
+            const chartFakeBar   = document.getElementById('chart-fake-bar');
+            const chartRealLabel = document.getElementById('chart-real-label');
+            const chartFakeLabel = document.getElementById('chart-fake-label');
+            if (chartRealBar) {
+                const realPct = Math.round(data.prob_human);
+                const fakePct = Math.round(data.prob_ai);
+                chartRealBar.style.width = '0%';
+                chartFakeBar.style.width = '0%';
+                setTimeout(() => {
+                    chartRealBar.style.width = realPct + '%';
+                    chartFakeBar.style.width = fakePct + '%';
+                    animateCountUp(chartRealLabel, realPct, 1500, '', '%');
+                    animateCountUp(chartFakeLabel, fakePct, 1500, '', '%');
+                }, 120);
+            }
 
             if (typeof scanHistory !== 'undefined') {
                 const fName = (typeof currentFile !== 'undefined' && currentFile) ? currentFile.name : 'Image File';

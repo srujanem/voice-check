@@ -61,26 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
     btnProtect.addEventListener('click', async () => {
         if (!currentFile) return;
         
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the Watermark tools.');
-            window.location.href = '../login.html';
-            return;
-        }
-        
         hideError();
         btnProtect.style.display = 'none';
         loadingState.classList.remove('hidden');
 
         const formData = new FormData();
-        formData.append('image', currentFile);
+        formData.append('file', currentFile);
+        formData.append('action', 'encode');
+        formData.append('message', 'AuthGuard Human Signature');
 
         try {
-            const response = await fetch('/create_watermark', {
+            const zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';
+            const response = await fetch(`${zrokUrl}/api/watermark`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`
-                },
                 body: formData
             });
 

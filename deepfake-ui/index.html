@@ -78,6 +78,29 @@
                     <span id="prob-real">Real: --</span>
                     <span id="prob-fake">Fake: --</span>
                 </div>
+
+                <!-- ===== ANIMATED CONFIDENCE CHART ===== -->
+                <div id="confidence-chart" style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+                    <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 14px;">Confidence Breakdown</div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                            <span style="color: #10b981;"><i class="fa-solid fa-image"></i> Real Image</span>
+                            <span id="chart-real-label" style="color: #10b981; font-weight: 700;">0%</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                            <div id="chart-real-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 999px; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                            <span style="color: #ef4444;"><i class="fa-solid fa-robot"></i> AI Generated</span>
+                            <span id="chart-fake-label" style="color: #ef4444; font-weight: 700;">0%</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                            <div id="chart-fake-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #ef4444, #f87171); border-radius: 999px; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button id="reset-btn" class="btn-secondary" style="width: 100%; margin-top: 20px; justify-content: center;" onclick="document.getElementById('btnRemove').click()">
@@ -101,6 +124,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../theme.js?v=2"></script>
     <script src="../history.js?v=2"></script>
+    <script src="../server-config.js"></script>
     <script src="script.js?v=2"></script>
 </body>
 </html>

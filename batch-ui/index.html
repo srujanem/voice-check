@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Batch Scanner — AuthGuard</title>
+    <meta name="description" content="Scan up to 50 files at once with AuthGuard AI detection — voice, image, video, and text.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* ===== PAGE BACKGROUND GLOWS ===== */
+        body::before {
+            content: ''; position: fixed; top: -25%; left: -25%; width: 65%; height: 65%;
+            background: radial-gradient(ellipse, rgba(0,243,255,0.055) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: ''; position: fixed; bottom: -25%; right: -25%; width: 65%; height: 65%;
+            background: radial-gradient(ellipse, rgba(188,19,254,0.055) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        .page-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; position: relative; z-index: 1; }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px; padding-bottom: 22px; border-bottom: 1px solid var(--border-color);
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, rgba(0,243,255,0.12), rgba(188,19,254,0.12));
+            border: 1px solid rgba(0,243,255,0.3); border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--accent-cyan);
+        }
+        .page-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+        .back-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+            border: 1px solid var(--border-color); border-radius: 12px;
+            background: var(--bg-hover); color: var(--text-secondary);
+            text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { color: var(--text-primary); border-color: var(--accent-cyan); }
+
+        /* ===== DROP ZONE ===== */
+        .dropzone {
+            border: 2px dashed rgba(0,243,255,0.22); border-radius: 22px;
+            padding: 58px 24px; text-align: center;
+            background: linear-gradient(135deg, rgba(0,243,255,0.03), rgba(188,19,254,0.02));
+            backdrop-filter: blur(12px); cursor: pointer;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(0,243,255,0.08), rgba(188,19,254,0.05));
+            transform: scale(1.005);
+        }
+        .dropzone-icon {
+            font-size: 3.6rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 16px; display: block;
+        }
+        .dropzone h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .dropzone p { color: var(--text-secondary); font-size: 14px; }
+        .file-types { display: flex; justify-content: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+        .type-chip { padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+        .type-chip.voice { background: rgba(0,243,255,0.1);   color: var(--accent-cyan); border: 1px solid rgba(0,243,255,0.2); }
+        .type-chip.image { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+        .type-chip.video { background: rgba(249,115,22,0.1); color: #fb923c; border: 1px solid rgba(249,115,22,0.2); }
+        .type-chip.text  { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+
+        /* ===== PROGRESS SECTION ===== */
+        .progress-section { margin-top: 28px; display: none; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .progress-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+        .progress-counter { font-size: 13px; font-weight: 800; color: var(--accent-cyan); }
+        .progress-track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 999px; transition: width 0.35s ease;
+        }
+
+        /* ===== FILE LIST ===== */
+        .file-list { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+        .file-item {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px 20px;
+            backdrop-filter: blur(12px); transition: border-color 0.3s;
+        }
+        .file-item.result-ai    { border-color: rgba(239,68,68,0.45); }
+        .file-item.result-human { border-color: rgba(16,185,129,0.45); }
+        .file-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .file-info { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+        .file-type-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .file-type-icon.voice   { background: rgba(0,243,255,0.1);   color: var(--accent-cyan); }
+        .file-type-icon.image   { background: rgba(139,92,246,0.1); color: #a78bfa; }
+        .file-type-icon.video   { background: rgba(249,115,22,0.1); color: #fb923c; }
+        .file-type-icon.text    { background: rgba(16,185,129,0.1); color: #34d399; }
+        .file-type-icon.unknown { background: rgba(100,116,139,0.1); color: #64748b; }
+        .file-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+        .file-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        .file-badge { padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+        .badge-queued   { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.2); }
+        .badge-scanning { background: rgba(251,146,60,0.15);  color: #fb923c; border: 1px solid rgba(251,146,60,0.3); animation: badge-pulse 1.2s infinite; }
+        .badge-human    { background: rgba(16,185,129,0.15);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-ai       { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .badge-error    { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        @keyframes badge-pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+        /* ===== MINI CONFIDENCE BARS ===== */
+        .mini-chart { margin-top: 12px; display: none; gap: 12px; }
+        .mini-chart.visible { display: flex; }
+        .mini-bar-wrap { flex: 1; }
+        .mini-bar-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+        .mini-bar-track { height: 6px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+        .mini-bar-fill { height: 100%; width: 0%; border-radius: 999px; transition: width 1.3s cubic-bezier(0.25,1,0.5,1); }
+        .mini-bar-fill.human { background: linear-gradient(90deg, #10b981, #34d399); }
+        .mini-bar-fill.ai    { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        /* ===== SUMMARY CARD ===== */
+        .summary-card {
+            display: none; margin-top: 36px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 22px; padding: 30px;
+            backdrop-filter: blur(20px);
+            animation: fadeSlideIn 0.5s ease;
+        }
+        .summary-card.visible { display: block; }
+        @keyframes fadeSlideIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+        .summary-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+        .summary-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 26px; }
+        .summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
+        @media (max-width: 600px) { .summary-stats { grid-template-columns: repeat(2,1fr); } }
+        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 12px; text-align: center; }
+        .stat-number { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card.total    .stat-number { color: var(--accent-cyan); }
+        .stat-card.ai-ct    .stat-number { color: #ef4444; }
+        .stat-card.human-ct .stat-number { color: #10b981; }
+        .stat-card.rate-ct  .stat-number { color: var(--accent-purple); }
+
+        .summary-chart-section { margin-bottom: 28px; }
+        .summary-chart-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
+        .summary-bar-row { margin-bottom: 14px; }
+        .summary-bar-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+        .summary-bar-track { height: 12px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+        .summary-bar-fill { height: 100%; width: 0%; border-radius: 999px; transition: width 1.6s cubic-bezier(0.25,1,0.5,1); }
+        .summary-bar-fill.human { background: linear-gradient(90deg, #10b981, #34d399); }
+        .summary-bar-fill.ai    { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-action {
+            display: inline-flex; align-items: center; gap: 9px;
+            padding: 12px 24px; border-radius: 12px;
+            font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+            transition: all 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .btn-more { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-more:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-pdf  { background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08)); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .btn-pdf:hover  { background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(239,68,68,0.15)); }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    <div class="page-wrap">
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <div class="header-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <div>
+                    <div class="page-title">Batch Scanner</div>
+                    <div class="page-subtitle">Scan up to 50 files in one go</div>
+                </div>
+            </div>
+            <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="dropzone" id="dropzone">
+            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+            <h3>Drag & Drop Your Files Here</h3>
+            <p>Or click to browse — voice, image, video, and text files supported</p>
+            <div class="file-types">
+                <span class="type-chip voice"><i class="fa-solid fa-microphone"></i> Voice</span>
+                <span class="type-chip image"><i class="fa-solid fa-image"></i> Image</span>
+                <span class="type-chip video"><i class="fa-solid fa-film"></i> Video</span>
+                <span class="type-chip text"><i class="fa-solid fa-file-lines"></i> Text</span>
+            </div>
+            <input type="file" id="fileInput" multiple style="display:none;">
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-header">
+                <span class="progress-label"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan);"></i> Scanning files...</span>
+                <span class="progress-counter" id="progressCounter">0 / 0</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- File Items -->
+        <div class="file-list" id="fileList"></div>
+
+        <!-- Summary Card -->
+        <div class="summary-card" id="summaryCard">
+            <div class="summary-title">✅ Scan Complete</div>
+            <div class="summary-sub" id="summarySub">Analysis finished.</div>
+
+            <div class="summary-stats">
+                <div class="stat-card total">   <div class="stat-number" id="statTotal">0</div><div class="stat-label">Total</div></div>
+                <div class="stat-card ai-ct">   <div class="stat-number" id="statAI">0</div>   <div class="stat-label">AI Found</div></div>
+                <div class="stat-card human-ct"><div class="stat-number" id="statHuman">0</div> <div class="stat-label">Human</div></div>
+                <div class="stat-card rate-ct"> <div class="stat-number" id="statRate">0%</div> <div class="stat-label">AI Rate</div></div>
+            </div>
+
+            <div class="summary-chart-section">
+                <div class="summary-chart-title">Detection Breakdown</div>
+                <div class="summary-bar-row">
+                    <div class="summary-bar-meta">
+                        <span style="color:#10b981;font-weight:700;"><i class="fa-solid fa-user"></i> Human</span>
+                        <span id="summaryHumanPct" style="color:#10b981;font-weight:700;">0%</span>
+                    </div>
+                    <div class="summary-bar-track"><div class="summary-bar-fill human" id="summaryHumanBar"></div></div>
+                </div>
+                <div class="summary-bar-row">
+                    <div class="summary-bar-meta">
+                        <span style="color:#ef4444;font-weight:700;"><i class="fa-solid fa-robot"></i> AI Generated</span>
+                        <span id="summaryAiPct" style="color:#ef4444;font-weight:700;">0%</span>
+                    </div>
+                    <div class="summary-bar-track"><div class="summary-bar-fill ai" id="summaryAiBar"></div></div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-action btn-more" id="scanMoreBtn"><i class="fa-solid fa-plus"></i> Scan More Files</button>
+                <button class="btn-action btn-pdf"  id="downloadPdfBtn"><i class="fa-solid fa-file-pdf"></i> Download PDF Report</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../server-config.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../history.js"></script>
+    <script>
+        const dropzone        = document.getElementById('dropzone');
+        const fileInput       = document.getElementById('fileInput');
+        const fileList        = document.getElementById('fileList');
+        const progressSection = document.getElementById('progressSection');
+        const progressFill    = document.getElementById('progressFill');
+        const progressCounter = document.getElementById('progressCounter');
+        const summaryCard     = document.getElementById('summaryCard');
+
+        let filesQueue  = [];
+        let scanResults = [];
+        let isScanning  = false;
+
+        // ── Drag & Drop ───────────────────────────────────────────────────────
+        dropzone.addEventListener('click',    () => fileInput.click());
+        dropzone.addEventListener('dragover', e  => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave',()  => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', e => {
+            e.preventDefault(); dropzone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+        // ── Helpers ───────────────────────────────────────────────────────────
+        function getFileType(name) {
+            const ext = name.split('.').pop().toLowerCase();
+            if (['wav','mp3','flac','webm','m4a','ogg','aac','mpeg'].includes(ext)) return 'voice';
+            if (['jpg','jpeg','png','webp','gif','avif','bmp'].includes(ext))       return 'image';
+            if (['mp4','mov','avi','mkv','ts'].includes(ext))                       return 'video';
+            if (['txt','pdf','doc','docx','md'].includes(ext))                     return 'text';
+            return 'unknown';
+        }
+
+        function getTypeIcon(type) {
+            const m = { voice:'fa-microphone', image:'fa-image', video:'fa-film', text:'fa-file-lines', unknown:'fa-file' };
+            return m[type] || 'fa-file';
+        }
+
+        function formatSize(b) {
+            if (b < 1024) return b + ' B';
+            if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+            return (b/1048576).toFixed(1) + ' MB';
+        }
+
+        // ── Handle file selection ─────────────────────────────────────────────
+        function handleFiles(files) {
+            if (isScanning) { alert('Scan in progress. Please wait.'); return; }
+            const slots = 50 - filesQueue.length;
+            if (slots <= 0) { alert('Maximum 50 files reached.'); return; }
+            const newFiles = Array.from(files).slice(0, slots);
+            newFiles.forEach(file => {
+                const id   = Math.random().toString(36).substr(2, 9);
+                const type = getFileType(file.name);
+                filesQueue.push({ id, file, type });
+                renderFileItem(id, file, type);
+            });
+            summaryCard.classList.remove('visible');
+            if (filesQueue.length > 0) startScan();
+        }
+
+        // ── Render a queued file row ───────────────────────────────────────────
+        function renderFileItem(id, file, type) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.id = `file-${id}`;
+            div.innerHTML = `
+                <div class="file-row">
+                    <div class="file-info">
+                        <div class="file-type-icon ${type}">
+                            <i class="fa-solid ${getTypeIcon(type)}"></i>
+                        </div>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-meta">${formatSize(file.size)} &bull; ${type.charAt(0).toUpperCase()+type.slice(1)}</div>
+                        </div>
+                    </div>
+                    <span class="file-badge badge-queued" id="badge-${id}">Queued</span>
+                </div>
+                <div class="mini-chart" id="chart-${id}">
+                    <div class="mini-bar-wrap">
+                        <div class="mini-bar-label">
+                            <span style="color:#10b981;">Human</span>
+                            <span id="hpct-${id}" style="color:#10b981;font-weight:700;">0%</span>
+                        </div>
+                        <div class="mini-bar-track">
+                            <div class="mini-bar-fill human" id="hbar-${id}"></div>
+                        </div>
+                    </div>
+                    <div class="mini-bar-wrap">
+                        <div class="mini-bar-label">
+                            <span style="color:#ef4444;">AI Generated</span>
+                            <span id="apct-${id}" style="color:#ef4444;font-weight:700;">0%</span>
+                        </div>
+                        <div class="mini-bar-track">
+                            <div class="mini-bar-fill ai" id="abar-${id}"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            fileList.appendChild(div);
+        }
+
+        function setBadge(id, cls, text) {
+            const b = document.getElementById(`badge-${id}`);
+            if (b) { b.className = `file-badge ${cls}`; b.textContent = text; }
+        }
+
+        function showMiniChart(id, humanPct, aiPct) {
+            const chart = document.getElementById(`chart-${id}`);
+            if (!chart) return;
+            chart.classList.add('visible');
+            setTimeout(() => {
+                const hbar = document.getElementById(`hbar-${id}`);
+                const abar = document.getElementById(`abar-${id}`);
+                const hpct = document.getElementById(`hpct-${id}`);
+                const apct = document.getElementById(`apct-${id}`);
+                if (hbar) hbar.style.width = humanPct + '%';
+                if (abar) abar.style.width = aiPct + '%';
+                if (hpct) hpct.textContent = humanPct + '%';
+                if (apct) apct.textContent = aiPct + '%';
+            }, 80);
+        }
+
+        // ── Run scan queue ────────────────────────────────────────────────────
+        async function startScan() {
+            isScanning    = true;
+            scanResults   = [];
+            progressSection.style.display = 'block';
+
+            const total = filesQueue.length;
+            let current = 0;
+
+            for (const item of filesQueue) {
+                setBadge(item.id, 'badge-scanning', '⚡ Scanning...');
+                const fileItem = document.getElementById(`file-${item.id}`);
+
+                try {
+                    if (item.type === 'unknown') throw new Error('Unsupported file type');
+
+                    const formData = new FormData();
+                    formData.append('file', item.file);
+                    formData.append('type', item.type);
+
+                    const baseUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+                    const res = await fetch(`${baseUrl}/api/infer`, { method: 'POST', body: formData });
+                    if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error);
+
+                    const isAI     = data.is_ai === true;
+                    const conf     = Math.round((data.confidence || 0.5) * 100);
+                    const humanPct = isAI ? 100 - conf : conf;
+                    const aiPct    = 100 - humanPct;
+
+                    setBadge(item.id, isAI ? 'badge-ai' : 'badge-human', isAI ? '🤖 AI Detected' : '✅ Human');
+                    if (fileItem) fileItem.classList.add(isAI ? 'result-ai' : 'result-human');
+                    showMiniChart(item.id, humanPct, aiPct);
+                    scanResults.push({ name: item.file.name, type: item.type, isAI, humanPct, aiPct, conf });
+
+                    if (typeof scanHistory !== 'undefined') {
+                        scanHistory.addScan(
+                            item.type.charAt(0).toUpperCase() + item.type.slice(1),
+                            item.file.name, isAI, conf
+                        );
+                    }
+
+                } catch (err) {
+                    setBadge(item.id, 'badge-error', '⚠ Error');
+                    scanResults.push({ name: item.file.name, type: item.type, error: true, errorMsg: err.message });
+                }
+
+                current++;
+                progressFill.style.width    = `${(current / total) * 100}%`;
+                progressCounter.textContent = `${current} / ${total}`;
+            }
+
+            isScanning = false;
+            filesQueue = [];
+            showSummary();
+        }
+
+        // ── Show summary after scan ───────────────────────────────────────────
+        function showSummary() {
+            const total     = scanResults.length;
+            const aiCount   = scanResults.filter(r => r.isAI   && !r.error).length;
+            const humanCount= scanResults.filter(r => !r.isAI  && !r.error).length;
+            const valid     = aiCount + humanCount;
+            const aiRate    = valid > 0 ? Math.round((aiCount   / valid) * 100) : 0;
+            const humanRate = valid > 0 ? Math.round((humanCount/ valid) * 100) : 0;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statAI').textContent    = aiCount;
+            document.getElementById('statHuman').textContent = humanCount;
+            document.getElementById('statRate').textContent  = aiRate + '%';
+            document.getElementById('summarySub').textContent =
+                `Scanned ${total} file${total !== 1 ? 's' : ''} — ${aiCount} AI detected, ${humanCount} authentic.`;
+
+            summaryCard.classList.add('visible');
+
+            // Animate summary chart bars
+            setTimeout(() => {
+                const hBar = document.getElementById('summaryHumanBar');
+                const aBar = document.getElementById('summaryAiBar');
+                const hPct = document.getElementById('summaryHumanPct');
+                const aPct = document.getElementById('summaryAiPct');
+                if (hBar) { hBar.style.width = humanRate + '%'; hPct.textContent = humanRate + '%'; }
+                if (aBar) { aBar.style.width = aiRate    + '%'; aPct.textContent = aiRate    + '%'; }
+            }, 120);
+        }
+
+        // ── Scan More ─────────────────────────────────────────────────────────
+        document.getElementById('scanMoreBtn').addEventListener('click', () => {
+            fileList.innerHTML = '';
+            summaryCard.classList.remove('visible');
+            progressSection.style.display = 'none';
+            progressFill.style.width = '0%';
+            scanResults = []; filesQueue = [];
+            fileInput.click();
+        });
+
+        // ── PDF Report ────────────────────────────────────────────────────────
+        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+            const now  = new Date().toLocaleString();
+            const rows = scanResults.map(r => `
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:10px 12px;font-size:12px;">${r.name}</td>
+                    <td style="padding:10px 12px;font-size:12px;text-transform:capitalize;">${r.type}</td>
+                    <td style="padding:10px 12px;font-size:12px;font-weight:700;color:${r.error ? '#d97706' : r.isAI ? '#dc2626' : '#16a34a'};">
+                        ${r.error ? '⚠ Error' : r.isAI ? '🤖 AI Detected' : '✅ Human'}
+                    </td>
+                    <td style="padding:10px 12px;font-size:12px;">${r.error ? 'N/A' : r.conf + '%'}</td>
+                </tr>
+            `).join('');
+
+            const reportDiv = document.createElement('div');
+            reportDiv.style.cssText = 'font-family:Inter,sans-serif;padding:36px;background:#fff;color:#0f172a;';
+            reportDiv.innerHTML = `
+                <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #0ea5e9;">
+                    <div style="width:52px;height:52px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                        <span style="color:white;font-size:24px;">🛡️</span>
+                    </div>
+                    <div>
+                        <h1 style="font-size:22px;font-weight:800;margin:0;color:#0f172a;">AuthGuard Batch Report</h1>
+                        <p style="margin:5px 0 0;font-size:13px;color:#64748b;">Generated: ${now}</p>
+                    </div>
+                </div>
+                <div style="display:flex;gap:14px;margin-bottom:28px;">
+                    <div style="flex:1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:18px;text-align:center;">
+                        <div style="font-size:30px;font-weight:800;color:#0284c7;">${document.getElementById('statTotal').textContent}</div>
+                        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Total Files</div>
+                    </div>
+                    <div style="flex:1;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:18px;text-align:center;">
+                        <div style="font-size:30px;font-weight:800;color:#dc2626;">${document.getElementById('statAI').textContent}</div>
+                        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">AI Detected</div>
+                    </div>
+                    <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:18px;text-align:center;">
+                        <div style="font-size:30px;font-weight:800;color:#16a34a;">${document.getElementById('statHuman').textContent}</div>
+                        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Human</div>
+                    </div>
+                    <div style="flex:1;background:#faf5ff;border:1px solid #e9d5ff;border-radius:12px;padding:18px;text-align:center;">
+                        <div style="font-size:30px;font-weight:800;color:#7c3aed;">${document.getElementById('statRate').textContent}</div>
+                        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">AI Rate</div>
+                    </div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+                    <thead>
+                        <tr style="background:#f8fafc;">
+                            <th style="padding:12px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;">File</th>
+                            <th style="padding:12px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;">Type</th>
+                            <th style="padding:12px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;">Verdict</th>
+                            <th style="padding:12px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;">Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div style="margin-top:28px;padding-top:18px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;text-align:center;">
+                    This report was generated by AuthGuard AI Detection Platform. Results are for informational purposes only.<br>
+                    Report ID: AG-${Date.now()}
+                </div>
+            `;
+
+            html2pdf().set({
+                margin: 8,
+                filename: `AuthGuard_Batch_${Date.now()}.pdf`,
+                html2canvas: { scale: 2, backgroundColor: '#fff' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(reportDiv).save();
+        });
+    </script>
+</body>
+</html>

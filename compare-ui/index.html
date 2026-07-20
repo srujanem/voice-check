@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare - AuthGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../global.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .back-link { color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.3s; }
+        .back-link:hover { color: #f8fafc; }
+        .split-layout { display: flex; gap: 2rem; margin-bottom: 2rem; }
+        .panel { flex: 1; background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 1rem; padding: 2rem; display: flex; flex-direction: column; }
+        .panel-header { text-align: center; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 600; color: #94a3b8; }
+        .upload-zone { border: 2px dashed #475569; border-radius: 1rem; padding: 3rem 1rem; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .upload-zone:hover, .upload-zone.dragover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .upload-zone i { font-size: 2.5rem; color: #64748b; margin-bottom: 1rem; }
+        .file-selected { display: none; text-align: center; padding: 2rem 1rem; border: 1px solid #475569; border-radius: 1rem; background: rgba(15, 23, 42, 0.5); }
+        .btn-compare { width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; border: none; border-radius: 0.5rem; cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.3s; }
+        .btn-compare.active { opacity: 1; pointer-events: auto; }
+        .btn-compare:hover.active { filter: brightness(1.1); }
+        
+        .result-container { display: none; text-align: center; margin-top: 2rem; }
+        .ring { position: relative; width: 150px; height: 150px; margin: 0 auto 1.5rem; border-radius: 50%; background: conic-gradient(#3b82f6 0%, #1e293b 0%); display: flex; align-items: center; justify-content: center; }
+        .ring-inner { width: 130px; height: 130px; background: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .confidence-val { font-size: 1.5rem; font-weight: 700; }
+        .badge { padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 600; display: inline-block; }
+        .badge.ai { background: rgba(153, 27, 27, 0.2); color: #fca5a5; border: 1px solid #991b1b; }
+        .badge.human { background: rgba(22, 101, 52, 0.2); color: #86efac; border: 1px solid #166534; }
+        
+        .comparison-summary { display: none; margin-top: 2rem; padding: 2rem; background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 1rem; text-align: center; font-size: 1.25rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            <h2>Compare Files</h2>
+        </div>
+
+        <div class="split-layout">
+            <div class="panel">
+                <div class="panel-header">File A</div>
+                <div class="upload-zone" id="zoneA">
+                    <i class="fas fa-file-upload"></i>
+                    <p>Click or drag file here</p>
+                    <input type="file" id="inputA" style="display: none;">
+                </div>
+                <div class="file-selected" id="selectedA">
+                    <i class="fas fa-file-alt" style="font-size: 2rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+                    <div id="nameA" style="word-break: break-all;">filename.ext</div>
+                    <button style="margin-top: 1rem; background: none; border: 1px solid #475569; color: #94a3b8; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;" onclick="clearFile('A')">Remove</button>
+                </div>
+                <div class="result-container" id="resultA">
+                    <div class="ring" id="ringA">
+                        <div class="ring-inner">
+                            <div class="confidence-val" id="confA">0%</div>
+                            <div style="font-size: 0.875rem; color: #94a3b8;">Confidence</div>
+                        </div>
+                    </div>
+                    <div class="badge" id="badgeA">Result</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">File B</div>
+                <div class="upload-zone" id="zoneB">
+                    <i class="fas fa-file-upload"></i>
+                    <p>Click or drag file here</p>
+                    <input type="file" id="inputB" style="display: none;">
+                </div>
+                <div class="file-selected" id="selectedB">
+                    <i class="fas fa-file-alt" style="font-size: 2rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+                    <div id="nameB" style="word-break: break-all;">filename.ext</div>
+                    <button style="margin-top: 1rem; background: none; border: 1px solid #475569; color: #94a3b8; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;" onclick="clearFile('B')">Remove</button>
+                </div>
+                <div class="result-container" id="resultB">
+                    <div class="ring" id="ringB">
+                        <div class="ring-inner">
+                            <div class="confidence-val" id="confB">0%</div>
+                            <div style="font-size: 0.875rem; color: #94a3b8;">Confidence</div>
+                        </div>
+                    </div>
+                    <div class="badge" id="badgeB">Result</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-compare" id="compareBtn">Compare Now</button>
+
+        <div class="comparison-summary" id="comparisonSummary"></div>
+    </div>
+
+    <script>
+        let fileA = null;
+        let fileB = null;
+
+        function setupZone(id, type) {
+            const zone = document.getElementById(id);
+            const input = document.getElementById(`input${type}`);
+            
+            zone.addEventListener('click', () => input.click());
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0], type);
+            });
+            input.addEventListener('change', (e) => handleFile(e.target.files[0], type));
+        }
+
+        function handleFile(file, type) {
+            if (!file) return;
+            if (type === 'A') fileA = file;
+            else fileB = file;
+
+            document.getElementById(`zone${type}`).style.display = 'none';
+            document.getElementById(`selected${type}`).style.display = 'block';
+            document.getElementById(`name${type}`).textContent = file.name;
+            
+            document.getElementById(`result${type}`).style.display = 'none';
+            document.getElementById('comparisonSummary').style.display = 'none';
+
+            checkReady();
+        }
+
+        window.clearFile = function(type) {
+            if (type === 'A') { fileA = null; document.getElementById('inputA').value = ''; }
+            else { fileB = null; document.getElementById('inputB').value = ''; }
+
+            document.getElementById(`zone${type}`).style.display = 'block';
+            document.getElementById(`selected${type}`).style.display = 'none';
+            document.getElementById(`result${type}`).style.display = 'none';
+            document.getElementById('comparisonSummary').style.display = 'none';
+
+            checkReady();
+        }
+
+        function checkReady() {
+            const btn = document.getElementById('compareBtn');
+            if (fileA && fileB) {
+                btn.classList.add('active');
+                btn.textContent = 'Compare Now';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Select two files to compare';
+            }
+        }
+
+        setupZone('zoneA', 'A');
+        setupZone('zoneB', 'B');
+
+        document.getElementById('compareBtn').addEventListener('click', async () => {
+            if (!fileA || !fileB) return;
+            
+            const btn = document.getElementById('compareBtn');
+            btn.textContent = 'Analyzing...';
+            btn.classList.remove('active');
+
+            try {
+                const resA = await scanFile(fileA);
+                const resB = await scanFile(fileB);
+
+                showResult('A', resA);
+                showResult('B', resB);
+
+                const sum = document.getElementById('comparisonSummary');
+                sum.style.display = 'block';
+
+                const diff = (resA.confidence - resB.confidence) * 100;
+                if (Math.abs(diff) < 5) {
+                    sum.innerHTML = `Both files have similar AI probability.`;
+                } else if (diff > 0) {
+                    sum.innerHTML = `<span style="color:#ef4444">File A</span> is <b>${diff.toFixed(1)}%</b> more likely to be AI than File B.`;
+                } else {
+                    sum.innerHTML = `<span style="color:#ef4444">File B</span> is <b>${Math.abs(diff).toFixed(1)}%</b> more likely to be AI than File A.`;
+                }
+
+            } catch (err) {
+                alert('Analysis failed: ' + err.message);
+            }
+
+            btn.textContent = 'Compare Again';
+            btn.classList.add('active');
+        });
+
+        async function scanFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            let type = 'unknown';
+            if (['wav', 'mp3', 'flac'].includes(ext)) type = 'voice';
+            else if (['jpg', 'png', 'webp', 'jpeg'].includes(ext)) type = 'image';
+            else if (['mp4', 'webm', 'mov'].includes(ext)) type = 'video';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+
+            const baseUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+            const res = await fetch(`${baseUrl}/api/infer`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!res.ok) throw new Error('API Error');
+
+            const data = await res.json();
+            const confidence = data.confidence || 0;
+            const isAI = data.prediction === 'ai' || confidence > 0.5;
+
+            return { isAI, confidence };
+        }
+
+        function showResult(type, data) {
+            document.getElementById(`selected${type}`).style.display = 'none';
+            const resContainer = document.getElementById(`result${type}`);
+            resContainer.style.display = 'block';
+
+            const confPct = Math.round(data.confidence * 100);
+            document.getElementById(`conf${type}`).textContent = `${confPct}%`;
+            
+            const color = data.isAI ? '#ef4444' : '#22c55e';
+            document.getElementById(`ring${type}`).style.background = `conic-gradient(${color} ${confPct}%, #1e293b 0%)`;
+
+            const badge = document.getElementById(`badge${type}`);
+            badge.className = `badge ${data.isAI ? 'ai' : 'human'}`;
+            badge.innerHTML = data.isAI ? '🤖 AI Detected' : '✅ Human Detected';
+        }
+    </script>
+    <script src="../server-config.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../history.js"></script>
+</body>
+</html>

@@ -164,46 +164,54 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     });
 
-    // API Key Management
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const toggleKeyBtn = document.getElementById('toggleKeyBtn');
-    const copyKeyBtn = document.getElementById('copyKeyBtn');
-    const generateKeyBtn = document.getElementById('generateKeyBtn');
+    const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
 
-    // Retrieve the real API key set by login.html
-    let savedKey = localStorage.getItem('api_key') || localStorage.getItem('authGuard_apiKey');
-    if (!savedKey) {
-        savedKey = 'Not logged in — please sign in first.';
-    }
-    // Show a masked version for security (first 12 chars + ***)
-    apiKeyInput.value = savedKey.length > 12 ? savedKey.substring(0, 12) + '••••••••••••••••••••' : savedKey;
-    apiKeyInput.dataset.realKey = savedKey;  // store for copy
-
-    toggleKeyBtn.addEventListener('click', () => {
-        const realKey = apiKeyInput.dataset.realKey || '';
-        if (apiKeyInput.type === 'password') {
-            apiKeyInput.type = 'text';
-            apiKeyInput.value = realKey;  // show real key
-            toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-        } else {
-            apiKeyInput.type = 'password';
-            // re-mask
-            apiKeyInput.value = realKey.length > 12 ? realKey.substring(0, 12) + '••••••••••••••••••••' : realKey;
-            toggleKeyBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+    // --- V3: Load API Usage ---
+    async function loadApiUsage() {
+        try {
+            const res = await fetch(`${backendUrl}/api/usage`);
+            const data = await res.json();
+            if (data.total_calls !== undefined) {
+                const el = document.getElementById('apiUsageTotal');
+                if (el) el.textContent = data.total_calls;
+            }
+        } catch (e) {
+            console.error('Failed to load usage', e);
         }
-    });
+    }
+    loadApiUsage();
 
-    copyKeyBtn.addEventListener('click', () => {
-        // Copy the real key, not the masked display value
-        const realKey = apiKeyInput.dataset.realKey || apiKeyInput.value;
-        navigator.clipboard.writeText(realKey);
-        copyKeyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--color-success);"></i>';
-        setTimeout(() => {
-            copyKeyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-        }, 2000);
-    });
-
-    generateKeyBtn.addEventListener('click', () => {
-        alert('To change your API key, please log out and log back in with your new VK Cloud key.');
-    });
+    // --- V3: Save Webhook ---
+    const saveWebhookBtn = document.getElementById('saveWebhookBtn');
+    const webhookInput = document.getElementById('webhookInput');
+    const webhookStatus = document.getElementById('webhookStatus');
+    
+    if (saveWebhookBtn) {
+        saveWebhookBtn.addEventListener('click', async () => {
+            const url = webhookInput.value.trim();
+            if (!url) { webhookStatus.textContent = 'Please enter a URL'; webhookStatus.style.color = '#ef4444'; return; }
+            
+            saveWebhookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            try {
+                const res = await fetch(`${backendUrl}/api/webhooks/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                if (data.message) {
+                    webhookStatus.textContent = 'Webhook saved successfully!';
+                    webhookStatus.style.color = '#10b981';
+                } else {
+                    webhookStatus.textContent = data.error || 'Failed to save';
+                    webhookStatus.style.color = '#ef4444';
+                }
+            } catch (e) {
+                webhookStatus.textContent = 'Network error. Server offline?';
+                webhookStatus.style.color = '#ef4444';
+            } finally {
+                saveWebhookBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Webhook';
+            }
+        });
+    }
 });

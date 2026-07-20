@@ -17,7 +17,6 @@ if (!document.getElementById('vc-overlay')) {
     
     const content = document.createElement('div');
     content.id = 'vc-content';
-    content.textContent = 'Analyzing...';
     content.style.fontSize = '14px';
     
     const closeBtn = document.createElement('button');
@@ -32,34 +31,34 @@ if (!document.getElementById('vc-overlay')) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'scan_text') {
-        const overlay = document.getElementById('vc-overlay');
-        const content = document.getElementById('vc-content');
-        
+    const overlay = document.getElementById('vc-overlay');
+    const content = document.getElementById('vc-content');
+    
+    if (request.action === 'show_loading') {
         overlay.style.display = 'flex';
-        content.innerHTML = '<span style="color:#94a3b8;">Analyzing text via local backend...</span>';
+        content.innerHTML = `<span style="color:#94a3b8;">Scanning ${request.type} on local RTX 4050...</span>`;
+    } 
+    else if (request.action === 'show_result') {
+        const data = request.data;
+        if (data.error) {
+            content.innerHTML = `<span style="color:#ef4444;">Error: ${data.error}</span>`;
+            return;
+        }
         
-        // Mock API Call delay
-        setTimeout(() => {
-            const textLen = request.text.length;
-            let prediction = 'Authentic Content';
-            let confidence = (85 + Math.random() * 14).toFixed(1);
-            let isAI = false;
-            
-            // Just a fun mock logic based on text length and some keywords
-            if (request.text.includes('rapid') || request.text.includes('furthermore') || request.text.includes('delve') || textLen % 3 === 0) {
-                prediction = 'AI-Generated';
-                isAI = true;
-                confidence = (90 + Math.random() * 9).toFixed(1);
-            }
-
-            const color = isAI ? '#ef4444' : '#10b981';
-            content.innerHTML = `
-                <div style="font-size: 20px; font-weight: bold; color: ${color}; margin-bottom: 8px;">
-                    ${prediction}
-                </div>
-                <div style="color: #cbd5e1;">Confidence: <strong>${confidence}%</strong></div>
-            `;
-        }, 1500);
+        const isAI = data.is_ai;
+        const confidence = (data.confidence * 100).toFixed(1);
+        const prediction = isAI ? 'AI-Generated' : 'Authentic Content';
+        const color = isAI ? '#ef4444' : '#10b981';
+        
+        content.innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; color: ${color}; margin-bottom: 8px;">
+                ${prediction}
+            </div>
+            <div style="color: #cbd5e1;">Confidence: <strong>${confidence}%</strong></div>
+            <div style="color: #94a3b8; margin-top: 5px; font-size: 12px;">${data.analysis}</div>
+        `;
+    }
+    else if (request.action === 'show_error') {
+        content.innerHTML = `<span style="color:#ef4444;">Connection failed: ${request.error}. Is your AI Panel running?</span>`;
     }
 });

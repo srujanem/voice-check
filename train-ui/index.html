@@ -159,78 +159,59 @@
         </div>
     </div>
 
+    <script src="../server-config.js"></script>
     <script type="module">
         const term = document.getElementById('terminal');
 
-        function log(msg) {
-            term.textContent += '\n> ' + msg;
+        function log(msg, type = 'info') {
+            const colors = { info: '#06b6d4', success: '#10b981', error: '#ef4444', warn: '#f59e0b' };
+            term.innerHTML += `\n<span style="color:${colors[type] || '#cbd5e1'}">› ${msg}</span>`;
             term.scrollTop = term.scrollHeight;
         }
 
-        if (!localStorage.getItem('api_key')) {
-            window.location.href = '../login.html'; // Kick out unauthenticated users
-        }
+        async function runTrain(modelType) {
 
-        async function runAdminTask(endpoint, data = {}) {
-            const token = localStorage.getItem('api_key');
-            if (!token) return log('Error: No API token found. Please login.');
-            
-            // Map the Vercel endpoint to our local PyTorch Node API
-            let targetUrl = endpoint;
-            if (endpoint === '/api/admin/train-model') {
-                const zrokInput = document.getElementById('zrok-tunnel-url');
-                const baseUrl = zrokInput && zrokInput.value.trim() !== '' 
-                    ? zrokInput.value.trim() 
-                    : 'http://localhost:8000';
-                    
-                targetUrl = `${baseUrl}/api/train`;
-                // Add epochs for our PyTorch script
-                data.epochs = 5; 
-            }
-            
+            // Auto-use the saved Zrok URL, or fall back to localhost
+            const zrokInput = document.getElementById('zrok-tunnel-url');
+            const manualUrl = zrokInput && zrokInput.value.trim();
+            const baseUrl   = manualUrl || localStorage.getItem('zrok_url') || 'http://localhost:8000';
+
+            log(`Sending ${modelType} training request to ${baseUrl} ...`, 'warn');
+
             try {
-                const res = await fetch(targetUrl, {
+                const res = await fetch(`${baseUrl}/api/train`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ type: modelType, epochs: 10 })
                 });
-                
+
                 const json = await res.json();
                 if (res.ok) {
-                    log('Success: ' + (json.message || JSON.stringify(json)));
-                    if (json.logs) {
-                        log(json.logs);
-                    }
+                    log(`Training job dispatched! Your RTX 4050 is now running ${modelType} training for 10 epochs.`, 'success');
+                    log(`Check the AI Training Panel desktop app → Monitor tab to see live GPU usage.`, 'info');
                 } else {
-                    log('Error: ' + (json.error || 'Request failed.'));
+                    log('Error: ' + (json.error || 'Request failed.'), 'error');
                 }
             } catch (err) {
-                log('Network Error: ' + err.message + '\n(Make sure the Node Server or Zrok Tunnel is running!)');
+                log('Cannot reach server: ' + err.message, 'error');
+                log('Make sure the Node Server is running in the AI Training Panel desktop app!', 'warn');
             }
         }
 
         document.getElementById('btn-sync').onclick = () => {
-            log('Starting external data sync...');
-            runAdminTask('/api/admin/sync-data');
+            log('Add your training data to these folders on your PC:', 'info');
+            log('Voice (Human) → C:\\voice-check\\dataset\\human\\  (.wav .mp3 .flac)', 'info');
+            log('Voice (AI)    → C:\\voice-check\\dataset\\ai\\      (.wav .mp3 .flac)', 'info');
+            log('Image (Real)  → C:\\voice-check\\dataset_image\\real\\  (.jpg .png)', 'info');
+            log('Image (Fake)  → C:\\voice-check\\dataset_image\\fake\\  (.jpg .png)', 'info');
+            log('Then click Train Voice Model or Train Image Model!', 'success');
         };
 
-        document.getElementById('btn-train-voice').onclick = () => {
-            log('Triggering voice model training...');
-            runAdminTask('/api/admin/train-model', { type: 'voice' });
-        };
-
-        document.getElementById('btn-train-image').onclick = () => {
-            log('Triggering image model training...');
-            runAdminTask('/api/admin/train-model', { type: 'image' });
-        };
-
-        document.getElementById('btn-train-text').onclick = () => {
-            log('Triggering text model training...');
-            runAdminTask('/api/admin/train-model', { type: 'text' });
-        };
+        document.getElementById('btn-train-voice').onclick  = () => runTrain('voice');
+        document.getElementById('btn-train-image').onclick  = () => runTrain('image');
+        document.getElementById('btn-train-text').onclick   = () => runTrain('text');
     </script>
 </body>
 </html>

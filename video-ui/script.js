@@ -103,13 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAnalyze.addEventListener('click', async () => {
         if (btnAnalyze.classList.contains('disabled')) return;
         if (!currentFile) return;
-        
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the Video Analysis tool.');
-            window.location.href = '../login.html';
-            return;
-        }
 
         scannerLine.classList.remove('hidden');
         btnAnalyze.style.display = 'none';
@@ -117,14 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
 
         const formData = new FormData();
-        formData.append('video', currentFile);
+        formData.append('file', currentFile);
+        formData.append('type', 'video');
 
         try {
-            const response = await fetch('/predict_video', {
+            const zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+            const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`
-                },
                 body: formData
             });
 
@@ -133,54 +125,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errData.error || 'Server error');
             }
 
-            const data = await response.json();
-            const taskId = data.task_id;
+            let data = await response.json();
             
-            // Poll for status
-            loadingState.querySelector('p').innerText = "Processing video in background...";
+            // Map new API response format to old UI format
+            data = {
+                prediction: data.is_ai ? "AI-Generated" : "Authentic",
+                confidence: data.confidence * 100, 
+                prob_ai: data.is_ai ? data.confidence * 100 : (1 - data.confidence) * 100,
+                prob_human: data.is_ai ? (1 - data.confidence) * 100 : data.confidence * 100,
+                generator: data.generator
+            };
             
-            const pollInterval = setInterval(async () => {
-                try {
-                    const statusRes = await fetch(`/video_status/${taskId}`);
-                    if (statusRes.ok) {
-                        const statusData = await statusRes.json();
-                        // Check for completion: backend returns 'prediction' when done
-                        if (statusData.prediction !== undefined) {
-                            // Completed, has results
-                            clearInterval(pollInterval);
-                            scannerLine.classList.add('hidden');
-                            loadingState.classList.add('hidden');
-                            loadingState.querySelector('p').innerText = "Processing..."; // reset
-                            showResults(statusData);
-                        } else if (statusData.status && statusData.status !== 'done') {
-                            // Still processing
-                            loadingState.querySelector('p').innerText = "Analyzing frames... " + statusData.status;
-                        } else {
-                            // Fallback: 'done' status string or no more fields = done
-                            clearInterval(pollInterval);
-                            scannerLine.classList.add('hidden');
-                            loadingState.classList.add('hidden');
-                            loadingState.querySelector('p').innerText = "Processing..."; // reset
-                            showResults(statusData);
-                        }
-                    } else {
-                        const errData = await statusRes.json();
-                        throw new Error(errData.error || "Failed polling");
-                    }
-                } catch (e) {
-                    clearInterval(pollInterval);
-                    scannerLine.classList.add('hidden');
-                    loadingState.classList.add('hidden');
-                    btnAnalyze.style.display = 'inline-flex';
-                    alert('Background analysis failed: ' + e.message);
-                }
-            }, 2000);
+            scannerLine.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            showResults(data);
 
         } catch (error) {
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
-            alert('Upload failed: ' + error.message);
+            alert('Analysis failed: ' + error.message);
         }
     });
 

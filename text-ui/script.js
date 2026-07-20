@@ -37,25 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Please paste some text to analyze.");
             return;
         }
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the Text Analysis tool.');
-            window.location.href = '../login.html';
-            return;
-        }
         
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
         try {
-            const response = await fetch('/predict_text', {
+            const backendUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+            const formData = new FormData();
+            formData.append('type', 'text');
+            formData.append('file', new Blob([text], { type: 'text/plain' }), 'text.txt');
+
+            const response = await fetch(`${backendUrl}/api/infer`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({ text: text })
+                body: formData
             });
 
             if (!response.ok) {

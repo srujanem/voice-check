@@ -91,7 +91,7 @@
             <canvas id="timelineChart"></canvas>
         </div>
 
-        <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; margin-bottom: 50px;">
+        <div class="dashboard-grid" style="margin-bottom: 50px;">
             <!-- Scan History Table -->
             <div class="stat-card" style="text-align: left; overflow: hidden; display: flex; flex-direction: column;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -117,30 +117,41 @@
                 </div>
             </div>
 
-            <!-- API Key Management -->
-            <div class="stat-card" style="text-align: left; display: flex; flex-direction: column;">
-                <h3 style="margin-bottom: 20px; color: var(--text-primary);">API Keys</h3>
-                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Use this key to authenticate requests to the AuthGuard API.</p>
-                
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">YOUR SECRET KEY</label>
-                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-                    <input type="password" id="apiKeyInput" value="sk_live_51AuthGuard..." readonly 
-                        style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); font-family: monospace;">
-                    <button id="toggleKeyBtn" class="btn-secondary" style="padding: 10px;" title="Show/Hide">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                    <button id="copyKeyBtn" class="btn-secondary" style="padding: 10px;" title="Copy">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
+        </div>
+        <!-- V3 Developer Features -->
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 50px;">
+            <!-- API Usage Tracker -->
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="margin-bottom: 20px; color: var(--text-primary);"><i class="fa-solid fa-server" style="color:var(--accent-purple)"></i> API Usage</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Track your total API calls across all endpoints.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:15px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:10px;">
+                    <span style="font-weight:600; font-size:14px;">Total API Calls</span>
+                    <span id="apiUsageTotal" style="font-size:24px; font-weight:800; color:var(--accent-cyan);">0</span>
                 </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:15px; border-radius:8px; border:1px solid var(--border-color);">
+                    <span style="font-weight:600; font-size:14px;">Current Plan</span>
+                    <span style="font-size:14px; font-weight:600; color:#10b981; background:rgba(16,185,129,0.1); padding:4px 10px; border-radius:20px;">Unlimited</span>
+                </div>
+            </div>
+
+            <!-- Webhooks -->
+            <div class="stat-card" style="text-align: left; display: flex; flex-direction: column;">
+                <h3 style="margin-bottom: 20px; color: var(--text-primary);"><i class="fa-solid fa-satellite-dish" style="color:var(--accent-cyan)"></i> Webhooks</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Receive a POST request to your URL whenever a scan completes.</p>
                 
-                <button id="generateKeyBtn" class="btn-primary" style="padding: 10px; font-size: 14px; margin-top: auto;">
-                    <i class="fa-solid fa-rotate"></i> Roll API Key
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">WEBHOOK URL</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <input type="url" id="webhookInput" placeholder="https://your-server.com/webhook"
+                        style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary);">
+                </div>
+                <div id="webhookStatus" style="font-size: 12px; color: #10b981; margin-bottom:15px; min-height: 15px;"></div>
+                
+                <button id="saveWebhookBtn" class="btn-primary" style="padding: 10px; font-size: 14px; margin-top: auto; background: linear-gradient(135deg, #8b5cf6, #3b82f6);">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Webhook
                 </button>
             </div>
         </div>
     </div>
-
     <script src="../theme.js"></script>
     <script src="script.js"></script>
 </body>

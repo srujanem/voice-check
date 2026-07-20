@@ -69,43 +69,58 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnAnalyze.classList.contains('disabled')) return;
         const url = urlInput.value.trim();
         if (!url) return;
-        
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the URL Scanner.');
-            window.location.href = '../login.html';
-            return;
-        }
 
         hideError();
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
+        const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+
+        // Auto-detect type from URL extension
+        const urlLower = url.toLowerCase();
+        let scanType = 'image';
+        if (urlLower.match(/\.(mp3|wav|flac|ogg|m4a)(\?|$)/)) scanType = 'voice';
+        else if (urlLower.match(/\.(mp4|webm|mov|avi)(\?|$)/)) scanType = 'video';
+
         try {
-            const response = await fetch('/predict_url', {
+            const response = await fetch(`${backendUrl}/api/scan-url`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ url: url })
+                body: JSON.stringify({ url, type: scanType })
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Server error');
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Server error (${response.status})`);
             }
 
             const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            // Map new API response to old showResults format
+            const mapped = {
+                prediction:  data.is_ai ? 'AI-Generated' : 'Authentic',
+                confidence:  Math.round(data.confidence * 100),
+                prob_ai:     data.prob_ai    || Math.round((data.is_ai ? data.confidence : 1 - data.confidence) * 100),
+                prob_human:  data.prob_human || Math.round((data.is_ai ? 1 - data.confidence : data.confidence) * 100),
+            };
+
             loadingState.classList.add('hidden');
-            showResults(data, url);
+            showResults(mapped, url);
         } catch (error) {
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
-            showError('Analysis failed: ' + error.message);
+            let msg = error.message;
+            if (msg.includes('fetch') || msg.includes('NetworkError')) {
+                msg = 'Cannot reach server. Make sure the Node server is running.';
+            }
+            showError('Analysis failed: ' + msg);
         }
     });
+
 
     function animateCountUp(element, target, duration, prefix = '', suffix = '%') {
         let start = 0;
