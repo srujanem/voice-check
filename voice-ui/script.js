@@ -249,11 +249,16 @@ function initVoiceUI() {
 
             clearInterval(msgInterval);
 
-            // API returns: { prediction, confidence, prob_human, prob_ai }
-            const isHuman    = data.prediction === "Human Voice";
-            const confidence = data.confidence;
-            const probHuman  = data.prob_human;
-            const probAi     = data.prob_ai;
+            // Handle both flat response (Node server) and wrapped response (Python /api/infer)
+            const analysis = data.analysis || data;
+            
+            // Fallbacks in case backend doesn't send exact fields
+            const probHuman  = analysis.prob_human !== undefined ? analysis.prob_human : (100 - (analysis.prob_ai || 0));
+            const probAi     = analysis.prob_ai !== undefined ? analysis.prob_ai : (100 - probHuman);
+            
+            // Recalculate verdict robustly
+            const isHuman = probHuman >= probAi;
+            const confidence = Math.max(probHuman, probAi);
 
             showResult(isHuman, confidence, probHuman, probAi);
 
