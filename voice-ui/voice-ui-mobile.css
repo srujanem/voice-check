@@ -1,0 +1,355 @@
+/* ================================================================
+   VOICE-UI MOBILE  —  iOS & Android polish
+   Covers: layout, spacing, touch targets, typography, animations
+   ================================================================ */
+
+/* ── Base phone reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    overflow-x: hidden;
+}
+
+/* ── Full-bleed page on small screens ── */
+@media (max-width: 600px) {
+
+    /* Remove card chrome, let content breathe edge-to-edge */
+    .app-container {
+        margin: 0 !important;
+        padding: 20px 16px calc(20px + env(safe-area-inset-bottom)) !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        min-height: 100dvh;
+        box-shadow: none !important;
+    }
+
+    /* ── Header ── */
+    .app-header {
+        padding-bottom: 16px !important;
+        margin-bottom: 20px !important;
+        padding-top: env(safe-area-inset-top, 12px);
+    }
+
+    .logo-section { gap: 10px !important; }
+
+    .app-logo {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+    }
+
+    .app-header h2 { font-size: 16px !important; }
+    .app-header p  { font-size: 12px !important; display: none; } /* hide sub-title on tiny screens */
+
+    .app-header .btn-secondary {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+    }
+
+    /* ── Input area — stack vertically ── */
+    #upload-area {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* Upload & record cards */
+    .upload-area {
+        padding: 28px 16px !important;
+        border-radius: 18px !important;
+        margin-bottom: 0 !important;
+        /* Large enough touch target */
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        /* Active feedback */
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease !important;
+    }
+
+    .upload-area:active {
+        transform: scale(0.97) !important;
+        background: rgba(139, 92, 246, 0.12) !important;
+    }
+
+    .upload-icon {
+        font-size: 28px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .upload-area h3 { font-size: 15px !important; margin: 4px 0 0 !important; }
+    .upload-area p  { font-size: 12px !important; margin: 0 !important; }
+
+    /* ── Audio preview ── */
+    #audio-preview-container {
+        padding: 14px !important;
+        border-radius: 14px !important;
+        margin-bottom: 14px !important;
+    }
+
+    #audio-player {
+        border-radius: 10px;
+        /* Prevent iOS audio element from overflowing */
+        max-width: 100%;
+    }
+
+    #remove-audio {
+        padding: 10px 18px !important;
+        font-size: 13px !important;
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* ── Analyze button ── */
+    #analyze-btn {
+        width: 100% !important;
+        padding: 16px !important;
+        font-size: 15px !important;
+        border-radius: 14px !important;
+        margin-top: 4px !important;
+        /* Must meet 44px touch target */
+        min-height: 52px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── LOADING STATE ── */
+    #loading-state { margin-top: 8px !important; }
+
+    .voice-loader {
+        gap: 20px !important;
+        padding: 30px 16px !important;
+    }
+
+    .voice-loader__wave-wrap {
+        gap: 3px !important;
+        height: 44px !important;
+    }
+
+    .vbar { width: 4px !important; }
+
+    @keyframes vbar-dance {
+        0%, 100% { transform: scaleY(0.25); opacity: 0.4; }
+        50%       { transform: scaleY(3.5); opacity: 1;   }
+    }
+
+    .voice-loader__ring {
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    .ring-icon { font-size: 22px !important; }
+
+    .voice-loader__msg {
+        font-size: 14px !important;
+        padding: 0 8px;
+        text-align: center;
+    }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+        margin-top: 16px !important;
+    }
+
+    /* Verdict Hero */
+    .verdict-hero {
+        padding: 20px 14px 16px !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .verdict-hero__icon {
+        width: 66px !important;
+        height: 66px !important;
+        font-size: 26px !important;
+    }
+
+    .verdict-hero__label {
+        font-size: clamp(22px, 7vw, 30px) !important;
+    }
+
+    .verdict-hero__sub { font-size: 12px !important; }
+
+    /* Confidence ring — smaller on mobile */
+    .confidence-ring {
+        width: 100px !important;
+        height: 100px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .confidence-text { font-size: 20px !important; }
+
+    /* Probability duel — ensure always fills width */
+    .prob-duel {
+        gap: 8px !important;
+        margin: 14px 0 !important;
+    }
+
+    .prob-duel__block {
+        padding: 14px 6px !important;
+        border-radius: 14px !important;
+        min-width: 0;
+    }
+
+    .prob-duel__block i { font-size: 17px !important; }
+
+    .prob-duel__val {
+        font-size: clamp(22px, 6.5vw, 32px) !important;
+        letter-spacing: -0.5px !important;
+    }
+
+    .prob-duel__block.winner .prob-duel__val {
+        font-size: clamp(28px, 8vw, 40px) !important;
+    }
+
+    .prob-duel__block.winner { transform: scale(1.05) !important; }
+
+    .prob-duel__name { font-size: 10px !important; }
+
+    .prob-duel__vs { font-size: 11px !important; flex-shrink: 0; }
+
+    /* Confidence bars */
+    .conf-bars { margin-top: 14px !important; padding-top: 14px !important; }
+    .conf-bars__title { font-size: 10px !important; margin-bottom: 10px !important; }
+    .conf-bars__row { font-size: 12px !important; margin-bottom: 5px !important; }
+    .conf-bars__track { height: 8px !important; }
+
+    /* ── Action buttons ── */
+    #reset-btn,
+    #download-btn,
+    #share-btn {
+        padding: 14px !important;
+        font-size: 14px !important;
+        border-radius: 12px !important;
+        min-height: 48px !important;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Active press effect for buttons */
+    #reset-btn:active,
+    #download-btn:active,
+    #share-btn:active,
+    #analyze-btn:active:not(:disabled) {
+        transform: scale(0.97) !important;
+    }
+
+    /* ── Live mode panel ── */
+    #live-mode-panel {
+        padding: 0 0 16px !important;
+    }
+
+    #live-mode-panel > div {
+        border-radius: 18px !important;
+        padding: 18px 14px !important;
+    }
+
+    #live-mode-btn {
+        padding: 14px !important;
+        font-size: 14px !important;
+        border-radius: 12px !important;
+        min-height: 48px !important;
+        width: 100% !important;
+        touch-action: manipulation;
+    }
+
+    /* Floating history button — move above safe area */
+    .floating-history-btn {
+        bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+        right: 16px !important;
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 20px !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.35) !important;
+    }
+
+    /* ── History sidebar — full width on phone ── */
+    .history-sidebar {
+        width: 100% !important;
+        border-radius: 24px 24px 0 0 !important;
+        top: auto !important;
+        bottom: 0 !important;
+        height: 75vh !important;
+        transform: translateY(100%) !important;
+        border-left: none !important;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .history-sidebar:not(.hidden) {
+        transform: translateY(0) !important;
+    }
+
+    /* ── Error alert ── */
+    #error-alert {
+        border-radius: 12px !important;
+        font-size: 13px !important;
+        padding: 12px !important;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+        top: calc(12px + env(safe-area-inset-top)) !important;
+        right: 12px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* ── Medium phones (375-480px) ── */
+@media (min-width: 375px) and (max-width: 480px) {
+    .upload-area { min-height: 130px; }
+    .verdict-hero__label { font-size: clamp(24px, 7.5vw, 32px) !important; }
+}
+
+/* ── Larger phones & small tablets (481-600px) ── */
+@media (min-width: 481px) and (max-width: 600px) {
+    .app-container { padding: 24px 20px calc(24px + env(safe-area-inset-bottom)) !important; }
+
+    #upload-area { flex-direction: row !important; }
+
+    .upload-area { min-height: 140px; }
+}
+
+/* ── iOS Safari: prevent zoom on input focus ── */
+input, select, textarea, audio { font-size: 16px !important; }
+
+/* ── Prevent double-tap zoom on buttons ── */
+button, a, [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Smooth momentum scroll for result card on phones ── */
+.result-card, #loading-state {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── Reduce motion for accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+    .vbar,
+    .ring-spin,
+    .ring-icon,
+    .voice-loader__dots span,
+    .verdict-hero,
+    .verdict-hero__glow,
+    .verdict-hero__icon,
+    .verdict-hero__label,
+    .verdict-hero__sub,
+    .prob-duel,
+    .conf-bars {
+        animation: none !important;
+        transition: none !important;
+    }
+}

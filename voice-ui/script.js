@@ -130,6 +130,8 @@ function initVoiceUI() {
 
     // --- File Upload ---
     dropZone.addEventListener('click', () => fileInput.click());
+    // Keyboard support for role="button" divs
+    dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
 
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
