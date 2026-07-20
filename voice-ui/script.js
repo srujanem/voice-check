@@ -208,41 +208,61 @@ function initVoiceUI() {
         hideError();
         loadingState.classList.remove('hidden');
 
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-            alert('Please log in to use the Voice Analysis tool.');
-            window.location.href = '../login.html';
-            return;
-        }
+        // Cycle through loading messages for a lively loader
+        const loadingMessages = [
+            'Extracting audio features...',
+            'Running AI inference...',
+            'Analysing voice patterns...',
+            'Calculating probabilities...',
+            'Almost there...'
+        ];
+        let msgIdx = 0;
+        const msgEl = document.getElementById('loading-msg');
+        const msgInterval = setInterval(() => {
+            msgIdx = (msgIdx + 1) % loadingMessages.length;
+            if (msgEl) { msgEl.style.animation = 'none'; msgEl.offsetHeight; msgEl.style.animation = ''; msgEl.textContent = loadingMessages[msgIdx]; }
+        }, 1800);
+
+        // Auto-use the saved backend URL (set by server-config.js auto-connect)
+        const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
 
         const formData = new FormData();
         const filename = currentAudioFile.recordedName || currentAudioFile.name || 'recorded_audio.webm';
-        formData.append('audio', currentAudioFile, filename);
+        formData.append('file', currentAudioFile, filename);
+        formData.append('type', 'voice');
 
         try {
-            const response = await fetch('https://blitz-untimed-yiddish.ngrok-free.dev/predict_voice', {
+            const response = await fetch(`${backendUrl}/api/infer`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'ngrok-skip-browser-warning': 'true'
-                },
                 body: formData
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Server error');
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Server error (${response.status})`);
             }
 
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            const isHuman = data.prediction === "Human Voice";
-            showResult(isHuman, data.confidence, data.prob_human, data.prob_ai);
+            clearInterval(msgInterval);
+
+            // API returns: { prediction, confidence, prob_human, prob_ai }
+            const isHuman    = data.prediction === "Human Voice";
+            const confidence = data.confidence;
+            const probHuman  = data.prob_human;
+            const probAi     = data.prob_ai;
+
+            showResult(isHuman, confidence, probHuman, probAi);
 
         } catch (err) {
+            clearInterval(msgInterval);
             console.error('Analysis error:', err);
-            showError('Error analyzing audio: ' + err.message);
+            let msg = err.message;
+            if (msg.includes('fetch') || msg.includes('Failed') || msg.includes('NetworkError')) {
+                msg = 'Cannot reach server. Make sure the Node server is running and connected.';
+            }
+            showError('Error analyzing audio: ' + msg);
             inputSection.style.display = 'block';
             analyzeBtn.style.display   = 'flex';
             loadingState.classList.add('hidden');
@@ -269,39 +289,115 @@ function initVoiceUI() {
         loadingState.classList.add('hidden');
         resultState.classList.remove('hidden');
 
-        resultCard.className   = 'result-card';
+        // Apply status class on the card
+        resultCard.className = 'result-card';
+        resultCard.classList.add(isHuman ? 'status-authentic' : 'status-fake');
+
         const ring = document.getElementById('confidence-bar-circle');
         const icon = document.getElementById('result-icon');
         ring.style.strokeDashoffset = '339.292';
 
         setTimeout(() => {
+            // ── Verdict Hero ──
+            const verdictSub = document.getElementById('verdict-sub');
             if (isHuman) {
-                resultCard.classList.add('status-authentic');
-                resultCard.classList.remove('status-fake');
                 resultText.textContent  = 'Human Voice';
                 icon.className = 'fa-solid fa-user-check';
+                if (verdictSub) verdictSub.textContent = 'This audio is genuine human speech';
             } else {
-                resultCard.classList.add('status-fake');
-                resultCard.classList.remove('status-authentic');
                 resultText.textContent  = 'AI Generated Voice';
                 icon.className = 'fa-solid fa-robot';
+                if (verdictSub) verdictSub.textContent = 'This audio was synthesised by AI';
             }
 
+            // ── Confidence ring ──
             animateCountUp(confidencePercentage, confidence, 1500);
-            
             const circumference = 339.292;
-            const offset = circumference - (confidence / 100) * circumference;
-            ring.style.strokeDashoffset = offset;
+            ring.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
 
+            // ── Probability Duel ── show winner BIGGER
+            const humanValEl  = document.getElementById('prob-human-val');
+            const aiValEl     = document.getElementById('prob-ai-val');
+            const humanBlock  = document.getElementById('prob-human-block');
+            const aiBlock     = document.getElementById('prob-ai-block');
+
+            if (humanValEl) animateCountUp(humanValEl, probHuman, 1500, '', '%');
+            if (aiValEl)    animateCountUp(aiValEl,    probAi,    1500, '', '%');
+
+            // Mark winner block
+            if (humanBlock && aiBlock) {
+                if (probHuman >= probAi) {
+                    humanBlock.classList.add('winner');
+                    aiBlock.classList.remove('winner');
+                } else {
+                    aiBlock.classList.add('winner');
+                    humanBlock.classList.remove('winner');
+                }
+            }
+
+            // ── Hidden compat spans ──
             if (probHumanEl) animateCountUp(probHumanEl, probHuman, 1500, 'Human: ');
             if (probAiEl)    animateCountUp(probAiEl, probAi, 1500, 'AI: ');
+
+            // ── Confidence chart bars ──
+            const chartHumanBar   = document.getElementById('chart-human-bar');
+            const chartAiBar      = document.getElementById('chart-ai-bar');
+            const chartHumanLabel = document.getElementById('chart-human-label');
+            const chartAiLabel    = document.getElementById('chart-ai-label');
+            if (chartHumanBar) {
+                chartHumanBar.style.width = '0%';
+                chartAiBar.style.width    = '0%';
+                setTimeout(() => {
+                    chartHumanBar.style.width = probHuman + '%';
+                    chartAiBar.style.width    = probAi    + '%';
+                    animateCountUp(chartHumanLabel, probHuman, 1500, '', '%');
+                    animateCountUp(chartAiLabel,    probAi,    1500, '', '%');
+                }, 120);
+            }
 
             if (typeof scanHistory !== 'undefined') {
                 const fName = currentAudioFile ? currentAudioFile.name : 'Audio File';
                 scanHistory.addScan('Voice', fName, !isHuman, confidence);
             }
 
+            // Show share button
+            const shareBtn = document.getElementById('share-btn');
+            if (shareBtn) {
+                shareBtn.classList.remove('hidden');
+                shareBtn._lastResult = { is_ai: !isHuman, confidence: confidence / 100, prob_ai: probAi, prob_human: probHuman, generator: isHuman ? 'Authentic Human Voice' : 'AI Voice Synthesis' };
+                shareBtn._lastName   = currentAudioFile ? currentAudioFile.name : 'Audio File';
+            }
+
         }, 50);
+    }
+
+    // --- Share Result ---
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            const result     = shareBtn._lastResult;
+            const filename   = shareBtn._lastName || 'voice.wav';
+
+            shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            try {
+                const res  = await fetch(`${backendUrl}/api/results/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ result, filename, type: 'voice' })
+                });
+                const data = await res.json();
+                if (data.id) {
+                    const shareUrl = `${window.location.origin}/result.html?id=${data.id}`;
+                    await navigator.clipboard.writeText(shareUrl);
+                    shareBtn.innerHTML = '<i class="fa-solid fa-check"></i> Link Copied!';
+                    setTimeout(() => { shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i> Share Result'; }, 3000);
+                }
+            } catch (e) {
+                shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i> Share Result';
+                alert('Could not save result. Make sure the server is connected.');
+            }
+        });
     }
 
     // --- Reset ---
@@ -311,8 +407,104 @@ function initVoiceUI() {
         resultState.classList.add('hidden');
         const ring = document.getElementById('confidence-bar-circle');
         if (ring) ring.style.strokeDashoffset = '339.292';
+        const shareBtn = document.getElementById('share-btn');
+        if (shareBtn) shareBtn.classList.add('hidden');
+        // ── Reset confidence chart bars ─────────────────────────────────────
+        const cHBar = document.getElementById('chart-human-bar');
+        const cABar = document.getElementById('chart-ai-bar');
+        const cHLbl = document.getElementById('chart-human-label');
+        const cALbl = document.getElementById('chart-ai-label');
+        if (cHBar) { cHBar.style.width = '0%'; cHLbl.textContent = '0%'; }
+        if (cABar) { cABar.style.width = '0%'; cALbl.textContent = '0%'; }
         resetInputState();
     });
+
+    // --- Live Microphone Mode ---
+    const liveModeBtn  = document.getElementById('live-mode-btn');
+    const liveModePanel = document.getElementById('live-mode-panel');
+    const stopLiveBtn  = document.getElementById('stop-live-btn');
+    const liveHumanEl  = document.getElementById('live-human-pct');
+    const liveAiEl     = document.getElementById('live-ai-pct');
+    const liveVerdict  = document.getElementById('live-verdict');
+
+    let liveStream     = null;
+    let liveInterval   = null;
+    let liveRecorder   = null;
+
+    async function runLiveChunk() {
+        if (!liveStream) return;
+        const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/mp4',''].find(t => t === '' || MediaRecorder.isTypeSupported(t));
+        const rec = mimeType ? new MediaRecorder(liveStream, { mimeType }) : new MediaRecorder(liveStream);
+        const chunks = [];
+        rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        rec.start();
+        setTimeout(() => rec.stop(), 4000);
+        rec.onstop = async () => {
+            const usedMime = rec.mimeType || 'audio/webm';
+            const ext = usedMime.includes('mp4') ? 'm4a' : 'webm';
+            const blob = new Blob(chunks, { type: usedMime });
+            const file = new File([blob], `live_chunk.${ext}`, { type: usedMime });
+
+            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('type', 'voice');
+
+            liveVerdict.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+            try {
+                const res  = await fetch(`${backendUrl}/api/infer`, {
+                    method: 'POST',
+                    body: fd
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                const probHuman = data.is_ai ? Math.round((1 - data.confidence) * 100) : Math.round(data.confidence * 100);
+                const probAi    = 100 - probHuman;
+                liveHumanEl.textContent = probHuman + '%';
+                liveAiEl.textContent    = probAi + '%';
+
+                if (data.is_ai) {
+                    liveVerdict.innerHTML = '<i class="fa-solid fa-robot" style="color:#ef4444"></i> <span style="color:#ef4444">AI Generated Voice Detected</span>';
+                } else {
+                    liveVerdict.innerHTML = '<i class="fa-solid fa-user-check" style="color:#10b981"></i> <span style="color:#10b981">Human Voice Confirmed</span>';
+                }
+            } catch (e) {
+                liveVerdict.innerHTML = '<i class="fa-solid fa-exclamation-triangle" style="color:#f59e0b"></i> <span style="color:#f59e0b">Analysis failed — retrying...</span>';
+            }
+        };
+    }
+
+    if (liveModeBtn) {
+        liveModeBtn.addEventListener('click', async () => {
+            if (!navigator.mediaDevices) {
+                alert('Microphone not supported on this browser/connection (needs HTTPS).');
+                return;
+            }
+            try {
+                liveStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                liveModePanel.style.display = 'block';
+                liveModeBtn.style.display   = 'none';
+                liveHumanEl.textContent = '--';
+                liveAiEl.textContent    = '--';
+                liveVerdict.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Collecting audio...';
+
+                await runLiveChunk();
+                liveInterval = setInterval(runLiveChunk, 5000);
+            } catch {
+                alert('Microphone access denied.');
+            }
+        });
+    }
+
+    if (stopLiveBtn) {
+        stopLiveBtn.addEventListener('click', () => {
+            clearInterval(liveInterval);
+            if (liveStream) { liveStream.getTracks().forEach(t => t.stop()); liveStream = null; }
+            liveModePanel.style.display = 'none';
+            liveModeBtn.style.display   = 'inline-flex';
+        });
+    }
 
     // --- Helpers ---
     function showError(msg) {

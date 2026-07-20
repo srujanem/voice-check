@@ -59,30 +59,95 @@
             <i class="fa-solid fa-microchip"></i> Analyze Audio
         </button>
 
-        <div id="loading-state" class="hidden text-center" style="margin-top: 20px;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--accent-purple); margin-bottom: 10px;"></i>
-            <p>Analyzing voice features...</p>
+        <!-- ══ LOADING STATE ══ -->
+        <div id="loading-state" class="hidden">
+            <div class="voice-loader">
+                <div class="voice-loader__wave-wrap">
+                    <span class="vbar" style="--i:1"></span>
+                    <span class="vbar" style="--i:2"></span>
+                    <span class="vbar" style="--i:3"></span>
+                    <span class="vbar" style="--i:4"></span>
+                    <span class="vbar" style="--i:5"></span>
+                    <span class="vbar" style="--i:6"></span>
+                    <span class="vbar" style="--i:7"></span>
+                    <span class="vbar" style="--i:8"></span>
+                    <span class="vbar" style="--i:9"></span>
+                    <span class="vbar" style="--i:10"></span>
+                    <span class="vbar" style="--i:11"></span>
+                    <span class="vbar" style="--i:12"></span>
+                </div>
+                <div class="voice-loader__ring">
+                    <svg viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="50" class="ring-track"/>
+                        <circle cx="60" cy="60" r="50" class="ring-spin"/>
+                    </svg>
+                    <div class="ring-icon"><i class="fa-solid fa-waveform-lines"></i></div>
+                </div>
+                <p class="voice-loader__msg" id="loading-msg">Extracting audio features...</p>
+                <div class="voice-loader__dots"><span></span><span></span><span></span></div>
+            </div>
         </div>
 
         <div id="result-state" class="hidden">
             <div class="result-card" id="result-card">
-                <div class="result-icon-container" id="result-icon-box">
-                    <i class="fa-solid fa-microphone" id="result-icon"></i>
+
+                <!-- ── WINNER HERO BADGE ── -->
+                <div class="verdict-hero" id="verdict-hero">
+                    <div class="verdict-hero__glow" id="verdict-glow"></div>
+                    <div class="verdict-hero__icon" id="result-icon-box">
+                        <i class="fa-solid fa-microphone" id="result-icon"></i>
+                    </div>
+                    <div class="verdict-hero__label" id="result-text">Human Voice</div>
+                    <div class="verdict-hero__sub" id="verdict-sub">Analysis complete</div>
                 </div>
-                <h3 class="result-title" id="result-text">Human Voice</h3>
-                
-                <div class="confidence-ring">
+
+                <!-- ── CONFIDENCE RING ── -->
+                <div class="confidence-ring" style="margin: 0 auto 8px;">
                     <svg>
                         <circle cx="60" cy="60" r="54"></circle>
                         <circle class="progress" cx="60" cy="60" r="54" id="confidence-bar-circle"></circle>
                     </svg>
                     <div class="confidence-text" id="confidence-percentage">0%</div>
                 </div>
+                <p style="text-align:center; font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Overall confidence</p>
 
-                <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <span id="prob-human">Human: --</span>
-                    <span id="prob-ai">AI: --</span>
+                <!-- ── PROBABILITY DUEL ── -->
+                <div class="prob-duel" id="prob-duel">
+                    <div class="prob-duel__block prob-duel__human" id="prob-human-block">
+                        <i class="fa-solid fa-user"></i>
+                        <div class="prob-duel__val" id="prob-human-val">--</div>
+                        <div class="prob-duel__name">Human</div>
+                    </div>
+                    <div class="prob-duel__vs">vs</div>
+                    <div class="prob-duel__block prob-duel__ai" id="prob-ai-block">
+                        <i class="fa-solid fa-robot"></i>
+                        <div class="prob-duel__val" id="prob-ai-val">--</div>
+                        <div class="prob-duel__name">AI</div>
+                    </div>
                 </div>
+
+                <!-- ── CONFIDENCE BREAKDOWN BARS ── -->
+                <div id="confidence-chart" class="conf-bars">
+                    <div class="conf-bars__title">Confidence Breakdown</div>
+                    <div class="conf-bars__row">
+                        <span class="conf-bars__lbl" style="color:#10b981;"><i class="fa-solid fa-user"></i> Human</span>
+                        <span class="conf-bars__pct" id="chart-human-label" style="color:#10b981;">0%</span>
+                    </div>
+                    <div class="conf-bars__track">
+                        <div id="chart-human-bar" class="conf-bars__fill conf-bars__fill--human"></div>
+                    </div>
+                    <div class="conf-bars__row" style="margin-top:12px;">
+                        <span class="conf-bars__lbl" style="color:#ef4444;"><i class="fa-solid fa-robot"></i> AI Generated</span>
+                        <span class="conf-bars__pct" id="chart-ai-label" style="color:#ef4444;">0%</span>
+                    </div>
+                    <div class="conf-bars__track">
+                        <div id="chart-ai-bar" class="conf-bars__fill conf-bars__fill--ai"></div>
+                    </div>
+                </div>
+
+                <!-- hidden compat spans -->
+                <span id="prob-human" style="display:none"></span>
+                <span id="prob-ai" style="display:none"></span>
             </div>
 
             <button id="reset-btn" class="btn-secondary" style="width: 100%; margin-top: 20px; justify-content: center;">
@@ -91,13 +156,47 @@
             <button id="download-btn" class="btn-secondary" style="width: 100%; margin-top: 10px; justify-content: center; background: var(--bg-hover);">
                 <i class="fa-solid fa-file-pdf"></i> Download PDF Report
             </button>
+            <button id="share-btn" class="btn-secondary hidden" style="width:100%; margin-top:10px; justify-content:center; border-color:rgba(139,92,246,0.4); color:#a78bfa;">
+                <i class="fa-solid fa-share-nodes"></i> Share Result
+            </button>
         </div>
 
+    <!-- LIVE MODE PANEL -->
+    <div id="live-mode-panel" style="display:none; padding: 0 20px 20px; max-width: 700px; margin: 0 auto;">
+        <div style="background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; padding: 24px; text-align: center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px;">
+                <i class="fa-solid fa-circle-dot fa-fade" style="color:#ef4444; font-size:18px;"></i>
+                <span style="font-weight:700; font-size:16px; color:var(--accent-cyan);">LIVE ANALYSIS ACTIVE</span>
+            </div>
+            <p style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">Analyzing your microphone every 5 seconds in real-time</p>
+            <div style="display:flex; gap:12px; justify-content:center; margin-bottom:20px;">
+                <div style="flex:1; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:16px;">
+                    <div style="font-size:13px; color:#10b981; margin-bottom:8px; font-weight:600;">HUMAN</div>
+                    <div id="live-human-pct" style="font-size:36px; font-weight:800; color:#10b981;">--</div>
+                </div>
+                <div style="flex:1; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:16px;">
+                    <div style="font-size:13px; color:#ef4444; margin-bottom:8px; font-weight:600;">AI</div>
+                    <div id="live-ai-pct" style="font-size:36px; font-weight:800; color:#ef4444;">--</div>
+                </div>
+            </div>
+            <div id="live-verdict" style="font-size:14px; font-weight:600; padding:10px 20px; border-radius:8px; background:rgba(255,255,255,0.05); margin-bottom:16px; min-height:38px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Collecting audio...
+            </div>
+            <button id="stop-live-btn" class="btn-secondary" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-stop"></i> Stop Live Mode
+            </button>
+        </div>
+    </div>
+    <div style="text-align:center; padding: 10px 20px; max-width: 700px; margin: 0 auto;">
+        <button id="live-mode-btn" class="btn-secondary" style="border-color:rgba(6,182,212,0.4); color:var(--accent-cyan); width:100%; justify-content:center;">
+            <i class="fa-solid fa-wave-square"></i> Start Live Detection
+        </button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../theme.js"></script>
     <script src="../history.js"></script>
+    <script src="../server-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
