@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://wonderful-commands-educators-llp.trycloudflare.com';
+    const DEFAULT_URL = 'https://social-individually-statutory-constantly.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');
@@ -39,7 +39,13 @@
             100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
         }
         @media (max-width: 768px) {
-            #ag-status-badge { bottom: 85px; left: 16px; }
+            #ag-status-badge { 
+                bottom: auto; 
+                top: 85px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            }
         }
     `;
     document.head.appendChild(style);
