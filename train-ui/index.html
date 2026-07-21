@@ -206,7 +206,9 @@
             log('Voice (AI)    → C:\\voice-check\\dataset\\ai\\      (.wav .mp3 .flac)', 'info');
             log('Image (Real)  → C:\\voice-check\\dataset_image\\real\\  (.jpg .png)', 'info');
             log('Image (Fake)  → C:\\voice-check\\dataset_image\\fake\\  (.jpg .png)', 'info');
-            log('Then click Train Voice Model or Train Image Model!', 'success');
+            log('Text (Human)  → C:\\voice-check\\dataset_text\\human\\  (.txt)', 'info');
+            log('Text (AI)     → C:\\voice-check\\dataset_text\\ai\\     (.txt)', 'info');
+            log('Then click Train Voice, Train Image, or Train Text Model!', 'success');
         };
 
         document.getElementById('btn-train-voice').onclick  = () => runTrain('voice');
