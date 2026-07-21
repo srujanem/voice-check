@@ -43,11 +43,8 @@ def predict_voice():
     if ml.voice_model is None:
         return jsonify({"error": "Voice model not loaded on server."}), 500
 
-    if "audio" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-
-    file = request.files["audio"]
-    if file.filename == '':
+    file = request.files.get("audio") or request.files.get("file")
+    if not file or file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
     file_path = os.path.join(Config.UPLOAD_FOLDER, file.filename)

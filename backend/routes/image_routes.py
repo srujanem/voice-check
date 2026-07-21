@@ -12,11 +12,8 @@ def predict_image():
     if ml.image_model is None:
         return jsonify({"error": "Image model not loaded."}), 500
 
-    if "image" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-
-    file = request.files["image"]
-    if file.filename == '':
+    file = request.files.get("image") or request.files.get("file")
+    if not file or file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
     try:

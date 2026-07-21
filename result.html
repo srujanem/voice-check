@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuthGuard - Scan Result</title>
+  <link rel="stylesheet" href="/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0a0a0f;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #1e1e2d;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-left-color: #06b6d4;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .hidden { display: none; }
+    .verdict { font-size: 2rem; font-weight: 700; margin: 20px 0; }
+    .verdict.ai { color: #ef4444; }
+    .verdict.human { color: #22c55e; }
+    .details { font-size: 1rem; color: #a1a1aa; margin-bottom: 30px; }
+    .ring-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+    .ring {
+      transform: rotate(-90deg);
+    }
+    .ring-bg {
+      fill: none;
+      stroke: #333;
+      stroke-width: 10;
+    }
+    .ring-fill {
+      fill: none;
+      stroke: #06b6d4;
+      stroke-width: 10;
+      stroke-dasharray: 565;
+      stroke-dashoffset: 565;
+      transition: stroke-dashoffset 1.5s ease-out;
+    }
+    .confidence-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .bars { margin: 20px 0; text-align: left; }
+    .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+    .bar-bg { background: #333; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 15px; }
+    .bar-fill { height: 100%; transition: width 1s ease-out; }
+    .bar-ai { background: #ef4444; }
+    .bar-human { background: #22c55e; }
+    .btn {
+      display: inline-block;
+      background: #06b6d4;
+      color: #0a0a0f;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #0891b2; }
+    .error-msg { color: #ef4444; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+
+  <div id="loading" class="card">
+    <div class="spinner"></div>
+    <p>Loading result...</p>
+  </div>
+
+  <div id="result-card" class="card hidden">
+    <div class="ring-container">
+      <svg class="ring" width="200" height="200">
+        <circle class="ring-bg" cx="100" cy="100" r="90"></circle>
+        <circle class="ring-fill" cx="100" cy="100" r="90" id="confidence-ring"></circle>
+      </svg>
+      <div class="confidence-text"><span id="confidence-val">0</span>%</div>
+    </div>
+    
+    <div id="verdict-text" class="verdict"></div>
+    <div class="details">
+      <div id="file-name"></div>
+      <div id="scan-type"></div>
+      <div id="timestamp"></div>
+    </div>
+
+    <div class="bars">
+      <div class="bar-label"><span>AI Probability</span><span id="ai-val">0%</span></div>
+      <div class="bar-bg"><div class="bar-fill bar-ai" id="ai-bar" style="width: 0%"></div></div>
+      <div class="bar-label"><span>Human Probability</span><span id="human-val">0%</span></div>
+      <div class="bar-bg"><div class="bar-fill bar-human" id="human-bar" style="width: 0%"></div></div>
+    </div>
+
+    <a href="#" id="scan-btn" class="btn">Scan Your Own File</a>
+  </div>
+
+  <div id="error-card" class="card hidden">
+    <i class="fas fa-exclamation-circle fa-3x" style="color: #ef4444; margin-bottom: 20px;"></i>
+    <p class="error-msg" id="error-text">Result not found or expired.</p>
+  </div>
+
+  <script src="/server-config.js?v=4"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+      
+      const loading = document.getElementById('loading');
+      const resultCard = document.getElementById('result-card');
+      const errorCard = document.getElementById('error-card');
+      
+      if (!id) {
+        showError('No result ID provided.');
+        return;
+      }
+
+      try {
+        const baseUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+        const res = await fetch(`${baseUrl}/api/results/${id}`);
+        
+        if (!res.ok) throw new Error('Result not found');
+        
+        const data = await res.json();
+        showResult(data);
+      } catch (err) {
+        showError('Result not found, expired, or server offline.');
+      }
+
+      function showError(msg) {
+        loading.classList.add('hidden');
+        errorCard.classList.remove('hidden');
+        document.getElementById('error-text').innerText = msg;
+      }
+
+      function showResult(data) {
+        loading.classList.add('hidden');
+        resultCard.classList.remove('hidden');
+        
+        const isAI = data.ai_probability > 0.5;
+        const confidence = isAI ? data.ai_probability * 100 : data.human_probability * 100;
+        
+        // Verdict
+        const verdictEl = document.getElementById('verdict-text');
+        if (isAI) {
+          verdictEl.innerHTML = '🤖 AI Generated';
+          verdictEl.className = 'verdict ai';
+        } else {
+          verdictEl.innerHTML = '✅ Human Authentic';
+          verdictEl.className = 'verdict human';
+        }
+
+        // Details
+        document.getElementById('file-name').innerText = `File: ${data.filename || 'Unknown'}`;
+        document.getElementById('scan-type').innerText = `Type: ${data.scan_type || 'Unknown'}`;
+        document.getElementById('timestamp').innerText = `Scanned: ${new Date(data.timestamp || Date.now()).toLocaleString()}`;
+
+        // Scan button link
+        const scanBtn = document.getElementById('scan-btn');
+        if (data.scan_type && data.scan_type.includes('image')) {
+          scanBtn.href = '/deepfake-ui/';
+        } else {
+          scanBtn.href = '/voice-ui/';
+        }
+
+        // Animate confidence ring and number
+        const ring = document.getElementById('confidence-ring');
+        const offset = 565 - (565 * confidence) / 100;
+        setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+        
+        animateValue('confidence-val', 0, confidence, 1500);
+
+        // Bars
+        const aiPct = Math.round(data.ai_probability * 100) || 0;
+        const humanPct = Math.round(data.human_probability * 100) || 0;
+        
+        document.getElementById('ai-val').innerText = `${aiPct}%`;
+        document.getElementById('human-val').innerText = `${humanPct}%`;
+        
+        setTimeout(() => {
+          document.getElementById('ai-bar').style.width = `${aiPct}%`;
+          document.getElementById('human-bar').style.width = `${humanPct}%`;
+        }, 100);
+      }
+
+      function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          obj.innerHTML = Math.floor(progress * (end - start) + start);
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+    });
+  </script>
+</body>
+</html>
