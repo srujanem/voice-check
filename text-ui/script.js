@@ -99,11 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function showResults(data) {
         resultsSection.classList.remove('hidden');
         
-        const isAi = data.prediction === "AI-Generated";
-        const confidence = Math.round(data.confidence);
+        const isAi = data.prediction === "AI-Generated" || data.prediction === "ai" || data.is_ai;
+        
+        // Extract probabilities cleanly, handling both direct python responses and /api/infer wrappers
+        const innerData = data.analysis || data;
+        const aiProb = innerData.prob_ai || (isAi ? innerData.confidence : 100 - innerData.confidence);
+        const humanProb = innerData.prob_human || (isAi ? 100 - innerData.confidence : innerData.confidence);
+        
+        // Confidence for the main circle gauge
+        const confidence = Math.round(isAi ? aiProb : humanProb);
         
         resultCard.className = 'result-card';
         scoreProgress.style.strokeDashoffset = '339.292';
+
 
         setTimeout(() => {
             if (!isAi) {
@@ -124,14 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const offset = circumference - (confidence / 100) * circumference;
             scoreProgress.style.strokeDashoffset = offset;
 
-            if (probHuman) animateCountUp(probHuman, data.prob_human, 1500, 'Human: ');
-            if (probAi) animateCountUp(probAi, data.prob_ai, 1500, 'AI: ');
+            if (probHuman) animateCountUp(probHuman, humanProb, 1500, 'Human: ');
+            if (probAi) animateCountUp(probAi, aiProb, 1500, 'AI: ');
 
-            if (data.sentences) {
+            if (innerData.sentences) {
                 const xaiSection = document.getElementById('xai-section');
                 if (xaiSection) {
                     xaiSection.innerHTML = '<h4 style="margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;"><i class="fa-solid fa-magnifying-glass"></i> Sentence Analysis</h4>';
-                    data.sentences.forEach(s => {
+                    innerData.sentences.forEach(s => {
                         const span = document.createElement('span');
                         span.textContent = s.text + ' ';
                         if (s.ai_prob >= 0.5) {
