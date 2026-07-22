@@ -26,8 +26,9 @@ def sync_data():
         # 'audio_dataset' and 'image_dataset'
         
         # 1. Sync Audio
-        audio_docs = db_instance.list_documents("audio_dataset")
-        if audio_docs and isinstance(audio_docs, list):
+        audio_res = db_instance.list_documents("audio_dataset")
+        audio_docs = audio_res.get("data", []) if isinstance(audio_res, dict) and audio_res.get("success") else (audio_res if isinstance(audio_res, list) else [])
+        if audio_docs:
             log_output.append(f"Found {len(audio_docs)} audio documents.")
             for i, doc in enumerate(audio_docs):
                 label = doc.get("label", "ai").lower() # 'human' or 'ai'
@@ -48,8 +49,9 @@ def sync_data():
                         log_output.append(f"Failed to decode audio doc {i}: {e}")
         
         # 2. Sync Images
-        image_docs = db_instance.list_documents("image_dataset")
-        if image_docs and isinstance(image_docs, list):
+        image_res = db_instance.list_documents("image_dataset")
+        image_docs = image_res.get("data", []) if isinstance(image_res, dict) and image_res.get("success") else (image_res if isinstance(image_res, list) else [])
+        if image_docs:
             log_output.append(f"Found {len(image_docs)} image documents.")
             for i, doc in enumerate(image_docs):
                 label = doc.get("label", "fake").lower() # 'real' or 'fake'

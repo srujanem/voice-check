@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://registered-respondent-strategic-links.trycloudflare.com';
+    const DEFAULT_URL = 'https://traveller-clarke-emperor-ceramic.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');
@@ -92,8 +92,8 @@
     async function autoConnect() {
         const savedUrl = localStorage.getItem(STORAGE_KEY_URL);
 
-        // Port 8000 = Node.js Backend, Port 5000 = Flask ML backend
-        const localPorts = ['http://localhost:8000', 'http://localhost:5000'];
+        // Port 5000 = Flask ML backend, Port 8000 = Node.js / alternate
+        const localPorts = ['http://localhost:5000', 'http://localhost:8000'];
 
         for (const url of localPorts) {
             if (await tryUrl(url)) { setOnline(url); return; }

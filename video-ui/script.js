@@ -114,31 +114,60 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'video');
 
         try {
-            const zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
+            const zrokUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',
                 body: formData
             });
 
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Server error');
+            if (!response.ok && response.status !== 202) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Server error (${response.status})`);
             }
 
             let data = await response.json();
             
-            // Map new API response format to old UI format
-            data = {
-                prediction: data.is_ai ? "AI-Generated" : "Authentic",
-                confidence: data.confidence * 100, 
-                prob_ai: data.is_ai ? data.confidence * 100 : (1 - data.confidence) * 100,
-                prob_human: data.is_ai ? (1 - data.confidence) * 100 : data.confidence * 100,
-                generator: data.generator
+            // Check if task is async (video_routes returns task_id)
+            const taskId = data.task_id || (data.analysis && data.analysis.task_id);
+            if (taskId) {
+                let attempts = 0;
+                while (attempts < 30) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    attempts++;
+                    const statusRes = await fetch(`${zrokUrl}/video_status/${taskId}`);
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        if (statusData.prediction) {
+                            data = statusData;
+                            break;
+                        } else if (statusData.status === 'FAILED') {
+                            throw new Error(statusData.error || 'Video task failed');
+                        }
+                    }
+                }
+            }
+            
+            const innerData = data.analysis || data;
+            const isFake = data.is_ai !== undefined ? data.is_ai : (innerData.prediction === "AI-Generated" || innerData.prediction === "AI Voice" || (innerData.prob_ai >= 50));
+            
+            let rawConf = data.confidence !== undefined ? data.confidence : innerData.confidence;
+            if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
+            const confidence = Math.round(rawConf || 50);
+
+            const realPct = innerData.prob_human !== undefined ? Math.round(innerData.prob_human) : (isFake ? Math.round(100 - confidence) : Math.round(confidence));
+            const fakePct = innerData.prob_ai !== undefined ? Math.round(innerData.prob_ai) : (isFake ? Math.round(confidence) : Math.round(100 - confidence));
+
+            const mapped = {
+                prediction: isFake ? "AI-Generated" : "Authentic",
+                confidence: confidence,
+                prob_ai: fakePct,
+                prob_human: realPct,
+                is_ai: isFake
             };
             
             scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
-            showResults(data);
+            showResults(mapped);
 
         } catch (error) {
             scannerLine.classList.add('hidden');

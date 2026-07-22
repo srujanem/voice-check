@@ -152,8 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function showResults(data) {
         resultsSection.classList.remove('hidden');
         
-        const isFake = data.prediction === "AI-Generated";
-        const confidence = Math.round(data.confidence);
+        const innerData = data.analysis || data;
+        const isFake = data.is_ai !== undefined ? data.is_ai : (innerData.prediction === "AI-Generated" || innerData.prediction === "AI Voice" || (innerData.prob_ai >= 50));
+        
+        let rawConf = data.confidence !== undefined ? data.confidence : innerData.confidence;
+        if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
+        const confidence = Math.round(rawConf || 50);
+
+        const realPct = innerData.prob_human !== undefined ? Math.round(innerData.prob_human) : (isFake ? Math.round(100 - confidence) : Math.round(confidence));
+        const fakePct = innerData.prob_ai !== undefined ? Math.round(innerData.prob_ai) : (isFake ? Math.round(confidence) : Math.round(100 - confidence));
         
         resultCard.className = 'result-card';
         const icon = document.getElementById('result-icon');
@@ -178,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const offset = circumference - (confidence / 100) * circumference;
             scoreProgress.style.strokeDashoffset = offset;
 
-            if (probReal) animateCountUp(probReal, data.prob_human, 1500, 'Real: ');
-            if (probFake) animateCountUp(probFake, data.prob_ai, 1500, 'Fake: ');
+            if (probReal) animateCountUp(probReal, realPct, 1500, 'Real: ');
+            if (probFake) animateCountUp(probFake, fakePct, 1500, 'Fake: ');
 
             // ── Animate confidence chart bars ─────────────────────────────────
             const chartRealBar   = document.getElementById('chart-real-bar');
@@ -187,8 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const chartRealLabel = document.getElementById('chart-real-label');
             const chartFakeLabel = document.getElementById('chart-fake-label');
             if (chartRealBar) {
-                const realPct = Math.round(data.prob_human);
-                const fakePct = Math.round(data.prob_ai);
                 chartRealBar.style.width = '0%';
                 chartFakeBar.style.width = '0%';
                 setTimeout(() => {

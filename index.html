@@ -52,26 +52,58 @@
         .floating-mockup { animation: floatUp 5s ease-in-out infinite, slideUpFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s both; }
         @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== GLITCH EFFECT ===== */
-        .landing-header h1 { position: relative; display: inline-block; }
-        .landing-header h1:hover::before, .landing-header h1:hover::after {
-            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-main); z-index: -1;
+        /* ===== DYNAMIC GRADIENT SHIMMER & BADGE PULSE ===== */
+        .gradient-text-animated {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, #ec4899 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 4s ease-in-out infinite alternate;
         }
-        .landing-header h1:hover::before { left: 2px; text-shadow: -2px 0 red; animation: glitch-anim 2s infinite linear alternate-reverse; }
-        .landing-header h1:hover::after { left: -2px; text-shadow: -2px 0 blue; animation: glitch-anim 2.5s infinite linear alternate-reverse; }
-        @keyframes glitch-anim {
-            0% { clip: rect(42px, 9999px, 44px, 0); }
-            10% { clip: rect(12px, 9999px, 59px, 0); }
-            20% { clip: rect(48px, 9999px, 29px, 0); }
-            30% { clip: rect(42px, 9999px, 73px, 0); }
-            40% { clip: rect(63px, 9999px, 27px, 0); }
-            50% { clip: rect(34px, 9999px, 55px, 0); }
-            60% { clip: rect(86px, 9999px, 73px, 0); }
-            70% { clip: rect(20px, 9999px, 20px, 0); }
-            80% { clip: rect(26px, 9999px, 60px, 0); }
-            90% { clip: rect(9px, 9999px, 46px, 0); }
-            100% { clip: rect(46px, 9999px, 73px, 0); }
+        @keyframes textShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .hero-badge::before {
+            content: ''; position: absolute; inset: -4px; border-radius: 50px;
+            background: linear-gradient(90deg, rgba(6,182,212,0.5), rgba(139,92,246,0.5), rgba(236,72,153,0.5));
+            background-size: 200% 100%;
+            z-index: -1; filter: blur(8px); opacity: 0.6;
+            animation: badgePulse 3s ease-in-out infinite alternate, borderGradientRoll 4s linear infinite;
+        }
+        @keyframes badgePulse {
+            0% { opacity: 0.3; transform: scale(0.97); }
+            100% { opacity: 0.85; transform: scale(1.04); }
+        }
+
+        /* ===== MOCKUP LASER WAVE ENGINE ===== */
+        .mockup-chart {
+            position: relative;
+            overflow: hidden;
+        }
+        .mockup-chart::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6,182,212,0.45), rgba(139,92,246,0.45), transparent);
+            animation: laserWave 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes laserWave {
+            0% { left: -60%; }
+            100% { left: 160%; }
+        }
+
+        /* ===== BUTTON HOLOGRAPHIC GLOW & REACTION ===== */
+        .landing-header .btn-primary:hover, .landing-header .btn-secondary:hover {
+            transform: translateY(-3px) scale(1.04) !important;
+            box-shadow: 0 10px 30px rgba(6,182,212,0.4), 0 0 25px rgba(139,92,246,0.3) !important;
+        }
+        .nav-card:hover, .feature-card:hover {
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 20px 40px -15px rgba(6, 182, 212, 0.25), 0 0 20px rgba(139, 92, 246, 0.2) !important;
+            border-color: rgba(6, 182, 212, 0.4) !important;
         }
 
 
@@ -3550,6 +3582,8 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const hero = canvas.closest('.hero-section');
+            let mouse = { x: -1000, y: -1000, active: false };
+
             function resize() {
                 canvas.width = hero.offsetWidth;
                 canvas.height = hero.offsetHeight;
@@ -3557,34 +3591,68 @@ formData.<span class="c-fn">append</span>(<span class="c-str">'image'</span>, im
             resize();
             window.addEventListener('resize', resize);
 
-            const particles = Array.from({ length: 55 }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 1.5 + 0.3,
-                dx: (Math.random() - 0.5) * 0.35,
-                dy: (Math.random() - 0.5) * 0.35,
-                o: Math.random() * 0.5 + 0.15,
-                color: Math.random() > 0.5 ? '6,182,212' : '139,92,246'
+            hero.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+                mouse.active = true;
+            });
+            hero.addEventListener('mouseleave', () => { mouse.active = false; });
+
+            const particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * (canvas.width || 800),
+                y: Math.random() * (canvas.height || 600),
+                r: Math.random() * 2 + 0.5,
+                baseR: Math.random() * 2 + 0.5,
+                dx: (Math.random() - 0.5) * 0.45,
+                dy: (Math.random() - 0.5) * 0.45,
+                o: Math.random() * 0.6 + 0.2,
+                color: Math.random() > 0.4 ? '6,182,212' : (Math.random() > 0.5 ? '139,92,246' : '236,72,153')
             }));
 
             function drawParticles() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach(p => {
-                    // Draw dot
+                    // Mouse interaction
+                    if (mouse.active) {
+                        const mDist = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+                        if (mDist < 160) {
+                            const angle = Math.atan2(mouse.y - p.y, mouse.x - p.x);
+                            const force = (160 - mDist) / 160;
+                            p.x += Math.cos(angle) * force * 1.2;
+                            p.y += Math.sin(angle) * force * 1.2;
+                            p.r = p.baseR + force * 2.5;
+
+                            // Draw glowing cursor nexus line
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.strokeStyle = `rgba(6,182,212,${force * 0.35})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        } else {
+                            p.r = p.baseR;
+                        }
+                    }
+
+                    // Draw dot with outer glow
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(${p.color},${p.o})`;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = `rgba(${p.color},0.6)`;
                     ctx.fill();
+                    ctx.shadowBlur = 0;
 
-                    // Draw connecting lines
+                    // Draw connecting lines between particles
                     particles.forEach(p2 => {
                         const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                        if (dist < 100) {
+                        if (dist < 110) {
                             ctx.beginPath();
                             ctx.moveTo(p.x, p.y);
                             ctx.lineTo(p2.x, p2.y);
-                            ctx.strokeStyle = `rgba(${p.color},${(1 - dist / 100) * 0.08})`;
-                            ctx.lineWidth = 0.5;
+                            ctx.strokeStyle = `rgba(${p.color},${(1 - dist / 110) * 0.12})`;
+                            ctx.lineWidth = 0.6;
                             ctx.stroke();
                         }
                     });

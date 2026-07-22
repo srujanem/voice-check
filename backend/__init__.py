@@ -22,6 +22,8 @@ def create_app():
     from backend.routes.external_db_routes import external_db_bp
     from backend.routes.admin_routes import admin_bp
     from backend.routes.auth_routes import auth_bp
+    from backend.routes.results_routes import results_bp
+    from backend.routes.alias_routes import alias_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -33,6 +35,8 @@ def create_app():
     app.register_blueprint(external_db_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(results_bp)
+    app.register_blueprint(alias_bp)
 
     @app.route("/", methods=["GET"])
     def home():
@@ -82,7 +86,7 @@ def create_app():
             return jsonify({"error": f"Unsupported type: {req_type}"}), 400
             
         data = response.get_json()
-        if response.status_code != 200:
+        if response.status_code not in (200, 202):
             return jsonify(data) if data else jsonify({"error": "Internal error"}), response.status_code
             
         is_ai = False
@@ -90,8 +94,13 @@ def create_app():
         if "ai" in pred_str or "fake" in pred_str or "generated" in pred_str:
             is_ai = True
             
-        conf_val = float(data.get("prob_ai", data.get("confidence", 0.0))) / 100.0
-        
+        raw_conf = data.get("confidence")
+        if raw_conf is not None:
+            conf_val = float(raw_conf) / 100.0 if float(raw_conf) > 1.0 else float(raw_conf)
+        else:
+            prob_val = data.get("prob_ai") if is_ai else data.get("prob_human")
+            conf_val = (float(prob_val) / 100.0) if prob_val is not None else 0.5
+
         return jsonify({
             "is_ai": is_ai,
             "confidence": conf_val,

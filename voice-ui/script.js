@@ -253,8 +253,11 @@ function initVoiceUI() {
             const analysis = data.analysis || data;
             
             // Fallbacks in case backend doesn't send exact fields
-            const probHuman  = analysis.prob_human !== undefined ? analysis.prob_human : (100 - (analysis.prob_ai || 0));
-            const probAi     = analysis.prob_ai !== undefined ? analysis.prob_ai : (100 - probHuman);
+            let rawConf = analysis.confidence || 0.5;
+            if (rawConf > 1) rawConf = rawConf / 100;
+            
+            const probAi = analysis.prob_ai !== undefined ? analysis.prob_ai : Math.round(rawConf * 100);
+            const probHuman = analysis.prob_human !== undefined ? analysis.prob_human : (100 - probAi);
             
             // Recalculate verdict robustly
             const isHuman = probHuman >= probAi;
