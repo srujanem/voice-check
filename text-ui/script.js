@@ -43,19 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
 
         try {
-            const backendUrl = localStorage.getItem('zrok_url') || 'http://localhost:8000';
-            const formData = new FormData();
-            formData.append('type', 'text');
-            formData.append('file', new Blob([text], { type: 'text/plain' }), 'text.txt');
+            // Flask server runs on 5000; fall back to zrok_url if set for production
+            const backendUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';
+            const apiKey = localStorage.getItem('api_key') || '';
 
-            const response = await fetch(`${backendUrl}/api/infer`, {
+            const response = await fetch(`${backendUrl}/predict_text`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': apiKey ? `Bearer ${apiKey}` : ''
+                },
+                body: JSON.stringify({ text })
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Server error');
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Server error (${response.status})`);
             }
 
             const data = await response.json();
@@ -98,20 +101,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showResults(data) {
         resultsSection.classList.remove('hidden');
-        
-        const isAi = data.prediction === "AI-Generated" || data.prediction === "ai" || data.is_ai;
-        
-        // Extract probabilities cleanly, handling both direct python responses and /api/infer wrappers
+
+        // Support both direct /predict_text response AND /api/infer wrapper
         const innerData = data.analysis || data;
-        const aiProb = innerData.prob_ai || (isAi ? innerData.confidence : 100 - innerData.confidence);
-        const humanProb = innerData.prob_human || (isAi ? 100 - innerData.confidence : innerData.confidence);
-        
-        // Confidence for the main circle gauge
-        const confidence = Math.round(isAi ? aiProb : humanProb);
-        
+
+        // --- Safe numeric extraction ---
+        const isAi = innerData.prediction === 'AI-Generated' ||
+                     innerData.prediction === 'ai' ||
+                     !!innerData.is_ai;
+
+        // prob_ai / prob_human come as 0-100 percentages from the server
+        let aiProb    = Number(innerData.prob_ai);
+        let humanProb = Number(innerData.prob_human);
+        let conf      = Number(innerData.confidence);
+
+        // If the wrapper sent confidence as 0-1, scale it up
+        if (!isNaN(conf) && conf <= 1) conf = conf * 100;
+
+        // Fill in missing values from confidence
+        if (isNaN(aiProb) || isNaN(humanProb)) {
+            if (!isNaN(conf)) {
+                aiProb    = isAi ? conf : 100 - conf;
+                humanProb = isAi ? 100 - conf : conf;
+            } else {
+                // Last resort defaults
+                aiProb    = 50;
+                humanProb = 50;
+                conf      = 50;
+            }
+        }
+
+        if (isNaN(conf)) conf = isAi ? aiProb : humanProb;
+
+        const confidence = Math.round(conf);
+
         resultCard.className = 'result-card';
         scoreProgress.style.strokeDashoffset = '339.292';
-
 
         setTimeout(() => {
             if (!isAi) {
@@ -126,41 +151,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon.className = 'fa-solid fa-robot';
             }
 
+            // Animate confidence ring
             animateCountUp(scorePercentage, confidence, 1500);
-            
             const circumference = 339.292;
-            const offset = circumference - (confidence / 100) * circumference;
-            scoreProgress.style.strokeDashoffset = offset;
+            scoreProgress.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
 
-            if (probHuman) animateCountUp(probHuman, humanProb, 1500, 'Human: ');
-            if (probAi) animateCountUp(probAi, aiProb, 1500, 'AI: ');
+            // Animate prob bars
+            if (probHuman) animateCountUp(probHuman, humanProb.toFixed(1), 1500, 'Human: ');
+            if (probAi)    animateCountUp(probAi,    aiProb.toFixed(1),    1500, 'AI: ');
 
-            if (innerData.sentences) {
+            // Word count
+            const wordCountEl = document.getElementById('word-count');
+            if (wordCountEl) wordCountEl.textContent = innerData.word_count ?? '--';
+
+            // Confidence label badge
+            const confLabelEl = document.getElementById('confidence-label');
+            if (confLabelEl) {
+                const label = innerData.confidence_label || '';
+                confLabelEl.textContent = label ? `Confidence: ${label}` : '';
+                const colors = { 'Very High': '#10b981', 'High': '#6366f1', 'Moderate': '#f59e0b', 'Low': '#ef4444' };
+                confLabelEl.style.color = colors[label] || 'var(--accent-cyan)';
+            }
+
+            // Sentence-level highlighting
+            if (innerData.sentences && innerData.sentences.length) {
                 const xaiSection = document.getElementById('xai-section');
                 if (xaiSection) {
-                    xaiSection.innerHTML = '<h4 style="margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;"><i class="fa-solid fa-magnifying-glass"></i> Sentence Analysis</h4>';
+                    xaiSection.innerHTML = '<h4 style="margin-bottom:10px;border-bottom:1px solid var(--border-color);padding-bottom:5px;"><i class="fa-solid fa-magnifying-glass"></i> Sentence Analysis</h4>';
                     innerData.sentences.forEach(s => {
                         const span = document.createElement('span');
                         span.textContent = s.text + ' ';
-                        if (s.ai_prob >= 0.5) {
-                            const alpha = (s.ai_prob - 0.5) * 2; 
-                            span.style.backgroundColor = `rgba(239, 68, 68, ${alpha * 0.4})`;
+                        const p = Number(s.ai_prob);
+                        if (p >= 0.5) {
+                            const alpha = (p - 0.5) * 2;
+                            span.style.backgroundColor = `rgba(239,68,68,${(alpha * 0.4).toFixed(2)})`;
                             span.style.color = document.documentElement.getAttribute('data-theme') === 'light' ? '#7f1d1d' : '#fecaca';
                         } else {
-                            const alpha = (0.5 - s.ai_prob) * 2;
-                            span.style.backgroundColor = `rgba(16, 185, 129, ${alpha * 0.2})`;
+                            const alpha = (0.5 - p) * 2;
+                            span.style.backgroundColor = `rgba(16,185,129,${(alpha * 0.2).toFixed(2)})`;
                         }
-                        span.title = `AI Probability: ${(s.ai_prob * 100).toFixed(1)}%`;
+                        span.title  = `AI Probability: ${(p * 100).toFixed(1)}%`;
                         span.style.borderRadius = '3px';
-                        span.style.padding = '2px 0';
-                        span.style.cursor = 'help';
+                        span.style.padding      = '2px 0';
+                        span.style.cursor       = 'help';
                         xaiSection.appendChild(span);
                     });
                 }
             }
 
             if (typeof scanHistory !== 'undefined') {
-                scanHistory.addScan('Text', 'Text Snippet', isAi, confidence);
+                scanHistory.addScan('Text', `Text Snippet (${innerData.word_count || '?'} words)`, isAi, confidence);
             }
         }, 50);
     }
