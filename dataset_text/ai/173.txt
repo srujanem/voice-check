@@ -1,0 +1,1 @@
+High-field superconducting magnet development utilizing high-temperature superconductor (HTS) rare-earth barium copper oxide (REBCO) tapes enables the construction of compact magnetic confinement fusion reactors. Stronger magnetic fields confine superheated plasma at higher pressures, accelerating the timeline toward commercial fusion power generation.

@@ -1,0 +1,1 @@
+Spatial computing paradigms merge physical and digital environments by combining computer vision, spatial mapping, and eye-tracking technologies in mixed reality devices. Spatial operating systems render 3D digital content anchored persistently to physical surroundings. Applications range from collaborative engineering design reviews to remote industrial field technician support.

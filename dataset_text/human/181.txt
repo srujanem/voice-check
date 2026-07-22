@@ -1,0 +1,1 @@
+Banks offer 4 account types: 1. Savings Bank Account (salaried/savings), 2. Current Account (businessmen, unlimited daily transactions), 3. Recurring Deposit Account, and 4. Term Deposit Account (fixed term).

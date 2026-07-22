@@ -1,0 +1,1 @@
+Micro-modular nuclear reactor (MMR) designs provide compact, factory-fabricated nuclear power generation units capable of delivering clean electricity and high-temperature heat to remote off-grid industrial sites. MMRs feature passive safety systems that shut down automatically without human intervention or backup electrical power in emergency scenarios.

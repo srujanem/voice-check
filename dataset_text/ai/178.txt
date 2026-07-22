@@ -1,0 +1,1 @@
+Machine learning algorithms applied to astronomical survey data process millions of stellar light curves recorded by space telescopes to detect exoplanetary transit signals. Convolutional neural networks filter out stellar flare activity and instrumental noise, identifying tiny, periodic dips in stellar brightness caused by orbiting planets crossing their host stars.

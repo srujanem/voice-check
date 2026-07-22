@@ -1,0 +1,1 @@
+Autonomous robotic surgery systems combine high-definition 3D stereoscopic vision with micro-articulated robotic instruments to assist surgeons in complex minimally invasive operations. AI control algorithms filter out natural hand tremors and provide real-time haptic feedback, enhancing surgical dexterity and precision during delicate oncological procedures.

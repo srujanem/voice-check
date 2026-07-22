@@ -1,0 +1,1 @@
+High-frequency trading (HFT) infrastructure relies on custom field-programmable gate arrays (FPGAs) and ultra-low latency microwave networks to execute market trades within sub-microsecond timeframes. Direct market access (DMA) architectures process incoming order book feeds directly in hardware, executing algorithmic order routing strategies with minimal latency.

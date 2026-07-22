@@ -1,0 +1,1 @@
+Brain-Computer Interface (BCI) technologies decode neural signals recorded from invasive or non-invasive brain sensors to restore communication and motor mobility for paralyzed individuals. Machine learning signal processing algorithms translate electroencephalogram (EEG) or motor cortex neural firing patterns into control commands for robotic prosthetics and computer cursors.

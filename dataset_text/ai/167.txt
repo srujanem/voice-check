@@ -1,0 +1,1 @@
+Concentrated Solar Power (CSP) plants utilize arrays of tracking mirrors (heliostats) to focus sunlight onto a central receiver tower, heating molten salt to extreme temperatures. Thermal energy stored in molten salt drives steam turbines to generate electricity continuously, even after sunset. CSP systems provide dispatchable, clean baseload electricity to power grids.

@@ -1,0 +1,1 @@
+Multi-agent reinforcement learning (MARL) coordinates teams of autonomous logistics vehicles in complex automated distribution centers. Individual robotic agents communicate intent and negotiate path reservations to prevent collision bottlenecks. Decentralized multi-agent planning maximizes overall warehouse throughput and adapts dynamically to sudden demand spikes.
