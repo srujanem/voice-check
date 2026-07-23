@@ -42,38 +42,19 @@ def predict_text():
         ppl         = ppl_metrics["perplexity"]
         burstiness  = ppl_metrics["burstiness"]
 
-        # Perplexity score adjustment (low PPL < 50 indicates AI, high PPL > 75 indicates Human)
-        if ppl < 40:
-            ppl_ai_score = 0.95
-        elif ppl < 55:
-            ppl_ai_score = 0.80
-        elif ppl > 80:
-            ppl_ai_score = 0.10
-        elif ppl > 65:
-            ppl_ai_score = 0.25
+        # ── Perplexity Soft Modulation (±12% fine-tuning) ─────────────────────
+        if ppl < 30 and burstiness < 4.0:
+            ppl_mod = 0.12
+        elif ppl < 40:
+            ppl_mod = 0.06
+        elif ppl > 75:
+            ppl_mod = -0.12
+        elif ppl > 60:
+            ppl_mod = -0.06
         else:
-            ppl_ai_score = 0.50
+            ppl_mod = 0.0
 
-        # Burstiness adjustment (low burstiness < 4.0 indicates uniform AI structure)
-        if burstiness < 4.0 and word_count >= 20:
-            ppl_ai_score = min(1.0, ppl_ai_score + 0.15)
-        elif burstiness > 8.0:
-            ppl_ai_score = max(0.0, ppl_ai_score - 0.15)
-
-        # ── DistilBERT Engine (Option A — 98% accuracy) ──────────────────
-        bert_result = distilbert_engine.predict(text)
-
-        # ── Three-Way Fusion ─────────────────────────────────────────────
-        if bert_result is not None:
-            # 40% XGBoost + 30% Perplexity + 30% DistilBERT
-            prob_ai = (
-                0.40 * prob_ai_ml +
-                0.30 * ppl_ai_score +
-                0.30 * bert_result["prob_ai"]
-            )
-        else:
-            # Fallback: 50% XGBoost + 50% Perplexity
-            prob_ai = (0.50 * prob_ai_ml) + (0.50 * ppl_ai_score)
+        prob_ai = min(1.0, max(0.0, prob_ai_ml + ppl_mod))
 
         prob_human = 1.0 - prob_ai
 
