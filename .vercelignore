@@ -17,3 +17,8 @@ dataset_image/
 uploads/
 __pycache__/
 
+
+dataset_text/
+*.txt
+models/
+.git/
