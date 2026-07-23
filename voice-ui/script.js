@@ -299,6 +299,19 @@ function initVoiceUI() {
         loadingState.classList.add('hidden');
         resultState.classList.remove('hidden');
 
+        // ── Voice Animation Banner ─────────────────────────────────────────
+        const humanAnim = document.getElementById('human-anim');
+        const aiAnim    = document.getElementById('ai-anim');
+        if (humanAnim && aiAnim) {
+            if (isHuman) {
+                humanAnim.classList.remove('hidden');
+                aiAnim.classList.add('hidden');
+            } else {
+                aiAnim.classList.remove('hidden');
+                humanAnim.classList.add('hidden');
+            }
+        }
+
         // Apply status class on the card
         resultCard.className = 'result-card';
         resultCard.classList.add(isHuman ? 'status-authentic' : 'status-fake');
@@ -419,6 +432,11 @@ function initVoiceUI() {
         if (ring) ring.style.strokeDashoffset = '339.292';
         const shareBtn = document.getElementById('share-btn');
         if (shareBtn) shareBtn.classList.add('hidden');
+        // ── Hide voice animations on reset ─────────────────────────────────
+        const humanAnim = document.getElementById('human-anim');
+        const aiAnim    = document.getElementById('ai-anim');
+        if (humanAnim) humanAnim.classList.add('hidden');
+        if (aiAnim)    aiAnim.classList.add('hidden');
         // ── Reset confidence chart bars ─────────────────────────────────────
         const cHBar = document.getElementById('chart-human-bar');
         const cABar = document.getElementById('chart-ai-bar');
