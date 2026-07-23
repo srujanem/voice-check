@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from backend.services.ml_engine import ml
 from backend.services.external_db import external_db
+from backend.services.perplexity_engine import perplexity_engine
 from backend.decorators import require_api_key
 from datetime import datetime
 import uuid
@@ -30,11 +31,37 @@ def predict_text():
         return jsonify({"error": "Text too short. Please provide at least 10 words for accurate analysis."}), 400
 
     try:
-        # ── Overall prediction ──────────────────────────────────────────────
+        # ── Overall prediction (Ensemble ML) ────────────────────────────────
         text_vector = ml.text_vectorizer.transform([text])
         probs       = ml.text_model.predict_proba(text_vector)[0]
-        prob_ai     = float(probs[1])
-        prob_human  = float(probs[0])
+        prob_ai_ml  = float(probs[1])
+
+        # ── Perplexity & Burstiness Engine (Option 2) ────────────────────────
+        ppl_metrics = perplexity_engine.analyze(text)
+        ppl         = ppl_metrics["perplexity"]
+        burstiness  = ppl_metrics["burstiness"]
+
+        # Perplexity score adjustment (low PPL < 50 indicates AI, high PPL > 75 indicates Human)
+        if ppl < 40:
+            ppl_ai_score = 0.95
+        elif ppl < 55:
+            ppl_ai_score = 0.80
+        elif ppl > 80:
+            ppl_ai_score = 0.10
+        elif ppl > 65:
+            ppl_ai_score = 0.25
+        else:
+            ppl_ai_score = 0.50
+
+        # Burstiness adjustment (low burstiness < 4.0 indicates uniform AI structure)
+        if burstiness < 4.0 and word_count >= 20:
+            ppl_ai_score = min(1.0, ppl_ai_score + 0.15)
+        elif burstiness > 8.0:
+            ppl_ai_score = max(0.0, ppl_ai_score - 0.15)
+
+        # 50% Ensemble ML + 50% Perplexity & Burstiness Engine
+        prob_ai = (0.50 * prob_ai_ml) + (0.50 * ppl_ai_score)
+        prob_human = 1.0 - prob_ai
 
         is_ai  = prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
@@ -102,6 +129,8 @@ def predict_text():
             "confidence_label": confidence_label,
             "prob_human":       prob_human_pct,
             "prob_ai":          prob_ai_pct,
+            "perplexity":       ppl,
+            "burstiness":       burstiness,
             "word_count":       word_count,
             "sentences":        sentence_scores,
         })
