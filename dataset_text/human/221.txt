@@ -1,4 +1,1 @@
-Textbook Excerpt Part 221:
-Swaraj Party: Motilal Nehru and C.R.Das established 'Swaraj Party' in 1923 to enter legislative assemblies and oppose British policies from within. In 1924, C.R.Das was elected Mayor of Calcutta and known as 'Deshbandhu'.
-
-Crop Seasons & Major Crops: Kharif (June-Oct: Paddy, ragi, cotton), Rabi (Oct-March: Wheat, mustard), Jade (summer: pulses, vegetables). West Bengal leads in Paddy; Punjab & UP lead in Wheat. Sugarcane uses Ratoon system.
+I 'm not 100 % sure of the process but I imagine basically some people manually identify objects and sets their depth ( e.g. , this actor is really close , that tree is really far ) and then some software applies the appropriate polarization to the film . This is why post - processed 3D files generally have limited depth to a few layers , usually the actors , a few important objects and the background .

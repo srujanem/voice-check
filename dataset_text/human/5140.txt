@@ -1,1 +1,0 @@
-rˆ is along the radius vector from the centre to the area element. Now, since the normal to a sphere at every point is along the radius vector at that point, the area element DS and rˆ have the same direction. Therefore, FIGURE 1.22 Flux q D f= 4p e r2 D S (1.29) through a sphere 0 enclosing a point since the magnitude of a unit vector is 1. charge q at its centre.

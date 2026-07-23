@@ -1,1 +1,0 @@
-= Ze- Ze R3 Gauss’s law then gives, Z e 1 r E(r)= - ; r < R 4 p e r2 R3 0 The electric field is directed radially outward. (ii) r > R: In this case, the total charge enclosed by the Gaussian spherical surface is zero since the atom is neutral. Thus, from Gauss’s law, E (r) × 4 p r2 = 0 or E (r) = 0; r > R At

@@ -1,4 +1,1 @@
-Textbook Excerpt Part 483:
-Lahore Session 1929: Under the presidentship of Jawaharlal Nehru, Congress declared 'Purna Swaraj' (Complete Independence) as its goal. On January 26, 1930, Independence Day was celebrated across India, and Nehru hoisted the tricolour on the banks of river Ravi.
-
-Iron Ore & Manganese: Iron ore types: Magnetite, Hematite, Limonite, Siderite (found in Singhbhum, Kudremukh, Hospet). Manganese types: Pyrolusite, Psilomelane (used in steel manufacturing). Bauxite is the ore of Aluminium ('Wonder Metal').
+The advertised clock speed represents just one core . Think of it like car engines , each piston can reach 8,000 rpm , but a 12 cylinder engine will make a car go much faster than a 4 cylinder engine .

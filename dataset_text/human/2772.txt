@@ -1,1 +1,1 @@
-surface, this convention is very simple. The vector associated with every area element of a closed surface is taken to be in the direction of the outward normal. This is the convention used in Fig. 1.16. Thus, the area element vector DS at a point on a closed surface equals DS ˆn where D S is the magnitude of the area element and ˆn is a unit vector in the direction of outward normal at that point. We now come
+you get to ride in bus with only 3 rows of seats edit : wow .. the short bus is filling up quick

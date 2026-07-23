@@ -1,1 +1,0 @@
-rˆ' 4p e r'2 (1.26) 0 where r¢ is the distance between the charge element and P, and rˆ¢ is a unit vector in the direction from the charge element to P. By the superposition principle, the total electric field due to the charge distribution is obtained by summing over electric fields due to different volume elements: 1 r D V E @ S rˆ' 4p e all D V r'2 (1.27) 0 Note that

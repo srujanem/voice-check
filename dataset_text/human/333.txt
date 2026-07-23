@@ -1,4 +1,1 @@
-Textbook Excerpt Part 333:
-Improvements in transport and communication, journalism, establishment of organizations, and changes in administration saw people getting engaged in huge numbers in many provinces. Lord Lytton brought in 'Domestic Papers Control Act' in 1878 to exercise control over Indian publications, and Lord Rippon brought in 'Ilbert Bill' to bring in uniformity in the judicial system.
-
-First World War (1914-1918): Fought between Triple Entente (Britain, France, Russia, later USA) and Triple Alliance (Germany, Austria-Hungary, Italy). Sparked by assassination of Archduke Franz Ferdinand. Ended with Treaty of Versailles 1919 and creation of League of Nations.
+It 's because Doom was n't actually a 3D game , it 's what they called 2.5D. ( URL_0 ) The game is played on a 2D plane , but the view is rendered to simulate a 3D environment . Back in the day , the technology was n't powerful enough to render 3D scenes in real - time , so game programmers had to be clever about how they did it .

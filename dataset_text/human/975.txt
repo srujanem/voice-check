@@ -1,4 +1,1 @@
-Textbook Excerpt Part 975:
-In Kanpur, Nana Saheb rose in protest. Tatya Tope was his assistant. In Jhansi, a revolt took place under the leadership of Queen Laxmibai. When Kanpur fell into the hands of the British, Tatya Tope came to Jhansi to help the Queen.
-
-Jawaharlal Nehru: Nehru was President of the 1929 Lahore Congress declaring Purna Swaraj. As India's first Prime Minister, he promoted industrialization, five-year plans, language-based state reorganization, mixed economy, and Panchasheel principles of Non-Alignment.
+In case of torrent - ish like systems where threaded data flow protocols are used , it has a pretty simple explanation : The file is divided in parts , where each part is being downloaded from it 's own ( dynamic ) set of hosts which have different speeds / bandwidths . So the reason it takes longer to finish - is because the remaining part of the file is a part , where the sum of all download speeds of its hosts is low compared to the average .

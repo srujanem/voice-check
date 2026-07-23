@@ -1,1 +1,0 @@
-radial unit vector in the plane normal to the wire passing through the point. (ii) Infinite thin plane sheet of uniform surface charge density s s E= nˆ 2 e 0 where nˆ is a unit vector normal to the plane, outward on either side. 39 Reprint 2026-27 Physics (iii) Thin spherical shell of uniform surface charge density s q E = rˆ (r ‡ R) 4 p e r2 0 E = 0 (r

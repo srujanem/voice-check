@@ -1,10 +1,5 @@
-The solar system is a subject that has garnered significant attention in recent decades. At its core, planets, moons and the structure of our solar system represents one of the most compelling areas of inquiry for researchers and practitioners alike.
-
-Research in the field of astronomy has shed considerable light on the solar system. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-Key areas of focus include:
-1. Understanding the foundational principles of the solar system
-2. Considering ethical and social dimensions
-3. Analyzing empirical evidence from astronomy research
-
-To conclude, the study of the solar system reveals both the complexity of the underlying systems and the importance of informed, thoughtful engagement. Whether one approaches this topic as a student, a professional, or a concerned citizen, the insights available are both intellectually enriching and practically valuable.
+The GPA system is a way of measuring academic achievement in the United States that assigns a numerical value to a student's grades. The 4-point GPA scale is the most commonly used scale in the United States, and it assigns a numerical value to each letter grade, with 4.0 being the highest possible GPA and 0.0 being the lowest. 
+There are a few reasons why the GPA system is used in the United States instead of percentage grades. First, the GPA system allows for a more nuanced understanding of a student's grades. While a percentage grade gives a general idea of how well a student has performed, the GPA system allows for more precise comparisons between students. 
+Second, the GPA system is more flexible than percentage grades. For example, if a student receives a 90% on one assignment and an 80% on another, their average percentage grade would be 85%. However, if the first assignment was worth twice as much as the second assignment, the student's grades would be weighted differently, and the GPA would reflect that. 
+Finally, the GPA system is more widely used in the United States, so it is easier for universities to compare the grades of students from different schools. This can be particularly helpful when evaluating the academic achievements of international students, as different countries may use different grading systems. 
+Overall, the GPA system is a convenient and widely accepted way of measuring academic achievement in the United States. It allows for more precise comparisons between students and is more flexible than percentage grades.

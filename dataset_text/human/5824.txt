@@ -1,1 +1,0 @@
-v in the presence of magnetic and electric fields B and E, respectively is called the Lorentz force. It is given by the expression: F = q (v × B + E) The magnetic force q (v × B) is normal to v and work done by it is zero. 2. A straight conductor of length l and carrying a steady current I experiences a force F in a uniform external magnetic field B, F

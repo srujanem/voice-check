@@ -1,4 +1,1 @@
-Textbook Excerpt Part 724:
-Indian National Congress: Right from the time of Raja Ram Mohan Roy, the minds of middle class people of India were getting prepared to face new challenges. Organizations like 'The Hindu Mela', 'The East India Association', 'Poona Sarvajanik Sabha' and 'The Indian Association' were prominent.
-
-Rise of Dictators: Economic depression and humiliation enabled Hitler in Germany (Nazi Party, Fuhrer, Nuremberg Laws, Holocaust killing 6 million Jews) and Mussolini in Italy (Fascist Party, 1922-1943) to assume dictatorial powers.
+Batteries are kind of like tanks filled with water attached to a faucet . When you turn on the faucet , the water comes out . You can tell how much water is left in the tank by measuring the force at which the water comes out . Same thing with batteries , except the water is electricity and the force is the voltage .

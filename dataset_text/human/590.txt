@@ -1,4 +1,1 @@
-Textbook Excerpt Part 590:
-Many provincial kings, on account of their loyalty to the British, did not support the struggle. The people lost confidence in the soldiers due to their arson and looting.
-
-Junagadh, Hyderabad & Kashmir: Junagadh merged in 1949 after its Nawab fled. Hyderabad merged in 1948 after Indian forces defeated the Nizam's Razakars. Maharaja Hari Singh signed instrument of accession merging Jammu and Kashmir with India after Pakistani invasion.
+A decibel is actually a * logarithmic * unit , meaning that each ten steps up the scale is actually a ten times increase in intensity . 20dB represents a relative intensity of 100 so if you added ten of those together it could reach 1000 intensity which is 30dB But really , there 's a bit more going on than that with stuff like sound waves cancelling eachother out , so it 'll probably end up somewhere between 20 and 30 decibels

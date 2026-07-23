@@ -1,1 +1,0 @@
-an integer. Thus the charge on any body is always an integral multiple of e and can be increased or decreased also in steps of e. The step size e is, however, very small because at the macroscopic level, we deal with charges of a few mC. At this scale the fact that charge of a body can increase or decrease in units of e is not visible. In this respect, the grainy nature of

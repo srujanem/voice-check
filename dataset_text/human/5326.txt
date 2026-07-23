@@ -1,1 +1,0 @@
-j and |(nq v )|A is the current I (see Chapter 3 for the discussion d of current and current density). Thus, F = [(nq v )lA] × B = [ jAl ] ´´´´´ B d = Il ´´´´´ B (4.4) where l is a vector of magnitude l, the length of the rod, and with a direction identical to the current I. Note that the current I is not a vector. In the last

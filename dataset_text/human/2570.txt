@@ -1,1 +1,1 @@
-2 π r Ie = Current enclosed by the loop = I The result is the familiar expression for a long straight wire B (2π r) = µ0I π 0 2IBrµ= [4.15(a)] 1Br∝ (r > a) Now the current enclosed Ie is not I, but is less than this value. Since the current distribution is uniform, the current enclosed is, I Ir ae=  π π2 2 2 2Ir a= Using Ampere’s law, π2 0 2(2 )I rB raµ= BI
+My inner voice speaks from the center of my brain , between my ears . I tried to move it to the frontal lobes , bit it got all high and squeaky .

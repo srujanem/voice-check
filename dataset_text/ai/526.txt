@@ -1,5 +1,7 @@
-Understanding the human genome is essential in today's rapidly changing world. Dna sequencing and genetic research touches on fundamental questions that affect both individuals and society as a whole.
-
-Research in the field of genetics has shed considerable light on the human genome. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-To conclude, the study of the human genome reveals both the complexity of the underlying systems and the importance of informed, thoughtful engagement. Whether one approaches this topic as a student, a professional, or a concerned citizen, the insights available are both intellectually enriching and practically valuable.
+There are a few ways that someone might be able to tell that you have googled their name: 
+1. If you are logged into your Google account when you search for their name, the search may appear in your search history. If you have shared your search history with your friend, they may be able to see that you searched for their name. 
+2. If you click on a link to one of your friend's social media profiles or websites when you search for their name, your friend may receive a notification that someone has visited their profile or website. 
+3. If you search for your friend's name on a device that is logged into your Google account, and your friend has access to that device, they may be able to see that you have searched for their name. 
+4. If you have shared your search history with your friend, they may be able to see that you searched for their name. 
+5. It is also possible that your friend is using a website or service that alerts them when someone searches for their name online. 
+In general, it is important to be aware of who has access to your search history and to be respectful of other people's privacy. If you have any concerns about your search history being shared with others, you can adjust your privacy settings or use a private browsing mode to prevent your searches from being recorded.

@@ -1,1 +1,0 @@
-< R) where r is the distance of the point from the centre of the shell and R the radius of the shell. q is the total charge of the shell: q = 4pR2s. The electric field outside the shell is as though the total charge is concentrated at the centre. The same result is true for a solid sphere of uniform volume charge density. The field is zero at all points inside the shell.

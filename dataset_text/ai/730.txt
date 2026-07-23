@@ -1,10 +1,3 @@
-Few topics in global warming are as consequential as climate change. A thorough examination reveals layers of complexity that reward careful analysis.
-
-Research in the field of environmental science has shed considerable light on climate change. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-Key areas of focus include:
-1. Analyzing empirical evidence from environmental science research
-2. Considering ethical and social dimensions
-3. Understanding the foundational principles of climate change
-
-In summary, climate change is a multifaceted subject that demands careful, evidence-based inquiry. As our understanding deepens, it becomes increasingly clear that simplistic approaches are inadequate. Moving forward, collaboration across disciplines will be essential to address the most pressing challenges and opportunities that climate change presents.
+Water can conduct electricity because it contains ions, which are atoms that have gained or lost electrons and have a positive or negative charge. When water contains a lot of dissolved minerals, it can conduct electricity because the ions in the minerals allow electricity to flow through the water. 
+However, pure water does not conduct electricity very well because it does not have many ions. This is because the hydrogen atoms in water are bonded to the oxygen atoms through covalent bonds, which do not allow electrons to flow freely. As a result, pure water is a very poor conductor of electricity. 
+So, when you touched a slightly damp iPad charger, the water on your skin may have conducted electricity, which is why you got a bit of a jolt. But if the water on your skin was pure, you probably would not have felt anything.

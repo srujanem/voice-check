@@ -1,1 +1,0 @@
-DS are parallel. Therefore, the outward flux is f= E.DS = – 200 ˆiiD S L = + 200 DS, since ˆiiD S= – DS = + 200 × p (0.05)2 = + 1.57 N m2 C–1 On the right face, E and DS are parallel and therefore f = E.DS = + 1.57 N m2 C–1. R (b) For any point on the side of the cylinder E is perpendicular to DS and hence

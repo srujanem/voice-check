@@ -1,1 +1,1 @@
-Coulomb’s law is written as 01 2 21 4q qFrε=π(1.2) e0 is called the permittivity of fr ee space . The value of e0 in SI units is 0= 8.854 × 10–12 C2 N–1m–2 Since force is a vector , it is better to write Coulomb’s law in the vector notation. Let the position vectors of charges q1 and q2 be r1 and r2 respectively [see Fig.1.3(a)]. W e denote force on q1 due to q2 by F12 and force
+This page has a pretty clear explanation working it up from basic mathematical rules : URL_0

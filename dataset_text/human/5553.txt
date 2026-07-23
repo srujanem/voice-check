@@ -1,1 +1,0 @@
-current enclosed by the closed circuit. e 7. The magnitude of the magnetic field at a distance R from a long, straight wire carrying a current I is given by: m I B = 0 2πR The field lines are circles concentric with the wire. 8. The magnitude of the field B inside a long solenoid carrying a current I is B = µnI 0 where n is the number of turns per unit length.

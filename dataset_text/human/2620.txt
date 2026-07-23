@@ -1,1 +1,1 @@
-the spring. We have φ=  NAB kI (4.26) The quantity in brackets is a constant for a given galvanometer. The galvanometer can be used in a number of ways. It can be used as a detector to check if a current is flowing in the circuit. We have come across this usage in the Wheatstone’s bridge arrangement. In this usage the neutral position of the pointer (when no current is flowing through the galvanometer) is in the middle of
+We are not yet at a point that wireless transmission of electricity is economically feasible . TLDR it 's expensive and inefficent .

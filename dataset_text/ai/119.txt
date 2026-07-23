@@ -1,1 +1,5 @@
-Graph Neural Networks (GNNs) process non-Euclidean graph-structured datasets where information is represented as interconnected nodes and edges. In recommendation systems and social network analysis, GNNs model complex user-item interactions and community relationships. GNN embeddings capture structural graph topology, improving prediction accuracy in link prediction and node classification tasks.
+Burning trash is not a good solution for several reasons. 
+First, burning trash can release harmful chemicals and pollutants into the air. These pollutants can have negative effects on human health and the environment. They can cause respiratory problems, heart disease, and other health problems. 
+Second, burning trash is not an efficient way to get rid of it. Many materials that we throw away, such as plastic and metal, do not burn well and can create harmful emissions when they are burned. 
+Finally, burning trash takes up a lot of energy, which can be better used for other purposes. It is generally more efficient and environmentally friendly to recycle materials or find other ways to reuse them, rather than burning them. 
+Instead of burning trash, it is important to reduce, reuse, and recycle as much as possible. This can help to reduce the amount of waste that we produce and minimize the negative impacts on the environment.

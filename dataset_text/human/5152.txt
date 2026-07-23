@@ -1,1 +1,0 @@
-the flux through each element is E DS. Summing over all DS, the flux through the Gaussian surface is E × 4 p r2. The charge enclosed is s × 4 p R2. By Gauss’s law s E × 4 p r2 = e 4 p R2 0 s R2 q Or, E = = e r2 4pe r2 0 0 where q = 4 p R2 s is the total charge on the spherical

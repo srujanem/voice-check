@@ -1,1 +1,1 @@
-x2 0 +R2 ) 3/2 ˆ i (4.11) As a special case of the above result, we may obtain the field at the centre of the loop. Here x = 0, and we obtain, m I B = 0 ˆi (4.12) 0 2R The magnetic field lines due to a circular wire form closed loops and are shown in Fig. 4.10. The direction of the magnetic field is given by (another) right-hand thumb rule stated
+This [ picture ] ( URL_0 ) pretty much sums it up . This is Kabul , capitol of Afganistan .

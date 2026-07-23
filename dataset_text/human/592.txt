@@ -1,4 +1,1 @@
-Textbook Excerpt Part 592:
-In 1858, the Queen of England made a declaration. This declaration has been called India's 'Magna Carta'. The agreements made by the East India Company with the kings were accepted. Ambitious expansion plans had to be given up. A stable government had to be provided to Indians. There would be equality before law. The government would exhibit religious tolerance.
-
-Linguistic Reorganisation of States: After Potti Sriramulu died on 58-day fast for Vishalandhra, Justice Fazal Ali Commission (with Panikkar & Kunjru) was set up in 1953. The State Reorganisation Act 1956 formed 14 States and 6 UTs. Mysore State was formed on Nov 1, 1956 and renamed Karnataka in 1973.
+The computer uses a random number generator for things like accuracy . It can skew the randomness , or narrow the range . You could think of it as a dice roll . On easy , the computer blocks you if it rolls 4 or more . On hard , it will block you if it rolls 2 or more , increasing the chance that you will be blocked .

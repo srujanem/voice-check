@@ -1,1 +1,1 @@
-F1 on q1 due to the two charges q2 and q3 is given as F F F r r1 12 13 01 2 122 12 01 3 132 131 41 4= + = +π π ε εq q rq q rˆ ˆ(1.4) The above calculation of force can be generalised to a system of charges more than three, as shown in Fig. 1.5(b). The principle of superposition says that in a system of charges q1, q2, ..., qn, the force
+It 's basically " If I ca n't see them , they ca n't see me " made manifest .

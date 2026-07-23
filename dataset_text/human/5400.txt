@@ -1,1 +1,0 @@
-steady current of 1A. What is the force per unit length on it when it is placed on a horizontal table and the direction of the current is (a) east to west; (b) south to north? Solution F = Il × B F = IlB sinθ The force per unit length is f = F/l = I B sinθ (a) When the current is flowing from east to west, θ = 90° Hence, f =

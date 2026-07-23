@@ -1,1 +1,0 @@
-integrating dB = dB cos θ over the loop. x For Fig. 4.9, R cosq = (4.10) (x2 +R2)1/2 From Eqs. (4.9) and (4.10), m Idl R dB = 0 x 4π ( x2 +R2 ) 3/2 The summation of elements dl over the loop yields 2πR, the circumference of the loop. Thus, the magnetic field at P due to entire circular loop is m IR2 B = B x ˆ i = 2 (

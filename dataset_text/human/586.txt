@@ -1,4 +1,1 @@
-Textbook Excerpt Part 586:
-The heat of the revolt was felt in Lucknow too. Ultimately, Lucknow was taken over by the British. The war spread to the south of river Yamuna. As a result, the soldiers in Jhansi felt encouraged. Jhansi Rani Laxmibai who was enraged by the Doctrine of Lapse, declared war against the British.
-
-Mohammed Ali Jinnah & Partition: Jinnah joined Congress in 1906, defended Tilak, and led Home Rule League. Later he led the Muslim League, demanding Pakistan at the 1940 Lahore Session. Mountbatten Plan led to the Indian Independence Act of 1947, partitioning India and Pakistan on August 15, 1947.
+Other than games , it 's not usually CPU use that 's the problem . It 's network access . It uses a lot of power to transmit data to a cell tower that could be a mile a way . Well - coded apps manage how often they transmit data and the phone keeps the antennas on a low - power mode until its needed . Poorly coded apps just send data whenever , which results in a lot of starting up the antenna , sending a little bit of data , and shutting it back down . That will drain the battery like crazy .

@@ -1,11 +1,4 @@
-Understanding global trade is essential in today's rapidly changing world. International trade agreements and their economic effects touches on fundamental questions that affect both individuals and society as a whole.
-
-To fully appreciate the significance of global trade, one must consider it from multiple angles. Historically, this subject was poorly understood, and early theories often failed to account for the full range of observed phenomena. Over time, advances in methodology and data collection have enabled more nuanced and accurate models. Today, the prevailing consensus among experts in economics holds that a multi-factorial approach is necessary. No single variable is sufficient to explain the complexity at play. Instead, researchers must account for interactions between biological, social, economic, and technological systems.
-
-Key areas of focus include:
-1. Evaluating the policy and practical implications
-2. Applying findings to real-world contexts
-3. Analyzing empirical evidence from economics research
-4. Understanding the foundational principles of global trade
-
-Ultimately, global trade sits at the intersection of theory and practice, science and policy, individual experience and collective outcome. Continued research, open dialogue, and a commitment to evidence are the best tools we have for navigating its challenges and harnessing its potential.
+Time zones are used to keep track of time in different parts of the world. They help to ensure that people in different locations can coordinate their activities and communicate with one another. 
+Imagine if everyone used the same time all around the world. If you live in New York and want to talk to someone in Paris, you might have to stay up late or wake up very early because the time in Paris is different from the time in New York. But if you both use different time zones, you can easily figure out a time that works for both of you. 
+Time zones are based on the rotation of the Earth on its axis. The Earth is divided into 24 equal "slices" called time zones. Each time zone is one hour ahead or behind the time in the time zone next to it. This helps to keep things organized and makes it easier for people to know what time it is in different parts of the world. 
+So even though it might seem simpler to not have time zones, they actually help us to stay organized and communicate with each other more easily.

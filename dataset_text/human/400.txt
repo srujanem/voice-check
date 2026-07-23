@@ -1,4 +1,1 @@
-Textbook Excerpt Part 400:
-Panchayat Raj Institutions: 73rd Constitutional Amendment 1993 established uniform 3-tier Panchayats: Grama Panchayat, Taluk Panchayat, Zilla Panchayat. Karnataka provides 50% reservation for women in PRIs.
-
-Community Health & Waste Management: Proper waste management categorizes waste into Wet waste (organic, sewage) and Solid waste (glass, plastics, metals). Methods: Composting, Burying, Incineration. Sewage treatment purifies wastewater for agricultural reuse. Open wells need concrete aprons and covers to prevent mosquito breeding.
+It is for water pressure , so when you turn on a faucet located below the tower , water comes out . It 's also important for the entire water system to be pressurized so that when pipes leak , it 's mostly clean water leaking out and not dirty water leaking in . There is a little bit of a backup component in that water will still flow and the pipes will remain pressurized in the event of a power outage until water in the tower is depleted .

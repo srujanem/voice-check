@@ -1,1 +1,0 @@
-∆x = 1 cm. FIGURE 4.8 Reprint 2026-27 Moving Charges and Magnetism Solution m I dl sinq |dB|= 0 [using Eq. (4.7)] 4p r2 dl = D x= 10-2m, I = 10 A, r = 0.5 m = y, m /4p = 10- 7 Tm 0 A θ = 90° ; sin θ = 1 10- 7 · 10· 10-2 dB = = 4 × 10–8 T 25· 10- 2 The direction of the field

@@ -1,1 +1,0 @@
-n vector sum of the electric fields at charges q , q , ..., q . 3 4 n the point due to individual charges. By the superposition principle, the electric field E at r due to the system of charges is (as shown in Fig. 1.9) E(r) = E (r) + E (r) + … + E (r) 1 2 n 1 q 1 q 1 q = 1 rˆ + 2 rˆ +...+

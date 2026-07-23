@@ -1,1 +1,0 @@
-flux Df of electric field E through a small area element DS is given by Df = E.DS The vector area element DS is DS = DS nˆ where DS is the magnitude of the area element and nˆ is normal to the area element, which can be considered planar for sufficiently small DS. For an area element of a closed surface, nˆ is taken to be the direction of outward normal, by convention. 15.

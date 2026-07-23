@@ -1,1 +1,0 @@
-Gaussian surface, calculated as before, is E × 4 p r2. However, in this case, the Gaussian surface encloses no charge. Gauss’s law then gives E × 4 p r2 = 0 i.e., E = 0 (r < R ) (1.35) that is, the field due to a uniformly charged thin shell is zero at all points inside the shell*. This important result is a direct consequence of Gauss’s law which follows from Coulomb’s law.

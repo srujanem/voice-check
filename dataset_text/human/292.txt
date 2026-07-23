@@ -1,4 +1,1 @@
-Textbook Excerpt Part 292:
-N.D.S. Lezium Rhythmic Exercises: Aage ki mor chal (8 count activity performed after Harkat Bharath Matha ki), Chaumukhi mor chal (16 count activity moving in scissor steps).
-
-The unity among the British forces and lack of it among the Indian soldiers also led to the failure. There was no proper direction or proper leadership. In addition, there was a lack of strategy, expertise among soldiers, effective leadership, discipline and direction.
+Do you mean a transformer ? The EMF induced in the secondary coil is proportional to the rate of change of magnetic flux through the coil . More loops means a higher magnetic field ( and therefore flux ) inside the secondary coil . Less coils means less flux and therefore less induced EMF . So in a step - down transformer , the primary coil has more loops than the secondary coil .

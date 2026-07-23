@@ -1,4 +1,1 @@
-Textbook Excerpt Part 981:
-Effects of the revolt: The freedom struggle put an end to the administration of the East India Company, and the administration was taken over by to the Queen of England. The administrative responsibility was handed over to the Secretary of Indian Affairs in the British Parliament.
-
-Pondicherry & Goa Liberation: French colonies (Pondicherry, Karaikal, Mahe, Chandranagar) joined India in 1954/1963. Portuguese rule in Goa ended in 1961 when Indian army intervened, making Goa a state in 1987.
+There are varied types of sensors that are used to control the signal . The most common in my area ( Southern California ) are pressure sensors in the road . A car stopped ( at the proper place ) will engage the sensor , which will , in turn , send a command to change the signal , when enough time has passed . I have heard of camera - type sensors as well , including infrared cameras and motion sensors , and magnetic - type sensors , which detect large amounts of metal .

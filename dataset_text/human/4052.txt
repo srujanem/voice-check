@@ -1,1 +1,1 @@
-step leading to Eq. (4.4), we have transferred the vector sign from j to l. Equation (4.4) holds for a straight rod. In this equation, B is the external magnetic field. It is not the field produced by the current-carrying rod. If the wire has an arbitrary shape we can calculate the Lorentz force on it by considering it as a collection of linear strips dl and summing j F  Idl ×B j j
+The idea is to have a gradual fade in shading sunlight , but the varying size dots can achieve that without the trouble of tinting the glass . Making completely opaque dots is much easier .

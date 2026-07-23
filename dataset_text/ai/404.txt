@@ -1,5 +1,7 @@
-Few topics in types, uses are as consequential as stem cells. A thorough examination reveals layers of complexity that reward careful analysis.
-
-There are several important dimensions to consider when discussing stem cells. The first concerns the underlying mechanisms: how and why does this phenomenon occur? The second relates to scale: does it operate at the individual level, the community level, or globally? The third involves time: are we examining short-term fluctuations or long-term trends? Each of these dimensions offers a different lens through which medicine professionals can interpret the evidence. Integrating these perspectives yields a richer and more complete understanding.
-
-In summary, stem cells is a multifaceted subject that demands careful, evidence-based inquiry. As our understanding deepens, it becomes increasingly clear that simplistic approaches are inadequate. Moving forward, collaboration across disciplines will be essential to address the most pressing challenges and opportunities that stem cells presents.
+Sure! Here's a breakdown of some common parts of a PC and what they do: 
+Processor (also called a CPU, or Central Processing Unit): This is the brain of the computer. It's a chip that handles all the instructions and calculations that the computer needs to do. The faster the processor, the faster the computer can work.
+Video card (also called a graphics card): This is a special piece of hardware that is responsible for creating the images that you see on your monitor. It does this by processing the instructions for drawing pictures and sending them to the monitor.
+GHz (gigahertz): This is a measure of how fast a processor can work. The higher the number, the faster the processor. For example, a processor that is 3 GHz is faster than a processor that is 2 GHz.
+RAM (Random Access Memory): This is a type of memory that the computer uses to store information that it is currently working on. The more RAM a computer has, the more information it can store and the faster it can work.
+Hard drive: This is a type of storage that holds all the files and programs on your computer. It's like a giant file cabinet for your computer. 
+I hope this helps! Let me know if you have any other questions.

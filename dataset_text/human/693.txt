@@ -1,4 +1,1 @@
-Textbook Excerpt Part 693:
-Basketball Legends: S.V. Appayya (first Karnataka player 1951 Asian Games), G. Dileep (1980 Moscow Olympics), B.S. Goutam (Arjuna/Ekalavya awardee), Geethu Anna Jose (first Indian in Australian WNBL), Earvin 'Magic' Johnson (USA, 9 NBA titles Lakers), Michael Jordan ('Air Jordan', 6 NBA titles Bulls, 41694 points), Kareem Abdul Jabbar (Sky Hook technique, 7 ft 2 in).
-
-Partition of Bengal: Bengal was the centre of protests and anti-British sentiments. In order to curb this, Viceroy Lord Curzon proposed a plan to divide Bengal citing administrative problems. East and West Bengal based on Muslim and Hindu population were created in 1905.
+The other answers are right , but here 's an alternative explanation : When you look at .9999999(repeating ) , your brain tricks you into thinking that it 's somehow less than one . But if that were true , then you could subtract .999999(repeating ) from 1 and have something left over . So what happens when we do that ? Well , 1 - 0.9999999 ( repeating ) = 0.000000 ( repeating ) . There will never by a 1 at the end , only 0s . And 0.00000 ( repeating ) is zero .

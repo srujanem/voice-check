@@ -1,4 +1,1 @@
-Textbook Excerpt Part 628:
-Pondicherry & Goa Liberation: French colonies (Pondicherry, Karaikal, Mahe, Chandranagar) joined India in 1954/1963. Portuguese rule in Goa ended in 1961 when Indian army intervened, making Goa a state in 1987.
-
-Financial & Promotional Institutions: Financial: IDBI, NABARD, EXIM Bank, SIDBI, IFCI, ICICI, LIC, UTI. Promotional: SIDC, NSIC, Small Scale Industries Board, SISI, Khadi & Village Industries Corporation.
+Others have answered the direct question , but I just wanted to point this out : active / passive is called a * voice * , not a tense . Tenses deal with time ( present , future , etc . ) and are independent of voice . You can have a verb be future active or future passive , for example - same tense , different voice .

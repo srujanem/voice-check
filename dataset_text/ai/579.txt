@@ -1,10 +1,3 @@
-Cybersecurity is a subject that has garnered significant attention in recent decades. At its core, threats, vulnerabilities and network protection strategies represents one of the most compelling areas of inquiry for researchers and practitioners alike.
-
-Research in the field of technology has shed considerable light on cybersecurity. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-Key areas of focus include:
-1. Analyzing empirical evidence from technology research
-2. Understanding the foundational principles of cybersecurity
-3. Evaluating the policy and practical implications
-
-To conclude, the study of cybersecurity reveals both the complexity of the underlying systems and the importance of informed, thoughtful engagement. Whether one approaches this topic as a student, a professional, or a concerned citizen, the insights available are both intellectually enriching and practically valuable.
+The labels on lumber, such as "2x4" or "2x6", refer to the rough size of the wood before it has been planed smooth or finished. The rough size is the size of the wood as it comes straight from the sawmill or lumber mill, and it includes the bark and rough edges of the wood. The rough size is usually larger than the actual finished size of the wood, which is the size of the wood after it has been planed smooth and all of the rough edges have been removed. 
+So, when a piece of wood is labeled as a "2x4", it means that it is roughly 2 inches thick and 4 inches wide, but the actual finished size of the wood will be slightly smaller, around 1.75 inches thick and 3.5 inches wide. This is because some of the rough, unfinished wood must be removed during the finishing process in order to create a smooth, finished surface. 
+I hope this helps to explain why the labels on lumber don't always match the actual finished size of the wood.

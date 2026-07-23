@@ -1,10 +1,4 @@
-The study of photovoltaic technology has evolved considerably over the past century. Scholars now recognize that how solar panels convert light to electricity involves a complex interplay of factors that cannot be easily reduced to simple explanations.
-
-To fully appreciate the significance of photovoltaic technology, one must consider it from multiple angles. Historically, this subject was poorly understood, and early theories often failed to account for the full range of observed phenomena. Over time, advances in methodology and data collection have enabled more nuanced and accurate models. Today, the prevailing consensus among experts in engineering holds that a multi-factorial approach is necessary. No single variable is sufficient to explain the complexity at play. Instead, researchers must account for interactions between biological, social, economic, and technological systems.
-
-Key areas of focus include:
-1. Considering ethical and social dimensions
-2. Evaluating the policy and practical implications
-3. Analyzing empirical evidence from engineering research
-
-The evidence makes clear that photovoltaic technology deserves sustained attention and investment. As the body of knowledge continues to grow, so too does our capacity to respond effectively. The path forward requires interdisciplinary collaboration, rigorous methodology, and a genuine commitment to translating research into action.
+Derivatives and integrals are operations that allow us to find the rate of change of a function or the area under a curve, respectively. The derivative of a function tells us how the function is changing at any given point, and the integral of a function gives us the total amount that the function has changed over a certain interval. 
+The derivative of x^2 is 2x because x^2 is increasing at a rate of 2x at every point. In other words, if x is increasing by a small amount, then x^2 is increasing by twice that amount. This relationship is captured by the derivative of x^2, which is 2x. 
+The derivative of sin^2 x, on the other hand, is not equal to 2 sin x. The derivative of sin^2 x is actually 2 sin x cos x. This is because sin^2 x is not increasing at a constant rate like x^2. Instead, the rate at which sin^2 x is increasing depends on the value of sin x and cos x at that point. When sin x is large and cos x is small, sin^2 x is increasing quickly. When sin x is small and cos x is large, sin^2 x is increasing more slowly. The derivative of sin^2 x takes this changing rate of change into account. 
+Similarly, the integral of x is x^2/2 because the total amount that x has changed over a certain interval can be represented by the area of a rectangle with base x and height x/2. The integral of sin x or cos x, on the other hand, cannot be represented by a simple polynomial like x^2/2. Instead, these functions require more complex mathematical expressions to describe their total change over an interval.

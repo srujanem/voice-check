@@ -1,10 +1,4 @@
-When examining antibiotic resistance, it is important to consider both the historical context and the contemporary implications. How bacteria evolve to defeat antibiotics shapes policy, research agendas, and everyday decision-making.
-
-From a medicine perspective, several key mechanisms are at work. First, the foundational principles must be clearly understood before examining their broader applications. Researchers have identified multiple contributing factors, each of which plays a distinct role in shaping outcomes. Second, empirical evidence consistently supports the view that antibiotic resistance has measurable, real-world consequences. Studies conducted across diverse populations and settings have yielded broadly consistent findings, lending confidence to current theoretical frameworks. Finally, practical implications must be considered. Policymakers, educators, and industry leaders are increasingly called upon to make evidence-based decisions informed by the latest scholarship.
-
-Key areas of focus include:
-1. Understanding the foundational principles of antibiotic resistance
-2. Considering ethical and social dimensions
-3. Applying findings to real-world contexts
-
-In summary, antibiotic resistance is a multifaceted subject that demands careful, evidence-based inquiry. As our understanding deepens, it becomes increasingly clear that simplistic approaches are inadequate. Moving forward, collaboration across disciplines will be essential to address the most pressing challenges and opportunities that antibiotic resistance presents.
+Atoms are made up of three types of subatomic particles: protons, neutrons, and electrons. The number of protons in an atom's nucleus determines what element the atom is. For example, all atoms with 6 protons are carbon atoms, all atoms with 8 protons are oxygen atoms, and so on. 
+The properties of an atom are determined by the arrangement of its electrons. The electrons are arranged in shells around the nucleus, and each shell can hold a certain number of electrons. The outermost shell is called the valence shell, and the number of electrons in the valence shell determines how the atom will behave. 
+If an atom has a full valence shell, it is stable and not very reactive. Atoms that have only a few electrons in their valence shell, on the other hand, are more reactive because they want to gain more electrons to fill their valence shell. This is why some elements, like sodium and chlorine, are very reactive: they have only one or a few electrons in their valence shells and are eager to gain or lose those electrons to become more stable. 
+So to sum up: the number of protons in an atom's nucleus determines what element it is, and the arrangement of electrons around the nucleus determines the atom's properties.

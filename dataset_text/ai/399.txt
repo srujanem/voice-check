@@ -1,5 +1,9 @@
-When examining stem cells, it is important to consider both the historical context and the contemporary implications. Types, uses and ethical considerations of stem cell research shapes policy, research agendas, and everyday decision-making.
-
-Research in the field of medicine has shed considerable light on stem cells. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-In summary, stem cells is a multifaceted subject that demands careful, evidence-based inquiry. As our understanding deepens, it becomes increasingly clear that simplistic approaches are inadequate. Moving forward, collaboration across disciplines will be essential to address the most pressing challenges and opportunities that stem cells presents.
+An amp (ampere) is a unit of electrical current. It measures the flow of electrons in a circuit. 
+A volt (voltage) is a unit of electrical potential difference. It measures the pressure that drives electrons through a circuit. 
+A watt is a unit of power. It measures the rate at which energy is transferred or used. 
+Here's an example to help you understand the difference between these three units: 
+Imagine a water pipe with water flowing through it. The amps would be like the amount of water flowing through the pipe. The volts would be like the pressure of the water. And the watts would be like the rate at which the water is flowing and doing work (such as turning a turbine to generate electricity). 
+So, in short: 
+Amps measure the flow of electrons (current).
+Volts measure the pressure that drives the electrons through the circuit (voltage).
+Watts measure the rate at which energy is being transferred or used (power).

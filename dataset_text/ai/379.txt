@@ -1,5 +1,6 @@
-Few topics in causes are as consequential as inflation. A thorough examination reveals layers of complexity that reward careful analysis.
-
-There are several important dimensions to consider when discussing inflation. The first concerns the underlying mechanisms: how and why does this phenomenon occur? The second relates to scale: does it operate at the individual level, the community level, or globally? The third involves time: are we examining short-term fluctuations or long-term trends? Each of these dimensions offers a different lens through which economics professionals can interpret the evidence. Integrating these perspectives yields a richer and more complete understanding.
-
-The evidence makes clear that inflation deserves sustained attention and investment. As the body of knowledge continues to grow, so too does our capacity to respond effectively. The path forward requires interdisciplinary collaboration, rigorous methodology, and a genuine commitment to translating research into action.
+Surveys try to account for bias and lying in a few different ways. Here are a few examples: 
+1. Random sampling: Survey researchers try to select a representative sample of people to participate in the survey. By randomly selecting participants, researchers aim to minimize the chance that certain groups are overrepresented or underrepresented in the sample. 
+2. Anonymity: Surveys may be designed to be anonymous, which means that the researchers do not know who filled out the survey. This can help reduce bias because people may feel more comfortable being honest when they don't have to worry about being identified. 
+3. Neutral wording: Survey questions should be worded in a neutral way, without implying a certain answer. For example, a question that asks "Do you think it is wrong to drink and drive?" might bias people towards saying "yes" because of the use of the word "wrong." Instead, a better question might be "Do you think it is safe to drink and drive?" 
+4. Pilot testing: Before a survey is given to a large group of people, it is often tested with a smaller group to see if there are any problems with the questions or how they are worded. This can help researchers identify and fix any potential biases in the survey. 
+I hope this helps! Let me know if you have any other questions.

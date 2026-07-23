@@ -1,1 +1,0 @@
-) F = force on q due to q = 1 2 rˆ 21 2 1 r2 21 21 1 where rˆ is a unit vector in the direction from q to q and k = 21 1 2 4p e 0 is the constant of proportionality. In SI units, the unit of charge is coulomb. The experimental value of the constant e is 0 e = 8.854 × 10–12 C2 N–1 m–2 0 The

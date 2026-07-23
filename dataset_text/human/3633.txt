@@ -1,1 +1,1 @@
-resistance of the galvanometer is also likely to double, since it is proportional to the length of the wire. In Eq. (4.28), N →2N, and R →2R, thus the voltage sensitivity, f f fi V V remains unchanged. So in general, the modification needed for conversion of a galvanometer to an ammeter will be different from what is needed for converting it into a voltmeter. Example 4.12 In the circuit (Fig. 4.23) the current is
+Just a quick fact if you are ever unsure on what side the tank is on , the little fuel bowser on the dash has a nozzle that is the side you fill up on .

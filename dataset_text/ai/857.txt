@@ -1,5 +1,7 @@
-Antibiotic resistance is a subject that has garnered significant attention in recent decades. At its core, how bacteria evolve to defeat antibiotics represents one of the most compelling areas of inquiry for researchers and practitioners alike.
-
-There are several important dimensions to consider when discussing antibiotic resistance. The first concerns the underlying mechanisms: how and why does this phenomenon occur? The second relates to scale: does it operate at the individual level, the community level, or globally? The third involves time: are we examining short-term fluctuations or long-term trends? Each of these dimensions offers a different lens through which medicine professionals can interpret the evidence. Integrating these perspectives yields a richer and more complete understanding.
-
-In summary, antibiotic resistance is a multifaceted subject that demands careful, evidence-based inquiry. As our understanding deepens, it becomes increasingly clear that simplistic approaches are inadequate. Moving forward, collaboration across disciplines will be essential to address the most pressing challenges and opportunities that antibiotic resistance presents.
+There are several factors that doctors consider when deciding which type of scan to use. These include: 
+1. The part of the body being examined: Different types of scans are better suited for examining different parts of the body. For example, MRI is often used to examine the brain and spinal cord, while X-rays are often used to examine bones. 
+2. The type of information needed: Different types of scans can provide different types of information. For example, MRI can provide detailed images of soft tissues, while CT scans can provide detailed images of both soft tissues and bones. 
+3. The patient's condition: Some types of scans may not be suitable for certain patients, such as those who have pacemakers or are pregnant. 
+4. The availability of the equipment: Not all hospitals or clinics have all types of scanners, so the availability of the equipment may also play a role in the decision. 
+5. The cost: Some types of scans may be more expensive than others, and this may also be a factor in the decision. 
+Overall, doctors consider all of these factors when deciding which type of scan to use in order to get the best possible images and information for the patient's specific condition.

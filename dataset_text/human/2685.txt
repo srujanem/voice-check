@@ -1,1 +1,1 @@
-q1, q2 are separated by a distance r in vacuum, the magnitude of the force ( F) between them is given by 2 1 2q qF kr= (1.1) How did Coulomb arrive at this law from his experiments? Coulomb used a torsion balance * for measuring the force between two charged metallic spheres. When the separation between two spheres is much larger than the radius of each sphere, the charged spheres may be regarded as point charges. However , the
+It only looks wavy because it is on a flat map . Draw that line on a globe , and it will be a circle .

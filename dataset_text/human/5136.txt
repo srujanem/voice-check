@@ -1,1 +1,0 @@
-and an element of area r2DW at P , respectively. The 1 1 2 2 number of lines (say n) cutting these area elements are the same. The number of field lines, cutting unit area element is therefore n/(r2DW) at 1 P and n/(r2DW) at P , respectively. Since n and DW are common, the 1 2 2 strength of the field clearly has a 1/r2 dependence. The picture of field lines was invented by

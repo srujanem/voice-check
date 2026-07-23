@@ -1,1 +1,1 @@
-to ‘a’. The magnitude of this force is given by Eq. (4.4), =ba b aF I LB µ π=0 2a bI ILd(4.17) It is of course possible to compute the force on ‘a’ due to ‘b’. From considerations similar to above we can find the force Fab, on a segment of length L of ‘a’ due to the current in ‘b’. It is equal in magnitude to Fba, and directed towards ‘b’. Thus, Fba = –Fab(4.18) Note that this is
+It 's not a fundamental technical limitation but a business decision made by Sony & Microsoft . They say no cross platform gaming using Xbox Live & you do n't do it if you want to use XBL .

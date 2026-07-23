@@ -1,10 +1,4 @@
-Quantum computing is a subject that has garnered significant attention in recent decades. At its core, quantum bits and superposition in computing represents one of the most compelling areas of inquiry for researchers and practitioners alike.
-
-There are several important dimensions to consider when discussing quantum computing. The first concerns the underlying mechanisms: how and why does this phenomenon occur? The second relates to scale: does it operate at the individual level, the community level, or globally? The third involves time: are we examining short-term fluctuations or long-term trends? Each of these dimensions offers a different lens through which physics professionals can interpret the evidence. Integrating these perspectives yields a richer and more complete understanding.
-
-Key areas of focus include:
-1. Evaluating the policy and practical implications
-2. Analyzing empirical evidence from physics research
-3. Understanding the foundational principles of quantum computing
-
-The evidence makes clear that quantum computing deserves sustained attention and investment. As the body of knowledge continues to grow, so too does our capacity to respond effectively. The path forward requires interdisciplinary collaboration, rigorous methodology, and a genuine commitment to translating research into action.
+Degrees are a way to measure how much something has changed or how far something has turned. 
+We use degrees to measure temperature because it allows us to say how hot or cold something is compared to a standard temperature. For example, if the temperature outside is 70 degrees, that means it is warmer than 50 degrees but cooler than 90 degrees. 
+We use degrees to measure angles because it allows us to say how much something has turned compared to a straight line. For example, if you turn a pencil so that it is pointing straight up, that is 0 degrees. If you turn the pencil to the right until it is pointing straight out to the side, that is 90 degrees. If you turn it all the way around in a circle, that is 360 degrees. 
+Degrees are a convenient way to measure both temperature and angles because they allow us to describe how much something has changed or turned using a standard unit.

@@ -1,1 +1,1 @@
-r from it. Let q be the angle between dl and the displacement vector r. According to Biot-Savart’s law, the magnitude of the magnetic field dB is proportional to the current I, the element length |dl|, and inversely proportional to the square of the distance r. Its direction* is perpendicular to the plane containing dl and r. Thus, in vector notation, Idl· r FIGURE 4.7 Illustration of dB (cid:181) r3 the Biot-Savart law. The current
+Pennies are negative currency at this point . They cost more to make than their actual value !

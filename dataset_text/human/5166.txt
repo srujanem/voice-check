@@ -1,1 +1,0 @@
-magnetic axis of a current carrying circular field due to dl is given by the Biot-Savart law [Eq. 4.7(a)], loop of radius R. Shown are the µ I dl×r magnetic field dB (due to a line dB = 0 (4.8) element dl ) and its 4π r3 components along and Now r2 = x2 + R2 . Further, any element of the loop perpendicular to the axis. will be perpendicular to the displacement vector from

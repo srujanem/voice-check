@@ -1,4 +1,1 @@
-Textbook Excerpt Part 587:
-Queen Laxmibai tied her adopted son to her back and fought in the war. She took Gwalior under her control. When the battle took place again with the British, the Queen laid down her life. Even today, the queen occupies a pride of place in the history of the independence struggle.
-
-Partition Consequences & Refugees: Partition created two independent nations, India and Pakistan. Millions of refugees migrated from Pakistan to India, requiring shelter, food, employment, healthcare, and rehabilitation from the Indian government.
+if my app is supposed to figure out the differnce between two numbers it could be as simple and straightforward as 2nd grade math evaluate : Y - X but instead if i were to do it the complicated way . counter = X ; delta=0 ; loop until ( counter==Y ) { if ( counter < Y ) { Y = Y+1 ; delta = delta+1 ; } if ( counter > Y ) { counter = counter - 1 ; delta = delta+1 ; } } obviously the second way takes more steps .

@@ -1,5 +1,9 @@
-Few topics in the growth of cities are as consequential as urbanization. A thorough examination reveals layers of complexity that reward careful analysis.
-
-From a sociology perspective, several key mechanisms are at work. First, the foundational principles must be clearly understood before examining their broader applications. Researchers have identified multiple contributing factors, each of which plays a distinct role in shaping outcomes. Second, empirical evidence consistently supports the view that urbanization has measurable, real-world consequences. Studies conducted across diverse populations and settings have yielded broadly consistent findings, lending confidence to current theoretical frameworks. Finally, practical implications must be considered. Policymakers, educators, and industry leaders are increasingly called upon to make evidence-based decisions informed by the latest scholarship.
-
-The evidence makes clear that urbanization deserves sustained attention and investment. As the body of knowledge continues to grow, so too does our capacity to respond effectively. The path forward requires interdisciplinary collaboration, rigorous methodology, and a genuine commitment to translating research into action.
+In Morse code, there is a short pause between dots and dashes within a single letter, and a longer pause between letters in a word. The length of the pause between words is even longer. 
+For example, if you wanted to spell the word "hello" in Morse code, it would be: 
+H - dot dash dot dot
+E - dot
+L - dash dot dot dot
+L - dash dot dot dot
+O - dash dash dash 
+Each letter is separated by a short pause, and the word is separated by a longer pause. 
+So, if you are listening to someone sending Morse code, you can tell when a letter ends and another one begins by listening for the pause between the dots and dashes. And you can tell when a word ends and another one begins by listening for the longer pause between the letters.

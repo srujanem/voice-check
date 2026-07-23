@@ -1,10 +1,3 @@
-The study of global trade has evolved considerably over the past century. Scholars now recognize that international trade agreements and their economic effects involves a complex interplay of factors that cannot be easily reduced to simple explanations.
-
-Research in the field of economics has shed considerable light on global trade. Longitudinal studies, meta-analyses, and controlled experiments have all contributed to the body of knowledge. Key findings suggest that early intervention tends to produce the most significant outcomes, that systemic factors often outweigh individual-level variables, and that context matters enormously when applying general principles to specific cases. These insights have practical implications for how institutions design programs, allocate resources, and evaluate effectiveness.
-
-Key areas of focus include:
-1. Applying findings to real-world contexts
-2. Considering ethical and social dimensions
-3. Understanding the foundational principles of global trade
-
-Ultimately, global trade sits at the intersection of theory and practice, science and policy, individual experience and collective outcome. Continued research, open dialogue, and a commitment to evidence are the best tools we have for navigating its challenges and harnessing its potential.
+In a dark or nearly dark room, it can be easier to see objects if you don't look directly at them because of a phenomenon called "dark adaptation." When you go from a well-lit environment to a dark one, your eyes take some time to adjust. During this process, your eyes become more sensitive to low levels of light, which makes it easier to see in the dark. 
+Your eyes have two types of cells called rods and cones that help you see. Rods are more sensitive to low levels of light and are responsible for your night vision. Cones are more sensitive to bright light and are responsible for your color vision. When you're in a dark room, your rods are more active and your cones are less active, which is why it can be harder to see colors in the dark. 
+So when you're in a dark room, it can be easier to see objects if you don't look directly at them because your rods are more sensitive to low levels of light, and looking directly at something can cause your cones to become more active, which can make it harder to see.

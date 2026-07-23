@@ -1,11 +1,5 @@
-Few topics in how bacteria evolve to defeat antibiotics are as consequential as antibiotic resistance. A thorough examination reveals layers of complexity that reward careful analysis.
-
-There are several important dimensions to consider when discussing antibiotic resistance. The first concerns the underlying mechanisms: how and why does this phenomenon occur? The second relates to scale: does it operate at the individual level, the community level, or globally? The third involves time: are we examining short-term fluctuations or long-term trends? Each of these dimensions offers a different lens through which medicine professionals can interpret the evidence. Integrating these perspectives yields a richer and more complete understanding.
-
-Key areas of focus include:
-1. Considering ethical and social dimensions
-2. Analyzing empirical evidence from medicine research
-3. Evaluating the policy and practical implications
-4. Understanding the foundational principles of antibiotic resistance
-
-Ultimately, antibiotic resistance sits at the intersection of theory and practice, science and policy, individual experience and collective outcome. Continued research, open dialogue, and a commitment to evidence are the best tools we have for navigating its challenges and harnessing its potential.
+Private banks, also known as commercial banks, do not have the ability to create money out of thin air. Instead, they are regulated financial institutions that must follow certain rules and regulations set by government agencies and central banks. 
+When a person or business deposits money into a private bank, the bank is required to hold a certain amount of that money in reserve, which can be used to cover any withdrawals that the depositor may request. The bank can then lend out the remaining money to other people or businesses in the form of loans. This is how private banks make most of their profits. 
+Private banks are not allowed to simply create new money and add it to their own accounts or the accounts of their customers. This would be considered fraud and is illegal. 
+Electronic transactions between private banks are tracked through a centralized system called the Automated Clearing House (ACH), which is operated by the National Automated Clearing House Association (NACHA). This system allows banks to securely transfer money between each other and keep track of all the transactions that have taken place. 
+In summary, private banks are regulated financial institutions that must follow certain rules and regulations to prevent them from creating money out of thin air. They make most of their profits by lending out the money that their customers deposit with them, and electronic transactions between private banks are tracked through a centralized system called the ACH.

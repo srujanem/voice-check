@@ -1,1 +1,0 @@
-Chapter 1 that the electric field on the perpendicular bisector of the dipole is given by [See Eq.(1.21)], p E ≃ e 4πε x3 0 where x is the distance from the dipole. If we replace p à m and m fi 1/e 0 0 in the above expression, we obtain the result for B for a point in the plane of the loop at a distance x from the centre. For x >>R, µ
