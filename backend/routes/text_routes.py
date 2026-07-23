@@ -46,6 +46,7 @@ def predict_text():
         # ── Sentence-level analysis ─────────────────────────────────────────
         sentences = re.split(r'(?<=[.!?])\s+', text)
         sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) >= 3]
+        sentences = sentences[:15]  # cap at 15 for fast response
 
         sentence_scores = []
         if sentences:

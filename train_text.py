@@ -57,7 +57,7 @@ print(f"Total   {len(texts)} samples")
 word_tfidf = TfidfVectorizer(
     analyzer     = 'word',
     ngram_range  = (1, 2),       # unigrams + bigrams
-    max_features = 8000,
+    max_features = 5000,         # reduced from 8000 for faster inference
     sublinear_tf = True,
     min_df       = 2,
 )
@@ -65,7 +65,7 @@ word_tfidf = TfidfVectorizer(
 char_tfidf = TfidfVectorizer(
     analyzer     = 'char_wb',    # character n-grams (very effective for AI detection)
     ngram_range  = (3, 5),
-    max_features = 6000,
+    max_features = 2000,         # reduced from 6000 for faster inference
     sublinear_tf = True,
     min_df       = 3,
 )
