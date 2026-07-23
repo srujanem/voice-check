@@ -4,14 +4,14 @@ vec = joblib.load("text_vectorizer.pkl")
 model = joblib.load("text_model.pkl")
 
 test_samples = [
-    ("Human (casual chat)", "Hey man, sorry I couldn't make it to the party last night! Got stuck working late on my assignment. Let's hang out this weekend instead."),
-    ("AI (ChatGPT style)", "Certainly! Here is a comprehensive overview of quantum computing. Quantum computing is a rapidly emerging technology that harnesses the laws of quantum mechanics to solve complex problems."),
-    ("Human (story)", "The old wooden door creaked open as Sarah pushed it with her shoulder. Dust swirled in the thin beam of sunlight cutting through the darkness."),
-    ("AI (formal essay)", "Furthermore, it is essential to consider the multifaceted nature of environmental sustainability. In conclusion, adopting green energy policies is imperative.")
+    ("Real ChatGPT Essay", "In conclusion, artificial intelligence represents a transformative technology that promises to revolutionize numerous sectors. Furthermore, its ethical implications must be carefully navigated to foster a sustainable future."),
+    ("Real Human Reddit Comment", "Honestly I didn't think it would work out that way lol. Was pretty surprised when they announced the changes yesterday!"),
+    ("Real Human Scientific Paper", "We investigated the expression patterns of cardiac troponin in response to mechanical strain using fluorescent microscopic analysis."),
+    ("Real ChatGPT Explanation", "To understand how photosynthesis works, it is important to note that plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar.")
 ]
 
 print("=" * 65)
-print("  REAL-WORLD PREDICTION TEST (HC3 MODEL)")
+print("  REAL-WORLD PREDICTION TEST (ADVANCED ENSEMBLE MODEL)")
 print("=" * 65)
 
 for label, text in test_samples:
@@ -20,5 +20,6 @@ for label, text in test_samples:
     pred = "AI-Generated" if prob[1] >= 0.5 else "Human Written"
     conf = max(prob) * 100
     print(f"[{label}]")
+    print(f"  Text   : \"{text[:80]}...\"")
     print(f"  Result : {pred} ({conf:.1f}% confidence)")
     print(f"  Scores : Human={prob[0]*100:.1f}% | AI={prob[1]*100:.1f}%\n")
