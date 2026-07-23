@@ -1,0 +1,1 @@
+points towards the right and has a magnitude 9 2 –2 8 2B 2(9 10 Nm C ) (10 C) (0.15 m)E−× ×= = 4 × 103 N C–1 The magnitude of the total electric field at B is EB = E1B – E2B = 3.2 × 104 N C–1 EB is directed towards the left. The magnitude of each electric field vector at point C, due to charge q1 and q2 is 9 2 –2 8 1C 2C 2(9

@@ -1,0 +1,1 @@
+from the centre: 2 2 2 02 4 ( )r r aε=π −pE 3 02 4for r arε≅ >>πp The 1/ r3 dependence of dipole electric fields should be noted in contrast to the 1/ r2 dependence of electric field due to a point charge. 13.In a uniform electric field E, a dipole experiences a torque τ given by τ = p × E but experiences no net force. 14.The flux Df of electric field E through a small area

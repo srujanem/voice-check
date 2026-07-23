@@ -1,0 +1,1 @@
+in (a), we can expect to get approximately the same result by directly using the formula for dipole field at a point on the normal to the axis of the dipole: Reprint 2026-27 Electric Charges and Fields 27 EXAMPLE 1.9Ep r=43π0ε(r/a >> 1) 8 12 2 –1 –25 10 Cm 4 (8.854 10 C N m )− −×=π ×3 6 31 (15) 10 m−×× = 1.33 × 105 N C–1. The direction of electric field in this case is opposite

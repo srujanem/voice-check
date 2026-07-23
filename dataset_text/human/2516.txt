@@ -1,0 +1,1 @@
+not moving (as then | v|= 0). Only a moving charge feels the magnetic force. The expression for the magnetic force helps us to define the unit of the magnetic field, if one takes q, F and v, all to be unity in the force equation F = q [ v × B ] =q v B sin q ˆn, where q is the angle between v and B [see Fig. 4.2 (a)]. The magnitude of magnetic field B is

@@ -1,0 +1,1 @@
+i.e., F1 + F2 + F3 = 0 The result is not at all surprising. It follows straight from the fact that Coulomb’s law is consistent with Newton’s third law. The proof is left to you as an exercise. 1.7 E LECTRIC FIELD Let us consider a point charge Q placed in vacuum, at the origin O. If we place another point char ge q at a point P , wher e OP = r, then the char ge Q

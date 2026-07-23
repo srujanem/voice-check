@@ -1,0 +1,1 @@
+magnitude q v B . Equating the two expressions for centripetal force, m v 2/r = q v B, which gives r = m v / qB (4.5) for the radius of the circle described by the charged particle. The larger the momentum, the larger is the radius and bigger the circle described. If w is the angular frequency, then v = w r. So, w = 2p n = q B/ m [4.6(a)] which is independent of the velocity

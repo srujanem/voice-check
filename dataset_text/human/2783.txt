@@ -1,0 +1,1 @@
+in Fig. 1.17(b). Clearly, the components normal to the dipole axis cancel away. The components along the dipole axis add up. The total electric field is opposite to ˆp. We have E = – (E +q + E –q) cos q ˆp = −+2 42 2 3 2q a r aoπε( )□/p (1.17) At large distances ( r >> a), this reduces to E p = − >>2 43q a rr a oπεˆ ( ) (1.18) From Eqs. (1.15) and

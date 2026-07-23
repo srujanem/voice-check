@@ -1,0 +1,1 @@
+21 [15 (0.25) ] 10 m−+ ×× = 3.99 × 106 N C–1 along QA. Clearly, the components of these two forces with equal magnitudes cancel along the direction OQ but add up along the direction parallel to BA. Therefore, the resultant electric field at Q due to the two charges at A and B is = 2 × 6 –1 2 20.253.99 10 N C 15 (0.25)× × +along BA = 1.33 × 105 N C–1 along BA. As

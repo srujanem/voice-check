@@ -1,0 +1,1 @@
+10 Nm C ) (10 C) (0.10 m)E E−× ×= = = 9 × 103 N C–1 The directions in which these two vectors point are indicated in Fig. 1.11. The resultant of these two vectors is 1 2 cos cos3 3π π= +C c c E E E = 9 × 103 N C–1 EC points towards the right. 1.8 E LECTRIC F IELD LINES We have studied electric field in the last section. It is a vector quantity

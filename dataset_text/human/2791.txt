@@ -1,0 +1,1 @@
+Field at P due to charge –10 mC –5 12 2 1 210 C 4 (8.854 10 C N m )− − −=π × 2 4 21 (15 0.25) 10 m−×+ × = 3.86 × 106 N C–1 along PA The resultant electric field at P due to the two charges at A and B is = 2.7 × 105 N C–1 along BP . In this example, the ratio OP/OB is quite large (= 60). Thus, we can expect

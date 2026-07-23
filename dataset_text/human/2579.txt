@@ -1,0 +1,1 @@
+by inserting a soft iron core inside the solenoid. Example 4.8 A solenoid of length 0.5 m has a radius of 1 cm and is made up of 500 turns. It carries a current of 5 A. What is the magnitude of the magnetic field inside the solenoid? Solution The number of turns per unit length is, 50010000.5n= = turns/m The length l = 0.5 m and radius r = 0.01 m. Thus, l/a = 50 i.e., l >> a.

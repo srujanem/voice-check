@@ -1,0 +1,1 @@
+= 3/63 = 0.048 A. (b)Resistance of the galvanometer converted to an ammeter is, R r R rG s G s+=× +60 0 02 60 0 02Ω Ω Ω. ( . ) ≃ 0.02 Ω Total resistance in the circuit is, 0.02 3 3.02Ω + Ω = Ω . Hence, I = 3/3.02 = 0.99 A. (c)For the ideal ammeter with zero resistance, I = 3/3 = 1.00 A Reprint 2026-27 133Moving Charges and Magnetism 2 0 2 2 3/22(

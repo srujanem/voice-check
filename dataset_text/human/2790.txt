@@ -1,0 +1,1 @@
+as shown in Fig. 1.18(b). FIGURE 1.18 *Centre of a collection of positive point charges is defined much the same way as the centre of mass: rr cm=∑ ∑q qi ii ii. Reprint 2026-27 26Physics EXAMPLE 1.9Solution (a) Field at P due to charge +10 mC = 5 12 2 1 210 C 4 (8.854 10 C N m )− − − −π ×2 4 21 (15 0.25) 10 m−× − × = 4.13 × 106 N C–1 along BP

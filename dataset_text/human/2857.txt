@@ -1,0 +1,1 @@
+is a unit vector in the direction from q1 to q2 and k = 01 4επ is the constant of proportionality. In SI units, the unit of charge is coulomb. The experimental value of the constant e0 is e0 = 8.854 × 10–12 C2 N–1 m–2 The approximate value of k is k = 9 × 109 N m2 C–2 6.The ratio of electric force and gravitational force between a proton and an electron is 2 392 4 10 e

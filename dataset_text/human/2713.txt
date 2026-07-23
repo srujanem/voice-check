@@ -1,0 +1,1 @@
+on q1 due to q2 is the same as given by Coulomb’s law, i.e., it is unaffected by the presence of the other charges q3, q4, ..., qn. The total force F1 on the charge q1, due to all other charges, is then given by the vector sum of the forces F12, F13, ..., F1n: i.e., F F F F r r1 12 13 1n = + + ...+ = +1 401 2 122 121 3 132 13πεq q rq

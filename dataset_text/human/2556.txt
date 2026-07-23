@@ -1,0 +1,1 @@
+we may take each circular element to have the same radius R = 10 cm = 0.1 m. The number of turns N = 100. The magnitude of the magnetic field is, –7 2 0 –14 10 10 1 2 2 10NIBRµ π× × ×= =×42 10−= π ×46 28 10 T.−= × 4.6 AMPERE’ S CIRCUITAL LAW There is an alternative and appealing way in which the Biot-Savart law may be expressed. Ampere’s circuital law considers an open surface

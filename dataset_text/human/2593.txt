@@ -1,0 +1,1 @@
+is placed such that the uniform magnetic field B is in the plane of the loop. This is illustrated in Fig. 4.18(a). The field exerts no force on the two arms AD and BC of the loop. It is perpendicular to the arm AB of the loop and exerts a force F1 on it which is directed into the plane of the loop. Its magnitude is, F1 = I b B Similarly, it exerts a force F2 on the arm

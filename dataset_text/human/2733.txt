@@ -1,0 +1,1 @@
+law and the superposition principle to determine this field at a point P denoted by position vector r. Reprint 2026-27 16Physics Electric field E1 at r due to q1 at r1 is given by E1 = 1 401 12πεq rP1Pˆr wher e 1Pˆr is a unit vector in the dir ection fr om q1 to P, and r1P is the distance between q1 and P . In the same manner , electric field E2 at r due to q2 at

@@ -1,0 +1,1 @@
+flux thr ough a spher e of radius r, which encloses a point char ge q at its centre. Divide the sphere into small area elements, as shown in Fig. 1.22. The flux through an area element DS is 2 0ˆ 4q rφεΔ = Δ = ΔπE S r Sii (1.28) where we have used Coulomb’s law for the electric field due to a single charge q. The unit vector ˆr is along the radius vector from the centre to

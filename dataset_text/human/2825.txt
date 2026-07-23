@@ -1,0 +1,1 @@
+DS cos q = ER DS, since q = 0° = ERa2 Net flux through the cube Reprint 2026-27 32Physics EXAMPLE 1.11 EXAMPLE 1.10= fR + fL = ERa2 – ELa2 = a2 (ER – EL) = aa2 [(2a)1/2 – a1/2] = aa5/2 ()2 –1 = 800 (0.1)5/2 ()2 –1 = 1.05 N m2 C–1 (b) W e can use Gauss’s law to find the total char ge q inside the cube. We have f = q/ e0 or q

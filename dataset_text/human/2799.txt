@@ -1,0 +1,1 @@
+sinq = 2 q a E sinq Its dir ection is nor mal to the plane of the paper , coming out of it. The magnitude of p × E is also p E sinq and its direction is nor mal to the paper , coming out of it. Thus, t tt tt = p × E (1.22) This torque will tend to align the dipole with the field E. When p is aligned with E, the torque is zero.

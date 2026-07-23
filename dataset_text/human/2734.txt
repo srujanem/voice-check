@@ -1,0 +1,1 @@
+r2 is E2 = 1 402 22πεq rP2Pˆr where 2Pˆr is a unit vector in the direction from q2 to P and r2P is the distance between q2 and P . Similar expressions hold good for fields E3, E4, ..., En due to charges q3, q4, ..., qn. By the superposition principle, the electric field E at r due to the system of charges is (as shown in Fig. 1.9) E(r) = E1 (r) + E2 (r) + … +

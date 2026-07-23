@@ -1,0 +1,1 @@
+× e + n1 × (–e) = (n2 – n1) e. Since n1 and n2 are integers, their dif ference is also an integer . Thus the char ge on any body is always an integral multiple of e and can be increased or decreased also in steps of e. The step size e is, however , very small because at the macr oscopic level, we deal with charges of a few mC. At this scale the fact that charge

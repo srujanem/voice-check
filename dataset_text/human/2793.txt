@@ -1,0 +1,1 @@
+on the dipole axis is always along the direction of the dipole moment vector (i.e., from – q to q). Here, p =10–5 C × 5 × 10–3 m = 5 × 10–8 C m Therefore, E =8 12 2 1 22 5 10 Cm 4 (8.854 10 C N m )− − − −× × π ×3 6 31 (15) 10 m−× × = 2.6 × 105 N C–1 along the dipole moment direction AB, which is close to

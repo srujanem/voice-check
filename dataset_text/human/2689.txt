@@ -1,0 +1,1 @@
+is about 9 × 109 2 2Nm C. The unit of charge that results from this choice is called a coulomb which we defined earlier in Section 1.4. Putting this value of k in Eq. (1.1), we see that for q1 = q2 = 1 C, r = 1 m F = 9 × 109 N That is, 1 C is the charge that when placed at a distance of 1 m from another charge of the same magnitude in

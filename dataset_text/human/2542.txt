@@ -1,0 +1,1 @@
+speed of light in vacuum is constant, the product µ0ε0 is fixed in magnitude. Choosing the value of either ε0 or µ0, fixes the value of the other. In SI units, µ0 is fixed to be equal to 4π × 10–7 in magnitude. Example 4.4 An element ˆ ∆ = ∆ xi l is placed at the origin and carries a large current I = 10 A (Fig. 4.8). What is the magnetic field on the y- axis at a

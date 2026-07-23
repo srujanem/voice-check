@@ -1,0 +1,1 @@
+En(r) =1 41 41 401 121 02 222 02π π π ε ε εq rq rq rn nn PP PP PPˆ ˆ... ˆ r r r + + + E(r) = =∑ 1 40 Pi Pπεq ri i in 2 1ˆr (1.10) E is a vector quantity that varies from one point to another point in space and is determined from the positions of the source charges. 1.7.2 Physical significance of electric field You may wonder why the notion of

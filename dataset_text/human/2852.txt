@@ -1,0 +1,1 @@
+density r obtained earlier , we have 3 3rq Z e Z e R= − Gauss’s law then gives, 2 3 01( ) ;4Z e rE r r Rr Rε = − < π The electric field is directed radially outward. (ii) r > R: In this case, the total charge enclosed by the Gaussian spherical surface is zero since the atom is neutral. Thus, from Gauss’s law, E (r) × 4 p r2 = 0 or E (r) =

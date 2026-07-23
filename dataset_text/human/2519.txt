@@ -1,0 +1,1 @@
+number of mobile charge carriers in it is nlA. For a steady current I in this conducting rod, we may assume that each mobile carrier has an average drift velocity vd (see Chapter 3). In the presence of an external magnetic field B, the force on these carriers is: F = (nlA)q vd ´ ´´ ´´ B wher e q is the value of the char ge on a carrier . Now nq vd is the curr ent density j

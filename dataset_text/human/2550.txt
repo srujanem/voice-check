@@ -1,0 +1,1 @@
+dB cos θ over the loop. For Fig. 4.9, 2 2 1/2cos( )R x Rθ=+ (4.10) From Eqs. (4.9) and (4.10), ( )π0 3/22 2dd4xI l RB x Rµ= + The summation of elements d l over the loop yields 2 πR, the circumference of the loop. Thus, the magnetic field at P due to entire circular loop is ( )2 0 3/22 2ˆ ˆ 2xI RB x Rµ= = +B i i(4.11) As a special case of the above

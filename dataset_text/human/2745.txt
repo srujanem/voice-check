@@ -1,0 +1,1 @@
+fall under gravity’ where the time of fall is independent of the mass of the body. Note that in this example we have ignored the acceleration due to gravity in calculating the time of fall. To see if this is justified, let us calculate the acceleration of the proton in the given electric field: p pe Eam= 19 4 1 27(1 6 10 C) (2 0 10 N C ) 1 67 10 kg. . .− − −× × ×=×

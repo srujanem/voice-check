@@ -1,0 +1,1 @@
+direction of a uniform horizontal magnetic field of magnitude 0.80 T. What is the magnitude of torque experienced by the coil? 4.10 Two moving coil meters, M1 and M2 have the following particulars: R1 = 10 Ω, N1 = 30, A1 = 3.6 × 10–3 m2, B1 = 0.25 T R2 = 14 Ω, N2 = 42, A2 = 1.8 × 10–3 m2, B2 = 0.50 T (The spring constants are identical for the two meters). Determine the ratio of

@@ -1,0 +1,1 @@
+circular loop carrying a steady current I. The loop is placed in the plane with its centre at the origin O and has a radius R. The x-axis is the axis of the loop. We wish to calculate the magnetic field at the point P on this axis. Let x be the distance of P from the centre O of the loop. Cons ider a conducting element d l of the loop. This is shown in Fig. 4. 9. The

@@ -1,0 +1,1 @@
+the mass of the electron. Starting from rest, the time required by the electron to fall through a distance h is given by 2 2 ee eh m hta e E= = For e = 1.6 × 10–19C, me = 9.11 × 10–31 kg, E = 2.0 × 104 N C–1, h = 1.5 × 10–2 m, te = 2.9 × 10–9s In Fig. 1.10 (b), the field is downward, and the positively charged proton experiences a downward force of

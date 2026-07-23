@@ -1,0 +1,1 @@
+s 0ˆ 2σ ε=E n where ˆn is a unit vector normal to the plane, outward on either side. Reprint 2026-27 40Physics (iii) Thin spherical shell of uniform surface charge density s 2 0ˆ ( )4qr Rrε= ≥πE r E = 0 (r < R) where r is the distance of the point from the centre of the shell and R the radius of the shell. q is the total charge of the shell: q = 4 pR2s. The electric

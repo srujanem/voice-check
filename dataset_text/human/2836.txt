@@ -1,0 +1,1 @@
+if l is positive and inward if l is negative. Note that when we write a vector A as a scalar multiplied by a unit vector , i.e., as A = A ˆa, the scalar A is an algebraic number . It can be negative or positive. The direction of A will be the same as that of the unit vector ˆaif A > 0 and opposite to ˆa if A < 0. When we want to restrict to non-negative

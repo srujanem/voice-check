@@ -1,0 +1,1 @@
+is the force on each charge? FIGURE 1.7 Solution The forces acting on charge q at A due to charges q at B and –q at C are F12 along BA and F13 along AC respectively, as shown in Fig. 1.7. By the parallelogram law, the total force F1 on the charge q at A is given by F1 = F 1ˆr where 1ˆr is a unit vector along BC. The force of attraction or repulsion for each pair of

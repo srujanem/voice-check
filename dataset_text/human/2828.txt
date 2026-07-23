@@ -1,0 +1,1 @@
+see fr om the figur e that on the left face E and DS are parallel. Therefore, the outward flux is fL= E.DS = – 200 ˆΔi Si = + 200 DS, since ˆΔi Si= – DS = + 200 × p (0.05)2 = + 1.57 N m2 C–1 On the right face, E and DS are parallel and therefore fR = E.DS = + 1.57 N m2 C–1. (b)For any point on the side of the cylinder E is

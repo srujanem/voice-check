@@ -1,0 +1,1 @@
+CD and F2 is directed out of the plane of the paper. F2 = I b B = F1 Thus, the net force on the loop is zero . There is a torque on the loop due to the pair of forces F1 and F2. Figure 4.18(b) shows a view of the loop from the AD end. It shows that the torque on the loop tends to rotate it anticlockwise. This torque is (in magnitude), 1 22 2a aF Fτ=
