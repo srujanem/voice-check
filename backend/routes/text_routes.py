@@ -5,6 +5,7 @@ from backend.decorators import require_api_key
 from datetime import datetime
 import uuid
 import re
+import threading
 
 text_bp = Blueprint('text', __name__)
 
@@ -66,7 +67,7 @@ def predict_text():
         else:
             confidence_label = "Low"
 
-        # ── Save result to database (non-blocking) ──────────────────────────
+        # ── Save result to database (truly non-blocking) ─────────────────────
         try:
             user_id = getattr(request, 'user', {}).get('uid', 'anonymous')
             scan_data = {
@@ -83,9 +84,13 @@ def predict_text():
                 "timestamp":        datetime.utcnow().isoformat(),
             }
             collection = f"text_results_{user_id}"
-            external_db.create_document(collection, scan_data)
+            t = threading.Thread(
+                target=external_db.create_document,
+                args=(collection, scan_data),
+                daemon=True
+            )
+            t.start()
         except Exception as db_err:
-            # DB save failure must never break the prediction response
             print(f"[text_routes] DB save failed (non-fatal): {db_err}")
 
         # ── Return response ─────────────────────────────────────────────────

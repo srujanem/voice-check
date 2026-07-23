@@ -10,7 +10,7 @@ voice_bp = Blueprint('voice', __name__)
 
 def extract_features(file_path):
     try:
-        y, sr = librosa.load(file_path, duration=5, sr=22050)
+        y, sr = librosa.load(file_path, duration=3, sr=16000)
         if len(y) == 0:
             return None
         if len(y) < 2048:
