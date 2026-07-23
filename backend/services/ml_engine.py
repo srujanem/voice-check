@@ -2,6 +2,8 @@ import os
 import pickle
 import tensorflow as tf
 import stylometric_transformer
+import xgboost   # Required for VotingClassifier deserialization (XGBClassifier)
+import lightgbm  # Required for VotingClassifier deserialization (LGBMClassifier)
 from backend.config import Config
 
 class MLEngine:
