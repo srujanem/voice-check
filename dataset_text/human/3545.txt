@@ -1,0 +1,1 @@
+charge –10 mC at A 10-5C 1 · = 4p (8.854· 10- 12C2N- 1m- 2) [152+(0.25)2]· 10-4m2 = 3.99 × 106 N C–1 along QA. Clearly, the components of these two forces with equal magnitudes cancel along the direction OQ but add up along the direction parallel to BA. Therefore, the resultant electric field at Q due to the two charges at A and B is 0.25 = 2 × · 3.99· 106N C–1 along

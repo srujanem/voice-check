@@ -1,0 +1,1 @@
+2p E = 4p εr3 (r >> a) (1.20) o At a point on the equatorial plane p 24 E = - 4p εr3 (r >> a) (1.21) o Reprint 2026-27 Electric Charges and Fields 25 EXAMPLE 1.9 Notice the important point that the dipole field at large distances falls off not as 1/r2 but as1/r3. Further, the magnitude and the direction of the dipole field depends not only on the distance r but also

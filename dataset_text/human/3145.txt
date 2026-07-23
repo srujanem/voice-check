@@ -1,0 +1,1 @@
+surface, with the convention stated already, q is the angle between E and the outward normal to the area element. Notice we could look at FIGURE 1.16 the expression E DS cosq in two ways: E (DS cosq ) i.e., E times the Convention for defining normal nˆ and DS. * It will not be proper to say that the number of field lines is equal to EDS. The number of field lines is after

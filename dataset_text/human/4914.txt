@@ -1,0 +1,1 @@
+result is not at all surprising. It follows straight from the fact that Coulomb’s law is consistent with Newton’s third law. The proof is left to you as an exercise. 1.7 E F LECTRIC IELD Let us consider a point charge Q placed in vacuum, at the origin O. If we place another point charge q at a point P, where OP = r, then the charge Q will exert a force on q as

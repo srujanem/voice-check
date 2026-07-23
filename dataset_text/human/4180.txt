@@ -1,0 +1,1 @@
+Therefore, f = –E S , f = +E S 1 1 2 2 S = S = S 1 2 where S is the area of circular cross-section. Thus, the total flux is zero, as expected by Gauss’s law. Thus, whenever you find that the net electric flux through a closed surface is zero, we conclude that the total charge contained in the closed surface is zero. The great significance of Gauss’s law Eq.

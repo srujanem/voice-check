@@ -1,0 +1,1 @@
+the familiar expression for a long straight wire B (2π r) = µI 0 m I B = 0 2π r [4.15(a)] 1 B (cid:181) (r > a) r Now the current enclosed I is not I, but is less than this value. e Since the current distribution is uniform, the current enclosed is, (cid:230) p r2(cid:246) Ir2 I e = I Ł (cid:231) p a2ł (cid:247) = a2 Ir2 B(2πr)= m Using Ampere’s law,

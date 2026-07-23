@@ -1,0 +1,1 @@
+Flag player is allowed to go outside the Flag court while the game is on. In both Jail the courts, a part of the court should be identified as a prison. While struggling for the flag the players from either side can be put into the prison. The players who go into the prison are out of the game. If neither team is able to take the opponents flag, then the team which has the

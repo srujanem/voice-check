@@ -1,0 +1,1 @@
+AD end and it illustrates these two forces constituting a couple. The magnitude of the torque on the loop is, a a t = F sinq +F siqn 1 2 2 2 = I ab B sin θ = I A B sin θ (4.21) 125 Reprint 2026-27 Physics 126 01.4 ELPMAXE As θ à 0, the perpendicular distance between the forces of the couple also approaches zero. This makes the forces collinear and the

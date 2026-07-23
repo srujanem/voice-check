@@ -1,0 +1,1 @@
+considerations similar to above we can find the force F , on a segment of ab length L of ‘a’ due to the current in ‘b’. It is equal in magnitude to F , ba and directed towards ‘b’. Thus, F = –F (4.18) ba ab Note that this is consistent with Newton’s third Law. Thus, at least for parallel conductors and steady currents, we have shown that the Biot-Savart law and the Lorentz force

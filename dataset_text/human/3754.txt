@@ -1,0 +1,1 @@
+>> a 4qa E = 4p εr3 pˆ (r >> a) (1.15) 0 (ii) For points on the equatorial plane The magnitudes of the electric fields due to the two charges +q and –q are given by q 1 E +q = 4p ε r2 +a2 [1.16(a)] 0 q 1 E –q = 4p ε r2 +a2 [1.16(b)] 0 FIGURE 1.17 Electric field of a dipole and are equal. at (a) a point on the

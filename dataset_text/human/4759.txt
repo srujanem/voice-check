@@ -1,0 +1,1 @@
+how much time is required to get a total charge of 1 C on the other body? Solution In one second 109 electrons move out of the body. Therefore the charge given out in one second is 1.6 × 10–19 × 109 C = 1.6 × 10–10 C. The time required to accumulate a charge of 1 C can then be estimated to be 1 C ÷ (1.6 × 10–10 C/s) = 6.25 × 109

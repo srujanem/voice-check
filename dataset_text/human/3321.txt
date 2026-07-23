@@ -1,0 +1,1 @@
+r : 12 r = r – r = – r 12 1 2 21 The magnitude of the vectors r and r is denoted by r and r , 21 12 21 12 respectively (r = r ). The direction of a vector is specified by a unit 12 21 vector along the vector. To denote the direction from 1 to 2 (or from 2 to 1), we define the unit vectors: r r

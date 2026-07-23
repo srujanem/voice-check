@@ -1,0 +1,1 @@
+in three-dimensions the solid angle* subtended by a small perpendicular plane area DS, at a distance r, can be written as DW = DS/r2. We know that in a given solid angle the number of radial field lines is the same. In Fig. 1.13, for two points P and P at distances 1 2 r and r from the charge, the element of area subtending the solid angle 1 2 DW is r2DW at P

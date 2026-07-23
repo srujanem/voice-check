@@ -1,0 +1,1 @@
+15 position vector r. Reprint 2026-27 Physics Electric field E at r due to q at r is given by 1 1 1 1 q E = 1 rˆ 1 4p ε r2 1P 0 1P where rˆ is a unit vector in the direction from q to P, 1P 1 and r is the distance between q and P. 1P 1 In the same manner, electric field E at r due to q at

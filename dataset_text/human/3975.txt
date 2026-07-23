@@ -1,0 +1,1 @@
+is an algebraic number. It can be negative or positive. The direction of A will be the same as that of the unit vector aˆ if A > 0 and opposite to aˆ if A < 0. When we want to restrict to non-negative values, we use the symbol A and call it the modulus of A. Thus, A ‡ 0. Also note that though only the charge enclosed by the surface (ll) was included

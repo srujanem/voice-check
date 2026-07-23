@@ -1,0 +1,1 @@
+3 Qq The resultant of forces F 2 and F 3 is 4p ε l2 along OA, by the 0 parallelogram law. Therefore, the total force on Q = 4p 3 ε Q l2 q( rˆ- rˆ ) 0 rˆ = 0, where is the unit vector along OA. It is clear also by symmetry that the three forces will sum to zero. Suppose that the resultant force was non-zero but in some direction. Consider

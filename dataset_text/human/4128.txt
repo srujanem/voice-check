@@ -1,0 +1,1 @@
+q E(r) (1.8) Equation (1.8) defines the SI unit of electric field as N/C*. Some important remarks may be made here: (i) From Eq. (1.8), we can infer that if q is unity, the electric field due to a charge Q is numerically equal to the force exerted by it. Thus, the FIGURE 1.8 Electric field (a) due to a electric field due to a charge Q at a point in space may be defined

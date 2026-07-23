@@ -1,0 +1,1 @@
+direction of m (and A) When this loop is placed in a uniform magnetic field B, the force F on it is: F = 0 And the torque on it is, τ = m × B In a moving coil galvanometer, this torque is balanced by a counter- torque due to a spring, yielding kφ = NI AB where φ is the equilibrium deflection and k the torsion constant of the spring. 11. A moving

@@ -1,0 +1,1 @@
+a charge can be either positive or negative. Proper signs have to be used while adding the charges in a system. For example, the total charge of a system containing five charges +1, +2, –3, +4 and –5, in some arbitrary unit, is (+1) + (+2) + (–3) + (+4) + (–5) = –1 in the same unit. 1.4.2 Charge is conserved We have already hinted to the fact that when bodies are charged by

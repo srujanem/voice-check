@@ -1,0 +1,1 @@
+this model of the atom is as shown in Fig. 1.29. The total negative charge in the uniform spherical charge distribution of radius R must be –Z e, since the atom (nucleus of charge Z e + negative charge) is neutral. This immediately gives us the negative charge density r, since we must have 4p R3 r =0–Ze 3 3Ze r =- or 4p R3 To find the electric field E(r) at a point P

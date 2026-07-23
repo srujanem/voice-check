@@ -1,0 +1,1 @@
+1 Å (= 10-10 m) apart? (m = 1.67 × p 10–27 kg, m = 9.11 × 10–31 kg) e Solution (a) (i) The electric force between an electron and a proton at a distance r apart is: 1 e2 F = - e 4p e r2 0 where the negative sign indicates that the force is attractive. The corresponding gravitational force (always attractive) is: m m F = - G p e G r2

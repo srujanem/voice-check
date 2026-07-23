@@ -1,0 +1,1 @@
+is obtained by adding the electric fields E due to the charge –q and E due to the charge q, by the –q +q parallelogram law of vectors. (i) For points on the axis Let the point P be at distance r from the centre of the dipole on the side of the charge q, as shown in Fig. 1.17(a). Then q E = - pˆ - q 4p ε (r +a)2 [1.13(a)] 0 where

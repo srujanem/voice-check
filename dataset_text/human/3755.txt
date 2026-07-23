@@ -1,0 +1,1 @@
+or antiparallel to E. In either case, the net torque is zero, but there is a net force on the dipole if E is not uniform. Figure 1.20 is self-explanatory. It is easily seen that when p is parallel to E, the dipole has a net force in the direction of increasing field. When p is antiparallel to E, the net force on the dipole is in the direction of decreasing field. In general, the

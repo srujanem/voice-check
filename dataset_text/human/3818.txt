@@ -1,0 +1,1 @@
+direction of the dipole axis from –q to q. 38 Reprint 2026-27 Electric Charges and Fields 12. Field of an electric dipole in its equatorial plane (i.e., the plane perpendicular to its axis and passing through its centre) at a distance r from the centre: - p 1 E= 4p e (a2+ r2)3/2 o - p @ , for r >> a 4 p e r3 o Dipole electric field on the axis at a

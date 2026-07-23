@@ -1,0 +1,1 @@
+5. The magnitude of the magnetic field due to a circular coil of radius R carrying a current I at an axial distance x from the centre is 132 21.4 ELPMAXE Solution (a) Total resistance in the circuit is, R +3=63W . Hence, I = 3/63 = 0.048 A. G (b) Resistance of the galvanometer converted to an ammeter is, R r 60 W · 0.02W R G + s r = (60+0.02)W ≃ 0.02Ω

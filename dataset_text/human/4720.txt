@@ -1,0 +1,1 @@
+magnitude of electric field E due to a point charge is thus same on a sphere with the point charge at its centre; in other words, it has a spherical symmetry. 1.7.1 Electric field due to a system of charges Consider a system of charges q , q , ..., q with position vectors r , 1 2 n 1 r , ..., r relative to some origin O. Like the electric field at a

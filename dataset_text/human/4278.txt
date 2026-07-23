@@ -1,0 +1,1 @@
+the element to the axial point. For example, the element dl in Fig. 4.9 is in the plane, whereas, the displacement vector r from dl to the axial point P is in the plane. Hence |dl × r|=r dl. Thus, m Idl dB = 0 ( ) 4π x2 +R2 (4.9) 115 EXAMPLE 4.4 Reprint 2026-27 Physics The direction of dB is shown in Fig. 4.9. It is perpendicular to the plane formed by dl

@@ -1,0 +1,1 @@
+surrounding. When another charge q is brought at some point P, the field there acts on it and produces a force. The electric field produced by the charge Q at a point r is given as E ( r )= 1 Q rˆ = 1 Q rˆ 4p ε r2 4p ε r2 (1.6) 0 0 where rˆ = r/r, is a unit vector from the origin to the point r. Thus, Eq.(1.6) specifies the

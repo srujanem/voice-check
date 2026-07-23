@@ -1,0 +1,1 @@
+2 2 r is 2 1 q E = 2 rˆ 2 4p ε r2 2P 0 2P where rˆ is a unit vector in the direction from q to P 2P 2 and r is the distance between q and P. Similar FIGURE 1.9 Electric field at a point 2P 2 due to a system of charges is the expressions hold good for fields E , E , ..., E due to 3 4

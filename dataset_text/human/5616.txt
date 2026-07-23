@@ -1,0 +1,1 @@
+o 0 through the surface of a cylinder. Now S, the total area of the sphere, equals 4pr2. Thus, q q f = · 4p r=2 4p e r2 e (1.30) 0 0 Equation (1.30) is a simple illustration of a general result of electrostatics called Gauss’s law. We state Gauss’s law without proof: Electric flux through a closed surface S = q/e (1.31) 0 q = total charge enclosed by S. The law implies

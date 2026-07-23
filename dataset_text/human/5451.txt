@@ -1,0 +1,1 @@
+n rˆ 4p ε r2 1P 4p ε r2 2P 4p ε r2 nP 0 1P 0 2P 0 nP E(r) = 1 (cid:229) n q irˆ (1.10) 4p ε r2 iP 0 i=1 iP E is a vector quantity that varies from one point to another point in space and is determined from the positions of the source charges. 1.7.2 Physical significance of electric field You may wonder why the notion of electric field

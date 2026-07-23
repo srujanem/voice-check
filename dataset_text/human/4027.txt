@@ -1,0 +1,1 @@
+right-hand thumb rule. (b) The magnetic moment is given by Eq. (4.24), m = N I A = N I π r2 = 100 × 3.2 × 3.14 × 10–2 = 10 A m2 The direction is once again given by the right-hand thumb rule. (c) τ = m × B [from Eq. (4.23)] = m B sin θ Initially, θ = 0. Thus, initial torque τ = 0. Finally, θ = π/2 (or 90º).

@@ -1,0 +1,1 @@
+relation between ε, the permittivity of free 0 space; µ, the permeability of free space; and c, the speed of light in vacuum: 0 ( ) m 1 ( ) 1 1 e 0 m 0 = 4ep 0 4 0 p = 9· 109 10 - 7 = (3· 108)2 = c2 We will discuss this connection further in Chapter 8 on the electromagnetic waves. Since the speed of light in vacuum is constant,

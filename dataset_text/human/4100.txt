@@ -1,0 +1,1 @@
+law is similar to the relationship between Gauss’s law and Coulomb’s law. EXERCISES 4.1 A circular coil of wire consisting of 100 turns, each of radius 8.0 cm carries a current of 0.40 A. What is the magnitude of the magnetic field B at the centre of the coil? 4.2 A long straight wire carries a current of 35 A. What is the magnitude of the field B at a point 20 cm from the

@@ -1,0 +1,1 @@
+= I l × B where|l| = l and the direction of l is given by the direction of the current. 3. In a uniform magnetic field B, a charge q executes a circular orbit in a plane normal to B. Its frequency of uniform circular motion is called the cyclotron frequency and is given by: qB n = c 2p m This frequency is independent of the particle’s speed and radius. This fact is

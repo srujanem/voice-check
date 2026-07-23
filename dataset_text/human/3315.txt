@@ -1,0 +1,1 @@
+AO = BO = CO. Reprint 2026-27 Electric Charges and Fields 13 EXAMPLE 1.5 Thus, 3 Qq Force F on Q due to charge q at A = along AO 1 4p ε l2 0 3 Qq Force F 2 on Q due to charge q at B = 4p ε l2 along BO 0 3 Qq Force F 3 on Q due to charge q at C = 4p ε l2 along CO 0

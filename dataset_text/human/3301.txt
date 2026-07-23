@@ -1,0 +1,1 @@
+(E + E ) cosq pˆ +q –q 2qa = - 4p ε (r2+a2)3/2 pˆ (1.17) o At large distances (r >> a), this reduces to 2q a E = - 4p ε r3 pˆ (r >> a) (1.18) o From Eqs. (1.15) and (1.18), it is clear that the dipole field at large distances does not involve q and a separately; it depends on the product qa. This suggests the definition of dipole moment.

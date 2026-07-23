@@ -1,0 +1,1 @@
+rɵ = 21 rɵ = 12, rɵ = - rɵ 21 , 12 21 12 r r 21 12 Coulomb’s force law between two point charges q and q located at 1 2 r and r ,respectively is then expressed as 1 2 F = 1 q 1 q 2 r ɵ 21 4p e r2 21 (1.3) o 21 Some remarks on Eq. (1.3) are relevant: · Equation (1.3) is valid for any sign

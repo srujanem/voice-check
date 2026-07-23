@@ -1,0 +1,1 @@
+in Fig.4.22. Note that the resistance of the voltmeter is now, FIGURE 4.22 ≃ R + R R : large G Conversion of a The scale of the voltmeter is calibrated to read off the voltage value galvanometer (G) to a with ease. We define the voltage sensitivity as the deflection per unit voltmeter by the introduction of a voltage. From Eq. (4.26), resistance R of large φ  NAB  I  NAB 

@@ -1,0 +1,1 @@
+is flowing from south to north, θ = 0o f = 0 Hence there is no force on the conductor. 4.9 T C L , M D ORQUE ON URRENT OOP AGNETIC IPOLE 4.9.1 Torque on a rectangular current loop in a uniform magnetic field We now show that a rectangular loop carrying a steady current I and placed in a uniform magnetic field experiences a torque. It does not experience a net force. This

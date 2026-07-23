@@ -1,0 +1,1 @@
+26 9.1 ELPMAXE Solution (a) Field at P due to charge +10 mC 10-5C 1 · = 4p (8.854· 10- 12C2N-1m- 2) (15- 0.25)2· 10-4m2 = 4.13 × 106 N C–1 along BP Field at P due to charge –10 mC 10–5C 1 = · 4p (8.854· 10- 12C2N- 1m- 2) (15+0.25)2 · 10- 4m2 = 3.86 × 106 N C–1 along PA The resultant electric field at P due to the two charges at

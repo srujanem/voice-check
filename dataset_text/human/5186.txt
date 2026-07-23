@@ -1,0 +1,1 @@
+(r). The force on an electric charge q due to both of them can be written as F = q [ E (r) + v × B (r)] º F +F (4.3) electric magnetic This force was given first by H.A. Lorentz based on the extensive experiments of Ampere and others. It is called the Lorentz force. You have already studied in detail the force due to the electric field. If we look at the

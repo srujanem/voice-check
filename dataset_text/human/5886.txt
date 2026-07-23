@@ -1,0 +1,1 @@
+surface is not parallel to the direction of flow of liquid, i.e., to v, but makes an angle q with it, the projected area in a plane perpendicular to v is d dS cos q. Therefore, the flux going out of the surface dS is v.nˆ dS. For the case of the electric field, we define an analogous quantity and call it electric flux. We should, however, note that there is no flow of a

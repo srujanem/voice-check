@@ -1,0 +1,1 @@
+of electric flux, let us consider the total flux through a sphere of radius r, which encloses a point charge q at its centre. Divide the sphere into small area elements, as shown in Fig. 1.22. The flux through an area element DS is q D f= EDi =S 4p e r2 rˆiD S (1.28) 0 where we have used Coulomb’s law for the electric field due to a single charge q. The unit vector

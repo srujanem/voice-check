@@ -1,0 +1,1 @@
+0 2x3 Note that the area of the loop A = πR2. Thus, IA µ B 0 = 2π x3 As earlier, we define the magnetic moment m to have a magnitude IA, m = I A. Hence, m µ B ≃ 0 2π x3 µ 2m 0 = [4.25(a)] 4π x3 The expression of Eq. [4.25(a)] is very similar to an expression obtained earlier for the electric field of a dipole. The similarity may
