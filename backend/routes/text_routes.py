@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from backend.services.ml_engine import ml
 from backend.services.external_db import external_db
 from backend.services.perplexity_engine import perplexity_engine
+from backend.services.distilbert_engine import distilbert_engine
 from backend.decorators import require_api_key
 from datetime import datetime
 import uuid
@@ -59,8 +60,21 @@ def predict_text():
         elif burstiness > 8.0:
             ppl_ai_score = max(0.0, ppl_ai_score - 0.15)
 
-        # 50% Ensemble ML + 50% Perplexity & Burstiness Engine
-        prob_ai = (0.50 * prob_ai_ml) + (0.50 * ppl_ai_score)
+        # ── DistilBERT Engine (Option A — 98% accuracy) ──────────────────
+        bert_result = distilbert_engine.predict(text)
+
+        # ── Three-Way Fusion ─────────────────────────────────────────────
+        if bert_result is not None:
+            # 40% XGBoost + 30% Perplexity + 30% DistilBERT
+            prob_ai = (
+                0.40 * prob_ai_ml +
+                0.30 * ppl_ai_score +
+                0.30 * bert_result["prob_ai"]
+            )
+        else:
+            # Fallback: 50% XGBoost + 50% Perplexity
+            prob_ai = (0.50 * prob_ai_ml) + (0.50 * ppl_ai_score)
+
         prob_human = 1.0 - prob_ai
 
         is_ai  = prob_ai >= 0.5
