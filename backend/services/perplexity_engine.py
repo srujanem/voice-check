@@ -7,6 +7,12 @@ class PerplexityEngine:
     def __init__(self):
         self.model = None
         self.tokenizer = None
+        self._attempted = False
+
+    def _ensure_loaded(self):
+        if self._attempted:
+            return
+        self._attempted = True
         self.load_model()
 
     def load_model(self):
@@ -20,6 +26,7 @@ class PerplexityEngine:
             print(f"[PerplexityEngine] Failed to load distilgpt2: {e}")
 
     def analyze(self, text):
+        self._ensure_loaded()
         if self.model is None or self.tokenizer is None:
             return {"perplexity": 50.0, "burstiness": 0.0, "perplexity_std": 0.0}
 

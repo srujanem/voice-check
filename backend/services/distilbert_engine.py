@@ -13,6 +13,12 @@ class DistilBERTEngine:
         self.model     = None
         self.tokenizer = None
         self.device    = "cpu"   # Force CPU for stability on Windows
+        self._attempted = False
+
+    def _ensure_loaded(self):
+        if self._attempted:
+            return
+        self._attempted = True
         self._load()
 
     def _load(self):
@@ -36,10 +42,7 @@ class DistilBERTEngine:
             self.tokenizer = None
 
     def predict(self, text: str) -> dict:
-        """
-        Returns AI probability score from DistilBERT.
-        Returns None if model not loaded.
-        """
+        self._ensure_loaded()
         if self.model is None or self.tokenizer is None:
             return None
 
