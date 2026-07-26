@@ -41,11 +41,13 @@ def predict_image():
         img_array = tf.expand_dims(img_array, 0)
 
         pred_prob = float(image_model.predict(img_array, verbose=0)[0][0])
-        is_fake = pred_prob >= 0.5
+        # TF assigns labels alphabetically: fake=0, real=1
+        # So pred_prob = P(real). Fake means pred_prob < 0.5
+        is_fake = pred_prob < 0.5
 
         result = "AI-Generated" if is_fake else "Authentic"
-        prob_fake = round(pred_prob * 100, 1)
-        prob_real = round((1.0 - pred_prob) * 100, 1)
+        prob_real = round(pred_prob * 100, 1)
+        prob_fake = round((1.0 - pred_prob) * 100, 1)
         confidence = prob_fake if is_fake else prob_real
 
         return jsonify({
