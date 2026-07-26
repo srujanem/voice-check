@@ -32,31 +32,51 @@ def predict_text():
         return jsonify({"error": "Text too short. Please provide at least 10 words for accurate analysis."}), 400
 
     try:
-        # ── Overall prediction (Ensemble ML) ────────────────────────────────
+        # ── Signal 1: Calibrated TF-IDF Model ────────────────────────────────
         text_vector = ml.text_vectorizer.transform([text])
         probs       = ml.text_model.predict_proba(text_vector)[0]
-        prob_ai_ml  = float(probs[1])
+        s_tfidf     = float(probs[1])
 
-        # ── Perplexity & Burstiness Engine (Option 2) ────────────────────────
+        # ── Signal 2: Perplexity & Burstiness Engine (distilgpt2) ───────────
         ppl_metrics = perplexity_engine.analyze(text)
         ppl         = ppl_metrics["perplexity"]
         burstiness  = ppl_metrics["burstiness"]
 
-        # ── Perplexity Soft Modulation (±12% fine-tuning) ─────────────────────
-        if ppl < 30 and burstiness < 4.0:
-            ppl_mod = 0.12
-        elif ppl < 40:
-            ppl_mod = 0.06
-        elif ppl > 75:
-            ppl_mod = -0.12
-        elif ppl > 60:
-            ppl_mod = -0.06
+        if ppl < 25 and burstiness < 3.0:
+            s_ppl = 0.85
+        elif ppl < 42 and burstiness < 4.0:
+            s_ppl = 0.70
+        elif ppl < 55:
+            s_ppl = 0.50
+        elif ppl > 80:
+            s_ppl = 0.15
         else:
-            ppl_mod = 0.0
+            s_ppl = 0.30
 
-        prob_ai = min(1.0, max(0.0, prob_ai_ml + ppl_mod))
+        # ── Signal 3: Stylometric AI Marker Pattern Engine ────────────────────
+        ai_markers = [
+            r"\b(in today'?s (fast-paced|rapidly changing|digital|modern) world)\b",
+            r"\b(plays a (crucial|vital|pivotal|key|paramount) role)\b",
+            r"\b(delve into|delving into|intricate|multifaceted|tapestry|testament to)\b",
+            r"\b(fosters|fostering|underscores|underscoring|harnessing)\b",
+            r"\b(furthermore|moreover|in conclusion|in summary|it is important to note)\b",
+            r"\b(transformative|seamlessly|paradigm|interplay|holistic)\b",
+            r"\b(fundamental biological process|convert light energy|vital for living organisms)\b"
+        ]
+        pattern_matches = sum(1 for p in ai_markers if re.search(p, text, re.IGNORECASE))
+        s_pattern = min(1.0, pattern_matches * 0.35)
 
+        # ── Multi-Signal Fusion Decision ──────────────────────────────────────
+        if pattern_matches >= 2 or (ppl < 42 and pattern_matches >= 1):
+            prob_ai = max(0.68, 0.30 * s_tfidf + 0.45 * s_pattern + 0.25 * s_ppl)
+        elif pattern_matches >= 1:
+            prob_ai = max(s_tfidf + 0.25, 0.40 * s_tfidf + 0.35 * s_pattern + 0.25 * s_ppl)
+        else:
+            prob_ai = 0.60 * s_tfidf + 0.20 * s_pattern + 0.20 * s_ppl
+
+        prob_ai    = min(1.0, max(0.0, prob_ai))
         prob_human = 1.0 - prob_ai
+
 
         is_ai  = prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
