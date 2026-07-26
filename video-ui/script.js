@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'video');
 
         try {
-            const zrokUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            const zrokUrl = ('http://localhost:5000').replace(/\/$/, '');
             const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',
                 body: formData

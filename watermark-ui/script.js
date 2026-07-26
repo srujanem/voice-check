@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('message', 'AuthGuard Human Signature');
 
         try {
-            const zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';
+            const zrokUrl = 'http://localhost:5000';
             const response = await fetch(`${zrokUrl}/api/watermark`, {
                 method: 'POST',
                 body: formData
