@@ -27,31 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // PDF Download logic
-    const downloadBtn = document.getElementById('download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const element = document.getElementById('result-card');
-            const opt = {
-                margin:       10,
-                filename:     `URL_Report_${Date.now()}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1e1e2e' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        });
-    }
-
-    resetBtn.addEventListener('click', () => {
-        urlInput.value = '';
-        resultsSection.classList.add('hidden');
-        btnAnalyze.style.display = 'inline-flex';
-        btnAnalyze.classList.add('disabled');
-        btnAnalyze.disabled = true;  // also set the HTML attribute, not just the CSS class
-        if (probHuman) probHuman.textContent = 'Human: --';
-        if (probAi) probAi.textContent = 'AI: --';
-        if (previewSection) previewSection.textContent = '';
-        hideError();
     });
 
     urlInput.addEventListener('input', () => {

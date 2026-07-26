@@ -159,17 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedFile = null;
     });
 
-    document.getElementById('download-btn').addEventListener('click', () => {
-        const element = document.getElementById('result-card');
-        const opt = {
-            margin:       1,
-            filename:     'AuthGuard_Document_Report.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    });
+    
 
     function showError(msg) {
         errorMessage.textContent = msg;

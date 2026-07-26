@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://til-voluntary-prefix-lectures.trycloudflare.com';
+    const DEFAULT_URL = 'https://concept-codes-properties-during.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');

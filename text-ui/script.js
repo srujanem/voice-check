@@ -15,59 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const icon = document.getElementById('result-icon');
 
     // PDF Download logic
-    const downloadBtn = document.getElementById('download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const element = document.getElementById('result-card');
-            const opt = {
-                margin:       10,
-                filename:     `Text_Report_${Date.now()}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1e1e2e' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        });
-    }
-
-    // Handle Analyze
-    btnAnalyze.addEventListener('click', async () => {
-        const text = textInput.value.trim();
-        if (!text) {
-            alert("Please paste some text to analyze.");
-            return;
-        }
-        
-        btnAnalyze.style.display = 'none';
-        loadingState.classList.remove('hidden');
-        resultsSection.classList.add('hidden');
-
-        try {
-            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
-            const formData = new FormData();
-            formData.append('type', 'text');
-            formData.append('file', new Blob([text], { type: 'text/plain' }), 'text.txt');
-
-            const response = await fetch(`${backendUrl}/api/infer`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || `Server error (${response.status})`);
-            }
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-
-            loadingState.classList.add('hidden');
-            showResults(data);
-        } catch (error) {
-            loadingState.classList.add('hidden');
-            btnAnalyze.style.display = 'inline-flex';
-            alert('Analysis failed: ' + error.message);
-        }
     });
 
     resetBtn.addEventListener('click', () => {

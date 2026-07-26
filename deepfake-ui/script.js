@@ -21,24 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFile = null;
 
     // PDF Download logic
-    const downloadBtn = document.getElementById('download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const element = document.getElementById('result-card');
-            const opt = {
-                margin:       10,
-                filename:     `Image_Report_${Date.now()}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1e1e2e' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        });
-    }
-
-    // Handle drag events
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
     });
 
     function preventDefaults(e) {
