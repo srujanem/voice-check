@@ -21,8 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFile = null;
 
     // PDF Download logic
-    });
-
+    
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
