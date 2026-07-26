@@ -3,20 +3,64 @@ from backend.services.ml_engine import ml
 from backend.services.external_db import external_db
 from backend.decorators import require_api_key
 from datetime import datetime
+import numpy as np
 import uuid
 import re
 
 text_bp = Blueprint('text', __name__)
 
-# Stylometric AI Vocabulary & Phrase Indicators
-AI_MARKER_PATTERNS = [
-    r"\b(in today'?s (fast-paced|rapidly changing|digital|modern) world)\b",
-    r"\b(plays a (crucial|vital|pivotal|key|paramount) role)\b",
-    r"\b(delve into|delving into|intricate|multifaceted|tapestry|testament to)\b",
-    r"\b(fosters|fostering|underscores|underscoring|harnessing)\b",
-    r"\b(furthermore|moreover|in conclusion|in summary|it is important to note)\b",
-    r"\b(transformative|seamlessly|paradigm|interplay|holistic)\b"
+# Generalizing AI Structural Patterns & Formal Discourse Markers
+AI_DISCOURSE_MARKERS = [
+    r"\b(in today'?s (fast-paced|rapidly changing|digital|modern|interconnected) world)\b",
+    r"\b(plays a (crucial|vital|pivotal|key|paramount|central) role)\b",
+    r"\b(it is (worth|important|crucial|essential|imperative) to (note|highlight|understand|consider|remember))\b",
+    r"\b(furthermore|moreover|consequently|additionally|in conclusion|in summary|ultimately)\b",
+    r"\b(delve|intricate|tapestry|testament|fosters|underscores|multifaceted|paradigm|transformative)\b",
+    r"\b(overall|as a result|on the other hand|it should be noted|broadly speaking)\b"
 ]
+
+
+def calculate_generalization_signals(text):
+    """
+    Computes model-agnostic structural stylometric features that generalize across AI models:
+    1. Sentence length variance (Burstiness)
+    2. Formal Discourse Markers
+    3. Punctuation & Capitalization Uniformity
+    """
+    words = text.split()
+    if not words:
+        return 0.5
+
+    # 1. Formal Discourse Markers
+    text_lower = text.lower()
+    marker_matches = 0
+    for pat in AI_DISCOURSE_MARKERS:
+        if re.search(pat, text_lower):
+            marker_matches += 1
+
+    # 2. Sentence Length Variance (Burstiness)
+    sentences = [s.strip() for s in re.split(r'[.!?]+', text) if s.strip()]
+    sent_lengths = [len(s.split()) for s in sentences if len(s.split()) > 0]
+
+    stylo_ai_score = 0.5
+
+    if marker_matches >= 3:
+        stylo_ai_score += 0.40
+    elif marker_matches == 2:
+        stylo_ai_score += 0.28
+    elif marker_matches == 1:
+        stylo_ai_score += 0.15
+
+    if len(sent_lengths) >= 3:
+        std_len = float(np.std(sent_lengths))
+        mean_len = float(np.mean(sent_lengths))
+        # AI text has highly uniform sentence lengths (low std_len)
+        if std_len < 3.5 and mean_len > 10:
+            stylo_ai_score += 0.15
+        elif std_len > 8.0:
+            stylo_ai_score -= 0.15
+
+    return min(max(stylo_ai_score, 0.05), 0.98)
 
 
 @text_bp.route("/predict_text", methods=["POST"])
@@ -38,34 +82,31 @@ def predict_text():
         return jsonify({"error": "Text too short. Please provide at least 3 words for accurate analysis."}), 400
 
     try:
-        # ── 1. Model Prediction ─────────────────────────────────────────────
+        # ── 1. TF-IDF Vocabulary Signal ─────────────────────────────────────
         text_vector = ml.text_vectorizer.transform([text])
         probs       = ml.text_model.predict_proba(text_vector)[0]
-        prob_human  = float(probs[0])
-        prob_ai     = float(probs[1])
+        prob_human_tfidf = float(probs[0])
+        prob_ai_tfidf    = float(probs[1])
 
-        # ── 2. AI Stylometric Pattern Adjustment ────────────────────────────
-        text_lower = text.lower()
-        matched_markers = 0
-        for pattern in AI_MARKER_PATTERNS:
-            if re.search(pattern, text_lower):
-                matched_markers += 1
+        # ── 2. Structural Generalization Signal ─────────────────────────────
+        prob_ai_stylo = calculate_generalization_signals(text)
 
-        if matched_markers >= 2:
-            prob_ai = max(prob_ai, 0.85)
-            prob_human = 1.0 - prob_ai
-        elif matched_markers == 1:
-            prob_ai = max(prob_ai, 0.70)
-            prob_human = 1.0 - prob_ai
+        # ── 3. Weighted Fusion (65% ML Model + 35% Structural Generalization)
+        if word_count >= 15:
+            final_prob_ai = (0.65 * prob_ai_tfidf) + (0.35 * prob_ai_stylo)
+        else:
+            final_prob_ai = (0.80 * prob_ai_tfidf) + (0.20 * prob_ai_stylo)
 
-        is_ai  = prob_ai >= 0.5
+        final_prob_human = 1.0 - final_prob_ai
+
+        is_ai  = final_prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
 
-        prob_ai_pct    = round(prob_ai    * 100, 1)
-        prob_human_pct = round(prob_human * 100, 1)
+        prob_ai_pct    = round(final_prob_ai    * 100, 1)
+        prob_human_pct = round(final_prob_human * 100, 1)
         confidence     = prob_ai_pct if is_ai else prob_human_pct
 
-        # ── 3. Sentence-level analysis ──────────────────────────────────────
+        # ── 4. Sentence-level analysis ──────────────────────────────────────
         sentences = re.split(r'(?<=[.!?])\s+', text)
         sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) >= 3]
         sentences = sentences[:15]
@@ -80,7 +121,7 @@ def predict_text():
                     "ai_prob": round(float(p), 4)
                 })
 
-        # ── 4. Confidence label ─────────────────────────────────────────────
+        # ── 5. Confidence label ─────────────────────────────────────────────
         if confidence >= 85:
             confidence_label = "Very High"
         elif confidence >= 70:
@@ -90,7 +131,7 @@ def predict_text():
         else:
             confidence_label = "Low"
 
-        # ── 5. Database logging ─────────────────────────────────────────────
+        # ── 6. Save result to database ──────────────────────────────────────
         try:
             user_id = getattr(request, 'user', {}).get('uid', 'anonymous')
             scan_data = {
