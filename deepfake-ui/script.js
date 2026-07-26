@@ -1,90 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadArea = document.getElementById('upload-area');
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('fileInput');
-    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-    const imagePreview = document.getElementById('imagePreview');
-    const btnRemove = document.getElementById('btnRemove');
-    const btnAnalyze = document.getElementById('btnAnalyze');
-    const scannerLine = document.getElementById('scannerLine');
-    const loadingState = document.getElementById('loading-state');
-    const resultsSection = document.getElementById('resultsSection');
-    
-    // Results elements
-    const scoreProgress = document.getElementById('scoreProgress');
-    const scorePercentage = document.getElementById('scorePercentage');
-    const resultCard = document.getElementById('result-card');
+    // ── Element references ────────────────────────────────────────────────────
+    const uploadArea           = document.getElementById('upload-area');
+    const dropZone             = document.getElementById('drop-zone');
+    const fileInput            = document.getElementById('fileInput');
+    const imagePreviewContainer= document.getElementById('imagePreviewContainer');
+    const imagePreview         = document.getElementById('imagePreview');
+    const btnRemove            = document.getElementById('btnRemove');
+    const btnAnalyze           = document.getElementById('btnAnalyze');
+    const scannerLine          = document.getElementById('scannerLine');
+    const loadingState         = document.getElementById('loading-state');
+    const resultsSection       = document.getElementById('resultsSection');
+    const scoreProgress        = document.getElementById('scoreProgress');
+    const scorePercentage      = document.getElementById('scorePercentage');
+    const resultCard           = document.getElementById('result-card');
     const classificationResult = document.getElementById('classificationResult');
-    const probReal = document.getElementById('prob-real');
-    const probFake = document.getElementById('prob-fake');
+    const probReal             = document.getElementById('prob-real');
+    const probFake             = document.getElementById('prob-fake');
 
     let currentFile = null;
 
-    // PDF Download logic
-    
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+    // ── Drag-and-drop support ─────────────────────────────────────────────────
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt =>
+        dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false)
+    );
+    dropZone.addEventListener('dragover',  () => dropZone.classList.add('dragover'));
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-
-    dropZone.addEventListener('drop', (e) => {
+    dropZone.addEventListener('drop', e => {
         dropZone.classList.remove('dragover');
-        handleFiles(e.dataTransfer.files);
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) setFile(files[0]);
     });
 
-    fileInput.addEventListener('change', function() {
-        handleFiles(this.files);
+    // ── File input change ─────────────────────────────────────────────────────
+    fileInput.addEventListener('change', function () {
+        if (this.files && this.files.length > 0) setFile(this.files[0]);
     });
 
-    function handleFiles(files) {
-        if (files && files.length > 0) {
-            const file = files[0];
-            currentFile = file;
-            displayPreview(file);
-        }
-    }
-
-    function displayPreview(file) {
+    // ── Set current file and show preview ─────────────────────────────────────
+    function setFile(file) {
+        currentFile = file;
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function() {
+        reader.onloadend = function () {
             imagePreview.src = reader.result;
-            dropZone.parentElement.classList.add('hidden');
+            uploadArea.classList.add('hidden');
             imagePreviewContainer.classList.remove('hidden');
             btnAnalyze.classList.remove('disabled');
             btnAnalyze.disabled = false;
             resultsSection.classList.add('hidden');
-            scoreProgress.style.strokeDashoffset = '339.292';
-        }
+            if (scoreProgress) scoreProgress.style.strokeDashoffset = '339.292';
+        };
+        reader.readAsDataURL(file);
     }
 
-    // Handle remove image
-    btnRemove.addEventListener('click', (e) => {
-        e.stopPropagation();
-        currentFile = null;
-        fileInput.value = '';
-        dropZone.parentElement.classList.remove('hidden');
-        imagePreviewContainer.classList.add('hidden');
-        btnAnalyze.classList.add('disabled');
-        btnAnalyze.disabled = true;
-        resultsSection.classList.add('hidden');
-        scannerLine.classList.add('hidden');
-        scoreProgress.style.strokeDashoffset = '339.292';
-    });
+    // ── Remove / Reset ────────────────────────────────────────────────────────
+    if (btnRemove) {
+        btnRemove.addEventListener('click', e => {
+            e.stopPropagation();
+            currentFile = null;
+            fileInput.value = '';
+            uploadArea.classList.remove('hidden');
+            imagePreviewContainer.classList.add('hidden');
+            btnAnalyze.classList.add('disabled');
+            btnAnalyze.disabled = true;
+            resultsSection.classList.add('hidden');
+            if (scannerLine) scannerLine.classList.add('hidden');
+            if (scoreProgress) scoreProgress.style.strokeDashoffset = '339.292';
+        });
+    }
 
-    // Handle Analyze
+    // ── Analyze ───────────────────────────────────────────────────────────────
     btnAnalyze.addEventListener('click', async () => {
-        if (btnAnalyze.classList.contains('disabled')) return;
-        if (!currentFile) return;
-        
-        scannerLine.classList.remove('hidden');
+        if (btnAnalyze.disabled || !currentFile) return;
+
+        if (scannerLine)  scannerLine.classList.remove('hidden');
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
@@ -94,87 +82,97 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'image');
 
         try {
-            let zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';
-            if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';
-            const response = await fetch(`${zrokUrl}/api/infer`, {
+            // Use the server-config URL discovery (window.AUTHGUARD_BACKEND_URL),
+            // then fall back to localhost:5000
+            let backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
+
+            const response = await fetch(`${backendUrl}/api/infer`, {
                 method: 'POST',
                 body: formData
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Server error');
+                let errMsg = 'Server error ' + response.status;
+                try { const e = await response.json(); errMsg = e.error || errMsg; } catch (_) {}
+                throw new Error(errMsg);
             }
 
-            let data = await response.json();
-            
-            scannerLine.classList.add('hidden');
+            const data = await response.json();
+
+            if (scannerLine)  scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
-            
+            btnAnalyze.style.display = 'inline-flex';
+
             showResults(data);
+
         } catch (error) {
-            scannerLine.classList.add('hidden');
+            if (scannerLine)  scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
             alert('Analysis failed: ' + error.message);
         }
     });
 
+    // ── Count-up animation ────────────────────────────────────────────────────
     function animateCountUp(element, target, duration, prefix = '', suffix = '%') {
+        if (!element) return;
         let start = 0;
         const targetNum = parseFloat(target);
         if (isNaN(targetNum)) { element.textContent = prefix + target + suffix; return; }
         const increment = targetNum / (duration / 16);
-        const interval = setInterval(() => {
+        const timer = setInterval(() => {
             start += increment;
-            if (start >= targetNum) {
-                start = targetNum;
-                clearInterval(interval);
-            }
+            if (start >= targetNum) { start = targetNum; clearInterval(timer); }
             element.textContent = prefix + start.toFixed(1) + suffix;
         }, 16);
     }
 
+    // ── Show results ──────────────────────────────────────────────────────────
     function showResults(data) {
         resultsSection.classList.remove('hidden');
-        
-        const innerData = data.analysis || data;
-        const isFake = data.is_ai !== undefined ? data.is_ai : (innerData.prediction === "AI-Generated" || innerData.prediction === "AI Voice" || (innerData.prob_ai >= 50));
-        
-        let rawConf = data.confidence !== undefined ? data.confidence : innerData.confidence;
+
+        const inner     = data.analysis || data;
+        const isFake    = data.is_ai !== undefined
+            ? data.is_ai
+            : (String(inner.prediction).toLowerCase().includes('ai') || String(inner.prediction).toLowerCase().includes('fake'));
+
+        let rawConf = data.confidence !== undefined ? data.confidence : inner.confidence;
         if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
         const confidence = Math.round(rawConf || 50);
 
-        const realPct = innerData.prob_human !== undefined ? Math.round(innerData.prob_human) : (isFake ? Math.round(100 - confidence) : Math.round(confidence));
-        const fakePct = innerData.prob_ai !== undefined ? Math.round(innerData.prob_ai) : (isFake ? Math.round(confidence) : Math.round(100 - confidence));
-        
-        resultCard.className = 'result-card';
-        const icon = document.getElementById('result-icon');
-        scoreProgress.style.strokeDashoffset = '339.292';
+        const realPct = inner.prob_human !== undefined
+            ? Math.round(inner.prob_human)
+            : (isFake ? Math.round(100 - confidence) : Math.round(confidence));
+        const fakePct = inner.prob_ai !== undefined
+            ? Math.round(inner.prob_ai)
+            : (isFake ? Math.round(confidence) : Math.round(100 - confidence));
+
+        if (resultCard) resultCard.className = 'result-card';
+        if (scoreProgress) scoreProgress.style.strokeDashoffset = '339.292';
 
         setTimeout(() => {
+            const icon = document.getElementById('result-icon');
             if (!isFake) {
-                resultCard.classList.add('status-authentic');
-                resultCard.classList.remove('status-fake');
-                classificationResult.textContent = 'Authentic Image';
-                icon.className = 'fa-solid fa-user-check';
+                if (resultCard)           resultCard.classList.add('status-authentic');
+                if (classificationResult) classificationResult.textContent = 'Authentic Image';
+                if (icon)                 icon.className = 'fa-solid fa-user-check';
             } else {
-                resultCard.classList.add('status-fake');
-                resultCard.classList.remove('status-authentic');
-                classificationResult.textContent = 'AI-Generated Image';
-                icon.className = 'fa-solid fa-robot';
+                if (resultCard)           resultCard.classList.add('status-fake');
+                if (classificationResult) classificationResult.textContent = 'AI-Generated Image';
+                if (icon)                 icon.className = 'fa-solid fa-robot';
             }
 
             animateCountUp(scorePercentage, confidence, 1500);
-            
-            const circumference = 339.292;
-            const offset = circumference - (confidence / 100) * circumference;
-            scoreProgress.style.strokeDashoffset = offset;
 
-            if (probReal) animateCountUp(probReal, realPct, 1500, 'Real: ');
-            if (probFake) animateCountUp(probFake, fakePct, 1500, 'Fake: ');
+            if (scoreProgress) {
+                const circumference = 339.292;
+                scoreProgress.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
+            }
 
-            // ── Animate confidence chart bars ─────────────────────────────────
+            animateCountUp(probReal, realPct, 1500, 'Real: ');
+            animateCountUp(probFake, fakePct, 1500, 'Fake: ');
+
             const chartRealBar   = document.getElementById('chart-real-bar');
             const chartFakeBar   = document.getElementById('chart-fake-bar');
             const chartRealLabel = document.getElementById('chart-real-label');
@@ -183,15 +181,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 chartRealBar.style.width = '0%';
                 chartFakeBar.style.width = '0%';
                 setTimeout(() => {
-                    chartRealBar.style.width = realPct + '%';
-                    chartFakeBar.style.width = fakePct + '%';
+                    chartRealBar.style.width  = realPct + '%';
+                    chartFakeBar.style.width  = fakePct + '%';
                     animateCountUp(chartRealLabel, realPct, 1500, '', '%');
                     animateCountUp(chartFakeLabel, fakePct, 1500, '', '%');
                 }, 120);
             }
 
-            if (typeof scanHistory !== 'undefined') {
-                const fName = (typeof currentFile !== 'undefined' && currentFile) ? currentFile.name : 'Image File';
+            if (typeof scanHistory !== 'undefined' && scanHistory) {
+                const fName = currentFile ? currentFile.name : 'Image File';
                 scanHistory.addScan('Image', fName, isFake, confidence);
             }
         }, 50);
