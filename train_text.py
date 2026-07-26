@@ -1,4 +1,4 @@
-import os, glob, joblib, random
+import os, joblib, random
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -6,12 +6,12 @@ from sklearn.pipeline import FeatureUnion
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 
-print("Loading clean 2500 Human vs 2500 AI dataset...")
+print("Loading 5000 Human vs 5000 AI dataset...")
 human_dir = os.path.join("dataset_text", "human")
 ai_dir    = os.path.join("dataset_text", "ai")
 
-human_files = glob.glob(os.path.join(human_dir, "*.txt"))
-ai_files    = glob.glob(os.path.join(ai_dir, "*.txt"))
+human_files = [os.path.join(human_dir, f) for f in os.listdir(human_dir) if f.endswith('.txt')]
+ai_files    = [os.path.join(ai_dir, f) for f in os.listdir(ai_dir) if f.endswith('.txt')]
 
 texts, labels = [], []
 
