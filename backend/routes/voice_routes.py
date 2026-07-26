@@ -40,7 +40,8 @@ def extract_features(file_path):
 @voice_bp.route("/predict_voice", methods=["POST"])
 @require_api_key
 def predict_voice():
-    if ml.voice_model is None:
+    voice_model, voice_scaler = ml.get_voice_model()
+    if voice_model is None:
         return jsonify({"error": "Voice model not loaded on server."}), 500
 
     file = request.files.get("audio") or request.files.get("file")

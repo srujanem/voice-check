@@ -35,6 +35,7 @@ def process_video_task(app, task_id, path):
             total_prob = 0.0
             frame_count = 0
 
+            image_model = ml.get_image_model()
             for frame_file in frames:
                 frame_path = os.path.join(frames_dir, frame_file)
                 img = Image.open(frame_path).convert('RGB')
@@ -42,7 +43,7 @@ def process_video_task(app, task_id, path):
                 img_array = tf.keras.preprocessing.image.img_to_array(img)
                 img_array = tf.expand_dims(img_array, 0)
                 
-                pred_prob = float(ml.image_model.predict(img_array, verbose=0)[0][0])
+                pred_prob = float(image_model.predict(img_array, verbose=0)[0][0])
                 total_prob += pred_prob
                 frame_count += 1
                 os.remove(frame_path)

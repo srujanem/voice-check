@@ -9,7 +9,8 @@ image_bp = Blueprint('image', __name__)
 @image_bp.route("/predict_image", methods=["POST"])
 @require_api_key
 def predict_image():
-    if ml.image_model is None:
+    image_model = ml.get_image_model()
+    if image_model is None:
         return jsonify({"error": "Image model not loaded."}), 500
 
     file = request.files.get("image") or request.files.get("file")
@@ -35,7 +36,7 @@ def predict_image():
         img_array = tf.keras.preprocessing.image.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0)
 
-        pred_prob = float(ml.image_model.predict(img_array, verbose=0)[0][0])
+        pred_prob = float(image_model.predict(img_array, verbose=0)[0][0])
         is_fake = pred_prob >= 0.5
 
         result = "AI-Generated" if is_fake else "Authentic"

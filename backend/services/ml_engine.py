@@ -13,29 +13,38 @@ class MLEngine:
         self.image_model = None
         self.text_model = None
         self.text_vectorizer = None
-        self.load_models()
 
-    def load_models(self):
-        base_dir = Config.BASE_DIR
-        
-        # Load Voice Model
-        try:
-            import joblib
-            self.voice_model = tf.keras.models.load_model(os.path.join(base_dir, "model.keras"))
-            self.voice_scaler = joblib.load(os.path.join(base_dir, "scaler.pkl"))
-            print("Voice model and scaler loaded.")
-        except Exception as e:
-            print(f"Could not load voice model: {e}")
-
-        # Load Image Model
-        try:
-            self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "model_image.keras"))
-            print("Image model loaded.")
-        except Exception as e:
-            print(f"Could not load image model: {e}")
-
-        # Load Text Model (always reads from disk, never from Python module cache)
+        # Lazy model references
+        self._voice_attempted = False
+        self._image_attempted = False
+        # Load Text Model (lightweight joblib pkl - 0.01s)
         self.reload_text_model()
+
+    def get_voice_model(self):
+        if not self._voice_attempted:
+            self._voice_attempted = True
+            try:
+                import joblib, tensorflow as tf
+                base_dir = Config.BASE_DIR
+                self.voice_model = tf.keras.models.load_model(os.path.join(base_dir, "model.keras"))
+                self.voice_scaler = joblib.load(os.path.join(base_dir, "scaler.pkl"))
+                print("Voice model and scaler loaded.")
+            except Exception as e:
+                print(f"Could not load voice model: {e}")
+        return self.voice_model, self.voice_scaler
+
+    def get_image_model(self):
+        if not self._image_attempted:
+            self._image_attempted = True
+            try:
+                import tensorflow as tf
+                base_dir = Config.BASE_DIR
+                self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "model_image.keras"))
+                print("Image model loaded.")
+            except Exception as e:
+                print(f"Could not load image model: {e}")
+        return self.image_model
+
 
     def reload_text_model(self):
         """Hot-reload the text model from disk. Call this after retraining."""
