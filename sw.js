@@ -1,4 +1,4 @@
-const CACHE_NAME = 'authguard-v2';
+const CACHE_NAME = 'authguard-v3';
 const ASSETS = ['/', '/index.html', '/global.css', '/theme.js']; // removed server-config.js so it always stays fresh
 
 self.addEventListener('install', (event) => {

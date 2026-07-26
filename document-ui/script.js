@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingState.classList.remove('hidden');
 
         try {
-            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:8000').replace(/\/$/, '');
+            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             const formData = new FormData();
             formData.append('type', 'text');
             

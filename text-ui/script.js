@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
 
         try {
-            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:8000').replace(/\/$/, '');
+            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             const formData = new FormData();
             formData.append('type', 'text');
             formData.append('file', new Blob([text], { type: 'text/plain' }), 'text.txt');

@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://traveller-clarke-emperor-ceramic.trycloudflare.com';
+    const DEFAULT_URL = 'https://til-voluntary-prefix-lectures.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');
@@ -80,7 +80,7 @@
     async function tryUrl(url) {
         try {
             const res = await fetch(`${url}/api/health`, {
-                signal: AbortSignal.timeout(2500)
+                signal: AbortSignal.timeout(8000)
             });
             return res.ok;
         } catch {

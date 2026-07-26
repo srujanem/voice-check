@@ -12,11 +12,11 @@ print("Training Clean Real-World AI vs Human Text Classifier...")
 human_dir = os.path.join("dataset_text", "human")
 ai_dir    = os.path.join("dataset_text", "ai")
 
-# Load real HC3 Human files (files 1 to 2500)
-human_files = [os.path.join(human_dir, f) for f in os.listdir(human_dir) if f.endswith('.txt') and f.replace('.txt','').isdigit() and int(f.replace('.txt','')) <= 2500]
+# Load real HC3 Human files (files 1 to 5000)
+human_files = [os.path.join(human_dir, f) for f in os.listdir(human_dir) if f.endswith('.txt') and f.replace('.txt','').isdigit() and int(f.replace('.txt','')) <= 5000]
 
-# Load real HC3 AI files (files 1 to 2500)
-ai_files = [os.path.join(ai_dir, f) for f in os.listdir(ai_dir) if f.endswith('.txt') and f.replace('.txt','').isdigit() and int(f.replace('.txt','')) <= 2500]
+# Load real HC3 AI files (files 1 to 5000)
+ai_files = [os.path.join(ai_dir, f) for f in os.listdir(ai_dir) if f.endswith('.txt') and f.replace('.txt','').isdigit() and int(f.replace('.txt','')) <= 5000]
 
 random.seed(42)
 random.shuffle(human_files)

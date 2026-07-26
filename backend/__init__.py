@@ -9,10 +9,7 @@ import PyPDF2
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     app = Flask(__name__, static_folder=base_dir, static_url_path='/')
-    CORS(app, resources={r"/api/*": {"origins": [
-        "http://localhost", "http://127.0.0.1", "http://localhost:5000", "http://localhost:8000",
-        "https://voicecheck-9bfec.web.app", "https://voicecheck-9bfec.firebaseapp.com"
-    ]}})
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     app.config.from_object(Config)
 
     limiter = Limiter(
@@ -100,7 +97,9 @@ def create_app():
                 reader = PyPDF2.PdfReader(io.BytesIO(file_content))
                 text_data = ""
                 for i in range(len(reader.pages)):
-                    text_data += reader.pages[i].extract_text() + "\n"
+                    extracted = reader.pages[i].extract_text()
+                    if extracted:
+                        text_data += extracted + "\n"
             else:
                 text_data = file_content.decode('utf-8', errors='ignore')
             
