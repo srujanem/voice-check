@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorAlert = document.getElementById('error-alert');
     const errorMessage = document.getElementById('error-message');
 
+    let selectedFile = null;
+
     // Drag and Drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -43,75 +45,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleFile(file) {
         if (!file) return;
-        
-        // Mock reading file
-        if (file.type === "text/plain") {
-            const reader = new FileReader();
-            reader.onload = (e) => textInput.value = e.target.result;
-            reader.readAsText(file);
-        } else {
-            // Mock PDF extraction
-            textInput.value = `[Extracted text from ${file.name}]\n\nThe rapid advancement of artificial intelligence has brought profound changes to various sectors of society. From healthcare and finance to education and entertainment, AI systems are increasingly integrated into our daily lives. While these technologies offer unprecedented opportunities for efficiency and innovation, they also present significant ethical and societal challenges. \n\nOne of the most pressing concerns is the potential for AI-driven automation to displace human workers. Although historical technological shifts have eventually created new job categories, the speed and scale of AI disruption may outpace the ability of the workforce to adapt. Furthermore, algorithms can inadvertently perpetuate and amplify biases present in their training data, leading to discriminatory outcomes in areas such as hiring and law enforcement.\n\nTo address these issues, it is imperative that policymakers, technologists, and ethicists collaborate to establish robust regulatory frameworks. Ensuring transparency and accountability in AI development will be crucial for maximizing its benefits while mitigating its risks.`;
-        }
+        selectedFile = file;
+        textInput.value = `[Document Attached: ${file.name}]\nReady for analysis.`;
     }
 
     // Analyze
     btnAnalyze.addEventListener('click', async () => {
         const text = textInput.value.trim();
-        if (!text) {
+        if (!selectedFile && !text) {
             showError("Please paste text or upload a document to analyze.");
             return;
         }
 
         errorAlert.classList.add('hidden');
-        heatmapContent.innerHTML = '';  // Clear previous heatmap before new analysis
+        heatmapContent.innerHTML = '';
         inputSection.style.display = 'none';
         btnAnalyze.style.display = 'none';
         loadingState.classList.remove('hidden');
 
-        // Mock API Call delay
-        await new Promise(r => setTimeout(r, 2000));
-
-        // Process text into sentences
-        // Simple regex to split by sentence
-        const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-        
-        let totalScore = 0;
-
-        sentences.forEach(sentence => {
-            // Assign a random fake probability for demo
-            let prob = Math.random();
-            // If it's the mock text, make some parts specifically fake
-            if (sentence.includes("rapid advancement") || sentence.includes("opportunities for efficiency")) {
-                prob = 0.85 + Math.random() * 0.1;
-            } else if (sentence.includes("address these issues") || sentence.includes("collaborate to establish")) {
-                prob = 0.1 + Math.random() * 0.2;
+        try {
+            const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:8000').replace(/\/$/, '');
+            const formData = new FormData();
+            formData.append('type', 'text');
+            
+            if (selectedFile) {
+                formData.append('file', selectedFile);
+            } else {
+                formData.append('file', new Blob([text], { type: 'text/plain' }), 'text.txt');
             }
 
-            totalScore += prob;
+            const response = await fetch(`${backendUrl}/api/infer`, {
+                method: 'POST',
+                body: formData
+            });
 
-            let heatClass = "heat-low";
-            if (prob > 0.7) heatClass = "heat-high";
-            else if (prob > 0.35) heatClass = "heat-med";
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || `Server error (${response.status})`);
+            }
 
-            // Use textContent (not innerHTML) to prevent XSS from user-supplied text
-            const span = document.createElement('span');
-            span.className = heatClass;
-            span.title = `${(prob*100).toFixed(1)}% AI`;
-            span.textContent = sentence + ' ';
-            heatmapContent.appendChild(span);
-        });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
 
-        const avgProb = totalScore / sentences.length;
-        const finalPercentage = (avgProb * 100).toFixed(1);
+            loadingState.classList.add('hidden');
+            showResults(data);
 
-        // heatmapContent already populated via DOM nodes above
+        } catch (error) {
+            loadingState.classList.add('hidden');
+            inputSection.style.display = 'block';
+            btnAnalyze.style.display = 'block';
+            showError('Analysis failed: ' + error.message);
+        }
+    });
+
+    function showResults(data) {
+        let innerData = data.analysis || data;
+        
+        const isAi = innerData.prediction === 'AI-Generated' || innerData.prediction === 'ai' || !!innerData.is_ai || !!data.is_ai;
+        let aiProb = innerData.prob_ai ?? data.prob_ai;
+        let conf = innerData.confidence ?? data.confidence;
+        
+        if (aiProb === undefined) aiProb = isAi ? 85 : 15;
+        if (conf === undefined) conf = 85;
+
+        const finalPercentage = (aiProb).toFixed(1);
         overallScore.textContent = finalPercentage + '%';
         
-        if (avgProb > 0.7) {
+        if (aiProb > 70) {
             classificationResult.textContent = "Likely AI-Generated";
             classificationResult.style.color = "var(--color-error)";
-        } else if (avgProb < 0.3) {
+        } else if (aiProb < 30) {
             classificationResult.textContent = "Likely Human-Written";
             classificationResult.style.color = "var(--color-success)";
         } else {
@@ -119,14 +122,33 @@ document.addEventListener('DOMContentLoaded', () => {
             classificationResult.style.color = "var(--text-primary)";
         }
 
-        // Save to History using the global scanHistory from history.js
-        if (typeof scanHistory !== 'undefined') {
-            scanHistory.addScan('Document', text.substring(0, 50) + '...', avgProb > 0.5, finalPercentage);
+        // Sentence-level highlighting if provided by backend
+        if (innerData.sentences && innerData.sentences.length) {
+            innerData.sentences.forEach(s => {
+                const p = Number(s.ai_prob);
+                let heatClass = "heat-low";
+                if (p > 0.7) heatClass = "heat-high";
+                else if (p > 0.4) heatClass = "heat-med";
+                
+                const span = document.createElement('span');
+                span.className = heatClass;
+                span.title = `${(p*100).toFixed(1)}% AI`;
+                span.textContent = s.text + ' ';
+                heatmapContent.appendChild(span);
+            });
+        } else {
+            const p = document.createElement('p');
+            p.textContent = "Sentence level highlighting is not available for this document.";
+            heatmapContent.appendChild(p);
         }
 
-        loadingState.classList.add('hidden');
+        if (typeof scanHistory !== 'undefined') {
+            const previewText = selectedFile ? selectedFile.name : (textInput.value.substring(0, 50) + '...');
+            scanHistory.addScan('Document', previewText, isAi, conf);
+        }
+
         resultsSection.classList.remove('hidden');
-    });
+    }
 
     document.getElementById('reset-btn').addEventListener('click', () => {
         resultsSection.classList.add('hidden');
@@ -134,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAnalyze.style.display = 'block';
         textInput.value = '';
         fileInput.value = '';
+        selectedFile = null;
     });
 
     document.getElementById('download-btn').addEventListener('click', () => {

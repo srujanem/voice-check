@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, Response, current_app
 import io
 import json
+import PyPDF2
 
 alias_bp = Blueprint('alias', __name__)
 
@@ -76,7 +77,7 @@ def api_infer():
                 infer_type = 'image'
             elif any(fn.endswith(ext) for ext in ['.mp4', '.avi', '.mov', '.mkv', '.webm']):
                 infer_type = 'video'
-            elif any(fn.endswith(ext) for ext in ['.txt']):
+            elif any(fn.endswith(ext) for ext in ['.txt', '.pdf', '.docx']):
                 infer_type = 'text'
         elif text_content:
             infer_type = 'text'
@@ -84,10 +85,18 @@ def api_infer():
     if infer_type == 'text':
         if not text_content and file:
             try:
-                text_content = file.read().decode('utf-8', errors='ignore').strip()
+                fn = file.filename.lower()
+                if fn.endswith('.pdf'):
+                    reader = PyPDF2.PdfReader(file)
+                    text_content = ""
+                    for i in range(len(reader.pages)):
+                        text_content += reader.pages[i].extract_text() + "\n"
+                else:
+                    text_content = file.read().decode('utf-8', errors='ignore').strip()
             except Exception:
                 pass
 
+        text_content = text_content.strip()
         if not text_content:
             return jsonify({"error": "No text provided for analysis."}), 400
 
