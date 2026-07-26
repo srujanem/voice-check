@@ -1,1 +1,0 @@
-For example : in a medical test for a disease , if the result comes back positive but the person does not in fact have the disease -- this is called a false positive . Likewise , if the test result comes back negative but the patient does have the disease -- it 's called a false negative .

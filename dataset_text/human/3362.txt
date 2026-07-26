@@ -1,1 +1,0 @@
-Your phone measures your battery in milivolts I believe . The phones minimum operating voltage before things start slowing down and the screen dims is let 's say 3000mv . Fully charged it will be at let 's say 4900mv . I 'm basing this off the fact that phones charge at 5v ( 5000mv ) That 's my guess , i definitely could be wrong , but that 's how car battery chargers work .

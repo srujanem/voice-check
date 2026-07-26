@@ -1,1 +1,1 @@
-if my app is supposed to figure out the differnce between two numbers it could be as simple and straightforward as 2nd grade math evaluate : Y - X but instead if i were to do it the complicated way . counter = X ; delta=0 ; loop until ( counter==Y ) { if ( counter < Y ) { Y = Y+1 ; delta = delta+1 ; } if ( counter > Y ) { counter = counter - 1 ; delta = delta+1 ; } } obviously the second way takes more steps .
+the prizes they give away are relatively cheap when compared to the cost of script writers , actors , etc that are incurred by other forms of TV .

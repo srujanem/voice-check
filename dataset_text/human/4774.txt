@@ -1,1 +1,1 @@
-In simple terms , that text command , and the code behind it that runs it is represented inside the computer by electrical signals . To convert those electrical signals into physical action , you simply need to amplify them and then use them to drive things like motors , solenoids , valves , linear actuators , and other devices that are operated electrically .
+Most major mmos go down regularly for patching . Most mobas do as well .

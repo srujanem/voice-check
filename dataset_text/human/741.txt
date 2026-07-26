@@ -1,1 +1,1 @@
-Backups of TPB exist . Also , remember that Pirate Bay is basically a directory where one can download the torrent files , and they 're not storing anything directly , so a backup of that directory could be relatively small when all things are considered .
+ELI5 version : There 's a tiny clock with separate battery inside . Remember the non - smart phones from not long ago , setting the clock was the first thing one had to do after reinserting the battery / restarting .

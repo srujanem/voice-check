@@ -1,1 +1,1 @@
-For most its to just say they have it or it " looks cool "
+The front page is for subs you 're subscribed to . Even when you 're not logged in , the front page is showing the default subscribed subs . If you want a more accurate representation of what the top posts of all of reddit are , then I believe you need to look at All , which is quite different from the front page . Fair warning that there is probably nsfw content in All .

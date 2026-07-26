@@ -1,1 +1,1 @@
-The site is mirrored on multiple servers throughout the world . So even if you seize the original server , a copy exists in multiple places . As far as I know , it 's impossible to stop it for good as long as a mirror exists elsewhere .
+There s a small battery on the motherboard that keeps power going to it in order to save user specified settings , such as time and date and also some configurations the user might have done .

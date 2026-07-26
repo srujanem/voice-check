@@ -1,1 +1,0 @@
-They use a chip that measures the energy used and put back in when charging . It measures both the battery voltage and the current ( electrons per second ) . This information is sent to the microprocessor and used by the operating system to display the battery state and other functions . Something like this [ fuel gauge ic ] ( URL_0 ) .

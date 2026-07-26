@@ -1,1 +1,0 @@
-The processor works by sending a lot of electrical signals back and froth . Which creates heat , there is no way around that . You can of course reduce the heat by reducing the power , but that also reduces the speed at which you can run it . For example a phone processor does n't get as hot , but it 's also much slower .

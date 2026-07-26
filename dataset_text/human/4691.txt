@@ -1,1 +1,1 @@
-> why do they run slow when they are hot ? This is the better question . Computer chips have a maximum operating temperature , and the more work they do the more hot they get . Because they will stop working if they get too hot , the chip will cut back its own processing power as it approaches higher temperatures to ensure that it never exceeds its maximum operating temperature .
+It 's like your toe jam . It does n't " do " anything , it 's just stiff that used to be on the surface after a period odd pressure and heat .

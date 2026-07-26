@@ -1,1 +1,0 @@
-Usually yes , they are the same thing . Deleting the folder essentially uninstalls the program . However , sometimes programs spread out and store parts in other places of the computer . Deleting the folder will only delete the contents of the folder , and those little bits will be left hanging around . Uninstalling deletes the folder and those little spread out parts .

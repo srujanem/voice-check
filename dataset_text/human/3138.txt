@@ -1,1 +1,0 @@
-To add onto /u / thinksmooth 's [ explanation ] ( URL_0 ) , another way they can " detect " if Adblock is running is by hiding an image / some text behind the advertisement . That way , if the ad is removed , the hidden content is displayed . If the ad is n't removed , the content is hiding behind the ad , so you ca n't see the message anyways .

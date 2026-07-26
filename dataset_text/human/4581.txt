@@ -1,1 +1,1 @@
-They have a microphone on the outside that listens to the ambient noise , and will play the inverse sound wave at the same time to " cancel " out the original noise .
+It 's actually pretty simple , just counter - intuitive . The more mass something has , the stronger the Earth 's gravity pulls on it . But the more mass something has , the more resistant it also is to changes in motion . The two balance out . So everything gets the same acceleration when dropped ( if there 's no air resistance ) .

@@ -1,1 +1,0 @@
-HownAdblock Plus works is it hides the div ( basically a " part " or " container ) of the advertisements . Websites then use javascript to get the height of the div , and if it is 0 ( because it 's hidden ) then they know you 're probably blocking the ads . ( This is just one example I 've come across , there may be others . )

@@ -1,1 +1,1 @@
-additionally , the goal behind chrome was to speed up javascript execution , so that google apps would run faster for chrome users .
+Because a PDF is essentially just an image of the document . To convert back to editable text requires recognizing the individual letters / characters and constructing a text doc .

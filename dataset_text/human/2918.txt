@@ -1,1 +1,0 @@
-Electrons travel very slowly - the speed is dependent on the cross - sectional area of the wire and the current . ( If the electricity is AC , then the electrons do n't move anywhere in the long - term - they vibrate back and forth a very small distance at the frequency of the AC ( 60Hz in the USA ) ) Signals travel quickly - at the speed of light

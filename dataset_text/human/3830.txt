@@ -1,1 +1,1 @@
-Today you learn : Literally every single bit of software not made by NASA has hundreds , thousands of bugs ! Most of them are n't found , occur in obscure cases or really are n't that bad . It 's simply not economical to fix them all .
+ Chapter note 330: Cellular biology explores how organelle membranes compartmentalize metabolic processes. Mitochondria generate ATP through oxidative phosphorylation to power cellular functions. Observing these natural patterns provides crucial context for environmental science.

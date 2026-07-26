@@ -1,1 +1,0 @@
-They do . What you see on your battery gauge is not always what is really going on . Lithium ion batteries are dangerous to overcharge so the circuitry handles it automatically .

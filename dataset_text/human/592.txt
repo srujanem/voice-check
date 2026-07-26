@@ -1,1 +1,1 @@
-The computer uses a random number generator for things like accuracy . It can skew the randomness , or narrow the range . You could think of it as a dice roll . On easy , the computer blocks you if it rolls 4 or more . On hard , it will block you if it rolls 2 or more , increasing the chance that you will be blocked .
+If it 's coded bad it might do unnecessary calculations that could have been optimized . The more you phone have to work the more battery it drains .

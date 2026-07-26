@@ -1,1 +1,1 @@
-Do you mean a transformer ? The EMF induced in the secondary coil is proportional to the rate of change of magnetic flux through the coil . More loops means a higher magnetic field ( and therefore flux ) inside the secondary coil . Less coils means less flux and therefore less induced EMF . So in a step - down transformer , the primary coil has more loops than the secondary coil .
+You ca n't know both where something is and how fast it 's moving . The more you know about one , the less you can know about the other .

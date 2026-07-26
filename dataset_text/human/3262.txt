@@ -1,1 +1,0 @@
-URL_0 This is a great video about the internet . As for how search engines work , they do n't search the entire internet . They search their index which is constantly being updated by complex tools called spiders . URL_1 This is kind of an advertisement for Google but explains the basics well enough .

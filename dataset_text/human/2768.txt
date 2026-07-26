@@ -1,1 +1,0 @@
-It 's an array of cameras . I built one you can see at : 56 URL_0 You take a series of pictures from a single moment in time . You play them back in series . You need one camera per frame . If you want half a second you need 15 cameras . If you want to extend the time , you can use techniques like twixtor or photogrammetry .

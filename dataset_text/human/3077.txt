@@ -1,1 +1,0 @@
-Each time you press volume up the remote sends a code in pulses of infrared light that TV reads as " make me louder " . More power is then sent to speakers and the volume increased . Edit : I m assuming the TV is using an infrared remote .

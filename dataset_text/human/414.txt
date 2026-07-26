@@ -1,1 +1,1 @@
-Yes , the connection is bone ! You vibrate the bones in your jaw and that vibration carries into your ear . Sound does n't just travel in air , it travels in all materials .
+Remember that the executing program is in memory , so it can delete any copy off the disk or whatever it loaded from , then reboot the system , which clears the memory .

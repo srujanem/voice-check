@@ -1,1 +1,0 @@
-" ph " is a diagraph used in the Latin script to represent the Greek character , Φ ( written ' phi ' , pronounced " fee " ) . This character in Greek is similar but not quite an f sound . If you try to make an f without your bottom lip touching your teeth , that 's the Φ sound . Since we do n't have that sound in English , everybody just pronounces f instead .

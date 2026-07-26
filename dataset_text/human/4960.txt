@@ -1,1 +1,1 @@
-MKV is just the wrapper . the actual bit that makes the file so small is the h.264 codec . The biggest thing is how the frame reference is up to 16 compared to other codec 's that are one . this translates into much less data needed to be written again and again .
+There is a membrane between the shell and white that deteriorates as the egg ages . The thicker this membrane is , the harder the egg is to peel without taking chunks of egg white with it . My guess is the times that you had trouble , the eggs were relatively young .

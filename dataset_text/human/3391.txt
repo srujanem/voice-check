@@ -1,1 +1,0 @@
-They are all run through a soundboard and the algorithm that produces them takes the current sound into consideration when generating patterns and effects . They work basically the same way visualizations work in Windows Media Player or VLC or most other media software .

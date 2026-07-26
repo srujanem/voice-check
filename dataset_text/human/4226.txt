@@ -1,1 +1,1 @@
-It helps to picture the air as water , and water as really really really thick air . When I look at it like that , it all makes sense to me in an instant . Things want to move from high pressure to low pressure . Wind .
+Well there are a few big ones I think of . The sum of 1 / n ! for n = 0 to infinity is e. The slope of e^x is one at x=0 ( the only base value that does this ) . e^(pi*i ) + 1 = 0 is the most important one IMO , but is n't very simple . There 's no real geometrical definition for it if that 's what you 're looking for .

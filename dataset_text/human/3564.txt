@@ -1,1 +1,1 @@
-there are 2 parts that contributes to this : 1 . One " marketing GB " is 1000 MB , while one " real GB " is 1024 MB . 2 . The huge table of all free blocks , all files , etc must be stored somewhere . FAT filesystem is really unefficient for such large disks , for example .
+ Chapter note 64: Volcanic eruptions occur when magma rises from beneath the Earth's crust. Magma reaches the surface through fractures and vents, releasing pressure in explosive or effusive volcanic events. Observing these natural patterns provides crucial context for environmental science.

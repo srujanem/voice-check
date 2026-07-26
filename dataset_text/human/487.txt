@@ -1,1 +1,1 @@
-Car rear - view mirrors are not just simple mirrors , they are actually a prism . There is a weak reflection off the front surface and a strong reflection off the back surface . The strong reflection from the back surface is normal ( day ) mode . Tilting it lets you see the weak reflection from the front surface ( night mode ) .
+The advertised clock speed represents just one core . Think of it like car engines , each piston can reach 8,000 rpm , but a 12 cylinder engine will make a car go much faster than a 4 cylinder engine .

@@ -1,1 +1,1 @@
-Probably not . Here 's some data from /r / dataisbeautiful , that shows men prefer young women throughout their entire lives . URL_0
+Imagine a movie theatre . You go in , get a ticket , guy rips your ticket and tells you directions to the specific theatre in which your movie is being shown . In this example : You are the data . Your ticket is the port number . Your router is the ticket guy . And the specific theatre is the specific computer on the network .

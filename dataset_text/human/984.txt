@@ -1,1 +1,1 @@
-conspiracy theory : this is a viral marketing campaign and Sony Pictures itself is behind it .
+In case of torrent - ish like systems where threaded data flow protocols are used , it has a pretty simple explanation : The file is divided in parts , where each part is being downloaded from it 's own ( dynamic ) set of hosts which have different speeds / bandwidths . So the reason it takes longer to finish - is because the remaining part of the file is a part , where the sum of all download speeds of its hosts is low compared to the average .
