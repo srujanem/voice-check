@@ -3,6 +3,10 @@ import tensorflow as tf
 from PIL import Image
 from backend.services.ml_engine import ml
 from backend.decorators import require_api_key
+import pillow_heif
+
+# Register HEIF opener so PIL can open .heic files
+pillow_heif.register_heif_opener()
 
 image_bp = Blueprint('image', __name__)
 
