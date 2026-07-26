@@ -122,6 +122,157 @@
     <script src="../theme.js?v=6"></script>
     <script src="../history.js?v=6"></script>
     <script src="../server-config.js?v=6"></script>
-    <script src="script.js?v=10"></script>
+    <script>
+    // Inline fallback — guarantees cache cannot break the image uploader
+    document.addEventListener('DOMContentLoaded', function () {
+        var uploadArea            = document.getElementById('upload-area');
+        var fileInput             = document.getElementById('fileInput');
+        var imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        var imagePreview          = document.getElementById('imagePreview');
+        var btnRemove             = document.getElementById('btnRemove');
+        var btnAnalyze            = document.getElementById('btnAnalyze');
+        var scannerLine           = document.getElementById('scannerLine');
+        var loadingState          = document.getElementById('loading-state');
+        var resultsSection        = document.getElementById('resultsSection');
+        var scoreProgress         = document.getElementById('scoreProgress');
+        var scorePercentage       = document.getElementById('scorePercentage');
+        var resultCard            = document.getElementById('result-card');
+        var classificationResult  = document.getElementById('classificationResult');
+        var probReal              = document.getElementById('prob-real');
+        var probFake              = document.getElementById('prob-fake');
+        var currentFile = null;
+
+        function setFile(file) {
+            currentFile = file;
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                imagePreview.src = reader.result;
+                uploadArea.classList.add('hidden');
+                imagePreviewContainer.classList.remove('hidden');
+                btnAnalyze.classList.remove('disabled');
+                btnAnalyze.disabled = false;
+                resultsSection.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // File picker via Browse button
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) setFile(this.files[0]);
+        });
+
+        // Drag and drop
+        ['dragenter','dragover','dragleave','drop'].forEach(function(evt) {
+            document.getElementById('drop-zone').addEventListener(evt, function(e) { e.preventDefault(); e.stopPropagation(); });
+        });
+        document.getElementById('drop-zone').addEventListener('drop', function(e) {
+            var files = e.dataTransfer.files;
+            if (files && files.length > 0) setFile(files[0]);
+        });
+
+        // Remove
+        btnRemove.addEventListener('click', function(e) {
+            e.stopPropagation();
+            currentFile = null;
+            fileInput.value = '';
+            uploadArea.classList.remove('hidden');
+            imagePreviewContainer.classList.add('hidden');
+            btnAnalyze.classList.add('disabled');
+            btnAnalyze.disabled = true;
+            resultsSection.classList.add('hidden');
+        });
+
+        // Analyze
+        btnAnalyze.addEventListener('click', async function() {
+            if (btnAnalyze.disabled || !currentFile) return;
+            if (scannerLine) scannerLine.classList.remove('hidden');
+            btnAnalyze.style.display = 'none';
+            loadingState.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+
+            var formData = new FormData();
+            formData.append('file', currentFile);
+            formData.append('type', 'image');
+
+            try {
+                var backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+                if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
+
+                var response = await fetch(backendUrl + '/api/infer', { method: 'POST', body: formData });
+                if (!response.ok) {
+                    var ed = await response.json();
+                    throw new Error(ed.error || 'Server error ' + response.status);
+                }
+                var data = await response.json();
+
+                if (scannerLine) scannerLine.classList.add('hidden');
+                loadingState.classList.add('hidden');
+                btnAnalyze.style.display = 'inline-flex';
+                showResults(data);
+            } catch(err) {
+                if (scannerLine) scannerLine.classList.add('hidden');
+                loadingState.classList.add('hidden');
+                btnAnalyze.style.display = 'inline-flex';
+                alert('Analysis failed: ' + err.message);
+            }
+        });
+
+        function animateCountUp(el, target, duration, prefix, suffix) {
+            if (!el) return;
+            prefix = prefix || ''; suffix = suffix !== undefined ? suffix : '%';
+            var num = parseFloat(target);
+            if (isNaN(num)) { el.textContent = prefix + target + suffix; return; }
+            var start = 0, inc = num / (duration / 16);
+            var t = setInterval(function() {
+                start += inc;
+                if (start >= num) { start = num; clearInterval(t); }
+                el.textContent = prefix + start.toFixed(1) + suffix;
+            }, 16);
+        }
+
+        function showResults(data) {
+            resultsSection.classList.remove('hidden');
+            var inner = data.analysis || data;
+            var isFake = data.is_ai !== undefined ? data.is_ai
+                : (String(inner.prediction || '').toLowerCase().includes('ai') || String(inner.prediction || '').toLowerCase().includes('fake'));
+            var rawConf = data.confidence !== undefined ? data.confidence : inner.confidence;
+            if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
+            var confidence = Math.round(rawConf || 50);
+            var realPct = inner.prob_human !== undefined ? Math.round(inner.prob_human) : (isFake ? 100 - confidence : confidence);
+            var fakePct = inner.prob_ai   !== undefined ? Math.round(inner.prob_ai)    : (isFake ? confidence : 100 - confidence);
+
+            if (resultCard) resultCard.className = 'result-card';
+            setTimeout(function() {
+                var icon = document.getElementById('result-icon');
+                if (!isFake) {
+                    if (resultCard) resultCard.classList.add('status-authentic');
+                    if (classificationResult) classificationResult.textContent = 'Authentic Image';
+                    if (icon) icon.className = 'fa-solid fa-user-check';
+                } else {
+                    if (resultCard) resultCard.classList.add('status-fake');
+                    if (classificationResult) classificationResult.textContent = 'AI-Generated Image';
+                    if (icon) icon.className = 'fa-solid fa-robot';
+                }
+                animateCountUp(scorePercentage, confidence, 1500);
+                if (scoreProgress) {
+                    var circ = 339.292;
+                    scoreProgress.style.strokeDashoffset = circ - (confidence/100)*circ;
+                }
+                animateCountUp(probReal, realPct, 1500, 'Real: ');
+                animateCountUp(probFake, fakePct, 1500, 'Fake: ');
+                var rb = document.getElementById('chart-real-bar'), fb = document.getElementById('chart-fake-bar');
+                var rl = document.getElementById('chart-real-label'), fl = document.getElementById('chart-fake-label');
+                if (rb) { rb.style.width='0%'; fb.style.width='0%';
+                    setTimeout(function(){
+                        rb.style.width = realPct+'%'; fb.style.width = fakePct+'%';
+                        animateCountUp(rl, realPct, 1500, '', '%'); animateCountUp(fl, fakePct, 1500, '', '%');
+                    }, 120);
+                }
+                if (typeof scanHistory !== 'undefined' && scanHistory)
+                    scanHistory.addScan('Image', currentFile ? currentFile.name : 'Image', isFake, confidence);
+            }, 50);
+        }
+    });
+    </script>
 </body>
 </html>
