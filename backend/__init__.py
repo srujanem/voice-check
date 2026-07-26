@@ -1,13 +1,26 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from backend.config import Config
 import os
+import PyPDF2
 
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     app = Flask(__name__, static_folder=base_dir, static_url_path='/')
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": [
+        "http://localhost", "http://127.0.0.1", "http://localhost:5000", "http://localhost:8000",
+        "https://voicecheck-9bfec.web.app", "https://voicecheck-9bfec.firebaseapp.com"
+    ]}})
     app.config.from_object(Config)
+
+    limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["200 per day", "50 per hour"],
+        storage_uri="memory://"
+    )
 
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
@@ -51,6 +64,7 @@ def create_app():
         return jsonify({"status": "ok", "version": "2.0"})
 
     @app.route("/api/infer", methods=["POST"])
+    @limiter.limit("10 per minute")
     def api_infer():
         from flask import request
         import io
@@ -60,6 +74,16 @@ def create_app():
         
         if not file:
             return jsonify({"error": "No file uploaded"}), 400
+            
+        allowed_exts = {
+            "voice": {".wav", ".mp3", ".webm", ".m4a", ".ogg"},
+            "image": {".png", ".jpg", ".jpeg", ".webp"},
+            "video": {".mp4", ".mov", ".avi", ".webm"},
+            "text": {".txt", ".md", ".csv", ".json", ".pdf", ".docx"}
+        }
+        ext = os.path.splitext(file.filename)[1].lower()
+        if req_type in allowed_exts and ext not in allowed_exts[req_type]:
+            return jsonify({"error": f"Invalid file type {ext} for {req_type}"}), 400
             
         client = app.test_client()
         file_content = file.read()
@@ -71,8 +95,15 @@ def create_app():
         }
         
         if req_type == "text":
-            # For batch-ui which uploads text files
-            text_data = file_content.decode('utf-8', errors='ignore')
+            fn = file.filename.lower()
+            if fn.endswith(".pdf"):
+                reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+                text_data = ""
+                for i in range(len(reader.pages)):
+                    text_data += reader.pages[i].extract_text() + "\n"
+            else:
+                text_data = file_content.decode('utf-8', errors='ignore')
+            
             response = client.post('/predict_text', json={"text": text_data}, headers={'Authorization': request.headers.get('Authorization', '')})
         elif req_type in type_map:
             internal_route, file_key = type_map[req_type]
