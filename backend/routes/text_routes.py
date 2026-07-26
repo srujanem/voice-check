@@ -9,58 +9,6 @@ import re
 
 text_bp = Blueprint('text', __name__)
 
-# Generalizing AI Structural Patterns & Formal Discourse Markers
-AI_DISCOURSE_MARKERS = [
-    r"\b(in today'?s (fast-paced|rapidly changing|digital|modern|interconnected) world)\b",
-    r"\b(plays a (crucial|vital|pivotal|key|paramount|central) role)\b",
-    r"\b(it is (worth|important|crucial|essential|imperative) to (note|highlight|understand|consider|remember))\b",
-    r"\b(furthermore|moreover|consequently|additionally|in conclusion|in summary|ultimately)\b",
-    r"\b(delve|intricate|tapestry|testament|fosters|underscores|multifaceted|paradigm|transformative)\b",
-    r"\b(overall|as a result|on the other hand|it should be noted|broadly speaking)\b"
-]
-
-
-def calculate_generalization_signals(text):
-    """
-    Computes model-agnostic structural stylometric features that generalize across AI models:
-    1. Sentence length variance (Burstiness)
-    2. Formal Discourse Markers
-    3. Punctuation & Capitalization Uniformity
-    """
-    words = text.split()
-    if not words:
-        return 0.5
-
-    # 1. Formal Discourse Markers
-    text_lower = text.lower()
-    marker_matches = 0
-    for pat in AI_DISCOURSE_MARKERS:
-        if re.search(pat, text_lower):
-            marker_matches += 1
-
-    # 2. Sentence Length Variance (Burstiness)
-    sentences = [s.strip() for s in re.split(r'[.!?]+', text) if s.strip()]
-    sent_lengths = [len(s.split()) for s in sentences if len(s.split()) > 0]
-
-    stylo_ai_score = 0.5
-
-    if marker_matches >= 3:
-        stylo_ai_score += 0.40
-    elif marker_matches == 2:
-        stylo_ai_score += 0.28
-    elif marker_matches == 1:
-        stylo_ai_score += 0.15
-
-    if len(sent_lengths) >= 3:
-        std_len = float(np.std(sent_lengths))
-        mean_len = float(np.mean(sent_lengths))
-        # AI text has highly uniform sentence lengths (low std_len)
-        if std_len < 3.5 and mean_len > 10:
-            stylo_ai_score += 0.15
-        elif std_len > 8.0:
-            stylo_ai_score -= 0.15
-
-    return min(max(stylo_ai_score, 0.05), 0.98)
 
 
 @text_bp.route("/predict_text", methods=["POST"])
@@ -88,16 +36,9 @@ def predict_text():
         prob_human_tfidf = float(probs[0])
         prob_ai_tfidf    = float(probs[1])
 
-        # ── 2. Structural Generalization Signal ─────────────────────────────
-        prob_ai_stylo = calculate_generalization_signals(text)
-
-        # ── 3. Weighted Fusion (65% ML Model + 35% Structural Generalization)
-        if word_count >= 15:
-            final_prob_ai = (0.65 * prob_ai_tfidf) + (0.35 * prob_ai_stylo)
-        else:
-            final_prob_ai = (0.80 * prob_ai_tfidf) + (0.20 * prob_ai_stylo)
-
-        final_prob_human = 1.0 - final_prob_ai
+        # ── 2. Final Prediction Probability ─────────────────────────────
+        final_prob_ai = prob_ai_tfidf
+        final_prob_human = prob_human_tfidf
 
         is_ai  = final_prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
