@@ -8,6 +8,16 @@ import re
 
 text_bp = Blueprint('text', __name__)
 
+# Stylometric AI Vocabulary & Phrase Indicators
+AI_MARKER_PATTERNS = [
+    r"\b(in today'?s (fast-paced|rapidly changing|digital|modern) world)\b",
+    r"\b(plays a (crucial|vital|pivotal|key|paramount) role)\b",
+    r"\b(delve into|delving into|intricate|multifaceted|tapestry|testament to)\b",
+    r"\b(fosters|fostering|underscores|underscoring|harnessing)\b",
+    r"\b(furthermore|moreover|in conclusion|in summary|it is important to note)\b",
+    r"\b(transformative|seamlessly|paradigm|interplay|holistic)\b"
+]
+
 
 @text_bp.route("/predict_text", methods=["POST"])
 @require_api_key
@@ -24,15 +34,29 @@ def predict_text():
         return jsonify({"error": "Empty text provided"}), 400
 
     word_count = len(text.split())
-    if word_count < 5:
-        return jsonify({"error": "Text too short. Please provide at least 5 words for accurate analysis."}), 400
+    if word_count < 3:
+        return jsonify({"error": "Text too short. Please provide at least 3 words for accurate analysis."}), 400
 
     try:
-        # ── Fast & Clean Prediction (100% Balanced Model) ───────────────────
+        # ── 1. Model Prediction ─────────────────────────────────────────────
         text_vector = ml.text_vectorizer.transform([text])
         probs       = ml.text_model.predict_proba(text_vector)[0]
         prob_human  = float(probs[0])
         prob_ai     = float(probs[1])
+
+        # ── 2. AI Stylometric Pattern Adjustment ────────────────────────────
+        text_lower = text.lower()
+        matched_markers = 0
+        for pattern in AI_MARKER_PATTERNS:
+            if re.search(pattern, text_lower):
+                matched_markers += 1
+
+        if matched_markers >= 2:
+            prob_ai = max(prob_ai, 0.85)
+            prob_human = 1.0 - prob_ai
+        elif matched_markers == 1:
+            prob_ai = max(prob_ai, 0.70)
+            prob_human = 1.0 - prob_ai
 
         is_ai  = prob_ai >= 0.5
         result = "AI-Generated" if is_ai else "Human Written"
@@ -41,7 +65,7 @@ def predict_text():
         prob_human_pct = round(prob_human * 100, 1)
         confidence     = prob_ai_pct if is_ai else prob_human_pct
 
-        # ── Sentence-level analysis ─────────────────────────────────────────
+        # ── 3. Sentence-level analysis ──────────────────────────────────────
         sentences = re.split(r'(?<=[.!?])\s+', text)
         sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) >= 3]
         sentences = sentences[:15]
@@ -56,17 +80,17 @@ def predict_text():
                     "ai_prob": round(float(p), 4)
                 })
 
-        # ── Confidence label ────────────────────────────────────────────────
-        if confidence >= 90:
+        # ── 4. Confidence label ─────────────────────────────────────────────
+        if confidence >= 85:
             confidence_label = "Very High"
-        elif confidence >= 75:
+        elif confidence >= 70:
             confidence_label = "High"
-        elif confidence >= 60:
+        elif confidence >= 55:
             confidence_label = "Moderate"
         else:
             confidence_label = "Low"
 
-        # ── Save result to database (non-blocking) ──────────────────────────
+        # ── 5. Database logging ─────────────────────────────────────────────
         try:
             user_id = getattr(request, 'user', {}).get('uid', 'anonymous')
             scan_data = {
@@ -87,7 +111,6 @@ def predict_text():
         except Exception as db_err:
             print(f"[text_routes] DB save failed (non-fatal): {db_err}")
 
-        # ── Return clean response ───────────────────────────────────────────
         return jsonify({
             "prediction":       result,
             "is_ai":            is_ai,
@@ -112,6 +135,6 @@ def reload_text_model():
         ml.reload_text_model()
         if ml.text_model is None:
             return jsonify({"error": "Model reload failed — check server logs."}), 500
-        return jsonify({"message": "Text model reloaded successfully ✅"})
+        return jsonify({"message": "Text model reloaded successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
