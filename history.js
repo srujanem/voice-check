@@ -25,7 +25,8 @@ class ScanHistory {
 
         // Push to Database if logged in
         const userId = localStorage.getItem('user_id');
-        const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+        let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
         if (userId) {
             fetch(`${backendUrl}/history`, {
                 method: 'POST',
@@ -78,7 +79,8 @@ class ScanHistory {
         const userId = localStorage.getItem('user_id');
         if (!userId) return;
         try {
-            const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+            let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
             const res = await fetch(`${backendUrl}/history?user_id=${userId}`);
             if (res.ok) {
                 const data = await res.json();

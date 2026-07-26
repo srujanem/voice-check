@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
-        const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+        let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
 
         // Auto-detect type from URL extension
         const urlLower = url.toLowerCase();

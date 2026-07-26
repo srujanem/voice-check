@@ -164,7 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     });
 
-    const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+    let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
 
     // --- V3: Load API Usage ---
     async function loadApiUsage() {

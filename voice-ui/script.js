@@ -131,7 +131,8 @@ function initVoiceUI() {
         }, 1800);
 
         // Auto-use the saved backend URL (set by server-config.js auto-connect)
-        const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+        let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
 
         const formData = new FormData();
         const filename = currentAudioFile.recordedName || currentAudioFile.name || 'recorded_audio.webm';
@@ -303,7 +304,8 @@ function initVoiceUI() {
     const shareBtn = document.getElementById('share-btn');
     if (shareBtn) {
         shareBtn.addEventListener('click', async () => {
-            const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+            let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
             const result     = shareBtn._lastResult;
             const filename   = shareBtn._lastName || 'voice.wav';
 
@@ -378,7 +380,8 @@ function initVoiceUI() {
             const blob = new Blob(chunks, { type: usedMime });
             const file = new File([blob], `live_chunk.${ext}`, { type: usedMime });
 
-            const backendUrl = ('http://localhost:5000').replace(/\/$/, '');
+            let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
             const fd = new FormData();
             fd.append('file', file);
             fd.append('type', 'voice');

@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'image');
 
         try {
-            let zrokUrl = 'http://localhost:5000';
+            let zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';
             if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';
             const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',

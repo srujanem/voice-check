@@ -1,0 +1,37 @@
+import glob
+import re
+import os
+
+js_files = glob.glob('c:/voice-check/**/*.js', recursive=True)
+
+for filepath in js_files:
+    if 'node_modules' in filepath or 'old_script.js' in filepath: continue
+    
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # 1. Revert `const zrokUrl = ('http://localhost:5000').replace...`
+    new_content = re.sub(
+        r"const zrokUrl = \('http://localhost:\d+'\)\.replace\(/\\/\$\/, ''\);",
+        "const zrokUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\\/$/, '');\n            if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';",
+        content
+    )
+
+    # 2. Revert `const backendUrl = ('http://localhost:5000').replace...`
+    new_content = re.sub(
+        r"const backendUrl = \('http://localhost:\d+'\)\.replace\(/\\/\$\/, ''\);",
+        "let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\\/$/, '');\n            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';",
+        new_content
+    )
+
+    # 3. Revert `const zrokUrl = 'http://localhost:5000';` (that don't have replace)
+    new_content = re.sub(
+        r"const zrokUrl = 'http://localhost:\d+';(?!\s*if \()",
+        "let zrokUrl = localStorage.getItem('zrok_url') || 'http://localhost:5000';\n            if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';",
+        new_content
+    )
+    
+    if new_content != content:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        print(f"Reverted hardcoded port in {filepath}")
