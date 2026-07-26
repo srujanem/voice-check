@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, Batc
 from tensorflow.keras.callbacks import EarlyStopping
 
 DATASET_DIR = "dataset_image"
+BALANCED_DIR = "dataset_image_balanced"
 BATCH_SIZE = 16
 IMG_SIZE = (224, 224) # Standard size for EfficientNet
 
@@ -13,11 +14,38 @@ IMG_SIZE = (224, 224) # Standard size for EfficientNet
 os.makedirs(os.path.join(DATASET_DIR, "real"), exist_ok=True)
 os.makedirs(os.path.join(DATASET_DIR, "fake"), exist_ok=True)
 
-# Count images
-real_count = len(os.listdir(os.path.join(DATASET_DIR, "real")))
-fake_count = len(os.listdir(os.path.join(DATASET_DIR, "fake")))
+import shutil
 
+# Count original images
+original_real_files = os.listdir(os.path.join(DATASET_DIR, "real"))
+original_fake_files = os.listdir(os.path.join(DATASET_DIR, "fake"))
+
+real_count = len(original_real_files)
+fake_count = len(original_fake_files)
 print(f"Found {real_count} real images and {fake_count} fake images.")
+
+# Determine the balanced amount (minimum of the two)
+min_count = min(real_count, fake_count)
+
+if min_count >= 2:
+    print(f"Balancing dataset... Training on exactly {min_count} real and {min_count} fake images.")
+    # Create clean balanced directory
+    if os.path.exists(BALANCED_DIR):
+        shutil.rmtree(BALANCED_DIR)
+    os.makedirs(os.path.join(BALANCED_DIR, "real"), exist_ok=True)
+    os.makedirs(os.path.join(BALANCED_DIR, "fake"), exist_ok=True)
+    
+    # Copy exactly `min_count` images to the balanced directory
+    for f in original_real_files[:min_count]:
+        shutil.copy2(os.path.join(DATASET_DIR, "real", f), os.path.join(BALANCED_DIR, "real", f))
+    for f in original_fake_files[:min_count]:
+        shutil.copy2(os.path.join(DATASET_DIR, "fake", f), os.path.join(BALANCED_DIR, "fake", f))
+    
+    # Switch the training directory to the balanced one
+    TRAINING_DIR = BALANCED_DIR
+else:
+    TRAINING_DIR = DATASET_DIR
+
 
 if real_count < 2 or fake_count < 2:
     print("Not enough images found in dataset_image/real or dataset_image/fake.")
@@ -40,7 +68,7 @@ print("Loading dataset...")
 
 # Load dataset using tf.keras utilities
 train_dataset = tf.keras.utils.image_dataset_from_directory(
-    DATASET_DIR,
+    TRAINING_DIR,
     validation_split=0.2,
     subset="training",
     seed=123,
@@ -49,7 +77,7 @@ train_dataset = tf.keras.utils.image_dataset_from_directory(
 )
 
 val_dataset = tf.keras.utils.image_dataset_from_directory(
-    DATASET_DIR,
+    TRAINING_DIR,
     validation_split=0.2,
     subset="validation",
     seed=123,
