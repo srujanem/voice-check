@@ -60,10 +60,8 @@ n_h = (labels == 0).sum()
 n_a = (labels == 1).sum()
 print(f"Clean Real-World Dataset: {n_h} Human | {n_a} AI (Total: {len(labels)})")
 
-word_vec = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), max_features=10000, sublinear_tf=True, min_df=1)
-char_vec = TfidfVectorizer(analyzer='char_wb', ngram_range=(3, 5), max_features=6000, sublinear_tf=True, min_df=1)
-
-features = FeatureUnion([("word", word_vec), ("char", char_vec)])
+word_vec = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), max_features=15000, sublinear_tf=True, min_df=2)
+features = word_vec
 
 X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.15, random_state=42, stratify=labels)
 
