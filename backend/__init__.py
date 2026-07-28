@@ -1,17 +1,31 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from backend.config import Config
+from backend.security import apply_security_headers, log_request
 import os
 import PyPDF2
 
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     app = Flask(__name__, static_folder=base_dir, static_url_path='/')
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # ── CORS: allow all origins for API routes (tighten in production) ──
+    CORS(app, resources={r"/api/*": {
+        "origins": "*",
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "max_age": 600
+    }})
     app.config.from_object(Config)
+    # Reduce max upload to 50 MB hard ceiling
+    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
+    # ── Security hooks ──
+    app.after_request(apply_security_headers)
+    app.before_request(log_request)
+
+    # ── Rate limiter ──
     limiter = Limiter(
         get_remote_address,
         app=app,
@@ -34,6 +48,7 @@ def create_app():
     from backend.routes.auth_routes import auth_bp
     from backend.routes.results_routes import results_bp
     from backend.routes.alias_routes import alias_bp
+    from backend.routes.feedback_routes import feedback_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -47,6 +62,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(results_bp)
     app.register_blueprint(alias_bp)
+    app.register_blueprint(feedback_bp)
 
     @app.route("/", methods=["GET"])
     def home():
@@ -58,12 +74,31 @@ def create_app():
 
     @app.route("/api/health", methods=["GET"])
     def api_health():
-        return jsonify({"status": "ok", "version": "2.0"})
+        return jsonify({"status": "ok", "secure": True})
+
+    # ── Error handlers ──
+    @app.errorhandler(413)
+    def file_too_large(e):
+        return jsonify({"error": "File too large. Maximum upload size is 50 MB."}), 413
+
+    @app.errorhandler(429)
+    def rate_limited(e):
+        return jsonify({"error": "Too many requests. Please slow down."}), 429
+
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify({"error": "Bad request."}), 400
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return jsonify({"error": "Internal server error. Please try again."}), 500
+
 
     @app.route("/api/infer", methods=["POST"])
     @limiter.limit("10 per minute")
     def api_infer():
         from flask import request
+        from backend.security import validate_file_upload, log_suspicious
         import io
         
         req_type = request.form.get("type", "voice")
@@ -71,16 +106,15 @@ def create_app():
         
         if not file:
             return jsonify({"error": "No file uploaded"}), 400
-            
-        allowed_exts = {
-            "voice": {".wav", ".mp3", ".webm", ".m4a", ".ogg"},
-            "image": {".png", ".jpg", ".jpeg", ".webp"},
-            "video": {".mp4", ".mov", ".avi", ".webm"},
-            "text": {".txt", ".md", ".csv", ".json", ".pdf", ".docx"}
-        }
-        ext = os.path.splitext(file.filename)[1].lower()
-        if req_type in allowed_exts and ext not in allowed_exts[req_type]:
-            return jsonify({"error": f"Invalid file type {ext} for {req_type}"}), 400
+
+        # Comprehensive file validation (type, size, magic bytes)
+        scan_type = req_type if req_type in ("image", "audio", "video", "text") else "audio"
+        if req_type == "voice":
+            scan_type = "voice"
+        is_valid, err_msg = validate_file_upload(file, scan_type)
+        if not is_valid:
+            log_suspicious(f"File validation failed: {err_msg} | file={file.filename}")
+            return jsonify({"error": err_msg}), 400
             
         client = app.test_client()
         file_content = file.read()

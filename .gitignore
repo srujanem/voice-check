@@ -4,8 +4,13 @@ __pycache__/
 *.wav
 *.webm
 *.mp3
+*.mpeg
+*.mp4
 *.keras
 *.pkl
+*.pt
+*.safetensors
+*.h5
 .env
 
 .vercel
@@ -15,10 +20,35 @@ serviceAccountKey.json
 .firebase/
 .firebaserc
 
-# Server files to ignore
+# Server files
 Server/trained_models/
 Server/data/
 Server/database/*.db
 Server/logs/
 Server/.env
 Server/__pycache__/
+
+# Datasets (too large for git)
+dataset/
+dataset_image/
+dataset_image_balanced/
+dataset_voice/
+dataset_audio/
+
+# Models folder (large binary files)
+models/
+
+# Logs and backups
+security.log
+feedback_backup.json
+*.log
+
+# Temp / scratch files
+old_script.js
+download_ai_images.py
+train_image_balanced.py
+
+# Python cache
+*.pyc
+*.pyo
+.pytest_cache/

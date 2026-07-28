@@ -24,10 +24,20 @@ real_count = len(original_real_files)
 fake_count = len(original_fake_files)
 print(f"Found {real_count} real images and {fake_count} fake images.")
 
-# Determine the balanced amount (minimum of the two)
-min_count = min(real_count, fake_count)
+# Check if we already have a pre-built balanced dataset with more data
+balanced_fake_count = 0
+balanced_real_count = 0
+if os.path.exists(os.path.join(BALANCED_DIR, "fake")):
+    balanced_fake_count = len(os.listdir(os.path.join(BALANCED_DIR, "fake")))
+if os.path.exists(os.path.join(BALANCED_DIR, "real")):
+    balanced_real_count = len(os.listdir(os.path.join(BALANCED_DIR, "real")))
 
-if min_count >= 2:
+if balanced_fake_count >= 50 and balanced_real_count >= 50:
+    print(f"Using pre-built balanced dataset: {balanced_real_count} real + {balanced_fake_count} fake")
+    TRAINING_DIR = BALANCED_DIR
+elif fake_count >= 2 and real_count >= 2:
+    # Determine the balanced amount (minimum of the two)
+    min_count = min(real_count, fake_count)
     print(f"Balancing dataset... Training on exactly {min_count} real and {min_count} fake images.")
     # Create clean balanced directory
     if os.path.exists(BALANCED_DIR):
