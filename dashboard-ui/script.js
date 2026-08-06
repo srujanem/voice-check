@@ -1,6 +1,36 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Load history from localStorage (key matches history.js STORAGE_KEY)
-    const historyData = JSON.parse(localStorage.getItem('ai_detection_history') || '[]');
+document.addEventListener('DOMContentLoaded', async () => {
+    let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+    if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
+    const userId = localStorage.getItem('user_id');
+
+    let historyData = [];
+    if (userId) {
+        try {
+            const res = await fetch(`${backendUrl}/history?user_id=${userId}`, {
+                headers: {
+                    ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
+                }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                historyData = data.map(scan => ({
+                    id: scan.id,
+                    date: new Date(scan.timestamp).toLocaleString(),
+                    type: scan.scan_type,
+                    fileName: scan.target_name,
+                    isAi: scan.is_ai,
+                    confidence: scan.confidence
+                }));
+            }
+        } catch (e) {
+            console.error("Failed to fetch history from DB", e);
+        }
+    }
+    
+    // Fallback to localStorage if backend failed or no user
+    if (historyData.length === 0) {
+        historyData = JSON.parse(localStorage.getItem('ai_detection_history') || '[]');
+    }
     
     // Update Stat Cards
     const totalScans = historyData.length;
@@ -11,11 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateCount = {};
 
     historyData.forEach(item => {
-        if (item.isAi) aiCount++;  // history.js stores 'isAi', not 'isFake'
+        if (item.isAi) aiCount++;  
         typeCount[item.type] = (typeCount[item.type] || 0) + 1;
         
-        // history.js stores 'id' as a timestamp number and 'date' as a locale string
-        const d = new Date(item.id).toLocaleDateString();
+        // Use either the id (timestamp) or fallback to something sensible
+        const timestamp = item.timestamp ? new Date(item.timestamp) : (typeof item.id === 'number' ? new Date(item.id) : new Date());
+        const d = timestamp.toLocaleDateString();
         dateCount[d] = (dateCount[d] || 0) + 1;
     });
 
@@ -164,13 +195,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     });
 
-    let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
-            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
-
     // --- V3: Load API Usage ---
     async function loadApiUsage() {
         try {
-            const res = await fetch(`${backendUrl}/api/usage`);
+            const res = await fetch(`${backendUrl}/api/usage`, {
+                headers: {
+                    ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
+                }
+            });
             const data = await res.json();
             if (data.total_calls !== undefined) {
                 const el = document.getElementById('apiUsageTotal');
@@ -196,7 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch(`${backendUrl}/api/webhooks/register`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
+                    },
                     body: JSON.stringify({ url })
                 });
                 const data = await res.json();

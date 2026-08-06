@@ -6,7 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('reset-btn');
     const errorAlert = document.getElementById('error-alert');
     const errorMessage = document.getElementById('error-message');
-    
+
+    // ── PDF Download ─────────────────────────────────────────────────────────
+    const pdfBtn = document.getElementById('download-pdf-btn');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set({ margin: 10, filename: 'AuthGuard_URL_Report.pdf',
+                    html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }
+                }).from(document.getElementById('result-card')).save();
+            } else { alert('PDF library not loaded.'); }
+        });
+    }
+
     // Results elements
     const scoreProgress = document.getElementById('scoreProgress');
     const scorePercentage = document.getElementById('scorePercentage');
@@ -26,8 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorAlert.classList.add('hidden');
     }
 
-    // PDF Download logic
-    });
+
 
     urlInput.addEventListener('input', () => {
         if (urlInput.value.trim().length > 5) {
@@ -62,9 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${backendUrl}/api/scan-url`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: Object.assign({ 'Content-Type': 'application/json' },
+                    window.getAuthHeaders ? window.getAuthHeaders() : {}),
                 body: JSON.stringify({ url, type: scanType })
             });
 

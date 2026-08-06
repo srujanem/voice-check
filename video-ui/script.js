@@ -20,7 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentFile = null;
 
-    // PDF Download logic
+    // ── PDF Download ────────────────────────────────────────────────────────
+    const pdfBtn = document.getElementById('download-pdf-btn');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set({ margin: 10, filename: 'AuthGuard_Video_Report.pdf',
+                    html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }
+                }).from(document.getElementById('result-card')).save();
+            } else { alert('PDF library not loaded. Check your internet connection.'); }
+        });
+    }
 
     function preventDefaults(e) {
         e.preventDefault();
@@ -99,11 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'video');
 
         try {
-            const zrokUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            let zrokUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';
             const response = await fetch(`${zrokUrl}/api/infer`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
             });
 
             if (!response.ok && response.status !== 202) {

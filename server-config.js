@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://village-kings-wave-trademark.trycloudflare.com';
+    const DEFAULT_URL = 'https://extensions-graham-improving-seafood.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');
@@ -88,27 +88,42 @@
         }
     }
 
-    // ─── Smart auto-connect: LOCAL FIRST, then tunnel ─────────────────────────
+    // ─── Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback ─────
     async function autoConnect() {
         const savedUrl = localStorage.getItem(STORAGE_KEY_URL);
 
-        // Port 5000 = Flask ML backend, Port 8000 = Node.js / alternate
-        const localPorts = ['http://localhost:5000', 'http://localhost:8000'];
-
+        // 1. Try localhost first (works when user's PC is the server)
+        const localPorts = ['http://localhost:8000', 'http://localhost:5000'];
         for (const url of localPorts) {
-            if (await tryUrl(url)) { setOnline(url); return; }
+            if (await tryUrl(url)) {
+                // While on localhost, fetch and update the tunnel URL in background
+                fetch(`${url}/api/tunnel-url`)
+                    .then(r => r.json())
+                    .then(d => { if (d.url) localStorage.setItem('zrok_url', d.url); })
+                    .catch(() => {});
+                setOnline(url);
+                return;
+            }
         }
 
-        // Try previously saved (possibly tunnel) URL next
+        // 2. If we have a saved URL, ask the server for the LIVE tunnel URL first
         if (savedUrl && !localPorts.includes(savedUrl)) {
             const clean = savedUrl.replace(/\/$/, '');
-            if (await tryUrl(clean)) { setOnline(clean); return; }
+            if (await tryUrl(clean)) {
+                // Refresh the live URL in the background
+                fetch(`${clean}/api/tunnel-url`)
+                    .then(r => r.json())
+                    .then(d => { if (d.url && d.url !== clean) { localStorage.setItem('zrok_url', d.url); } })
+                    .catch(() => {});
+                setOnline(clean);
+                return;
+            }
         }
 
-        // Finally try the Cloudflare tunnel (for phone/remote access)
+        // 3. Try the baked-in DEFAULT_URL
         if (await tryUrl(DEFAULT_URL)) { setOnline(DEFAULT_URL); return; }
 
-        // Nothing worked
+        // 4. Nothing worked
         setOffline();
     }
 

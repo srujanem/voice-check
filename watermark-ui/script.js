@@ -75,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (zrokUrl === 'http://localhost:8000') zrokUrl = 'http://localhost:5000';
             const response = await fetch(`${zrokUrl}/api/watermark`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
             });
 
             if (!response.ok) {

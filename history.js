@@ -30,7 +30,10 @@ class ScanHistory {
         if (userId) {
             fetch(`${backendUrl}/history`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
+                },
                 body: JSON.stringify({
                     user_id: userId,
                     scan_type: type,
@@ -81,7 +84,11 @@ class ScanHistory {
         try {
             let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
-            const res = await fetch(`${backendUrl}/history?user_id=${userId}`);
+            const res = await fetch(`${backendUrl}/history?user_id=${userId}`, {
+                headers: {
+                    ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
+                }
+            });
             if (res.ok) {
                 const data = await res.json();
                 const formatted = data.map(scan => ({

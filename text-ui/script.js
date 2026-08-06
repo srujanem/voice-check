@@ -14,8 +14,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const probAi = document.getElementById('prob-ai');
     const icon = document.getElementById('result-icon');
 
-    // PDF Download logic
+
+    // ── Analyze button ──────────────────────────────────────────────────────
+    btnAnalyze.addEventListener('click', async () => {
+        const text = textInput.value.trim();
+        if (!text) return;
+
+        btnAnalyze.style.display = 'none';
+        loadingState.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+
+        const backendUrl = (window.AUTHGUARD_BACKEND_URL ||
+            localStorage.getItem('zrok_url') ||
+            'http://localhost:5000').replace(/\/$/, '');
+
+        try {
+            const response = await fetch(`${backendUrl}/predict_text`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+
+            if (!response.ok) {
+                const ed = await response.json().catch(() => ({}));
+                throw new Error(ed.error || `Server error ${response.status}`);
+            }
+
+            const data = await response.json();
+            loadingState.classList.add('hidden');
+            btnAnalyze.style.display = 'inline-flex';
+            showResults(data);
+        } catch (err) {
+            loadingState.classList.add('hidden');
+            btnAnalyze.style.display = 'inline-flex';
+            alert('Analysis failed: ' + err.message);
+        }
     });
+
+
+    // ── PDF Download ─────────────────────────────────────────────────────────
+    const pdfBtn = document.getElementById('download-pdf-btn');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set({
+                    margin: 10,
+                    filename: 'AuthGuard_Text_Report.pdf',
+                    html2canvas: { scale: 2, backgroundColor: '#fff' },
+                    jsPDF: { unit: 'mm', format: 'a4' }
+                }).from(document.getElementById('result-card')).save();
+            } else {
+                alert('PDF library not loaded. Check your internet connection.');
+            }
+        });
+    }
 
     resetBtn.addEventListener('click', () => {
         textInput.value = '';

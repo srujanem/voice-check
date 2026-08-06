@@ -5,7 +5,12 @@
       "googleSignIn": {
         "oAuthBrandDisplayName": "AuthGuard",
         "supportEmail": "srujanem222@gmail.com",
-        "authorizedRedirectUris": ["http://localhost", "http://127.0.0.1", "https://voicecheck-9bfec.web.app", "https://voicecheck-9bfec.firebaseapp.com"]
+        "authorizedRedirectUris": [
+          "http://localhost",
+          "http://127.0.0.1",
+          "https://voicecheck-9bfec.web.app",
+          "https://voicecheck-9bfec.firebaseapp.com"
+        ]
       }
     }
   },
@@ -13,26 +18,98 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      ".firebaserc",
+      ".env",
+      ".env.*",
       "**/.*",
-      "**/node_modules/**",
+      "**/.*/**",
+
       "backend/**",
       "dataset/**",
       "dataset_image/**",
+      "dataset_image_balanced/**",
+      "dataset_text/**",
       "uploads/**",
+      "models/**",
+      "node_modules/**",
+      "__pycache__/**",
+      "chrome-extension/**",
+      ".vercel/**",
+      ".firebase/**",
+      ".git/**",
+      ".agents/**",
+
       "**/*.py",
       "**/*.pkl",
       "**/*.keras",
       "**/*.db",
       "**/*.wav",
       "**/*.webm",
+      "**/*.bin",
+      "**/*.exe",
+      "**/*.dll",
+      "**/*.so",
+      "**/*.log",
+      "**/*.bat",
+      "**/*.txt",
+      "**/*.mp3",
+      "**/*.mp4",
+      "**/*.csv",
+      "**/*.parquet",
+      "**/*.npz",
+      "**/*.npy",
+      "**/*.pt",
+      "**/*.pth",
+      "**/*.ckpt",
+      "**/*.safetensors",
+      "**/*.jsonl",
+
       "serviceAccountKey.json",
+      "package-lock.json",
+      "package.json",
       "requirements.txt",
-      "package-lock.json"
+      "vercel.json",
+      "skills-lock.json",
+      "README.md",
+      "diff*.txt",
+      "*.log",
+      "test.jpg",
+      "test.webm",
+      "dummy.jpg",
+      "sample_ai_face.png",
+      "debug_upload.js",
+      "old_script.js",
+      "test.js",
+      "test_ui.js",
+      "ngrok_output.log",
+      "tunnel.log",
+      "security.log"
     ],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000" }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
       }
     ]
   },

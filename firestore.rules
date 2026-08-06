@@ -1,14 +1,62 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default Deny: Block all access by default
+
+    // ── DEFAULT DENY ────────────────────────────────────────────────────────
+    // Blocks everything not explicitly allowed below.
     match /{document=**} {
       allow read, write: if false;
     }
-    
-    // Example: Allow authenticated users to access their own documents
-    // match /users/{userId}/{document=**} {
-    //   allow read, write: if request.auth != null && request.auth.uid == userId;
-    // }
+
+    // ── USERS ────────────────────────────────────────────────────────────────
+    // Each user can only read/write their own profile document.
+    match /users/{userId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+
+    // ── PER-USER SCAN HISTORY ────────────────────────────────────────────────
+    // history_{uid} collections: only the owning user can read/write.
+    // The backend uses collection names like "history_<uid>".
+    match /{historyCollection}/{scanId} {
+      allow read, write: if request.auth != null
+        && historyCollection == ("history_" + request.auth.uid);
+    }
+
+    // ── VIDEO TASKS ──────────────────────────────────────────────────────────
+    // Video processing tasks are written/read by the backend service account.
+    // Frontend polls these read-only; the backend writes via Admin SDK
+    // (which bypasses rules entirely), so we only need client-side read access.
+    match /video_tasks/{taskId} {
+      // Authenticated users can read the status of any task
+      // (the task_id is a UUID unknown to others, so this is safe)
+      allow read: if request.auth != null;
+      // Only backend (Admin SDK) writes — no client write needed here.
+      allow write: if false;
+    }
+
+    // ── FEEDBACK (write-only from clients) ───────────────────────────────────
+    // Anyone (even unauthenticated) can submit feedback; no one can read it
+    // from the client (admin reads via Admin SDK / Firebase console).
+    match /feedback/{feedbackId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    // ── SCAN RESULTS (short-lived shareable results) ─────────────────────────
+    // Authenticated users can save and read back their own results.
+    match /scan_results/{resultId} {
+      allow create: if request.auth != null;
+      allow read:   if request.auth != null
+        && resource.data.owner_uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ── ADMIN ────────────────────────────────────────────────────────────────
+    // Admin documents can only be read/written by the designated admin email.
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email == "srujanem222@gmail.com";
+    }
   }
 }

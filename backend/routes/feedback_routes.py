@@ -14,12 +14,12 @@ feedback_bp = Blueprint('feedback', __name__)
 # ── Email configuration ──────────────────────────────────────────────────────
 OWNER_EMAIL    = os.environ.get("FEEDBACK_TO_EMAIL",   "srujanem222@gmail.com")
 SENDER_EMAIL   = os.environ.get("FEEDBACK_FROM_EMAIL", "srujanem222@gmail.com")
-GMAIL_APP_PASS = os.environ.get("GMAIL_APP_PASSWORD",  "")   # set via env var
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD",  "")   # set via env var
 
 
 def send_feedback_email(name: str, email: str, subject: str, message: str, rating: str = "") -> bool:
     """Send a formatted feedback email via Gmail SMTP."""
-    if not GMAIL_APP_PASS:
+    if not GMAIL_APP_PASSWORD:
         print("[Feedback] ERROR: GMAIL_APP_PASSWORD env var not set.")
         return False
 
@@ -95,15 +95,15 @@ def send_feedback_email(name: str, email: str, subject: str, message: str, ratin
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
-            server.login(SENDER_EMAIL, GMAIL_APP_PASS)
+            server.login(SENDER_EMAIL, GMAIL_APP_PASSWORD)
             server.sendmail(SENDER_EMAIL, OWNER_EMAIL, msg.as_string())
-        print(f"[Feedback] ✅ Email sent from {email} to {OWNER_EMAIL}")
+        print("[Feedback] OK: Email sent from {} to {}".format(email, OWNER_EMAIL))
         return True
     except smtplib.SMTPAuthenticationError:
-        print("[Feedback] ❌ Gmail authentication failed — check GMAIL_APP_PASSWORD")
+        print("[Feedback] FAIL: Gmail authentication failed -- check GMAIL_APP_PASSWORD")
         return False
     except Exception as e:
-        print(f"[Feedback] ❌ Failed to send email: {e}")
+        print("[Feedback] FAIL: Could not send email: {}".format(str(e)))
         return False
 
 

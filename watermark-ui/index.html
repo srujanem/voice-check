@@ -20,9 +20,12 @@
                     <p style="font-size: 14px;">Protect your real content</p>
                 </div>
             </div>
-            <a href="../index.html" class="btn-secondary">
-                <i class="fa-solid fa-house"></i> Home
-            </a>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div id="nav-auth"></div>
+                <a href="../index.html" class="btn-secondary">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+            </div>
         </header>
 
         <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 10px; border-radius: 8px; margin-bottom: 20px; color: white;">
@@ -62,6 +65,9 @@
     </div>
 
     <script src="../theme.js"></script>
+    <script src="../server-config.js?v=6"></script>
+    <script src="../auth.js?v=1"></script>
+    <script>document.addEventListener('DOMContentLoaded',()=>injectNavAuthState(document.getElementById('nav-auth')));</script>
     <script src="script.js"></script>
 </body>
 </html>

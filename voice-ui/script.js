@@ -142,7 +142,8 @@ function initVoiceUI() {
         try {
             const response = await fetch(`${backendUrl}/api/infer`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
             });
 
             if (!response.ok) {
@@ -390,7 +391,8 @@ function initVoiceUI() {
             try {
                 const res  = await fetch(`${backendUrl}/api/infer`, {
                     method: 'POST',
-                    body: fd
+                    body: fd,
+                    headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
                 });
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);

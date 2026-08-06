@@ -35,10 +35,12 @@
                     <p style="font-size:13px; margin:0;">AI vs Human speech</p>
                 </div>
             </div>
-            <a href="../index.html" class="btn-secondary" aria-label="Go home">
-                <i class="fa-solid fa-house"></i><span class="btn-label"> Home</span>
-            </a>
-        </header>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div id="nav-auth"></div>
+                <a href="../index.html" class="btn-secondary" aria-label="Go home">
+                    <i class="fa-solid fa-house"></i><span class="btn-label"> Home</span>
+                </a>
+            </div>
 
         <!-- ══ ERROR BANNER ══ -->
         <div id="error-alert" class="hidden" role="alert" aria-live="polite"
@@ -558,6 +560,8 @@
     <script src="../theme.js"></script>
     <script src="../history.js"></script>
     <script src="../server-config.js?v=6"></script>
+    <script src="../auth.js?v=1"></script>
+    <script>document.addEventListener('DOMContentLoaded',()=>injectNavAuthState(document.getElementById('nav-auth')));</script>
     <script src="script.js"></script>
 </body>
 </html>
