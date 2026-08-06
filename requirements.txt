@@ -1,11 +1,38 @@
+# Core framework
 Flask
 Flask-Cors
-static-ffmpeg
-librosa
+Flask-Limiter
+
+# Environment & config
+python-dotenv
+
+# ML & data science
+tensorflow
+scikit-learn
 numpy<2.0.0
 joblib
-tensorflow
-gunicorn
+xgboost
+lightgbm
+
+# Audio processing
+librosa
+static-ffmpeg
+
+# Image / PDF
+Pillow
+pillow-heif
+PyPDF2
+
+# Text / NLP
 beautifulsoup4
-firebase-admin
 requests
+cloudscraper
+
+# Auth & security
+PyJWT
+
+# Firebase
+firebase-admin
+
+# Production server
+gunicorn
