@@ -88,7 +88,9 @@ def predict_text():
                 "word_count":       word_count,
                 "timestamp":        datetime.utcnow().isoformat(),
             }
-            collection = f"text_results_{user_id}"
+            # Save to the same history collection as all other scan types
+            # so the dashboard can see text scans alongside voice/image scans
+            collection = f"history_{user_id}"
             external_db.create_document(collection, scan_data)
         except Exception as db_err:
             print(f"[text_routes] DB save failed (non-fatal): {db_err}")

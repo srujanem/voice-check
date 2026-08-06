@@ -253,11 +253,13 @@ def brute_force_protect(f):
 # ────────────────────────────────────────────────────────────────────────────
 
 import logging
+import sys
 
 security_logger = logging.getLogger("voicecheck.security")
 security_logger.setLevel(logging.INFO)
 
-_handler = logging.FileHandler("security.log", encoding="utf-8")
+# Use stdout so logs are visible on Render / cloud platforms (ephemeral filesystem)
+_handler = logging.StreamHandler(sys.stdout)
 _handler.setFormatter(logging.Formatter(
     "%(asctime)s | %(levelname)s | %(message)s"
 ))

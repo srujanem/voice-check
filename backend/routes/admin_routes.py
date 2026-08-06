@@ -2,7 +2,14 @@ import os
 import subprocess
 from flask import Blueprint, jsonify, request
 from backend.decorators import require_api_key
-from sync_dataset import sync_data
+
+try:
+    from sync_dataset import sync_data
+    _SYNC_AVAILABLE = True
+except Exception:
+    _SYNC_AVAILABLE = False
+    def sync_data():
+        return False, ["sync_dataset.py not available in this environment"]
 
 admin_bp = Blueprint('admin', __name__)
 

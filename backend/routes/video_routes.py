@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 import os
+import shutil
 import subprocess
 from PIL import Image
 import tensorflow as tf
@@ -48,7 +49,7 @@ def process_video_task(app, task_id, path):
                 frame_count += 1
                 os.remove(frame_path)
                 
-            os.rmdir(frames_dir)
+            shutil.rmtree(frames_dir, ignore_errors=True)
 
             avg_prob = total_prob / frame_count
             is_fake = avg_prob >= 0.5
@@ -84,7 +85,9 @@ def process_video_task(app, task_id, path):
 @video_bp.route("/predict_video", methods=["POST"])
 @require_api_key
 def predict_video():
-    if ml.image_model is None:
+    # Trigger lazy load and check if model is available
+    _image_model = ml.get_image_model()
+    if _image_model is None:
         return jsonify({"error": "Image model not loaded. Cannot process video frames."}), 500
 
     if "video" not in request.files:

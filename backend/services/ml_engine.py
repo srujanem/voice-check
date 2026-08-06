@@ -1,9 +1,23 @@
 import os
 import pickle
 import tensorflow as tf
-import stylometric_transformer
-import xgboost   # Required for VotingClassifier deserialization (XGBClassifier)
-import lightgbm  # Required for VotingClassifier deserialization (LGBMClassifier)
+
+# Optional packages — gracefully degrade if not installed
+try:
+    import stylometric_transformer
+except ImportError:
+    print("[ml_engine] stylometric_transformer not available — some features disabled.")
+
+try:
+    import xgboost   # Required for VotingClassifier deserialization (XGBClassifier)
+except ImportError:
+    print("[ml_engine] xgboost not available.")
+
+try:
+    import lightgbm  # Required for VotingClassifier deserialization (LGBMClassifier)
+except ImportError:
+    print("[ml_engine] lightgbm not available.")
+
 from backend.config import Config
 
 class MLEngine:

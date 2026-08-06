@@ -7,7 +7,8 @@ class ExternalDB:
 
     def __init__(self, base_url=None, api_key=None):
         self.base_url = (base_url or "http://localhost:8000").rstrip("/")
-        self.api_key = api_key or os.environ.get("VKSERVER_API_KEY", "ais_8f293b4a2e5c89d107a6f2b1d3e8a49c")
+        # Never hardcode API keys — use environment variable only
+        self.api_key = api_key or os.environ.get("VKSERVER_API_KEY", "")
         self.scraper = cloudscraper.create_scraper()
         pass
 

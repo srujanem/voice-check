@@ -100,7 +100,8 @@ def api_infer():
         if not text_content:
             return jsonify({"error": "No text provided for analysis."}), 400
 
-        res = client.post('/predict_text', json={"text": text_content})
+        res = client.post('/predict_text', json={"text": text_content},
+                          headers={'Authorization': request.headers.get('Authorization', '')})
         res_data = res.get_json() or {}
 
         if res.status_code != 200:
@@ -196,4 +197,22 @@ def api_register_webhook():
     if url not in _webhooks:
         _webhooks.append(url)
     return jsonify({"message": "Webhook registered successfully", "url": url}), 200
+
+
+@alias_bp.route("/api/train", methods=["POST"])
+def api_train():
+    """
+    Alias used by train-ui. Forwards to /api/admin/train-model.
+    Accepts: { "type": "voice"|"image"|"text", "epochs": <int> }
+    """
+    client = current_app.test_client()
+    data = request.json or {}
+    model_type = data.get("type", "voice")
+    res = client.post(
+        "/api/admin/train-model",
+        json={"type": model_type},
+        headers={"Authorization": request.headers.get("Authorization", "")},
+    )
+    res_data = res.get_json() or {}
+    return jsonify(res_data), res.status_code
 

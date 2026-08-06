@@ -15,7 +15,11 @@ def save_history():
     is_ai = data.get("is_ai")
     confidence = data.get("confidence")
     user_id = request.user['uid']
-    
+
+    # Require a real logged-in user
+    if user_id == 'guest':
+        return jsonify({"error": "Login required to save history"}), 401
+
     if not scan_type or not target_name:
         return jsonify({"error": "Missing required fields"}), 400
         
