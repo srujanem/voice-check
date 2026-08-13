@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://scotia-cast-entering-lender.trycloudflare.com';
+    const DEFAULT_URL = 'https://primary-southwest-demonstrates-modify.trycloudflare.com';
 
     // ─── Inject status badge CSS ──────────────────────────────────────────────
     const style = document.createElement('style');
