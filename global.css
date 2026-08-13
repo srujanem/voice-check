@@ -607,6 +607,10 @@ a,
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+section, main {
+    width: 100%;
+}
+
 body {
     background-color: var(--bg-main);
     color: var(--text-primary);
