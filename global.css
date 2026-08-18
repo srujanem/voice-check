@@ -632,13 +632,9 @@ body {
     background-color: var(--bg-main);
     color: var(--text-primary);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     overflow-x: hidden;
     background: radial-gradient(circle at 15% 50%, var(--accent-purple-glow), transparent 30%),
                 radial-gradient(circle at 85% 30%, var(--accent-blue-glow), transparent 30%);
-    background-color: var(--bg-main);
     background-attachment: fixed;   /* overridden to scroll on mobile — see @media 768px */
     transition: background-color 0.4s ease, color 0.4s ease;
 }
