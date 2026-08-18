@@ -19,7 +19,7 @@ if os.path.exists(BALANCED_FAKE_DIR):
     shutil.rmtree(BALANCED_FAKE_DIR)
 os.makedirs(BALANCED_FAKE_DIR)
 
-TARGET = 150  # We want 150 augmented fake images
+TARGET = 1000  # We want 1000 augmented fake images
 generated = 0
 
 random.seed(42)
