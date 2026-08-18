@@ -32,17 +32,33 @@
     --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* ── Smooth Theme Transition ── */
-html, body,
-.app-container, .nav-card, .feature-card, .testimonial-card,
-.faq-item, .step-card, .stats-bar, .navbar, .site-footer,
-.newsletter-box, .result-card, .upload-area, .btn-primary,
-.btn-secondary, .theme-toggle, .floating-history-btn,
-.history-sidebar, .toast, .user-dropdown, h1, h2, p {
-    transition: background-color 0.4s ease,
-                color 0.4s ease,
-                border-color 0.4s ease,
-                box-shadow 0.4s ease;
+/* ── Base Reset & Hardware Accelerated Defaults ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ── Targeted Theme Transitions (prevents layout scroll jank) ── */
+body.theme-transitioning,
+body.theme-transitioning .app-container,
+body.theme-transitioning .nav-card,
+body.theme-transitioning .feature-card,
+body.theme-transitioning .navbar,
+body.theme-transitioning .site-footer,
+body.theme-transitioning .result-card,
+body.theme-transitioning .upload-area {
+    transition: background-color 0.35s ease,
+                color 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -54,7 +70,7 @@ html, body,
    touching the main thread (transform, opacity).
    ══════════════════════════════════════════════ */
 
-/* ── Native Momentum Scrolling (iOS Safari) ── */
+/* ── Native Momentum Scrolling & Android Optimization ── */
 html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
@@ -63,6 +79,7 @@ html {
 body {
     -webkit-overflow-scrolling: touch;   /* iOS kinetic scroll */
     overscroll-behavior-y: contain;      /* prevent pull-to-refresh jank on Android */
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* ── GPU Promotion for Animated Layers ──
@@ -1573,9 +1590,6 @@ p {
 
     /* ── Marquee speed on mobile ── */
     .marquee-content { animation-duration: 20s; }
-
-    /* ── Deepfake UI / Split columns ── */
-    div[style*="display: grid"] { grid-template-columns: 1fr !important; }
 
     /* ── Grid spacing normalization ── */
     .stats-container { grid-template-columns: 1fr !important; }

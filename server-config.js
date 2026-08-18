@@ -1,5 +1,5 @@
 /**
- * AuthGuard Auto Server Connection — Smart Multi-Port Auto-Discovery
+ * AuthGuard Auto Server Connection â€” Smart Multi-Port Auto-Discovery
  *
  * Permanently fixes "Cannot reach server" by trying:
  *   1. localhost:5000  (Flask default)
@@ -15,7 +15,7 @@
     const STORAGE_KEY_STATUS = 'server_online';
     const DEFAULT_URL = 'https://voice-check-2wgk.onrender.com';
 
-    // ─── Inject status badge CSS ──────────────────────────────────────────────
+    // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
     style.textContent = `
         #ag-status-badge {
@@ -50,7 +50,7 @@
     `;
     document.head.appendChild(style);
 
-    // ─── Inject status badge HTML ─────────────────────────────────────────────
+    // â”€â”€â”€ Inject status badge HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const badge = document.createElement('div');
     badge.id = 'ag-status-badge';
     badge.innerHTML = `<span id="ag-dot"></span><span id="ag-label">Connecting...</span>`;
@@ -59,7 +59,7 @@
     const dot   = document.getElementById('ag-dot');
     const label = document.getElementById('ag-label');
 
-    // ─── State setters ────────────────────────────────────────────────────────
+    // â”€â”€â”€ State setters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function setOnline(url) {
         localStorage.setItem(STORAGE_KEY_URL, url);
         localStorage.setItem(STORAGE_KEY_STATUS, 'true');
@@ -76,7 +76,7 @@
         label.textContent = 'Server Offline';
     }
 
-    // ─── Try a single URL ─────────────────────────────────────────────────────
+    // â”€â”€â”€ Try a single URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function tryUrl(url) {
         try {
             const res = await fetch(`${url}/api/health`, {
@@ -88,7 +88,7 @@
         }
     }
 
-    // ─── Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback ─────
+    // â”€â”€â”€ Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback â”€â”€â”€â”€â”€
     async function autoConnect() {
         const savedUrl = localStorage.getItem(STORAGE_KEY_URL);
 
@@ -130,3 +130,6 @@
     autoConnect();
     setInterval(autoConnect, 30000);   // Re-check every 30 seconds
 })();
+
+
+

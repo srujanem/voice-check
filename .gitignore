@@ -47,6 +47,8 @@ feedback_backup.json
 old_script.js
 download_ai_images.py
 train_image_balanced.py
+cloudflared.exe
+vercel_token.txt
 
 # Python cache
 *.pyc

@@ -52,11 +52,11 @@ def process_video_task(app, task_id, path):
             shutil.rmtree(frames_dir, ignore_errors=True)
 
             avg_prob = total_prob / frame_count
-            is_fake = avg_prob >= 0.5
+            is_fake = avg_prob < 0.5
             result = "AI-Generated" if is_fake else "Authentic"
             
-            prob_fake = round(avg_prob * 100, 1)
-            prob_real = round((1.0 - avg_prob) * 100, 1)
+            prob_real = round(avg_prob * 100, 1)
+            prob_fake = round((1.0 - avg_prob) * 100, 1)
             confidence = prob_fake if is_fake else prob_real
 
             result_dict = {
