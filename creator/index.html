@@ -204,6 +204,26 @@
             <div id="nav-auth"></div>
         </div>
     </nav>
+    <!-- Mobile Menu Drawer -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-drawer" id="mobileDrawer">
+        <div class="drawer-header">
+            <div class="drawer-logo">
+                <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan);"></i> AuthGuard
+            </div>
+            <button class="drawer-close" id="drawerClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="/" class="drawer-nav-item"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="/#tools" class="drawer-nav-item"><i class="fa-solid fa-grid-2"></i> Tools</a>
+            <a href="/#pricing" class="drawer-nav-item"><i class="fa-solid fa-tag"></i> Pricing</a>
+            <a href="/creator/index.html" class="drawer-nav-item active"><i class="fa-solid fa-user-astronaut"></i> Creator</a>
+        </nav>
+        <div class="drawer-divider"></div>
+        <div class="drawer-auth" id="drawer-auth-container">
+            <!-- Auth buttons injected here -->
+        </div>
+    </div>
 
     <!-- Creator Hero -->
     <main class="creator-hero">
@@ -271,5 +291,6 @@
     </script>
 </body>
 </html>
+
 
 
