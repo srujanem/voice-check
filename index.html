@@ -46,12 +46,12 @@
 
         /* ===== TEXT REVEAL ===== */
         .hero-badge { animation: slideUpFadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
-        .landing-header h1 { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; opacity: 0; transform: translateY(30px); }
-        .landing-header p { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; opacity: 0; transform: translateY(30px); }
-        .landing-header .btn-primary, .landing-header .btn-secondary { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both; opacity: 0; transform: translateY(30px); }
+        .landing-header h1 { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; opacity: 1; transform: translateY(0); }
+        .landing-header p { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; opacity: 1; transform: translateY(0); }
+        .landing-header .btn-primary, .landing-header .btn-secondary { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both; opacity: 1; transform: translateY(0); }
         .hero-counter-strip { animation: slideUpFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; opacity: 0; }
         .floating-mockup { animation: floatUp 5s ease-in-out infinite, slideUpFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s both; }
-        @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFadeIn { from { opacity: 1; transform: translateY(0); } to { opacity: 1; transform: translateY(0); } }
 
         /* ===== DYNAMIC GRADIENT SHIMMER & BADGE PULSE ===== */
         .gradient-text-animated {
@@ -1010,10 +1010,10 @@
 
         /* ===== STEP CARD STAGGER ===== */
         .steps-grid .step-card {
-            opacity: 0; transform: translateY(30px);
+            opacity: 1; transform: translateY(0);
             transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1);
         }
-        .steps-grid.visible .step-card { opacity: 1; transform: translateY(0); }
+        /* removed visible requirement */
         .steps-grid.visible .step-card:nth-child(1) { transition-delay: 0.0s; }
         .steps-grid.visible .step-card:nth-child(3) { transition-delay: 0.15s; }
         .steps-grid.visible .step-card:nth-child(5) { transition-delay: 0.30s; }
@@ -2920,5 +2920,21 @@
 
 
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+<script>
+(function(){
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+            }
+        });
+    }, { threshold: 0.1 });
+
+    const targets = document.querySelectorAll(".steps-grid, .testimonials-grid, .cards-grid, .stats-bar, .section-title-animated, .timeline-item, [class*='fade-']");
+    targets.forEach(el => observer.observe(el));
+});
+</script>
 </body>
 </html>
+
+
