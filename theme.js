@@ -65,7 +65,7 @@
             // Ping that we are alive
             await fetch(\/api/presence, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ clientId: generateClientId() })
             });
 
@@ -95,3 +95,4 @@
         setInterval(pingPresence, 30000);
     }
 })();
+

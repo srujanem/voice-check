@@ -2827,7 +2827,7 @@
         try {
             var res = await fetch(backendUrl + '/api/feedback', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ name, email, subject, message, rating: ratingLabel })
             });
             var data = await res.json();
@@ -2999,6 +2999,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
 </script>
 </body>
 </html>
+
 
 
 
