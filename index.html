@@ -2934,7 +2934,23 @@
     targets.forEach(el => observer.observe(el));
 });
 </script>
+<script>
+// FAQ Accordion Logic
+document.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+        const item = button.parentElement;
+        const isOpen = item.classList.contains('open');
+        // Close all other FAQs
+        document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+        // Open the clicked one if it was not already open
+        if (!isOpen) {
+            item.classList.add('open');
+        }
+    });
+});
+</script>
 </body>
 </html>
+
 
 
