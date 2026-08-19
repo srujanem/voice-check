@@ -314,7 +314,7 @@ function initVoiceUI() {
             try {
                 const res  = await fetch(`${backendUrl}/api/results/save`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                     body: JSON.stringify({ result, filename, type: 'voice' })
                 });
                 const data = await res.json();
@@ -461,3 +461,4 @@ if (document.readyState === 'loading') {
 } else {
     initVoiceUI();
 }
+

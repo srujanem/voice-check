@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${backendUrl}/predict_text`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ text })
             });
 
@@ -214,3 +214,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
     }
 });
+
