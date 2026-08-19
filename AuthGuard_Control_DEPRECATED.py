@@ -9,7 +9,7 @@ import requests
 import time
 
 # ─── Config ──────────────────────────────────────────────────────────────────
-SERVER_DIR  = r"C:\voice-check"
+SERVER_DIR  = r"D:\voice-check\voice-check"
 SERVER_CMD  = [sys.executable, "run.py"]
 HEALTH_URL  = "http://localhost:5000/api/health"
 WEBSITE_URL = "https://authguard.vercel.app"

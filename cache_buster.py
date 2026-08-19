@@ -1,7 +1,7 @@
 import glob
 import re
 
-html_files = glob.glob('c:/voice-check/**/*.html', recursive=True)
+html_files = glob.glob('D:/voice-check/voice-check/**/*.html', recursive=True)
 
 for filepath in html_files:
     if 'node_modules' in filepath: continue

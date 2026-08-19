@@ -1,3 +1,3 @@
 @echo off
-cd /d "C:\voice-check"
+cd /d "D:\voice-check\voice-check"
 pythonw AuthGuard_Control.py

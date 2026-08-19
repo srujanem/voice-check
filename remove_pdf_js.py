@@ -2,7 +2,7 @@ import os
 import glob
 import re
 
-js_files = glob.glob('c:/voice-check/*-ui/*.js')
+js_files = glob.glob('D:/voice-check/voice-check/*-ui/*.js')
 
 for filepath in js_files:
     with open(filepath, 'r', encoding='utf-8') as f:

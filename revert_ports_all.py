@@ -2,7 +2,7 @@ import glob
 import re
 import os
 
-js_files = glob.glob('c:/voice-check/**/*.js', recursive=True)
+js_files = glob.glob('D:/voice-check/voice-check/**/*.js', recursive=True)
 
 for filepath in js_files:
     if 'node_modules' in filepath or 'old_script.js' in filepath: continue

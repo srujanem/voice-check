@@ -3,8 +3,8 @@ import glob
 import re
 
 def process_html_files():
-    html_files = glob.glob('c:/voice-check/*-ui/*.html')
-    html_files.append('c:/voice-check/result.html')
+    html_files = glob.glob('D:/voice-check/voice-check/*-ui/*.html')
+    html_files.append('D:/voice-check/voice-check/result.html')
     for filepath in html_files:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -32,7 +32,7 @@ def process_html_files():
         print(f"Processed HTML: {filepath}")
 
 def process_js_files():
-    js_files = glob.glob('c:/voice-check/*-ui/*.js')
+    js_files = glob.glob('D:/voice-check/voice-check/*-ui/*.js')
     for filepath in js_files:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
