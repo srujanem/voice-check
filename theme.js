@@ -63,14 +63,14 @@
         
         try {
             // Ping that we are alive
-            await fetch(\/api/presence, {
+            await fetch(cleanUrl + '/api/presence', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ clientId: generateClientId() })
             });
 
             // Get the current online count
-            const res = await fetch(\/api/presence);
+            const res = await fetch(cleanUrl + '/api/presence');
             const data = await res.json();
             
             if (data && data.online !== undefined && liveCountEl) {
@@ -97,12 +97,14 @@
 })();
 
 
+
+
 // ===== AUTHGUARD ASSISTANT CHATBOT =====
 (function() {
-    if (document.getElementById('ag-chat-btn')) return; // Prevent duplicates
+    if (document.getElementById('ag-chat-btn')) return;
 
     const style = document.createElement('style');
-    style.textContent = \
+    style.textContent = `
         #ag-chat-btn {
             position: fixed; bottom: 85px; right: 25px; z-index: 9999;
             width: 55px; height: 55px; border-radius: 50%;
@@ -161,11 +163,11 @@
             #ag-chat-window { width: calc(100% - 40px); right: 20px; bottom: 100px; height: 60vh; }
             #ag-chat-btn { bottom: 25px; right: 20px; width: 50px; height: 50px; }
         }
-    \;
+    `;
     document.head.appendChild(style);
 
     const container = document.createElement('div');
-    container.innerHTML = \
+    container.innerHTML = `
         <button id="ag-chat-btn"><i class="fa-solid fa-robot"></i></button>
         <div id="ag-chat-window">
             <div id="ag-chat-header">
@@ -180,7 +182,7 @@
                 <button id="ag-chat-send"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
-    \;
+    `;
     document.body.appendChild(container);
 
     const btn = document.getElementById('ag-chat-btn');
@@ -205,13 +207,13 @@
     function getBotResponse(q) {
         q = q.toLowerCase();
         if (q.includes('price') || q.includes('pricing') || q.includes('cost') || q.includes('money')) {
-            return "We have 3 tiers: <br><b>Free</b> (Basic scans up to 5MB)<br><b>Pro</b> (/mo - 50MB uploads & Batch Processing)<br><b>Enterprise</b> (/mo - Full API access).";
+            return "We have 3 tiers: <br><b>Free</b> (Basic scans up to 5MB)<br><b>Pro</b> ($19/mo - 50MB uploads & Batch Processing)<br><b>Enterprise</b> ($99/mo - Full API access).";
         }
         if (q.includes('api') || q.includes('developer')) {
-            return "Our Enterprise plan (/mo) gives you full access to the AuthGuard API. You can programmatically scan text, images, video, and audio directly from your own apps.";
+            return "Our Enterprise plan ($99/mo) gives you full access to the AuthGuard API. You can programmatically scan text, images, video, and audio directly from your own apps.";
         }
         if (q.includes('accuracy') || q.includes('accurate') || q.includes('trust')) {
-            return "AuthGuard is industry-leading! Our average accuracy is <b>96.7%</b>. Voice Detection hits 96.5%, Image Detection hits 97.2%, and Text Detection is at 98.1%.";
+            return "AuthGuard is industry-leading! Our average accuracy is <b>96.8%</b>. Voice Detection hits 96.5%, Image Detection hits 96.8%, and Text Detection is at 98.1%.";
         }
         if (q.includes('watermark') || q.includes('protect')) {
             return "We offer an Authentic Watermark Creator! It embeds an invisible cryptographic signature into your images to permanently prove they are human-made.";
@@ -220,7 +222,7 @@
             return "Our Voice Detector analyzes spectrograms and audio frequencies to instantly flag AI voice clones from tools like ElevenLabs or PlayHT with 96.5% accuracy.";
         }
         if (q.includes('image') || q.includes('photo') || q.includes('picture')) {
-            return "Our Image Detector uses an advanced Convolutional Neural Network (EfficientNetB0) to spot hidden artifacts left by MidJourney, DALL-E, and Stable Diffusion. We just retrained it and hit 95.37% accuracy on unseen data!";
+            return "Our Image Detector uses an advanced Convolutional Neural Network (EfficientNetB0) to spot hidden artifacts left by MidJourney, DALL-E, and Stable Diffusion. We just retrained it and hit 96.8% accuracy on unseen data!";
         }
         if (q.includes('text') || q.includes('chatgpt') || q.includes('written') || q.includes('writing')) {
             return "Our Text Detector uses a RoBERTa ensemble model combined with perplexity heuristics to detect ChatGPT, Claude, and Gemini text with 98.1% accuracy.";
