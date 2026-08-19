@@ -7,7 +7,7 @@ echo   AuthGuard — Starting Server and Cloudflare Tunnel
 echo  ====================================================
 echo.
 
-cd /d "D:\voice-check"
+cd /d "C:\voice-check"
 
 :: ─── Step 1: Kill old instances ────────────────────────────────────────────
 echo [1/4] Stopping old processes...
@@ -69,7 +69,7 @@ python -c "
 import re, sys
 sys.stdout.reconfigure(encoding='utf-8')
 url = '%TUNNEL_URL%'
-path = 'D:/voice-check/server-config.js'
+path = 'C:/voice-check/server-config.js'
 content = open(path, encoding='utf-8').read()
 new_content = re.sub(
     r\"const DEFAULT_URL = '[^']*'\",

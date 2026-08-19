@@ -1,7 +1,7 @@
 import re
 
 url = 'https://primary-southwest-demonstrates-modify.trycloudflare.com'
-path = 'D:/voice-check/server-config.js'
+path = 'C:/voice-check/server-config.js'
 
 content = open(path, encoding='utf-8').read()
 new_content = re.sub(
