@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Profile | Srujan EM</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../global.css?v=2">
+    <style>
+        .creator-hero {
+            position: relative;
+            padding: 120px 20px 60px;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        /* Background Orbs */
+        .creator-hero::before {
+            content: '';
+            position: absolute;
+            top: 20%; left: 10%; width: 400px; height: 400px;
+            background: rgba(6, 182, 212, 0.15); filter: blur(100px); border-radius: 50%; z-index: 0;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+        .creator-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 10%; right: 10%; width: 500px; height: 500px;
+            background: rgba(139, 92, 246, 0.15); filter: blur(100px); border-radius: 50%; z-index: 0;
+            animation: float 12s infinite ease-in-out alternate-reverse;
+        }
+
+        .creator-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            padding: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.3);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #0a0a0f;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px);
+        }
+        .social-btn.github:hover { background: #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .social-btn.linkedin:hover { background: #0077b5; box-shadow: 0 10px 20px rgba(0,119,181,0.4); }
+        .social-btn.email:hover { background: #06b6d4; box-shadow: 0 10px 20px rgba(6,182,212,0.4); }
+
+        .bio-section h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bio-section h2 {
+            font-size: 20px;
+            color: #06b6d4;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0 0 30px 0;
+        }
+
+        .bio-text {
+            color: #94a3b8;
+            font-size: 18px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .bio-text strong {
+            color: #e2e8f0;
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-tag {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .skill-tag:hover {
+            background: rgba(6, 182, 212, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.5); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        @media (max-width: 900px) {
+            .creator-container { grid-template-columns: 1fr; padding: 40px 20px; text-align: center; }
+            .bio-section h1 { font-size: 36px; }
+            .skills-grid { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="../index.html" class="logo">
+                <i class="fa-solid fa-shield-halved"></i> AuthGuard <span style="font-size:12px; color:#94a3b8; font-weight:400; margin-left:8px;">by Srujan EM</span>
+            </a>
+            
+            <!-- Desktop Nav -->
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../index.html#tools">Tools</a>
+                <a href="../index.html#pricing">Pricing</a>
+                <a href="#" class="active">Creator</a>
+            </div>
+
+            <!-- Right side: Auth & Theme -->
+            <div class="nav-actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div id="nav-auth"></div> <!-- Injected by auth.js -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Creator Hero -->
+    <main class="creator-hero">
+        <div class="creator-container">
+            
+            <!-- Left Side: Avatar & Socials -->
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <img src="../assets/images/srujan_avatar.jpg" alt="Srujan EM - AI Avatar">
+                </div>
+                <div class="social-links">
+                    <a href="https://github.com/srujanem" target="_blank" class="social-btn github" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/srujan-em-10092b336" target="_blank" class="social-btn linkedin" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="mailto:srujanem222@gmail.com" class="social-btn email" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+            </div>
+
+            <!-- Right Side: Bio & Skills -->
+            <div class="bio-section">
+                <h1>Srujan EM</h1>
+                <h2>Computer Science Engineer (AI & ML)</h2>
+                
+                <p class="bio-text">
+                    Welcome! I am <strong>Srujan</strong>, a Computer Science Engineer specializing in Artificial Intelligence and Machine Learning. 
+                    I exist at the intersection of innovation, software engineering, and digital security. 
+                    <br><br>
+                    Recognizing the rapid evolution of generative models and the emerging threat of deepfakes, I engineered and developed <strong>AuthGuard (VoiceCheck)</strong> entirely from the ground up. 
+                    My mission is to provide an enterprise-grade, multi-modal detection suite to help journalists, educators, and everyday users verify what is real on the internet.
+                    <br><br>
+                    Driven by a passion for ethical AI, algorithmic transparency, and cutting-edge neural networks, I am dedicated to building the tools that will secure our digital future.
+                </p>
+
+                <h3 style="color: #fff; font-size: 16px; margin-bottom: 15px; font-weight: 600;">Core Expertise</h3>
+                <div class="skills-grid">
+                    <div class="skill-tag"><i class="fa-solid fa-brain"></i> Artificial Intelligence</div>
+                    <div class="skill-tag"><i class="fa-solid fa-network-wired"></i> Machine Learning</div>
+                    <div class="skill-tag"><i class="fa-brands fa-python"></i> Python & TensorFlow</div>
+                    <div class="skill-tag"><i class="fa-brands fa-node-js"></i> Node.js Backend</div>
+                    <div class="skill-tag"><i class="fa-solid fa-shield-virus"></i> Cyber Security</div>
+                    <div class="skill-tag"><i class="fa-solid fa-code"></i> Full-Stack Dev</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-bottom" style="border:none;">
+            <p>&copy; 2024 AuthGuard (VoiceCheck). Designed & Engineered by <strong>Srujan EM</strong>.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../server-config.js?v=6"></script>
+    <script src="../auth.js?v=1"></script>
+    <script src="../theme.js?v=6"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navAuth = document.getElementById('nav-auth');
+            if (typeof injectNavAuthState === 'function') {
+                injectNavAuthState(navAuth);
+            }
+        });
+    </script>
+</body>
+</html>
