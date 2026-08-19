@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://stated-vacations-searches-thomas.trycloudflare.com';
+    const DEFAULT_URL = 'https://nail-olive-serves-man.trycloudflare.com';
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
@@ -130,6 +130,10 @@
     autoConnect();
     setInterval(autoConnect, 30000);   // Re-check every 30 seconds
 })();
+
+
+
+
 
 
 
