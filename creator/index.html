@@ -179,31 +179,29 @@
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <a href="/" class="logo">
-                <i class="fa-solid fa-shield-halved"></i> AuthGuard <span style="font-size:12px; color:#94a3b8; font-weight:400; margin-left:8px;">by Srujan EM</span>
-            </a>
-            
-            <!-- Desktop Nav -->
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/#tools">Tools</a>
-                <a href="/#pricing">Pricing</a>
-                <a href="#" class="active">Creator</a>
+        <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a class="nav-brand" href="/">
+            <div class="logo-icon" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px;"><i class="fa-solid fa-shield-halved"></i></div>
+            <span>AuthGuard <span style="font-size:12px; color:#94a3b8; font-weight:400; margin-left:8px;">by Srujan EM</span></span>
+        </a>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/#tools">Tools</a>
+            <a href="/#pricing">Pricing</a>
+            <a href="/creator/index.html" class="active">Creator</a>
+        </div>
+        <div class="nav-right">
+            <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-moon"></i></div>
+            <div class="live-user-count" title="People using AuthGuard right now">
+                <div class="live-dot"></div>
+                <span class="live-count-num" id="live-count">1</span>
+                <span>online</span>
             </div>
-
-            <!-- Right side: Auth & Theme -->
-            <div class="nav-actions">
-                <button class="theme-toggle" aria-label="Toggle theme">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-                <div id="nav-auth"></div> <!-- Injected by auth.js -->
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-            </div>
+            <div id="nav-auth"></div>
         </div>
     </nav>
 
@@ -273,4 +271,5 @@
     </script>
 </body>
 </html>
+
 
