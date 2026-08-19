@@ -324,6 +324,17 @@ a,
 
 /* ── Mobile-specific smoothness overrides ── */
 @media (max-width: 768px) {
+    /* FIX: Prevent header icons overlapping on mobile */
+    .app-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+    }
+    .app-header > div:last-child {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+    .hide-on-mobile { display: none !important; }
     /* On mobile, reduce blur radius — blur is GPU-expensive on mobile GPUs */
     .navbar,
     .history-sidebar,
@@ -1367,6 +1378,17 @@ p {
 
 /* ── Mobile Responsiveness ── */
 @media (max-width: 768px) {
+    /* FIX: Prevent header icons overlapping on mobile */
+    .app-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+    }
+    .app-header > div:last-child {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+    .hide-on-mobile { display: none !important; }
     /* Safe area body padding for iOS notch */
     body {
         overflow-x: hidden; width: 100%;
@@ -1936,3 +1958,4 @@ p {
     from { opacity: 0; transform: translateY(30px) scale(0.97); }
     to   { opacity: 1; transform: none; }
 }
+
