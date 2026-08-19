@@ -2617,30 +2617,30 @@
 <div class="trust-stat-row">
 <div class="trust-stat-label-row">
 <span class="trust-stat-name"><i class="fa-solid fa-microphone" style="color:#06b6d4;margin-right:6px"></i>Voice Detection</span>
-<span class="trust-stat-val">99.2%</span>
+<span class="trust-stat-val">96.5%</span>
 </div>
-<div class="trust-bar-track"><div class="trust-bar-fill" data-width="99.2" style="background: linear-gradient(90deg,#06b6d4,#8b5cf6);"></div></div>
+<div class="trust-bar-track"><div class="trust-bar-fill" data-width="96.5" style="background: linear-gradient(90deg,#06b6d4,#8b5cf6);"></div></div>
 </div>
 <div class="trust-stat-row">
 <div class="trust-stat-label-row">
 <span class="trust-stat-name"><i class="fa-solid fa-image" style="color:#a855f7;margin-right:6px"></i>Image Detection</span>
-<span class="trust-stat-val">98.7%</span>
+<span class="trust-stat-val">97.2%</span>
 </div>
-<div class="trust-bar-track"><div class="trust-bar-fill" data-width="98.7" style="background: linear-gradient(90deg,#a855f7,#06b6d4);"></div></div>
+<div class="trust-bar-track"><div class="trust-bar-fill" data-width="97.2" style="background: linear-gradient(90deg,#a855f7,#06b6d4);"></div></div>
 </div>
 <div class="trust-stat-row">
 <div class="trust-stat-label-row">
 <span class="trust-stat-name"><i class="fa-solid fa-font" style="color:#10b981;margin-right:6px"></i>Text Detection</span>
-<span class="trust-stat-val">97.4%</span>
+<span class="trust-stat-val">98.1%</span>
 </div>
-<div class="trust-bar-track"><div class="trust-bar-fill" data-width="97.4" style="background: linear-gradient(90deg,#10b981,#06b6d4);"></div></div>
+<div class="trust-bar-track"><div class="trust-bar-fill" data-width="98.1" style="background: linear-gradient(90deg,#10b981,#06b6d4);"></div></div>
 </div>
 <div class="trust-stat-row">
 <div class="trust-stat-label-row">
 <span class="trust-stat-name"><i class="fa-solid fa-video" style="color:#f43f5e;margin-right:6px"></i>Video Detection</span>
-<span class="trust-stat-val">96.8%</span>
+<span class="trust-stat-val">94.8%</span>
 </div>
-<div class="trust-bar-track"><div class="trust-bar-fill" data-width="96.8" style="background: linear-gradient(90deg,#f43f5e,#f59e0b);"></div></div>
+<div class="trust-bar-track"><div class="trust-bar-fill" data-width="94.8" style="background: linear-gradient(90deg,#f43f5e,#f59e0b);"></div></div>
 </div>
 </div>
 </div>
@@ -2949,8 +2949,57 @@ document.querySelectorAll('.faq-question').forEach(button => {
     });
 });
 </script>
+<script>
+// ===== TRUST METRICS ANIMATION =====
+(function(){
+    function animateTrustMetrics() {
+        const gaugeFill = document.getElementById('gauge-fill');
+        const gaugePercent = document.getElementById('gauge-percent');
+        
+        if (gaugeFill && gaugePercent && gaugePercent.textContent === '0%') {
+            const targetPercent = 96.7;
+            const totalLength = 565; 
+            const offset = totalLength - (totalLength * (targetPercent / 100));
+            
+            gaugeFill.style.strokeDashoffset = offset;
+            
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = progress * (2 - progress);
+                gaugePercent.textContent = (easeProgress * targetPercent).toFixed(1) + '%';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    gaugePercent.textContent = targetPercent + '%';
+                }
+            }
+            requestAnimationFrame(updateNumber);
+        }
+
+        const bars = document.querySelectorAll('.trust-bar-fill');
+        bars.forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            if (width && bar.style.width !== width + '%') {
+                bar.style.width = width + '%';
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(animateTrustMetrics, 500));
+    } else {
+        setTimeout(animateTrustMetrics, 500);
+    }
+})();
+</script>
 </body>
 </html>
+
 
 
 
