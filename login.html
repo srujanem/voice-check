@@ -666,28 +666,26 @@
     // --- Google OAuth Mock ---
     
     
+    
     window.doGoogleLogin = function(event) {
         if(event) event.preventDefault();
-        const btn = event.currentTarget;
-        const originalHtml = btn.innerHTML;
+        const btn = event.currentTarget || document.querySelector('.google-btn');
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Google...';
         btn.style.pointerEvents = 'none';
 
-        // Simulate network delay then redirect, no popups on mobile!
         setTimeout(() => {
-            const mockUser = {
-                email: "srujanem222@gmail.com",
-                name: "Srujan",
-                token: "google_oauth_mock_token_" + Date.now()
-            };
-            localStorage.setItem('auth_email', mockUser.email);
-            localStorage.setItem('user_name', mockUser.name);
-            localStorage.setItem('auth_token', mockUser.token);
-            
-            const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
-            window.location.href = redirect;
-        }, 1500);
+            try {
+                localStorage.setItem('auth_email', "srujanem222@gmail.com");
+                localStorage.setItem('user_name', "Srujan");
+                localStorage.setItem('auth_token', "google_oauth_mock_token_" + Date.now());
+            } catch(e) {
+                alert("Please disable Private/Incognito mode. Your browser is blocking the login data storage.");
+                return;
+            }
+            window.location.href = 'dashboard.html';
+        }, 800);
     };
+
 </script>
 </body>
 </html>
