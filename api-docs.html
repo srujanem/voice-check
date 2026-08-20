@@ -1,146 +1,252 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuthGuard API Documentation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AuthGuard — API Documentation</title>
+    <link rel="stylesheet" href="global.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="global.css?v=4">
     <style>
-        .api-container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-        .api-section { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        .code-block { background: #1e1e2e; color: #a6accd; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 14px; margin-top: 10px; border: 1px solid #333; }
-        .endpoint-badge { background: var(--accent-cyan); color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+        body { background-color: var(--bg-main); color: var(--text-primary); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        .api-key-box {
-            display: flex; gap: 10px; margin-top: 20px; align-items: center;
-        }
-        .api-key-input {
-            flex-grow: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary);
-            font-family: monospace; font-size: 16px;
+        /* Navbar */
+        .navbar { position: fixed; top: 0; width: 100%; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:white; font-size:20px; font-weight:700; }
+        
+        /* Docs Layout */
+        .docs-container { display: flex; max-width: 1600px; margin: 70px auto 0; width: 100%; min-height: calc(100vh - 70px); }
+        
+        /* Sidebar */
+        .docs-sidebar { width: 280px; background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 40px 20px; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .docs-sidebar-section { margin-bottom: 30px; }
+        .docs-sidebar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); font-weight: 700; margin-bottom: 15px; padding-left: 10px; }
+        .docs-sidebar-link { display: block; padding: 8px 10px; color: var(--text-primary); text-decoration: none; font-size: 14px; border-radius: 6px; transition: 0.2s; margin-bottom: 2px; }
+        .docs-sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--accent-cyan); }
+        .docs-sidebar-link.active { background: rgba(6,182,212,0.1); color: var(--accent-cyan); font-weight: 600; border-left: 3px solid var(--accent-cyan); }
+        
+        /* Main Content */
+        .docs-main { flex: 1; padding: 50px 80px; max-width: 900px; overflow-y: auto; }
+        .docs-main h1 { font-size: 36px; margin: 0 0 15px 0; background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .docs-main p { font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 30px; }
+        .docs-main h2 { font-size: 24px; margin: 50px 0 20px 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .docs-main h3 { font-size: 18px; margin: 30px 0 15px 0; color: #fff; }
+        
+        /* Code Blocks */
+        .code-window { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .code-header { background: #1e293b; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; }
+        .code-tabs { display: flex; gap: 15px; }
+        .code-tab { font-size: 13px; color: #94a3b8; cursor: pointer; font-family: monospace; transition: 0.2s; }
+        .code-tab:hover, .code-tab.active { color: var(--accent-cyan); }
+        .code-copy { background: none; border: none; color: #94a3b8; cursor: pointer; transition: 0.2s; }
+        .code-copy:hover { color: #fff; }
+        .code-content { padding: 20px; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; color: #e2e8f0; line-height: 1.5; overflow-x: auto; margin: 0; }
+        
+        /* Method Badges */
+        .method-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; font-family: monospace; margin-right: 10px; }
+        .method-post { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .method-get { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+        
+        /* Parameters Table */
+        .param-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .param-table th, .param-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .param-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
+        .param-table td { font-size: 14px; }
+        .param-name { font-family: monospace; font-weight: 600; color: var(--accent-purple); }
+        .param-type { font-family: monospace; font-size: 12px; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
+        
+        /* API Key Generator */
+        .api-key-box { background: linear-gradient(135deg, rgba(6,182,212,0.05), rgba(139,92,246,0.05)); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; }
+        .api-key-input-wrap { display: flex; gap: 10px; }
+        .api-key-input-wrap input { flex: 1; background: #0f172a; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; color: #10b981; font-family: monospace; font-size: 15px; pointer-events: none; }
+        
+        @media (max-width: 900px) {
+            .docs-container { flex-direction: column; margin-top: 70px; }
+            .docs-sidebar { width: 100%; height: auto; position: relative; top: 0; border-right: none; border-bottom: 1px solid var(--border-color); padding: 20px; }
+            .docs-main { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
-    
-    <header class="app-header" style="max-width: 900px; margin: 0 auto;">
-        <div class="logo-section">
-            <i class="fa-solid fa-code app-logo" style="font-size: 32px; color: var(--accent-cyan);"></i>
-            <div>
-                <h2>Developer API</h2>
-                <p style="font-size: 14px;">Integrate AuthGuard into your own apps</p>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> AuthGuard
+        </a>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <a href="dashboard.html" style="color:var(--text-secondary); text-decoration:none; font-size:14px; font-weight:600; transition:0.2s;">Dashboard</a>
+            <div id="nav-auth"></div>
+        </div>
+    </nav>
+
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <div class="docs-sidebar">
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">Getting Started</div>
+                <a href="#intro" class="docs-sidebar-link active">Introduction</a>
+                <a href="#auth" class="docs-sidebar-link">Authentication</a>
+                <a href="#errors" class="docs-sidebar-link">Error Codes</a>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">API Endpoints</div>
+                <a href="#detect-voice" class="docs-sidebar-link">Detect Voice</a>
+                <a href="#detect-image" class="docs-sidebar-link">Detect Image</a>
+                <a href="#detect-text" class="docs-sidebar-link">Detect Text</a>
+                <a href="#watermark" class="docs-sidebar-link">Create Watermark</a>
             </div>
         </div>
-        <a href="index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Home</a>
-    </header>
 
-    <div class="api-container">
-        
-        <div class="api-section" style="text-align: center;">
-            <h2 style="margin-bottom: 10px;">Your API Keys</h2>
-            <p style="color: var(--text-secondary);">Use this key to authenticate your backend requests.</p>
+        <!-- Main Content -->
+        <div class="docs-main">
+            <h1 id="intro">AuthGuard API</h1>
+            <p>The AuthGuard REST API allows you to programmatically access our enterprise-grade AI detection models. Integrate deepfake detection, voice cloning analysis, and AI-text classification directly into your own applications.</p>
+            
             <div class="api-key-box">
-                <input type="text" class="api-key-input" id="apiKeyDisplay" value="Click generate to create a new API key" readonly>
-                <button class="btn-primary" id="btnGenerateKey"><i class="fa-solid fa-key"></i> Generate Key</button>
-            </div>
-        </div>
-
-        <div class="api-section">
-            <h2 style="margin-bottom: 20px; display: flex; align-items: center;"><span class="endpoint-badge">POST</span> /predict_text</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 15px;">Analyze a string of text to determine if it was generated by an AI model (like ChatGPT).</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-                <!-- Request Panel -->
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px;">
-                    <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-secondary);">REQUEST BODY</h4>
-                    <textarea id="pg-request" rows="6" style="width: 100%; background: #1e1e2e; color: #a6accd; border: 1px solid #333; padding: 10px; border-radius: 6px; font-family: monospace; resize: vertical; box-sizing: border-box;">{
-  "text": "Artificial Intelligence is rapidly evolving..."
-}</textarea>
-                    <button id="pg-send" class="btn-primary" style="width: 100%; margin-top: 10px; padding: 8px;"><i class="fa-solid fa-play"></i> Send Request</button>
+                <div>
+                    <h3 style="margin:0 0 5px 0;">Your API Key</h3>
+                    <p style="margin:0; font-size:13px;">Use this secret key to authenticate your requests. Do not share it.</p>
                 </div>
-                
-                <!-- Response Panel -->
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column;">
-                    <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-secondary);">RESPONSE</h4>
-                    <div id="pg-response" style="flex: 1; background: #1e1e2e; color: #a6accd; border: 1px solid #333; padding: 10px; border-radius: 6px; font-family: monospace; overflow-y: auto; white-space: pre-wrap; font-size: 13px;">// Click 'Send Request' to see simulated response...</div>
+                <div class="api-key-input-wrap">
+                    <input type="text" id="api-key-display" value="sk_test_ag_XXXXXXXXXXXXXXXXXXXXXXXXXXXX">
+                    <button class="btn-primary" onclick="generateKey()"><i class="fa-solid fa-arrows-rotate"></i> Generate</button>
+                    <button class="btn-secondary" onclick="copyKey()"><i class="fa-regular fa-copy"></i></button>
                 </div>
             </div>
-        </div>
 
-        <div class="api-section">
-            <h2 style="margin-bottom: 20px; display: flex; align-items: center;"><span class="endpoint-badge" style="background: #8b5cf6;">POST</span> /predict_video</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 15px;">Upload a video file (MP4/MOV). The system extracts frames and returns an aggregate deepfake probability.</p>
+            <h2 id="auth">Authentication</h2>
+            <p>Authenticate your API requests by including your secret API key in the <code>Authorization</code> HTTP header. All API requests must be made over HTTPS.</p>
             
-            <div class="code-block">
-import requests
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <div class="code-tab active">cURL</div>
+                    </div>
+                </div>
+                <pre class="code-content"><code>curl -H "Authorization: Bearer sk_test_ag_XXXXXX" \
+     https://api.authguard.ai/v1/models</code></pre>
+            </div>
 
-url = "https://api.authguard.com/v1/predict_video"
-headers = {"Authorization": "Bearer YOUR_API_KEY"}
-files = {"video": open("test_clip.mp4", "rb")}
+            <h2 id="detect-voice">Detect Voice (Audio)</h2>
+            <p>Analyze an audio file to determine if it was synthesized using AI voice cloning technology (e.g., ElevenLabs, Bark).</p>
+            
+            <h3 style="display:flex; align-items:center;"><span class="method-badge method-post">POST</span> /v1/detect/voice</h3>
+            
+            <table class="param-table">
+                <thead>
+                    <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="param-name">file</td>
+                        <td><span class="param-type">file</span></td>
+                        <td>The audio file to analyze. Supported formats: <code>.wav</code>, <code>.mp3</code>, <code>.ogg</code>. Max size: 25MB.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">mode</td>
+                        <td><span class="param-type">string</span></td>
+                        <td>Optional. Set to <code>fast</code> for speed or <code>deep</code> for highest accuracy.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <div class="code-tab active">Python</div>
+                        <div class="code-tab">Node.js</div>
+                    </div>
+                </div>
+                <pre class="code-content"><code>import requests
+
+url = "https://api.authguard.ai/v1/detect/voice"
+headers = { "Authorization": "Bearer YOUR_API_KEY" }
+files = { "file": open("suspect_audio.wav", "rb") }
 
 response = requests.post(url, headers=headers, files=files)
-print(response.json())
+print(response.json())</code></pre>
             </div>
-        </div>
 
+            <h3>Response Example</h3>
+            <div class="code-window">
+                <pre class="code-content" style="color:#10b981;"><code>{
+  "id": "req_8x92nd10a",
+  "status": "success",
+  "analysis": {
+    "is_ai_generated": true,
+    "confidence_score": 99.4,
+    "detected_model": "ElevenLabs",
+    "artifacts": ["high frequency cutoff", "unnatural breath cadence"]
+  }
+}</code></pre>
+            </div>
+            
+            <h2 id="detect-image">Detect Image (Deepfake)</h2>
+            <p>Analyze an image to detect manipulation, stable diffusion generation, or GAN synthesis.</p>
+            <h3 style="display:flex; align-items:center;"><span class="method-badge method-post">POST</span> /v1/detect/image</h3>
+            <p>Works identically to the voice endpoint, but accepts <code>.jpg</code>, <code>.png</code>, and <code>.webp</code> formats.</p>
+
+        </div>
     </div>
 
-    <script src="theme.js"></script>
+    <!-- Scripts -->
+    <script src="auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let storedKey = localStorage.getItem('authGuard_apiKey');
-            if (storedKey) {
-                document.getElementById('apiKeyDisplay').value = storedKey;
+            if (window.injectNavAuthState) {
+                window.injectNavAuthState(document.getElementById('nav-auth'));
+            }
+            
+            // Check if they have an API key in local storage, else use placeholder
+            const savedKey = localStorage.getItem('ag_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-display').value = savedKey;
             }
         });
 
-        document.getElementById('btnGenerateKey').addEventListener('click', () => {
+        function generateKey() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let key = 'sk_live_';
-            for (let i = 0; i < 24; i++) {
+            let key = 'sk_live_ag_';
+            for (let i = 0; i < 32; i++) {
                 key += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            document.getElementById('apiKeyDisplay').value = key;
-            localStorage.setItem('authGuard_apiKey', key);
-            document.getElementById('btnGenerateKey').innerHTML = '<i class="fa-solid fa-check"></i> Rolled!';
-            setTimeout(() => {
-                document.getElementById('btnGenerateKey').innerHTML = '<i class="fa-solid fa-key"></i> Generate Key';
-            }, 2000);
-        });
+            document.getElementById('api-key-display').value = key;
+            localStorage.setItem('ag_api_key', key);
+            
+            const btn = event.currentTarget;
+            const icon = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Generated';
+            btn.style.background = '#10b981';
+            setTimeout(() => { btn.innerHTML = icon; btn.style.background = ''; }, 2000);
+        }
 
-        // Playground Logic
-        const btnSend = document.getElementById('pg-send');
-        const resBox = document.getElementById('pg-response');
+        function copyKey() {
+            const input = document.getElementById('api-key-display');
+            navigator.clipboard.writeText(input.value);
+            
+            const btn = event.currentTarget;
+            const icon = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            setTimeout(() => { btn.innerHTML = icon; }, 2000);
+        }
+
+        // Simple ScrollSpy for sidebar
+        const sections = document.querySelectorAll('h2[id], h1[id]');
+        const navLinks = document.querySelectorAll('.docs-sidebar-link');
         
-        btnSend.addEventListener('click', () => {
-            const reqText = document.getElementById('pg-request').value;
-            resBox.innerHTML = '<span style="color: #6ee7b7;">Executing request...</span>';
-            btnSend.disabled = true;
-            btnSend.style.opacity = '0.7';
-
-            setTimeout(() => {
-                btnSend.disabled = false;
-                btnSend.style.opacity = '1';
-                try {
-                    const parsed = JSON.parse(reqText);
-                    if(!parsed.text) throw new Error("Missing 'text' field");
-                    
-                    const isAI = parsed.text.includes('rapid') || parsed.text.length > 100;
-                    const probAI = isAI ? (85 + Math.random() * 14).toFixed(1) : (Math.random() * 20).toFixed(1);
-                    
-                    const mockResponse = {
-                        "status": "success",
-                        "prediction": isAI ? "AI-Generated" : "Human Written",
-                        "confidence": parseFloat(probAI),
-                        "model_version": "ag-text-v2.1"
-                    };
-                    resBox.innerHTML = '<span style="color: #6ee7b7;">200 OK</span>\n\n' + JSON.stringify(mockResponse, null, 2);
-                } catch(e) {
-                    resBox.innerHTML = '<span style="color: #ef4444;">400 Bad Request</span>\n\n{\n  "error": "Invalid JSON or missing fields."\n}';
+        document.querySelector('.docs-main').addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (document.querySelector('.docs-main').scrollTop >= sectionTop - 100) {
+                    current = section.getAttribute('id');
                 }
-            }, 800);
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === #) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
 </body>
