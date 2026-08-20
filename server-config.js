@@ -40,12 +40,13 @@
         }
         @media (max-width: 768px) {
             #ag-status-badge { 
-                bottom: auto; 
-                top: 85px; 
-                left: 50%; 
-                transform: translateX(-50%); 
+                bottom: 25px; 
+                top: auto; 
+                left: 20px; 
+                transform: none; 
                 box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             }
+        }
         }
     `;
     document.head.appendChild(style);
@@ -130,6 +131,7 @@
     autoConnect();
     setInterval(autoConnect, 30000);   // Re-check every 30 seconds
 })();
+
 
 
 
