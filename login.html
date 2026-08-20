@@ -665,6 +665,7 @@
     
     // --- Google OAuth Mock ---
     
+    
     window.doGoogleLogin = function(event) {
         if(event) event.preventDefault();
         const btn = event.currentTarget;
@@ -686,17 +687,6 @@
             const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
             window.location.href = redirect;
         }, 1500);
-    };
- else {
-            // Fallback if popups are blocked
-            setTimeout(() => {
-                const mockUser = { email: "srujanem222@gmail.com", name: "Srujan", token: "google_mock" };
-                localStorage.setItem('auth_email', mockUser.email);
-                localStorage.setItem('user_name', mockUser.name);
-                localStorage.setItem('auth_token', mockUser.token);
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        }
     };
 </script>
 </body>
