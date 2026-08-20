@@ -50,33 +50,92 @@ class ScanHistory {
         this.renderHistory();
     }
 
+    
     renderHistory() {
-        const container = document.getElementById('history-list');
-        if (!container) return;
-
         const history = this.getHistory();
-        if (history.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color: var(--text-secondary); margin-top: 20px;">No recent scans.</p>';
-            return;
+        
+        // Render for sidebar or UI panels if they exist
+        const container = document.getElementById('history-list');
+        if (container) {
+            if (history.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-secondary); margin-top: 20px;">No recent scans.</p>';
+            } else {
+                container.innerHTML = history.map(scan => 
+                    <div class="history-item " style="padding: 15px; border-radius: 12px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
+                                <i class="fa-solid "></i> 
+                            </div>
+                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;"></div>
+                            <div style="font-size: 12px; font-weight: bold; color: ">
+                                 (%)
+                            </div>
+                        </div>
+                        <div style="font-size: 24px; color: ">
+                            <i class="fa-solid "></i>
+                        </div>
+                    </div>
+                ).join('');
+            }
         }
 
-        container.innerHTML = history.map(scan => `
-            <div class="history-item ${scan.isAi ? 'fake' : 'authentic'}" style="padding: 15px; border-radius: 12px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
-                        <i class="fa-solid ${scan.type === 'Voice' ? 'fa-microphone' : scan.type === 'Image' ? 'fa-image' : 'fa-file-signature'}"></i> ${scan.date}
-                    </div>
-                    <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">${scan.fileName}</div>
-                    <div style="font-size: 12px; font-weight: bold; color: ${scan.isAi ? 'var(--color-error)' : 'var(--color-success)'}">
-                        ${scan.isAi ? 'AI Generated' : 'Human / Authentic'} (${scan.confidence}%)
-                    </div>
-                </div>
-                <div style="font-size: 24px; color: ${scan.isAi ? 'var(--color-error)' : 'var(--color-success)'}">
-                    <i class="fa-solid ${scan.isAi ? 'fa-robot' : 'fa-user-check'}"></i>
-                </div>
-            </div>
-        `).join('');
+        // Render for Dashboard table if it exists
+        const dashTable = document.getElementById('dash-recent-scans');
+        if (dashTable) {
+            if (history.length === 0) {
+                dashTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:30px;">No scan history yet.</td></tr>';
+            } else {
+                dashTable.innerHTML = history.map(scan => {
+                    const statusClass = scan.isAi ? 'status-fake' : 'status-authentic';
+                    const statusIcon = scan.isAi ? 'fa-robot' : 'fa-user-check';
+                    const statusText = scan.isAi ? 'AI Generated' : 'Authentic';
+                    
+                    let typeIcon = 'fa-file';
+                    if (scan.type === 'Voice') typeIcon = 'fa-microphone';
+                    if (scan.type === 'Image') typeIcon = 'fa-image';
+                    if (scan.type === 'Text') typeIcon = 'fa-font';
+                    if (scan.type === 'Video') typeIcon = 'fa-video';
+                    
+                    return 
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:#fff;">
+                                        <i class="fa-solid "></i>
+                                    </div>
+                                    <span style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <span class="status-badge ">
+                                    <i class="fa-solid "></i>  (%)
+                                </span>
+                            </td>
+                            <td style="color:#94a3b8;font-size:13px;"></td>
+                            <td>
+                                <button onclick="alert('View report feature coming soon!')" style="background:none;border:none;color:var(--accent-cyan);cursor:pointer;font-weight:600;">View Report</button>
+                            </td>
+                        </tr>
+                    ;
+                }).join('');
+            }
+            
+            // Update counts on dashboard
+            const totalScansEl = document.getElementById('dash-total-scans');
+            const aiScansEl = document.getElementById('dash-ai-threats');
+            if (totalScansEl) totalScansEl.innerText = history.length;
+            
+            if (aiScansEl) aiScansEl.innerText = history.filter(s => s.isAi).length;
+            const avgConfEl = document.getElementById('dash-avg-conf');
+            if (avgConfEl && history.length > 0) {
+                const avg = history.reduce((sum, s) => sum + parseFloat(s.confidence || 0), 0) / history.length;
+                avgConfEl.innerText = avg.toFixed(1) + '%';
+            }
+
+        }
     }
+
 
     async fetchHistoryFromDB() {
         const userId = localStorage.getItem('user_id');
@@ -169,3 +228,4 @@ if (document.readyState === 'loading') {
 } else {
     initHistory();
 }
+\nwindow.scanHistory = new ScanHistory();\ndocument.addEventListener('DOMContentLoaded', () => { if (window.scanHistory) window.scanHistory.renderHistory(); });\n
