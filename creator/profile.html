@@ -294,27 +294,39 @@
         </div>
     </nav>
 
-    <!-- Mobile Drawer -->
-    <div class="mobile-overlay" id="mobileOverlay"></div>
-    <div class="mobile-drawer" id="mobileDrawer">
+        <!-- Mobile Slide-Over Drawer -->
+    <div id="mobile-drawer-overlay"></div>
+    <div id="mobile-drawer">
         <div class="drawer-header">
-            <div class="drawer-logo">
-                <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan);"></i> AuthGuard
+            <div class="drawer-brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                AuthGuard
             </div>
-            <button class="drawer-close" id="drawerClose"><i class="fa-solid fa-xmark"></i></button>
+            <button class="drawer-close" id="drawer-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
+
         <nav class="drawer-nav">
-            <a href="/" class="drawer-nav-item"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="/#tools" class="drawer-nav-item"><i class="fa-solid fa-grid-2"></i> Tools</a>
-            <a href="/creator/profile.html" class="drawer-nav-item active"><i class="fa-solid fa-user-astronaut"></i> Creator</a>
+            <a href="/" class="drawer-nav-item" id="drawer-home">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+            <a href="/#tools" class="drawer-nav-item" id="drawer-tools">
+                <i class="fa-solid fa-grid-2"></i> Tools
+            </a>
+            <a href="/#pricing" class="drawer-nav-item" id="drawer-pricing">
+                <i class="fa-solid fa-tag"></i> Pricing
+            </a>
+            <a href="/creator/profile.html" class="drawer-nav-item active" id="drawer-creator">
+                <i class="fa-solid fa-user-astronaut"></i> Creator
+            </a>
         </nav>
         <div class="drawer-divider"></div>
-        <div class="drawer-auth" id="drawer-auth-container">
+        <div class="drawer-auth" id="drawer-auth-container" style="padding: 16px;">
             <!-- Auth buttons injected here -->
         </div>
     </div>
-
-    <!-- Creator Hero -->
+<!-- Creator Hero -->
     <main class="creator-hero">
         <div class="creator-container">
             
@@ -377,28 +389,9 @@
                 injectNavAuthState(navAuth);
             }
             
-            // Re-bind drawer toggle logic for this specific page just in case
-            const hamburgerMenu = document.getElementById('hamburgerMenu');
-            const mobileDrawer = document.getElementById('mobileDrawer');
-            const mobileOverlay = document.getElementById('mobileOverlay');
-            const drawerClose = document.getElementById('drawerClose');
-            
-            if (hamburgerMenu && mobileDrawer) {
-                hamburgerMenu.addEventListener('click', () => {
-                    mobileDrawer.classList.add('open');
-                    mobileOverlay.classList.add('open');
-                });
-                drawerClose.addEventListener('click', () => {
-                    mobileDrawer.classList.remove('open');
-                    mobileOverlay.classList.remove('open');
-                });
-                mobileOverlay.addEventListener('click', () => {
-                    mobileDrawer.classList.remove('open');
-                    mobileOverlay.classList.remove('open');
-                });
-            }
-        });
+            });
     </script>
 </body>
 </html>
+
 
