@@ -50,13 +50,14 @@
      * - If logged in: shows avatar circle + email + logout button.
      * - If not logged in: shows a "Sign In" link.
      */
-    window.injectNavAuthState = function(containerEl) {
+        window.injectNavAuthState = function(containerEl) {
         if (!containerEl) return;
         const user = window.getCurrentUser();
         if (user) {
             const initials = user.name.slice(0, 2).toUpperCase();
             containerEl.innerHTML = `
-                <div style="display:flex;align-items:center;gap:10px;font-family:inherit;">
+                <div style="display:flex;align-items:center;gap:15px;font-family:inherit;">
+                    <span style="font-size:12px;font-weight:600;color:var(--success);background:rgba(16,185,129,0.1);padding:4px 10px;border-radius:12px;border:1px solid rgba(16,185,129,0.2);"><i class="fa-solid fa-crown"></i> Pro</span>
                     <a href="/dashboard.html" style="text-decoration:none;"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 10px rgba(6,182,212,0.3);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform=''">${initials}</div></a>
                     <a href="/dashboard.html" class="hide-on-mobile" style="font-size:13px;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-primary)'">${user.email}</a>
                     <button onclick="authLogout()" style="background:none;border:1px solid rgba(239,68,68,0.3);color:#ef4444;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">
@@ -64,15 +65,33 @@
                     </button>
                 </div>`;
         } else {
+            let scans = parseInt(localStorage.getItem('free_scans_used') || '0', 10);
+            let remaining = Math.max(0, 2 - scans);
+            let badgeColor = remaining > 0 ? 'var(--accent-cyan)' : 'var(--error)';
+            let badgeText = remaining + '/2 Free Scans';
+            
             containerEl.innerHTML = `
-                <a href="/login.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
-                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
-                </a>`;
+                <div style="display:flex;align-items:center;gap:12px;font-family:inherit;">
+                    <span class="hide-on-mobile" style="font-size:11px;font-weight:600;color:${badgeColor};background:rgba(255,255,255,0.05);padding:5px 10px;border-radius:12px;border:1px solid ${badgeColor}; opacity:0.8;">
+                        <i class="fa-solid fa-bolt"></i> ${badgeText}
+                    </span>
+                    <a href="/login.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                    </a>
+                </div>`;
         }
     };
 
-
-
+    // Also re-inject nav state after gate increments
+    const oldCheck = window.checkScanGate;
+    window.checkScanGate = function() {
+        const res = oldCheck();
+        if (res && !window.getCurrentUser() && document.getElementById('nav-auth')) {
+            window.injectNavAuthState(document.getElementById('nav-auth'));
+        }
+        return res;
+    };
+    
     // --- Premium Scan Gate ---
     window.checkScanGate = function() {
         if (window.getCurrentUser()) return true; // Logged in, unlimited
@@ -110,7 +129,7 @@
             const modal = document.createElement('div');
             modal.style.cssText = 'background:#12121a;border:1px solid rgba(255,255,255,0.1);padding:40px;border-radius:24px;width:90%;max-width:440px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.8);animation:modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);position:relative;';
             
-            modal.innerHTML = 
+            modal.innerHTML = `
                 <button onclick="document.getElementById('gate-modal').remove()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:20px;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'"><i class="fa-solid fa-xmark"></i></button>
                 <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2));display:flex;align-items:center;justify-content:center;margin:0 auto 24px auto;border:1px solid rgba(255,255,255,0.05);">
                     <i class="fa-solid fa-lock" style="font-size:28px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>
@@ -121,7 +140,7 @@
                 <a href="/login.html" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:#fff;color:#0a0a0f;text-decoration:none;border-radius:12px;font-weight:600;font-size:15px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
                     <i class="fa-solid fa-right-to-bracket"></i> Sign In to Continue
                 </a>
-            ;
+            `;
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
         }
