@@ -3007,7 +3007,17 @@ document.querySelectorAll('.faq-question').forEach(button => {
     }
 })();
 </script>
+
+<script src="auth.js?v=2"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.injectNavAuthState) {
+            window.injectNavAuthState(document.getElementById('nav-auth'));
+        }
+    });
+</script>
 </body>
+
 </html>
 
 
