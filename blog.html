@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - VoiceCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="global.css?v=5">
+    <style>
+        body { background-color: var(--bg-main); color: var(--text-primary); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .blog-hero { padding: 120px 20px 60px; text-align: center; }
+        .blog-title { font-size: 42px; font-weight: 800; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+        .blog-subtitle { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 40px; line-height: 1.6; }
+        
+        .blog-grid { display: flex; gap: 30px; justify-content: center; max-width: 1200px; margin: 0 auto; padding: 0 20px 100px; flex-wrap: wrap; }
+        
+        .blog-card { background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); flex: 1; min-width: 300px; max-width: 350px; position: relative; transition: all 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; text-decoration: none; }
+        .blog-card:hover { transform: translateY(-10px); border-color: rgba(6,182,212,0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        
+        .blog-card h3 { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+        .blog-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; flex: 1; line-height: 1.5; }
+        .read-more { color: var(--accent-cyan); font-weight: 600; font-size: 14px; text-decoration: none; }
+        
+        /* Footer */
+        footer { margin-top: auto; padding: 40px 20px; text-align: center; border-top: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="logo-text">AuthGuard</div>
+            </a>
+        </div>
+        <div class="nav-links hide-on-mobile">
+            <a href="index.html#tools">Tools</a>
+            
+            <a href="api-docs.html">Documentation</a>
+            <a href="blog.html">Blog</a>
+        </div>
+        <div class="nav-right">
+            <div id="nav-auth"></div>
+            <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+        </div>
+    </nav>
+
+    <div class="blog-hero">
+        <h1 class="blog-title">The AuthGuard Blog</h1>
+        <p class="blog-subtitle">Insights, news, and deep dives into AI detection, deepfakes, and synthetic media.</p>
+    </div>
+
+    <div class="blog-grid">
+        <a href="blog/how-to-spot-an-ai-voice-clone.html" class="blog-card">
+            <h3>How to Spot an AI Voice Clone</h3>
+            <p>Learn the top telltale signs of AI-generated voices and how to protect yourself from voice cloning scams.</p>
+            <span class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a href="blog/the-rise-of-deepfakes-in-2026.html" class="blog-card">
+            <h3>The Rise of Deepfakes in 2026</h3>
+            <p>A comprehensive overview of how deepfake technology has evolved and the state of synthetic media today.</p>
+            <span class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a href="blog/why-ai-detection-matters.html" class="blog-card">
+            <h3>Why AI Detection Matters Now More Than Ever</h3>
+            <p>As AI becomes more sophisticated, distinguishing human from machine is critical for trust and security.</p>
+            <span class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a href="blog/protecting-your-digital-identity.html" class="blog-card">
+            <h3>Protecting Your Digital Identity</h3>
+            <p>Actionable steps you can take today to secure your digital footprint against AI impersonators.</p>
+            <span class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a href="blog/the-future-of-synthetic-media.html" class="blog-card">
+            <h3>The Future of Synthetic Media</h3>
+            <p>What's next for AI generation? We explore the cutting edge of audio and video synthesis.</p>
+            <span class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 AuthGuard AI Detection Suite. All rights reserved.</p>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="theme.js"></script>
+</body>
+</html>

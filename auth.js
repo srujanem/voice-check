@@ -85,8 +85,11 @@
     // Also re-inject nav state after gate increments
     const oldCheck = window.checkScanGate;
     window.checkScanGate = function() {
-        const res = oldCheck();
-        if (res && !window.getCurrentUser() && document.getElementById('nav-auth')) {
+    return true; // Pricing and scan limits have been removed
+};
+
+
+window.getCurrentUser() && document.getElementById('nav-auth')) {
             window.injectNavAuthState(document.getElementById('nav-auth'));
         }
         return res;
@@ -94,7 +97,11 @@
     
     // --- Premium Scan Gate ---
     window.checkScanGate = function() {
-        if (window.getCurrentUser()) return true; // Logged in, unlimited
+    return true; // Pricing and scan limits have been removed
+};
+
+
+window.getCurrentUser()) return true; // Logged in, unlimited
 
         let scans = parseInt(localStorage.getItem('free_scans_used') || '0', 10);
         
