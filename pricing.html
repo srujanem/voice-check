@@ -102,7 +102,7 @@
                 <li><i class="fa-solid fa-check"></i> Priority Processing Speed</li>
                 <li class="no"><i class="fa-solid fa-xmark"></i> API Access</li>
             </ul>
-            <a href="checkout.html" class="btn-pricing btn-primary">Upgrade to Pro</a>
+            <button class="btn-pricing btn-primary" onclick="initiateStripeCheckout(this)">Upgrade to Pro</button>
         </div>
 
         <!-- Enterprise Tier -->
@@ -128,12 +128,53 @@
 
     <script src="auth.js"></script>
     <script src="theme.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.injectNavAuthState) {
                 window.injectNavAuthState(document.getElementById('nav-auth'));
             }
         });
+
+        async function initiateStripeCheckout(btn) {
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading Secure Checkout...';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+
+            try {
+                let userEmail = 'guest@example.com';
+                if (window.getCurrentUser) {
+                    const user = window.getCurrentUser();
+                    if (user && user.email) userEmail = user.email;
+                }
+
+                // Call the real Node.js backend
+                let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+                if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
+
+                const response = await fetch(${backendUrl}/api/create-checkout-session, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+
+                const data = await response.json();
+                
+                if (data.url) {
+                    // Redirect to Official Stripe Checkout
+                    window.location.href = data.url;
+                } else {
+                    throw new Error('No checkout URL returned');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Checkout failed to initialize. Please try again.');
+                btn.innerHTML = 'Upgrade to Pro';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+            }
+        }
     </script>
+
 </body>
 </html>
