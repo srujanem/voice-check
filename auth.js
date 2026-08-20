@@ -65,7 +65,7 @@
                 </div>`;
         } else {
             containerEl.innerHTML = `
-                <a href="/login.html?v=v3_fix" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                <a href="/signin.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
                     <i class="fa-solid fa-right-to-bracket"></i> Sign In
                 </a>`;
         }

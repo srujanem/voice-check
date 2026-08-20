@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description" content="Sign in or create your VoiceCheck account to access AI detection history and personalized results.">
+    <title>Sign In — VoiceCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0f;
+            --bg-card: rgba(255,255,255,0.04);
+            --bg-input: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.09);
+            --text: #f1f5f9;
+            --text-sec: #94a3b8;
+            --cyan: #06b6d4;
+            --purple: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+            --gradient: linear-gradient(135deg, #06b6d4, #8b5cf6);
+        }
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --bg-card: rgba(0,0,0,0.03);
+            --bg-input: rgba(0,0,0,0.04);
+            --border: rgba(0,0,0,0.09);
+            --text: #0f172a;
+            --text-sec: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% -10%, rgba(6,182,212,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 110%, rgba(139,92,246,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ── Card ─────────────────────────────────────────────────────── */
+        .card {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 440px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px 36px;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+            animation: fadeSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Brand ─────────────────────────────────────────────────────── */
+        .brand {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 28px;
+            text-decoration: none;
+        }
+        .brand-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--gradient);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #fff;
+        }
+        .brand-name { font-size: 18px; font-weight: 700; color: var(--text); }
+
+        /* ── Tabs ──────────────────────────────────────────────────────── */
+        .tabs {
+            display: flex; gap: 4px;
+            background: var(--bg-input);
+            border-radius: 10px; padding: 4px;
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px; border: none; background: none;
+            border-radius: 8px; cursor: pointer;
+            font-family: inherit; font-size: 13px; font-weight: 600;
+            color: var(--text-sec); transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: var(--gradient); color: #fff;
+            box-shadow: 0 2px 12px rgba(6,182,212,0.35);
+        }
+
+        /* ── Form Steps ─────────────────────────────────────────────────── */
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.3s ease both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .subtitle { font-size: 14px; color: var(--text-sec); margin-bottom: 24px; line-height: 1.5; }
+
+        /* ── Fields ─────────────────────────────────────────────────────── */
+        .field { margin-bottom: 16px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--text-sec); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .input-wrap { position: relative; }
+        .input-wrap > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-sec); font-size: 14px; pointer-events: none; }
+        input[type="email"], input[type="password"], input[type="text"] {
+            width: 100%; padding: 12px 14px 12px 40px;
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text);
+            font-family: inherit; font-size: 15px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+        input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
+        .show-pw { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-sec); cursor: pointer; font-size: 14px; padding: 4px; }
+
+        /* ── OTP Grid ─────────────────────────────────────────────────────── */
+        .otp-grid { display: flex; gap: 6px; margin-top: 6px; justify-content: space-between; }
+        .otp-grid input {
+            flex: 1; text-align: center; padding: 14px 6px;
+            font-size: 20px; font-weight: 700; letter-spacing: 0;
+            border-radius: 10px;
+        }
+
+        /* ── Buttons ─────────────────────────────────────────────────────── */
+        .btn-primary {
+            width: 100%; padding: 13px;
+            background: var(--gradient); color: #fff;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6,182,212,0.4); }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+        .btn-primary.loading i.fa-spinner { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-text {
+            width: 100%; padding: 9px; background: none; border: none;
+            color: var(--cyan); font-family: inherit; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s ease; margin-top: 4px;
+        }
+        .btn-text:hover { opacity: 0.75; }
+
+        /* ── Alert Banner ────────────────────────────────────────────────── */
+        .alert {
+            display: none; align-items: flex-start; gap: 10px;
+            padding: 12px 14px; border-radius: 10px; margin-bottom: 16px;
+            font-size: 13px; font-weight: 500; line-height: 1.5;
+        }
+        .alert.show { display: flex; }
+        .alert.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.25);   color: #fca5a5; }
+        .alert.success { background: rgba(16,185,129,0.1);  border: 1px solid rgba(16,185,129,0.25);  color: #6ee7b7; }
+
+        /* ── Divider ─────────────────────────────────────────────────────── */
+        .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+        .divider span { font-size: 12px; color: var(--text-sec); }
+
+        /* ── Footer ─────────────────────────────────────────────────────── */
+        .back-home { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 24px; font-size: 13px; color: var(--text-sec); text-decoration: none; transition: color 0.2s; }
+        .back-home:hover { color: var(--cyan); }
+
+        /* ── Theme toggle ────────────────────────────────────────────────── */
+        .theme-btn {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--bg-card); border: 1px solid var(--border);
+            color: var(--text-sec); font-size: 14px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease; backdrop-filter: blur(12px);
+        }
+        .theme-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+
+        /* ── Strength bar ────────────────────────────────────────────────── */
+        .strength-wrap { margin-top: 6px; }
+        .strength-bar { height: 3px; border-radius: 2px; background: var(--border); overflow: hidden; }
+        .strength-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 0.4s ease, background 0.4s ease; }
+        .strength-label { font-size: 11px; margin-top: 4px; color: var(--text-sec); }
+
+        /* ── Resend countdown ─────────────────────────────────────────────── */
+        #resend-btn { color: var(--text-sec); cursor: not-allowed; }
+        #resend-btn.ready { color: var(--cyan); cursor: pointer; }
+
+        @media (max-width: 480px) {
+            .card { padding: 28px 22px; }
+            h2 { font-size: 20px; }
+        }
+    
+        .google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 15px; font-weight: 600; padding: 12px; margin-bottom: 25px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); transition: all 0.2s ease; cursor: pointer; }
+        .google-btn:hover { background: rgba(255,255,255,0.05); border-color: #4285F4; }
+
+    </style>
+</head>
+<body>
+
+<button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
+    <i class="fa-solid fa-sun"></i>
+</button>
+
+<div class="card">
+    <a href="index.html" class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <span class="brand-name">VoiceCheck</span>
+    </a>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <div id="alert-box" class="alert" role="alert">
+        <i class="fa-solid fa-circle-info"></i>
+        <span id="alert-msg"></span>
+    </div>
+
+    <!-- ═══ LOGIN FLOW ═══ -->
+    <div id="login-flow">
+        <div class="step active" id="login-step-1">
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to access your scan history and saved results.</p>
+
+            <div class="field">
+                <label>Email</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" autofocus>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Your password" autocomplete="current-password">
+                    <button class="show-pw" type="button" onclick="togglePw('login-password', this)" tabindex="-1">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="login-btn" onclick="doLogin()">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+            </button>
+
+            
+            <button class="btn-secondary google-btn" type="button" onclick="doGoogleLogin(event)">
+                <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="divider"><span>or</span></div>
+
+            <button class="btn-text" onclick="switchTab('signup')">
+                <i class="fa-solid fa-user-plus"></i> Create a new account
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══ SIGNUP FLOW ═══ -->
+    <div id="signup-flow" style="display:none;">
+
+        <!-- Step 1: Enter Email → request OTP -->
+        <div class="step active" id="signup-step-1">
+            <h2>Create account</h2>
+            <p class="subtitle">Enter your email and we'll send you a one-time code to verify it.</p>
+
+            <div class="field">
+                <label>Email</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+                </div>
+            </div>
+
+            <button class="btn-primary" id="send-otp-btn" onclick="requestOtp()">
+                <i class="fa-solid fa-paper-plane"></i> Send Verification Code
+            </button>
+
+            
+            <button class="btn-secondary google-btn" type="button" onclick="doGoogleLogin(event)">
+                <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="divider"><span>or</span></div>
+
+            <button class="btn-text" onclick="switchTab('login')">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Already have an account? Sign in
+            </button>
+        </div>
+
+        <!-- Step 2: Enter OTP + password -->
+        <div class="step" id="signup-step-2">
+            <h2>Verify & Set Password</h2>
+            <p class="subtitle" id="otp-subtitle">Enter the 6-digit code sent to <strong></strong> and choose a password.</p>
+
+            <div class="field">
+                <label>Verification Code</label>
+                <div class="otp-grid" id="otp-grid">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 1">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 2">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 3">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 4">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 5">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-box" aria-label="Digit 6">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="signup-password" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+                    <button class="show-pw" type="button" onclick="togglePw('signup-password', this)" tabindex="-1">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <div class="strength-wrap">
+                    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                    <div class="strength-label" id="strength-label"></div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="verify-btn" onclick="verifyOtp()">
+                <i class="fa-solid fa-check"></i> Create Account
+            </button>
+
+            <button class="btn-text" id="resend-btn" onclick="resendOtp()">
+                Resend code (<span id="countdown">60</span>s)
+            </button>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div class="step" id="signup-step-3">
+            <div style="text-align:center;padding:20px 0;">
+                <div style="font-size:52px;margin-bottom:16px;">🎉</div>
+                <h2>Account created!</h2>
+                <p class="subtitle" style="margin-top:8px;">You're signed in. Redirecting to the dashboard…</p>
+                <div style="margin-top:24px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                    <div id="redirect-bar" style="height:100%;width:0%;background:var(--gradient);border-radius:2px;transition:width 3s linear;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="index.html" class="back-home">
+        <i class="fa-solid fa-arrow-left"></i> Back to home
+    </a>
+</div>
+
+<script src="server-config.js?v=6"></script>
+<script>
+(function() {
+    // ── Theme ──────────────────────────────────────────────────────────────
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    const themeBtn = document.getElementById('themeToggle');
+    function updateThemeIcon() {
+        themeBtn.innerHTML = html.getAttribute('data-theme') === 'dark'
+            ? '<i class="fa-solid fa-sun"></i>'
+            : '<i class="fa-solid fa-moon"></i>';
+    }
+    updateThemeIcon();
+    themeBtn.addEventListener('click', () => {
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeIcon();
+    });
+
+    // ── Tab switch ─────────────────────────────────────────────────────────
+    window.switchTab = function(tab) {
+        clearAlert();
+        document.getElementById('login-flow').style.display  = tab === 'login'  ? '' : 'none';
+        document.getElementById('signup-flow').style.display = tab === 'signup' ? '' : 'none';
+        document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+        document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    };
+
+    // ── Alert helpers ───────────────────────────────────────────────────────
+    function showAlert(msg, type) {
+        const box = document.getElementById('alert-box');
+        box.className = 'alert show ' + type;
+        box.querySelector('i').className = type === 'success'
+            ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+        document.getElementById('alert-msg').textContent = msg;
+    }
+    function clearAlert() { document.getElementById('alert-box').classList.remove('show'); }
+
+    // ── Password visibility toggle ─────────────────────────────────────────
+    window.togglePw = function(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.querySelector('i').className = isText ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+    };
+
+    // ── Password strength ──────────────────────────────────────────────────
+    window.checkStrength = function(pw) {
+        const fill  = document.getElementById('strength-fill');
+        const label = document.getElementById('strength-label');
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+        const levels = [
+            { label: '',              color: 'transparent', w: '0%'  },
+            { label: 'Weak',          color: '#ef4444',     w: '25%' },
+            { label: 'Fair',          color: '#f59e0b',     w: '50%' },
+            { label: 'Good',          color: '#06b6d4',     w: '75%' },
+            { label: 'Strong ✓',      color: '#10b981',     w: '100%'},
+        ];
+        const l = levels[score] || levels[0];
+        fill.style.width = l.w;
+        fill.style.background = l.color;
+        label.textContent = l.label;
+        label.style.color = l.color;
+    };
+
+    // ── Backend URL helper ─────────────────────────────────────────────────
+    function getBackendUrl() {
+        return (window.AUTHGUARD_BACKEND_URL ||
+                localStorage.getItem('zrok_url') ||
+                'http://localhost:5000').replace(/\/$/, '');
+    }
+
+    // ── Button loading state ───────────────────────────────────────────────
+    function setLoading(btn, loading) {
+        btn.disabled = loading;
+        if (loading) {
+            btn.dataset.orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner"></i> Please wait…';
+            btn.classList.add('loading');
+        } else {
+            btn.innerHTML = btn.dataset.orig || btn.innerHTML;
+            btn.classList.remove('loading');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // LOGIN
+    // ══════════════════════════════════════════════════════════════════════
+    window.doLogin = async function() {
+        clearAlert();
+        const email    = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        if (!email || !password) { showAlert('Please fill in both fields.', 'error'); return; }
+
+        const btn = document.getElementById('login-btn');
+        setLoading(btn, true);
+
+        try {
+            const res = await fetch(getBackendUrl() + '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Login failed');
+
+            // Persist auth
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('auth_email', email);
+            localStorage.setItem('user_name', email.split('@')[0]);
+
+            showAlert('Signed in! Redirecting…', 'success');
+            setTimeout(() => {
+                const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
+                location.href = redirect;
+            }, 900);
+        } catch (err) {
+            showAlert(err.message, 'error');
+        } finally {
+            setLoading(btn, false);
+        }
+    };
+
+    // Enter key on login form
+    ['login-email', 'login-password'].forEach(id => {
+        document.getElementById(id)?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') window.doLogin();
+        });
+    });
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SIGNUP — Step 1: Request OTP
+    // ══════════════════════════════════════════════════════════════════════
+    window.requestOtp = async function() {
+        clearAlert();
+        const email = document.getElementById('signup-email').value.trim();
+        if (!email || !email.includes('@')) { showAlert('Please enter a valid email address.', 'error'); return; }
+
+        const btn = document.getElementById('send-otp-btn');
+        setLoading(btn, true);
+
+        try {
+            const res = await fetch(getBackendUrl() + '/api/auth/request-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+
+            // Move to step 2
+            document.getElementById('signup-step-1').classList.remove('active');
+            document.getElementById('signup-step-2').classList.add('active');
+            document.querySelector('#otp-subtitle strong').textContent = email;
+            startCountdown();
+            document.querySelector('.otp-box').focus();
+        } catch (err) {
+            showAlert(err.message, 'error');
+        } finally {
+            setLoading(btn, false);
+        }
+    };
+
+    document.getElementById('signup-email')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') window.requestOtp();
+    });
+
+    // ── OTP box auto-advance ──────────────────────────────────────────────
+    document.querySelectorAll('.otp-box').forEach((box, i, arr) => {
+        box.addEventListener('input', () => {
+            box.value = box.value.replace(/\D/g, '');
+            if (box.value && i < arr.length - 1) arr[i + 1].focus();
+        });
+        box.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !box.value && i > 0) arr[i - 1].focus();
+        });
+        box.addEventListener('paste', e => {
+            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+            arr.forEach((b, j) => { b.value = text[j] || ''; });
+            arr[Math.min(text.length, arr.length - 1)].focus();
+            e.preventDefault();
+        });
+    });
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SIGNUP — Step 2: Verify OTP + create account
+    // ══════════════════════════════════════════════════════════════════════
+    window.verifyOtp = async function() {
+        clearAlert();
+        const email    = document.getElementById('signup-email').value.trim();
+        const otp      = [...document.querySelectorAll('.otp-box')].map(b => b.value).join('');
+        const password = document.getElementById('signup-password').value;
+
+        if (otp.length < 6) { showAlert('Please enter the full 6-digit code.', 'error'); return; }
+        if (password.length < 8) { showAlert('Password must be at least 8 characters.', 'error'); return; }
+
+        const btn = document.getElementById('verify-btn');
+        setLoading(btn, true);
+
+        try {
+            const res = await fetch(getBackendUrl() + '/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp, password })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+            // Persist auth
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('auth_email', email);
+            localStorage.setItem('user_name', email.split('@')[0]);
+
+            // Success screen
+            document.getElementById('signup-step-2').classList.remove('active');
+            document.getElementById('signup-step-3').classList.add('active');
+            setTimeout(() => { document.getElementById('redirect-bar').style.width = '100%'; }, 100);
+            setTimeout(() => {
+                const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
+                location.href = redirect;
+            }, 3200);
+        } catch (err) {
+            showAlert(err.message, 'error');
+        } finally {
+            setLoading(btn, false);
+        }
+    };
+
+    // ── Countdown + resend ──────────────────────────────────────────────
+    let countdownTimer;
+    function startCountdown(seconds = 60) {
+        const resendBtn = document.getElementById('resend-btn');
+        const countEl   = document.getElementById('countdown');
+        resendBtn.classList.remove('ready');
+        resendBtn.disabled = true;
+        let left = seconds;
+        clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+            left--;
+            countEl.textContent = left;
+            if (left <= 0) {
+                clearInterval(countdownTimer);
+                resendBtn.disabled = false;
+                resendBtn.classList.add('ready');
+                resendBtn.innerHTML = 'Resend code';
+            }
+        }, 1000);
+    }
+
+    window.resendOtp = async function() {
+        const resendBtn = document.getElementById('resend-btn');
+        if (!resendBtn.classList.contains('ready')) return;
+
+        clearAlert();
+        const email = document.getElementById('signup-email').value.trim();
+        try {
+            const res = await fetch(getBackendUrl() + '/api/auth/request-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+            showAlert('A new code has been sent!', 'success');
+            resendBtn.innerHTML = 'Resend code (<span id="countdown">60</span>s)';
+            startCountdown(60);
+            document.querySelectorAll('.otp-box').forEach(b => b.value = '');
+            document.querySelector('.otp-box').focus();
+        } catch (err) {
+            showAlert(err.message, 'error');
+        }
+    };
+
+    // ── If already logged in, skip to index ──────────────────────────────
+    if (localStorage.getItem('auth_token')) {
+        const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
+        location.replace(redirect);
+    }
+})();
+
+    
+    // --- Google OAuth Mock ---
+    
+    
+    
+    window.doGoogleLogin = function(event) {
+        if(event) event.preventDefault();
+        const btn = event.currentTarget || document.querySelector('.google-btn');
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Google...';
+        btn.style.pointerEvents = 'none';
+
+        setTimeout(() => {
+            try {
+                localStorage.setItem('auth_email', "srujanem222@gmail.com");
+                localStorage.setItem('user_name', "Srujan");
+                localStorage.setItem('auth_token', "google_oauth_mock_token_" + Date.now());
+            } catch(e) {
+                alert("Please disable Private/Incognito mode. Your browser is blocking the login data storage.");
+                return;
+            }
+            window.location.href = 'dashboard.html';
+        }, 800);
+    };
+
+</script>
+</body>
+</html>
+
