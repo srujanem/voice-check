@@ -1531,8 +1531,8 @@ p {
     }
 
     /* Hide desktop nav links — drawer replaces them */
-    .nav-links, .nav-right { display: none !important; }
-    .nav-links.active, .nav-right.active { display: none !important; }
+    .nav-links { display: none !important; }
+    .nav-links.active { display: none !important; }
 
     .navbar {
         padding: 12px 16px;
