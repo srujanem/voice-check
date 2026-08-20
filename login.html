@@ -665,7 +665,7 @@
     
     // --- Google OAuth Mock ---
     window.doGoogleLogin = function(event) {
-        const btn = event.currentTarget;
+        if(event) event.preventDefault(); const btn = event.currentTarget;
         const originalHtml = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...';
         btn.style.pointerEvents = 'none';
