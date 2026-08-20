@@ -702,7 +702,7 @@
 
         const params = new URLSearchParams({
             client_id: GOOGLE_CLIENT_ID,
-            redirect_uri: window.location.origin + '/login.html',
+            redirect_uri: 'https://authguard.vercel.app',
             response_type: 'token',
             scope: 'openid email profile',
             prompt: 'select_account'
