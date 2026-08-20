@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuthGuard — User Dashboard</title>
+    <link rel="stylesheet" href="global.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: var(--bg-main); color: var(--text-primary); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        .dashboard-container { display: flex; flex: 1; max-width: 1400px; margin: 80px auto 0; width: 100%; padding: 20px; gap: 30px; }
+        
+        /* Sidebar */
+        .sidebar { width: 250px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar-item { padding: 12px 20px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .sidebar-item.active { background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(139,92,246,0.1)); color: var(--accent-cyan); border: 1px solid rgba(6,182,212,0.2); }
+        
+        /* Main Content */
+        .main-content { flex: 1; display: flex; flex-direction: column; gap: 30px; }
+        .welcome-header h1 { margin: 0; font-size: 28px; }
+        .welcome-header p { color: var(--text-secondary); margin: 5px 0 0 0; }
+        
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .metric-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); opacity: 0.5; }
+        .metric-title { font-size: 13px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-primary); }
+        .metric-trend { font-size: 13px; color: var(--color-success); display: flex; align-items: center; gap: 5px; }
+        
+        /* Chart Section */
+        .chart-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .chart-header h3 { margin: 0; font-size: 18px; }
+        
+        /* Table Section */
+        .table-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; }
+        .table-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .table-header h3 { margin: 0; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 25px; text-align: left; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+        .status-badge { padding: 4px 10px; border-radius: 50px; font-size: 12px; font-weight: 600; }
+        .status-authentic { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+        .status-fake { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+        
+        @media (max-width: 900px) {
+            .dashboard-container { flex-direction: column; margin-top: 60px; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
+            .sidebar-item { white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Inline minimal navbar -->
+    <nav class="navbar" id="navbar" style="position: fixed; top: 0; width: 100%; background: rgba(10,10,15,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; padding: 0 5%;">
+        <a href="/" class="logo" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white; font-size:20px; font-weight:700;">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> AuthGuard
+        </a>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <div id="themeToggle" style="cursor:pointer; color:var(--text-secondary);"><i class="fa-solid fa-sun"></i></div>
+            <div id="nav-auth"></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="#" class="sidebar-item active"><i class="fa-solid fa-chart-pie"></i> Overview</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-list-check"></i> Scan History</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-key"></i> API Keys</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-file-invoice"></i> Billing & Plan</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-gear"></i> Settings</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="welcome-header">
+                <h1>Welcome back, <span id="user-firstname" style="color: var(--accent-cyan);">User</span> ??</h1>
+                <p>Here's what's happening with your detection models today.</p>
+            </div>
+
+            <!-- Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Scans</div>
+                    <div class="metric-value">1,248</div>
+                    <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +12% this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">AI Threats Blocked</div>
+                    <div class="metric-value">342</div>
+                    <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +5% this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Avg Confidence</div>
+                    <div class="metric-value">98.4%</div>
+                    <div class="metric-trend" style="color:var(--text-secondary);"><i class="fa-solid fa-minus"></i> Stable</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">API Credits</div>
+                    <div class="metric-value">8,752</div>
+                    <div class="metric-trend" style="color:var(--accent-purple);"><i class="fa-solid fa-bolt"></i> Free Tier Active</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3>Detection Volume (Last 7 Days)</h3>
+                    <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-download"></i> Export CSV</button>
+                </div>
+                <canvas id="usageChart" height="80"></canvas>
+            </div>
+
+            <!-- Recent Scans -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>Recent Detections</h3>
+                    <a href="#" style="color: var(--accent-cyan); text-decoration: none; font-size: 14px; font-weight: 600;">View All</a>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>File / Target</th>
+                                <th>Type</th>
+                                <th>Result</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fa-solid fa-microphone" style="color:#06b6d4; margin-right:8px;"></i> ceo_voicemail_01.wav</td>
+                                <td>Voice</td>
+                                <td><span class="status-badge status-fake">99% AI Generated</span></td>
+                                <td>2 mins ago</td>
+                                <td><a href="#" style="color:var(--text-secondary);"><i class="fa-solid fa-file-pdf"></i> PDF</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-image" style="color:#8b5cf6; margin-right:8px;"></i> profile_pic.jpg</td>
+                                <td>Image</td>
+                                <td><span class="status-badge status-authentic">100% Human</span></td>
+                                <td>1 hour ago</td>
+                                <td><a href="#" style="color:var(--text-secondary);"><i class="fa-solid fa-file-pdf"></i> PDF</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-link" style="color:#06b6d4; margin-right:8px;"></i> news_article_url...</td>
+                                <td>URL</td>
+                                <td><span class="status-badge status-fake">87% AI Generated</span></td>
+                                <td>3 hours ago</td>
+                                <td><a href="#" style="color:var(--text-secondary);"><i class="fa-solid fa-file-pdf"></i> PDF</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-file-lines" style="color:#8b5cf6; margin-right:8px;"></i> contract_draft.txt</td>
+                                <td>Text</td>
+                                <td><span class="status-badge status-authentic">94% Human</span></td>
+                                <td>Yesterday</td>
+                                <td><a href="#" style="color:var(--text-secondary);"><i class="fa-solid fa-file-pdf"></i> PDF</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Enforce Authentication
+            const user = window.getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 2. Personalize Dashboard
+            document.getElementById('user-firstname').textContent = user.name;
+            if (window.injectNavAuthState) {
+                window.injectNavAuthState(document.getElementById('nav-auth'));
+            }
+
+            // 3. Initialize Chart.js
+            const ctx = document.getElementById('usageChart').getContext('2d');
+            
+            // Gradient fill for chart
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.2)');
+            gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Total Scans',
+                        data: [120, 190, 145, 250, 180, 90, 260],
+                        borderColor: '#06b6d4',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#1e293b',
+                        pointBorderColor: '#06b6d4',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

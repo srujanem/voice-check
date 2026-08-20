@@ -470,7 +470,7 @@
 
             showAlert('Signed in! Redirecting…', 'success');
             setTimeout(() => {
-                const redirect = new URLSearchParams(location.search).get('next') || 'index.html';
+                const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
                 location.href = redirect;
             }, 900);
         } catch (err) {
@@ -575,7 +575,7 @@
             document.getElementById('signup-step-3').classList.add('active');
             setTimeout(() => { document.getElementById('redirect-bar').style.width = '100%'; }, 100);
             setTimeout(() => {
-                const redirect = new URLSearchParams(location.search).get('next') || 'index.html';
+                const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
                 location.href = redirect;
             }, 3200);
         } catch (err) {
@@ -631,10 +631,11 @@
 
     // ── If already logged in, skip to index ──────────────────────────────
     if (localStorage.getItem('auth_token')) {
-        const redirect = new URLSearchParams(location.search).get('next') || 'index.html';
+        const redirect = new URLSearchParams(location.search).get('next') || 'dashboard.html';
         location.replace(redirect);
     }
 })();
 </script>
 </body>
 </html>
+
