@@ -179,21 +179,25 @@
 </head>
 <body>
 
-        <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <a class="nav-brand" href="/">
             <div class="logo-icon" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px;"><i class="fa-solid fa-shield-halved"></i></div>
-            <span>AuthGuard <span style="font-size:12px; color:#94a3b8; font-weight:400; margin-left:8px;">by Srujan EM</span></span>
+            <span>AuthGuard</span>
         </a>
+        
         <div class="hamburger-menu" id="hamburgerMenu">
             <i class="fa-solid fa-bars"></i>
         </div>
+
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="/#tools">Tools</a>
-            <a href="/#pricing">Pricing</a>
-            <a href="/creator/index.html" class="active">Creator</a>
+            <a href="/#about">About</a>
+            <a href="/creator/profile.html" class="active">Creator</a>
+            <a href="/#faq">FAQ</a>
         </div>
+        
         <div class="nav-right">
             <div class="theme-toggle" id="themeToggle" style="position:static;"><i class="fa-solid fa-moon"></i></div>
             <div class="live-user-count" title="People using AuthGuard right now">
@@ -204,7 +208,8 @@
             <div id="nav-auth"></div>
         </div>
     </nav>
-    <!-- Mobile Menu Drawer -->
+
+    <!-- Mobile Drawer -->
     <div class="mobile-overlay" id="mobileOverlay"></div>
     <div class="mobile-drawer" id="mobileDrawer">
         <div class="drawer-header">
@@ -216,8 +221,7 @@
         <nav class="drawer-nav">
             <a href="/" class="drawer-nav-item"><i class="fa-solid fa-house"></i> Home</a>
             <a href="/#tools" class="drawer-nav-item"><i class="fa-solid fa-grid-2"></i> Tools</a>
-            <a href="/#pricing" class="drawer-nav-item"><i class="fa-solid fa-tag"></i> Pricing</a>
-            <a href="/creator/index.html" class="drawer-nav-item active"><i class="fa-solid fa-user-astronaut"></i> Creator</a>
+            <a href="/creator/profile.html" class="drawer-nav-item active"><i class="fa-solid fa-user-astronaut"></i> Creator</a>
         </nav>
         <div class="drawer-divider"></div>
         <div class="drawer-auth" id="drawer-auth-container">
@@ -287,12 +291,28 @@
             if (typeof injectNavAuthState === 'function') {
                 injectNavAuthState(navAuth);
             }
+            
+            // Re-bind drawer toggle logic for this specific page just in case
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const mobileDrawer = document.getElementById('mobileDrawer');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const drawerClose = document.getElementById('drawerClose');
+            
+            if (hamburgerMenu && mobileDrawer) {
+                hamburgerMenu.addEventListener('click', () => {
+                    mobileDrawer.classList.add('open');
+                    mobileOverlay.classList.add('open');
+                });
+                drawerClose.addEventListener('click', () => {
+                    mobileDrawer.classList.remove('open');
+                    mobileOverlay.classList.remove('open');
+                });
+                mobileOverlay.addEventListener('click', () => {
+                    mobileDrawer.classList.remove('open');
+                    mobileOverlay.classList.remove('open');
+                });
+            }
         });
     </script>
 </body>
 </html>
-
-
-
-
-<!-- Force Vercel Rebuild -->
