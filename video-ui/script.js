@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Analyze
     btnAnalyze.addEventListener('click', async () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         if (btnAnalyze.classList.contains('disabled')) return;
         if (!currentFile) return;
 

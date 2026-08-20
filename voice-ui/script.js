@@ -102,6 +102,7 @@ function initVoiceUI() {
 
     // --- Analysis ---
     analyzeBtn.addEventListener('click', () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         if (!currentAudioFile) {
             showError('Please upload or record an audio file first.');
             return;

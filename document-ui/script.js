@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Analyze
     btnAnalyze.addEventListener('click', async () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         const text = textInput.value.trim();
         if (!selectedFile && !text) {
             showError("Please paste text or upload a document to analyze.");

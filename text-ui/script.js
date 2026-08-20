@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Analyze button ──────────────────────────────────────────────────────
     btnAnalyze.addEventListener('click', async () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         const text = textInput.value.trim();
         if (!text) return;
 

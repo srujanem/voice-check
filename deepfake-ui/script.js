@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Analyze ───────────────────────────────────────────────────────────────
     btnAnalyze.addEventListener('click', async () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         if (btnAnalyze.disabled || !currentFile) return;
 
         if (scannerLine)  scannerLine.classList.remove('hidden');

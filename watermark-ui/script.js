@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnProtect.addEventListener('click', async () => {
+        if (window.checkScanGate && !window.checkScanGate()) return;
         if (!currentFile) return;
         
         hideError();
