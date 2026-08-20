@@ -655,11 +655,7 @@
         }
     };
 
-    // ── If already logged in, skip to index ──────────────────────────────
-    if (localStorage.getItem('auth_token')) {
-        const redirect = new URLSearchParams(location.search).get('next') || 'index.html';
-        location.replace(redirect);
-    }
+    // ── Auto-redirect removed: let user always see the sign-in page ──────
 })();
 
     
