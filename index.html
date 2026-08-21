@@ -251,7 +251,7 @@
         .trust-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
         }
-        @media (max-width: 768px) { .trust-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { .trust-grid { grid-template-columns: 1fr; } }
         .trust-gauge-wrap { display: flex; align-items: center; justify-content: center; position: relative; }
         .trust-gauge-wrap svg { transform: rotate(-90deg); }
         .gauge-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 12; }
@@ -663,7 +663,7 @@
         a, button { touch-action: manipulation; }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .navbar { padding: 12px 16px; }
             .nav-links { display: none; }
             .hero-section { padding: 110px 16px 60px; }
@@ -1457,7 +1457,7 @@
             position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
             z-index: 9990; display: flex; flex-direction: column; gap: 10px;
         }
-        @media (max-width: 768px) { #dot-nav { display: none; } }
+        @media (max-width: 1024px) { #dot-nav { display: none; } }
         .dot-nav-item {
             width: 10px; height: 10px; border-radius: 50%;
             background: var(--border-color); cursor: pointer;
@@ -1954,7 +1954,7 @@
             background: rgba(248,250,252,0.94);
             border-top-color: rgba(0,0,0,0.06);
         }
-        @media (max-width: 768px) { #mobile-bottom-nav { display: flex; } }
+        @media (max-width: 1024px) { #mobile-bottom-nav { display: flex; } }
 
         .mob-nav-item {
             position: relative;
@@ -2088,7 +2088,7 @@
         }
 
         /* ===== MOBILE HERO TEXT ===== */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .landing-header h1 { font-size: 32px !important; }
             .landing-header p { font-size: 16px !important; }
             body::after { display: none; } /* Remove grain on mobile for perf */
@@ -3061,9 +3061,17 @@ document.querySelectorAll('.faq-question').forEach(button => {
     .catch(err => console.error('Google OAuth error:', err));
 })();
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.injectNavAuthState) {
+        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
+    }
+});
+</script>
 </body>
 
 </html>
+
 
 
 
