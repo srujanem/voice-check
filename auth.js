@@ -64,21 +64,17 @@
                         <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hide-on-mobile">Logout</span>
                     </button>
                 </div>`;
-        } else {
-            let scans = parseInt(localStorage.getItem('free_scans_used') || '0', 10);
-            let remaining = Math.max(0, 2 - scans);
-            let badgeColor = remaining > 0 ? 'var(--accent-cyan)' : 'var(--error)';
-            let badgeText = remaining + '/2 Free Scans';
-            
+                } else {
             containerEl.innerHTML = `
-                <div style="display:flex;align-items:center;gap:12px;font-family:inherit;">
-                    <span class="hide-on-mobile" style="font-size:11px;font-weight:600;color:${badgeColor};background:rgba(255,255,255,0.05);padding:5px 10px;border-radius:12px;border:1px solid ${badgeColor}; opacity:0.8;">
-                        <i class="fa-solid fa-bolt"></i> ${badgeText}
-                    </span>
-                    <a href="/login.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                <div style="display:flex;align-items:center;gap:12px;width:100%;justify-content:center;">
+                    <a href="login.html" class="nav-signin-btn" style="text-decoration:none;font-size:14px;font-weight:600;color:#fff;background:rgba(255,255,255,0.1);padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);transition:all 0.2s;display:flex;align-items:center;gap:8px;">
                         <i class="fa-solid fa-right-to-bracket"></i> Sign In
                     </a>
-                </div>`;
+                    <a href="login.html" class="nav-signup-btn hide-on-mobile" style="text-decoration:none;font-size:14px;font-weight:600;color:#fff;background:linear-gradient(135deg, #06b6d4, #8b5cf6);padding:8px 18px;border-radius:8px;transition:all 0.2s;">
+                        Get Started
+                    </a>
+                </div>
+            `;
         }
     };
 
