@@ -380,7 +380,7 @@ a,
     opacity: 0.5;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* FIX: Prevent header icons overlapping on mobile */
     .app-header {
         flex-direction: column !important;
@@ -1491,7 +1491,7 @@ p {
     opacity: 0.5;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* FIX: Prevent header icons overlapping on mobile */
     .app-header {
         flex-direction: column !important;
@@ -2075,7 +2075,7 @@ p {
 
 
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .floating-history-btn {
         bottom: 85px; 
         right: 20px;
@@ -2084,3 +2084,4 @@ p {
         font-size: 20px;
     }
 }
+

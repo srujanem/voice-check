@@ -24,22 +24,21 @@ class ScanHistory {
         this.renderHistory();
 
         // Push to Database if logged in
-        const userId = localStorage.getItem('user_id');
-        let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
-            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
-        if (userId) {
-            fetch(`${backendUrl}/history`, {
+        const email = localStorage.getItem('user_email') || localStorage.getItem('user_id');
+        if (email) {
+            fetch(`http://localhost:5001/api/history`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
                 },
                 body: JSON.stringify({
-                    user_id: userId,
-                    scan_type: type,
-                    target_name: fileName,
-                    is_ai: isAi,
-                    confidence: confidence
+                    email: email,
+                    type: type,
+                    fileName: fileName,
+                    isAi: isAi,
+                    confidence: confidence,
+                    date: new Date().toLocaleString()
                 })
             }).catch(e => console.error("Failed to sync history to DB", e));
         }
@@ -138,12 +137,10 @@ class ScanHistory {
 
 
     async fetchHistoryFromDB() {
-        const userId = localStorage.getItem('user_id');
-        if (!userId) return;
+        const email = localStorage.getItem('user_email') || localStorage.getItem('user_id');
+        if (!email) return;
         try {
-            let backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
-            if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
-            const res = await fetch(`${backendUrl}/history?user_id=${userId}`, {
+            const res = await fetch(`http://localhost:5001/api/history?email=${email}`, {
                 headers: {
                     ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
                 }
@@ -152,10 +149,10 @@ class ScanHistory {
                 const data = await res.json();
                 const formatted = data.map(scan => ({
                     id: scan.id,
-                    date: new Date(scan.timestamp).toLocaleString(),
-                    type: scan.scan_type,
-                    fileName: scan.target_name,
-                    isAi: scan.is_ai,
+                    date: scan.date,
+                    type: scan.type,
+                    fileName: scan.fileName,
+                    isAi: scan.isAi,
                     confidence: scan.confidence
                 }));
                 localStorage.setItem(this.STORAGE_KEY, JSON.stringify(formatted));
