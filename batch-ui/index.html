@@ -549,6 +549,13 @@
             }).from(reportDiv).save();
         });
     </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.injectNavAuthState) {
+        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
+    }
+});
+</script>
 </body>
 </html>
 

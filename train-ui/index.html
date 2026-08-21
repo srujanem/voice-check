@@ -215,5 +215,12 @@
         document.getElementById('btn-train-image').onclick  = () => runTrain('image');
         document.getElementById('btn-train-text').onclick   = () => runTrain('text');
     </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.injectNavAuthState) {
+        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
+    }
+});
+</script>
 </body>
 </html>

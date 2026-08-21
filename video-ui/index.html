@@ -216,6 +216,13 @@
     <script src="../auth.js?v=1"></script>
     <script>document.addEventListener('DOMContentLoaded',()=>injectNavAuthState(document.getElementById('nav-auth')));</script>
     <script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.injectNavAuthState) {
+        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
+    }
+});
+</script>
 </body>
 </html>
 

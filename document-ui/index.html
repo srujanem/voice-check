@@ -110,5 +110,12 @@
     <script src="../theme.js"></script>
     <script src="../history.js"></script>
     <script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.injectNavAuthState) {
+        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
+    }
+});
+</script>
 </body>
 </html>
