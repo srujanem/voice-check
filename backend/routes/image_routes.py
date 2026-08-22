@@ -4,16 +4,49 @@ from PIL import Image
 from backend.services.ml_engine import ml
 from backend.decorators import require_api_key
 import pillow_heif
+import numpy as np
+import io
+import cv2
+import base64
 
-# Register HEIF opener so PIL can open .heic files
 pillow_heif.register_heif_opener()
-
 image_bp = Blueprint('image', __name__)
+
+def generate_gradcam(img_array, model, last_conv_layer_name="efficientnetb0"):
+    # Extract the base model (EfficientNetB0) from the Sequential model
+    base_model = model.get_layer(last_conv_layer_name)
+    
+    # We need a model that outputs both the last conv layer's activations and the final predictions
+    # Since our model is Sequential -> EfficientNetB0 -> GlobalAveragePooling2D -> Dense,
+    # it's tricky to hook into. We will use the internal TF graph.
+    
+    grad_model = tf.keras.models.Model(
+        [base_model.inputs], 
+        [base_model.output, model.output]
+    )
+
+    with tf.GradientTape() as tape:
+        last_conv_layer_output, preds = grad_model(img_array)
+        # Assuming binary classification where <0.5 is fake (0) and >0.5 is real (1)
+        # We want the heatmap for the "Fake" class (0)
+        class_channel = 1.0 - preds[0][0] 
+
+    grads = tape.gradient(class_channel, last_conv_layer_output)
+    if grads is None:
+        return None
+        
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    last_conv_layer_output = last_conv_layer_output[0]
+    
+    heatmap = last_conv_layer_output @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
+    return heatmap.numpy()
 
 @image_bp.route("/predict_image", methods=["POST"])
 @require_api_key
 def predict_image():
-    image_model = ml.get_image_model()
+    image_model, vit_model = ml.get_image_model()
     if image_model is None:
         return jsonify({"error": "Image model not loaded."}), 500
 
@@ -24,27 +57,73 @@ def predict_image():
     try:
         data = file.read()
         if b"VOICECHECK_AUTH_SIGNATURE" in data:
-            return jsonify({
-                "prediction": "Authentic (Watermarked)",
-                "confidence": 100.0,
-                "prob_human": 100.0,
-                "prob_ai": 0.0
-            })
+            return jsonify({"prediction": "Authentic (Watermarked)", "confidence": 100.0, "prob_human": 100.0, "prob_ai": 0.0, "heatmap": None})
         file.seek(0)
 
-        try:
-            img = Image.open(file).convert('RGB')
-            img = img.resize((224, 224))
-        except Exception as e:
-            return jsonify({"error": "Invalid or corrupted image file."}), 400
-        img_array = tf.keras.preprocessing.image.img_to_array(img)
+        img = Image.open(file).convert('RGB')
+        img_tf = img.resize((224, 224))
+        
+        # TF Predict
+        img_array = tf.keras.preprocessing.image.img_to_array(img_tf)
         img_array = tf.expand_dims(img_array, 0)
+        tf_pred = float(image_model.predict(img_array, verbose=0)[0][0])
+        
+        # Heatmap Generation
+        heatmap_base64 = None
+        try:
+            heatmap = generate_gradcam(img_array, image_model)
+            if heatmap is not None:
+                # Resize heatmap to match original image
+                heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
+                heatmap = np.uint8(255 * heatmap)
+                heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+                
+                # Convert original image to opencv format
+                img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+                
+                # Superimpose the heatmap onto the image
+                superimposed_img = heatmap * 0.4 + img_cv * 0.6
+                
+                # Encode to base64
+                _, buffer = cv2.imencode('.jpg', superimposed_img)
+                heatmap_base64 = base64.b64encode(buffer).decode('utf-8')
+                heatmap_base64 = f"data:image/jpeg;base64,{heatmap_base64}"
+        except Exception as hm_e:
+            print(f"Heatmap Error: {hm_e}")
+            heatmap_base64 = None
+        
+        # ViT Predict
+        vit_pred = None
+        if vit_model is not None:
+            import torch
+            from torchvision import transforms
+            transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize([0.5]*3, [0.5]*3)])
+            device = next(vit_model.parameters()).device
+            with torch.no_grad():
+                logits = vit_model(transform(img).unsqueeze(0).to(device))
+                vit_pred = float(torch.sigmoid(logits).cpu().item())
+                
+        if vit_pred is not None:
+            pred_prob = (vit_pred * 0.75) + (tf_pred * 0.25)
+            
+            # FFT
+            gray = img.convert('L')
+            f = np.fft.fft2(np.array(gray))
+            fshift = np.fft.fftshift(f)
+            mag = 20 * np.log(np.abs(fshift) + 1)
+            h, w = mag.shape
+            y, x = np.ogrid[0:h, 0:w]
+            cy, cx = h//2, w//2
+            mask = (x-cx)**2 + (y-cy)**2 <= (min(h, w)*0.15)**2
+            hf_ratio = np.sum(mag[~mask]) / (np.sum(mag) + 1e-10)
+            
+            if hf_ratio > 0.95:
+                pred_prob = max(0.0, pred_prob - 0.04) 
+                
+        else:
+            pred_prob = tf_pred
 
-        pred_prob = float(image_model.predict(img_array, verbose=0)[0][0])
-        # TF assigns labels alphabetically: fake=0, real=1
-        # So pred_prob = P(real). Fake means pred_prob < 0.5
         is_fake = pred_prob < 0.5
-
         result = "AI-Generated" if is_fake else "Authentic"
         prob_real = round(pred_prob * 100, 1)
         prob_fake = round((1.0 - pred_prob) * 100, 1)
@@ -54,8 +133,9 @@ def predict_image():
             "prediction": result,
             "confidence": confidence,
             "prob_human": prob_real,
-            "prob_ai": prob_fake
+            "prob_ai": prob_fake,
+            "heatmap": heatmap_base64 if is_fake else None
         })
     except Exception as e:
-        print(f"Error predicting image: {e}")
+        print(f"Error: {e}")
         return jsonify({"error": "Failed to process image."}), 500
