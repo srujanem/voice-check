@@ -105,9 +105,53 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
 
+            if(window.activeHudInterval) clearInterval(window.activeHudInterval);
+            const cyberOverlay = document.getElementById('cyber-scanner-overlay');
+            if(cyberOverlay) {
+                const hudPct = document.getElementById('hud-pct');
+                const hudStatus = document.getElementById('hud-status');
+                if(hudPct) hudPct.innerText = "100";
+                if(hudStatus) hudStatus.innerText = "ANALYSIS COMPLETE";
+                setTimeout(() => { cyberOverlay.classList.add('hidden'); }, 600);
+            }
+            
+            // Handle Heatmap Display
+            if (data.heatmap) {
+                const previewContainer = document.getElementById('imagePreview').parentElement;
+                document.getElementById('imagePreview').style.opacity = '0.3';
+                const existingHeatmap = document.getElementById('heatmap-img');
+                if (existingHeatmap) existingHeatmap.remove();
+                
+                const heatmapImg = document.createElement('img');
+                heatmapImg.id = 'heatmap-img';
+                heatmapImg.src = data.heatmap;
+                heatmapImg.style.position = 'absolute';
+                heatmapImg.style.top = '0';
+                heatmapImg.style.left = '0';
+                heatmapImg.style.width = '100%';
+                heatmapImg.style.height = '100%';
+                heatmapImg.style.objectFit = 'contain';
+                heatmapImg.style.zIndex = '5';
+                heatmapImg.style.borderRadius = '8px';
+                heatmapImg.style.mixBlendMode = 'screen';
+                heatmapImg.style.animation = 'pulse-heat 2s infinite';
+                
+                if (!document.getElementById('heatmap-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'heatmap-style';
+                    style.innerHTML = '@keyframes pulse-heat { 0% { opacity: 0.8; } 50% { opacity: 1; filter: brightness(1.2); } 100% { opacity: 0.8; } }';
+                    document.head.appendChild(style);
+                }
+                previewContainer.style.position = 'relative';
+                previewContainer.appendChild(heatmapImg);
+            }
+
             showResults(data);
 
         } catch (error) {
+            if(window.activeHudInterval) clearInterval(window.activeHudInterval);
+            const cyberOverlay = document.getElementById('cyber-scanner-overlay');
+            if(cyberOverlay) cyberOverlay.classList.add('hidden');
             if (scannerLine)  scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             btnAnalyze.style.display = 'inline-flex';
@@ -196,5 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
     }
 });
+
 
 
