@@ -125,14 +125,28 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSentenceStream(allSentencesData, filter);
     };
 
-    function renderSentenceStream(sentences, filter = 'all') {
-        if (!sentencesContainer) return;
-        sentencesContainer.innerHTML = '';
+        // Perplexity & Cadence Flow Visualizer
+        const flowSummary = document.createElement('div');
+        flowSummary.style.cssText = 'background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;';
+        
+        let avgProb = sentences.reduce((acc, s) => acc + (s.ai_prob || 0), 0) / sentences.length;
+        let pPct = Math.round(avgProb * 100);
+        let barColor = avgProb > 0.5 ? 'linear-gradient(90deg,#f59e0b,#ef4444)' : 'linear-gradient(90deg,#06b6d4,#10b981)';
 
-        if (!sentences || sentences.length === 0) {
-            sentencesContainer.innerHTML = '<div style="color:#64748b;font-size:12px;text-align:center;padding:10px;">Sentence-level analysis not available for short text.</div>';
-            return;
-        }
+        flowSummary.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;">
+                <span style="color:#94a3b8;"><i class="fa-solid fa-temperature-half"></i> LINGUISTIC ENTROPY / PERPLEXITY CADENCE:</span>
+                <span style="color:${avgProb > 0.5 ? '#f87171' : '#34d399'};font-weight:700;">${pPct}% AI TENSOR BURSTINESS</span>
+            </div>
+            <div style="width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
+                <div style="width:${pPct}%;height:100%;background:${barColor};border-radius:6px;transition:width 1s cubic-bezier(0.16,1,0.3,1);box-shadow:0 0 10px rgba(6,182,212,0.5);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:9px;font-family:var(--font-mono);color:#64748b;">
+                <span>◀ NATURAL ORGANIC CADENCE (HUMAN)</span>
+                <span>MONOTONOUS LOW-ENTROPY (AI) ▶</span>
+            </div>
+        `;
+        sentencesContainer.appendChild(flowSummary);
 
         sentences.forEach(s => {
             const isAiSent = s.ai_prob >= 0.5;
@@ -141,15 +155,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const div = document.createElement('div');
             div.className = `sent-item ${isAiSent ? 'sent-ai' : 'sent-human'}`;
+            div.style.transition = 'all 0.2s ease';
+            div.style.cursor = 'pointer';
+            div.setAttribute('title', isAiSent ? 'Detected high n-gram match & uniform transition flow' : 'Detected organic vocabulary diversity & human cadence');
             
             const pVal = Math.round(s.ai_prob * 100);
             div.innerHTML = `
-                <span>${s.text}</span>
-                <span class="sent-tag">${isAiSent ? `▲ ${pVal}% AI` : `● ${100 - pVal}% Human`}</span>
+                <span style="flex:1;">${s.text}</span>
+                <span class="sent-tag" style="white-space:nowrap;margin-left:12px;">${isAiSent ? `▲ ${pVal}% AI` : `● ${100 - pVal}% Human`}</span>
             `;
             sentencesContainer.appendChild(div);
         });
-    }
 
     // Analyze Click Handler
     btnAnalyze.addEventListener('click', async () => {

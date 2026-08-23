@@ -77,7 +77,86 @@ function initVoiceUI() {
 
 
 
-    // --- Audio Preview ---
+    // --- Audio Preview & Real-Time Neon Equalizer ---
+    let audioCtx = null;
+    let analyser = null;
+    let sourceNode = null;
+    let animFrameId = null;
+
+    function initAudioVisualizer() {
+        const canvas = document.getElementById('voice-equalizer-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth || 400;
+            canvas.height = canvas.parentElement.offsetHeight || 110;
+        }
+        resize();
+
+        function drawIdleWave() {
+            if (audioPlayer && !audioPlayer.paused) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            const time = Date.now() * 0.003;
+            for (let x = 0; x < canvas.width; x += 4) {
+                const y = canvas.height / 2 + Math.sin(x * 0.05 + time) * 6 + Math.cos(x * 0.02 - time) * 4;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            animFrameId = requestAnimationFrame(drawIdleWave);
+        }
+        drawIdleWave();
+
+        audioPlayer.addEventListener('play', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64;
+                try {
+                    sourceNode = audioCtx.createMediaElementSource(audioPlayer);
+                    sourceNode.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                } catch(e) {}
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            renderLiveEqualizer();
+        });
+
+        function renderLiveEqualizer() {
+            if (audioPlayer.paused) {
+                drawIdleWave();
+                return;
+            }
+            const bufferLength = analyser ? analyser.frequencyBinCount : 32;
+            const dataArray = new Uint8Array(bufferLength);
+            if (analyser) analyser.getByteFrequencyData(dataArray);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / bufferLength) * 1.5;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * (canvas.height * 0.85);
+                const grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - barHeight);
+                grad.addColorStop(0, '#06b6d4');
+                grad.addColorStop(0.5, '#8b5cf6');
+                grad.addColorStop(1, '#ec4899');
+
+                ctx.fillStyle = grad;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#06b6d4';
+                ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+                ctx.shadowBlur = 0;
+                x += barWidth + 1;
+            }
+            animFrameId = requestAnimationFrame(renderLiveEqualizer);
+        }
+    }
+
     function showAudioPreview(filename, url) {
         fileNameDisplay.textContent = filename;
         audioPlayer.src = url;
@@ -85,6 +164,7 @@ function initVoiceUI() {
         audioPreviewContainer.classList.remove('hidden');
         analyzeBtn.disabled = false;
         uploadArea.style.display = 'none';
+        setTimeout(initAudioVisualizer, 100);
     }
 
     removeAudioBtn.addEventListener('click', resetInputState);
@@ -92,6 +172,7 @@ function initVoiceUI() {
     function resetInputState() {
         currentAudioFile = null;
         if (currentAudioUrl) { URL.revokeObjectURL(currentAudioUrl); currentAudioUrl = null; }
+        if (animFrameId) cancelAnimationFrame(animFrameId);
         audioPlayer.src = '';
         audioPreviewContainer.classList.add('hidden');
         analyzeBtn.disabled = true;

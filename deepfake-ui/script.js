@@ -115,35 +115,75 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { cyberOverlay.classList.add('hidden'); }, 600);
             }
             
-            // Handle Heatmap Display
+            // Handle Interactive Forensic Split-Screen Slider
             if (data.heatmap) {
-                const previewContainer = document.getElementById('imagePreview').parentElement;
-                document.getElementById('imagePreview').style.opacity = '0.3';
-                const existingHeatmap = document.getElementById('heatmap-img');
-                if (existingHeatmap) existingHeatmap.remove();
-                
-                const heatmapImg = document.createElement('img');
-                heatmapImg.id = 'heatmap-img';
-                heatmapImg.src = data.heatmap;
-                heatmapImg.style.position = 'absolute';
-                heatmapImg.style.top = '0';
-                heatmapImg.style.left = '0';
-                heatmapImg.style.width = '100%';
-                heatmapImg.style.height = '100%';
-                heatmapImg.style.objectFit = 'contain';
-                heatmapImg.style.zIndex = '5';
-                heatmapImg.style.borderRadius = '8px';
-                heatmapImg.style.mixBlendMode = 'screen';
-                heatmapImg.style.animation = 'pulse-heat 2s infinite';
-                
-                if (!document.getElementById('heatmap-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'heatmap-style';
-                    style.innerHTML = '@keyframes pulse-heat { 0% { opacity: 0.8; } 50% { opacity: 1; filter: brightness(1.2); } 100% { opacity: 0.8; } }';
-                    document.head.appendChild(style);
+                const previewWrapper = document.querySelector('.preview-image-wrapper');
+                if (previewWrapper) {
+                    const existingSplit = document.getElementById('forensic-split-container');
+                    if (existingSplit) existingSplit.remove();
+
+                    const splitContainer = document.createElement('div');
+                    splitContainer.id = 'forensic-split-container';
+                    splitContainer.style.cssText = 'position:relative;width:100%;height:100%;overflow:hidden;border-radius:14px;user-select:none;touch-action:none;';
+
+                    const baseImg = document.getElementById('imagePreview');
+                    baseImg.style.display = 'block';
+                    baseImg.style.opacity = '1';
+
+                    const overlayLayer = document.createElement('div');
+                    overlayLayer.id = 'split-overlay-layer';
+                    overlayLayer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;clip-path:polygon(0 0, 50% 0, 50% 100%, 0 100%);pointer-events:none;';
+
+                    const heatmapImg = document.createElement('img');
+                    heatmapImg.src = data.heatmap;
+                    heatmapImg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:screen;';
+                    overlayLayer.appendChild(heatmapImg);
+
+                    // Draggable Divider Line & Handle
+                    const divider = document.createElement('div');
+                    divider.id = 'split-divider';
+                    divider.style.cssText = 'position:absolute;top:0;bottom:0;left:50%;width:3px;background:linear-gradient(180deg,#06b6d4,#8b5cf6);box-shadow:0 0 12px #06b6d4;cursor:ew-resize;z-index:20;display:flex;align-items:center;justify-content:center;';
+
+                    const handle = document.createElement('div');
+                    handle.style.cssText = 'width:32px;height:32px;border-radius:50%;background:rgba(10,11,20,0.9);border:2px solid #06b6d4;box-shadow:0 0 15px rgba(6,182,212,0.8);display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:12px;';
+                    handle.innerHTML = '<i class="fa-solid fa-arrows-left-right"></i>';
+                    divider.appendChild(handle);
+
+                    // Badge labels
+                    const badgeLeft = document.createElement('div');
+                    badgeLeft.style.cssText = 'position:absolute;top:12px;left:14px;background:rgba(6,182,212,0.25);border:1px solid #06b6d4;color:#a5f3fc;font-family:var(--font-mono);font-size:10px;padding:4px 8px;border-radius:6px;backdrop-filter:blur(8px);z-index:25;pointer-events:none;';
+                    badgeLeft.innerText = '◀ FORENSIC SCAN';
+
+                    const badgeRight = document.createElement('div');
+                    badgeRight.style.cssText = 'position:absolute;top:12px;right:14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#f1f5f9;font-family:var(--font-mono);font-size:10px;padding:4px 8px;border-radius:6px;backdrop-filter:blur(8px);z-index:25;pointer-events:none;';
+                    badgeRight.innerText = 'ORIGINAL ▶';
+
+                    previewWrapper.appendChild(overlayLayer);
+                    previewWrapper.appendChild(divider);
+                    previewWrapper.appendChild(badgeLeft);
+                    previewWrapper.appendChild(badgeRight);
+
+                    let isDragging = false;
+                    const updateSplit = (clientX) => {
+                        const rect = previewWrapper.getBoundingClientRect();
+                        let pos = ((clientX - rect.left) / rect.width) * 100;
+                        pos = Math.max(0, Math.min(100, pos));
+                        overlayLayer.style.clipPath = `polygon(0 0, ${pos}% 0, ${pos}% 100%, 0 100%)`;
+                        divider.style.left = `${pos}%`;
+                    };
+
+                    const onMove = (e) => {
+                        if (!isDragging) return;
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                        updateSplit(clientX);
+                    };
+
+                    const onUp = () => { isDragging = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp); };
+
+                    divider.addEventListener('mousedown', () => { isDragging = true; window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp); });
+                    divider.addEventListener('touchstart', () => { isDragging = true; window.addEventListener('touchmove', onMove); window.addEventListener('touchend', onUp); });
+                    previewWrapper.addEventListener('click', (e) => updateSplit(e.clientX));
                 }
-                previewContainer.style.position = 'relative';
-                previewContainer.appendChild(heatmapImg);
             }
 
             showResults(data);
