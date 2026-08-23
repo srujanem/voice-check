@@ -340,6 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof scanHistory !== 'undefined' && scanHistory) {
             scanHistory.addScan('Text', textInput.value.slice(0, 30) + '...', isAi, confidence);
         }
+
+        // Trigger 3D Latent Embedding Vector Space
+        if (window.update3DVectorSpace) {
+            window.update3DVectorSpace(isAi, allSentencesData, confidence);
+        }
     }
 
     // Reset Button

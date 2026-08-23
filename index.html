@@ -3423,8 +3423,19 @@
 <h4>Multi-Language Support</h4>
 <p>Detect AI-generated text across 30+ languages including English, Spanish, Hindi, Mandarin, Arabic, and more. Our NLP models are trained on diverse multilingual datasets for global accuracy.</p>
 </div>
-</div>
 <h3 class="subsection-title">How It Works</h3>
+
+<!-- 3D Interactive Neural Data Pipeline -->
+<div style="position: relative; width: 100%; height: 220px; margin: 20px auto 30px; background: rgba(10, 12, 22, 0.6); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 18px; overflow: hidden; cursor: grab;" id="pipeline3DViewport">
+    <canvas id="pipeline-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+    <div style="position: absolute; top: 12px; left: 16px; font-size: 11px; font-family: var(--font-mono, monospace); color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-cube"></i> 3D NEURAL DATA PIPELINE
+    </div>
+    <div style="position: absolute; bottom: 10px; right: 14px; font-size: 10px; font-family: var(--font-mono, monospace); color: rgba(255,255,255,0.4); pointer-events: none;">
+        <i class="fa-solid fa-hand-pointer"></i> DRAG TO ROTATE 3D PIPELINE
+    </div>
+</div>
+
 <div class="steps-grid">
 <div class="step-card "><div class="step-number">1</div><h4>Upload or Record</h4><p>Choose your content type and upload a file, paste a URL, or record directly from your device.</p></div>
 <div class="step-connector"><i class="fa-solid fa-chevron-right"></i></div>
@@ -4994,8 +5005,157 @@ document.querySelectorAll('.faq-question').forEach(button => {
     setInterval(renderRealUserTelemetry, 2500);
 })();
 </script>
-</body>
 
+<!-- ===== 3D INTERACTIVE NEURAL DATA PIPELINE ENGINE ===== -->
+<script>
+(function() {
+    const canvas = document.getElementById('pipeline-3d-canvas');
+    const viewport = document.getElementById('pipeline3DViewport');
+    if (!canvas || !viewport || typeof THREE === 'undefined') return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+    camera.position.set(0, 0, 7.5);
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+    });
+    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lighting
+    const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+    scene.add(ambient);
+    const pLight1 = new THREE.PointLight(0x06b6d4, 3, 20);
+    pLight1.position.set(5, 5, 5);
+    scene.add(pLight1);
+    const pLight2 = new THREE.PointLight(0x8b5cf6, 3, 20);
+    pLight2.position.set(-5, -5, 5);
+    scene.add(pLight2);
+
+    const pipelineGroup = new THREE.Group();
+    scene.add(pipelineGroup);
+
+    // Node 1: Ingestion Octahedron (Left - Cyan)
+    const n1Geo = new THREE.OctahedronGeometry(0.85, 0);
+    const n1Mat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, wireframe: true, emissive: 0x083344 });
+    const node1 = new THREE.Mesh(n1Geo, n1Mat);
+    node1.position.x = -3.2;
+    pipelineGroup.add(node1);
+
+    // Node 2: Neural Tensor Core Hyper-Cube (Center - Purple)
+    const n2Geo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+    const n2Mat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, wireframe: true, emissive: 0x3b0764 });
+    const node2 = new THREE.Mesh(n2Geo, n2Mat);
+    node2.position.x = 0;
+    pipelineGroup.add(node2);
+
+    const n2InnerGeo = new THREE.SphereGeometry(0.45, 12, 12);
+    const n2InnerMat = new THREE.MeshBasicMaterial({ color: 0xc084fc });
+    const node2Inner = new THREE.Mesh(n2InnerGeo, n2InnerMat);
+    node2.add(node2Inner);
+
+    // Node 3: Verdict Shield Dodecahedron (Right - Emerald Green)
+    const n3Geo = new THREE.DodecahedronGeometry(0.9, 0);
+    const n3Mat = new THREE.MeshStandardMaterial({ color: 0x10b981, wireframe: true, emissive: 0x064e3b });
+    const node3 = new THREE.Mesh(n3Geo, n3Mat);
+    node3.position.x = 3.2;
+    pipelineGroup.add(node3);
+
+    // Connecting Energy Beams
+    const beamMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.5 });
+    const beam1Geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.2, 0, 0), new THREE.Vector3(0, 0, 0)]);
+    const beam1 = new THREE.Line(beam1Geo, beamMat);
+    pipelineGroup.add(beam1);
+
+    const beam2Mat = new THREE.LineBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.5 });
+    const beam2Geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(3.2, 0, 0)]);
+    const beam2 = new THREE.Line(beam2Geo, beam2Mat);
+    pipelineGroup.add(beam2);
+
+    // Traveling Data Photon Packets
+    const packetGeo = new THREE.SphereGeometry(0.08, 8, 8);
+    const packet1 = new THREE.Mesh(packetGeo, new THREE.MeshBasicMaterial({ color: 0x06b6d4 }));
+    const packet2 = new THREE.Mesh(packetGeo, new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+    pipelineGroup.add(packet1);
+    pipelineGroup.add(packet2);
+
+    let t1 = 0;
+    let t2 = 0;
+
+    // Interactive Drag
+    let isDragging = false;
+    let prevMousePos = { x: 0, y: 0 };
+    let targetRotY = 0;
+    let targetRotX = 0;
+    let currentRotY = 0;
+    let currentRotX = 0;
+
+    viewport.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevMousePos = { x: e.clientX, y: e.clientY };
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    viewport.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - prevMousePos.x;
+            const dy = e.clientY - prevMousePos.y;
+            targetRotY += dx * 0.008;
+            targetRotX += dy * 0.008;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        }
+    });
+
+    // Resize
+    window.addEventListener('resize', () => {
+        if (!viewport || !renderer || !camera) return;
+        camera.aspect = viewport.clientWidth / viewport.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    });
+
+    // Animation Loop
+    let clock = new THREE.Clock();
+    function animatePipeline() {
+        requestAnimationFrame(animatePipeline);
+        const elapsed = clock.getElapsedTime();
+
+        if (!isDragging) {
+            targetRotY = Math.sin(elapsed * 0.5) * 0.2;
+            targetRotX = Math.cos(elapsed * 0.4) * 0.1;
+        }
+
+        currentRotX += (targetRotX - currentRotX) * 0.08;
+        currentRotY += (targetRotY - currentRotY) * 0.08;
+        pipelineGroup.rotation.x = currentRotX;
+        pipelineGroup.rotation.y = currentRotY;
+
+        // Rotate individual nodes
+        node1.rotation.x = elapsed * 1.2;
+        node1.rotation.y = elapsed * 0.8;
+
+        node2.rotation.x = elapsed * 0.9;
+        node2.rotation.y = elapsed * 1.4;
+
+        node3.rotation.x = elapsed * 0.7;
+        node3.rotation.y = elapsed * 1.1;
+
+        // Animate Traveling Packets
+        t1 = (t1 + 0.015) % 1;
+        t2 = (t2 + 0.015) % 1;
+
+        packet1.position.x = -3.2 + t1 * 3.2;
+        packet2.position.x = t2 * 3.2;
+
+        renderer.render(scene, camera);
+    }
+    animatePipeline();
+})();
+</script>
+</body>
 </html>
 
 

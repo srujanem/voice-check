@@ -10,6 +10,7 @@
     <title>AI Text Forensics & Perplexity Detector — AuthGuard AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="../global.css?v=3">
     <style>
         :root {
@@ -934,6 +935,24 @@
                     <div class="sentences-stream-view" id="sentencesContainer"></div>
                 </div>
 
+                <!-- 3D Latent Embedding Vector Space -->
+                <div class="vector-3d-card" style="margin-top: 22px; background: rgba(10, 12, 20, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div style="font-size: 12px; font-weight: 700; font-family: var(--font-mono); color: var(--neon-purple); display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-brain"></i> 3D LATENT EMBEDDING VECTOR SPACE
+                        </div>
+                        <div style="font-size: 11px; font-family: var(--font-mono);" id="vector3DStatus">
+                            <span style="color: #10b981;">● ORGANIC SEMANTIC DISPERSION</span>
+                        </div>
+                    </div>
+                    <div style="position: relative; width: 100%; height: 260px; background: radial-gradient(circle at center, rgba(139,92,246,0.08) 0%, transparent 70%); cursor: grab;" id="vector3DViewport">
+                        <canvas id="vector-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                        <div style="position: absolute; bottom: 10px; right: 12px; font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.4); pointer-events: none;">
+                            <i class="fa-solid fa-hand-pointer"></i> DRAG TO ORBIT 3D LATENT SPACE
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Action Controls -->
@@ -961,5 +980,188 @@
     });
     </script>
     <script src="script.js?v=7"></script>
+
+    <!-- ===== 3D LATENT EMBEDDING VECTOR SPACE ENGINE ===== -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('vector-3d-canvas');
+        const viewport = document.getElementById('vector3DViewport');
+        if (!canvas || !viewport || typeof THREE === 'undefined') return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        camera.position.set(0, 0, 6.5);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Lighting
+        const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+        scene.add(ambient);
+        const pLight = new THREE.PointLight(0x8b5cf6, 3, 20);
+        pLight.position.set(4, 4, 4);
+        scene.add(pLight);
+
+        // Vector Cluster Group
+        const vectorGroup = new THREE.Group();
+        scene.add(vectorGroup);
+
+        // 1. 3D Bounding Spatial Lattice Cage
+        const cageGeo = new THREE.BoxGeometry(4.2, 3.2, 3.2);
+        const cageMat = new THREE.MeshBasicMaterial({
+            color: 0x8b5cf6,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const cageMesh = new THREE.Mesh(cageGeo, cageMat);
+        vectorGroup.add(cageMesh);
+
+        // 2. Center Centroid Marker
+        const centerGeo = new THREE.OctahedronGeometry(0.18, 0);
+        const centerMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true });
+        const centerMesh = new THREE.Mesh(centerGeo, centerMat);
+        vectorGroup.add(centerMesh);
+
+        // 3. Sentence Vector Nodes & Connecting Filaments
+        const nodeSpheres = [];
+        const nodeConnections = [];
+        const nodeGeo = new THREE.SphereGeometry(0.08, 12, 12);
+        const totalNodes = 32;
+
+        const greenMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, metalness: 0.8, emissive: 0x064e3b });
+        const redMat   = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.8, emissive: 0x7f1d1d });
+        const cyanMat  = new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.3, metalness: 0.8, emissive: 0x083344 });
+
+        for (let i = 0; i < totalNodes; i++) {
+            const mesh = new THREE.Mesh(nodeGeo, cyanMat.clone());
+            mesh._basePos = new THREE.Vector3(
+                (Math.random() - 0.5) * 3.4,
+                (Math.random() - 0.5) * 2.4,
+                (Math.random() - 0.5) * 2.4
+            );
+            mesh.position.copy(mesh._basePos);
+            vectorGroup.add(mesh);
+            nodeSpheres.push(mesh);
+        }
+
+        // Connecting Filaments
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.25 });
+        for (let i = 0; i < 18; i++) {
+            const idx1 = Math.floor(Math.random() * totalNodes);
+            const idx2 = (idx1 + 1 + Math.floor(Math.random() * 5)) % totalNodes;
+            const geo = new THREE.BufferGeometry().setFromPoints([nodeSpheres[idx1].position, nodeSpheres[idx2].position]);
+            const line = new THREE.Line(geo, lineMat);
+            vectorGroup.add(line);
+            nodeConnections.push({ line, idx1, idx2 });
+        }
+
+        // Drag Interaction
+        let isDragging = false;
+        let prevMousePos = { x: 0, y: 0 };
+        let targetRot = { x: 0.1, y: 0 };
+        let currentRot = { x: 0.1, y: 0 };
+
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        viewport.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - prevMousePos.x;
+                const dy = e.clientY - prevMousePos.y;
+                targetRot.y += dx * 0.008;
+                targetRot.x += dy * 0.008;
+                prevMousePos = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        // Global Updater
+        window.update3DVectorSpace = function(isAi, sentenceData, conf) {
+            const statusEl = document.getElementById('vector3DStatus');
+            if (isAi) {
+                // AI Text: Vectors collapse into tight unnatural cluster
+                nodeSpheres.forEach((m, idx) => {
+                    const radius = 0.5 + Math.random() * 0.4;
+                    const phi = Math.random() * Math.PI * 2;
+                    const theta = Math.random() * Math.PI;
+                    m._targetPos = new THREE.Vector3(
+                        radius * Math.sin(theta) * Math.cos(phi),
+                        radius * Math.sin(theta) * Math.sin(phi),
+                        radius * Math.cos(theta)
+                    );
+                    m.material.color.setHex(0xef4444);
+                });
+                cageMat.color.setHex(0xef4444);
+                if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">● COLLAPSED SYNTHETIC AI CLUSTER</span>';
+            } else {
+                // Human Text: Vectors disperse broadly across semantic space
+                nodeSpheres.forEach((m) => {
+                    m._targetPos = new THREE.Vector3(
+                        (Math.random() - 0.5) * 3.4,
+                        (Math.random() - 0.5) * 2.4,
+                        (Math.random() - 0.5) * 2.4
+                    );
+                    m.material.color.setHex(0x10b981);
+                });
+                cageMat.color.setHex(0x10b981);
+                if (statusEl) statusEl.innerHTML = '<span style="color: #10b981;">● DIVERSE ORGANIC SEMANTIC DISPERSION</span>';
+            }
+        };
+
+        // Resize
+        window.addEventListener('resize', () => {
+            if (!viewport || !renderer || !camera) return;
+            camera.aspect = viewport.clientWidth / viewport.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        });
+
+        // Animation Loop
+        let clock = new THREE.Clock();
+        function animateVectors() {
+            requestAnimationFrame(animateVectors);
+            const elapsed = clock.getElapsedTime();
+
+            if (!isDragging) {
+                targetRot.y += 0.005;
+                targetRot.x = Math.sin(elapsed * 0.4) * 0.15;
+            }
+
+            currentRot.x += (targetRot.x - currentRot.x) * 0.08;
+            currentRot.y += (targetRot.y - currentRot.y) * 0.08;
+            vectorGroup.rotation.x = currentRot.x;
+            vectorGroup.rotation.y = currentRot.y;
+
+            // Center marker spin
+            centerMesh.rotation.x = elapsed * 1.5;
+            centerMesh.rotation.y = elapsed * 2.0;
+
+            // Node subtle float or transition
+            nodeSpheres.forEach(m => {
+                if (m._targetPos) {
+                    m.position.lerp(m._targetPos, 0.05);
+                }
+            });
+
+            // Update line connections
+            nodeConnections.forEach(c => {
+                const p1 = nodeSpheres[c.idx1].position;
+                const p2 = nodeSpheres[c.idx2].position;
+                c.line.geometry.setFromPoints([p1, p2]);
+            });
+
+            renderer.render(scene, camera);
+        }
+        animateVectors();
+    })();
+    </script>
 </body>
 </html>

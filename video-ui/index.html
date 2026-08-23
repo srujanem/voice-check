@@ -10,6 +10,7 @@
     <title>Video Deepfake Detector — AuthGuard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="../global.css?v=3">
     <style>
         * { box-sizing: border-box; }
@@ -198,6 +199,24 @@
                     <span id="prob-real" style="color:#10b981;font-weight:600;">Real: --</span>
                     <span id="prob-fake" style="color:#ef4444;font-weight:600;">Fake: --</span>
                 </div>
+
+                <!-- 3D Volumetric Video Temporal Matrix Cube -->
+                <div class="video-3d-card" style="margin-top: 22px; background: rgba(10, 12, 20, 0.7); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 16px; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div style="font-size: 12px; font-weight: 700; font-family: var(--font-mono, monospace); color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-layer-group"></i> 3D TEMPORAL FRAME VOLUMETRIC MATRIX
+                        </div>
+                        <div style="font-size: 11px; font-family: var(--font-mono, monospace);" id="video3DStatus">
+                            <span style="color: #10b981;">● TEMPORAL COHERENCE: VERIFIED</span>
+                        </div>
+                    </div>
+                    <div style="position: relative; width: 100%; height: 250px; background: radial-gradient(circle at center, rgba(6,182,212,0.08) 0%, transparent 70%); cursor: grab;" id="video3DViewport">
+                        <canvas id="video-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                        <div style="position: absolute; bottom: 10px; right: 12px; font-size: 10px; font-family: var(--font-mono, monospace); color: rgba(255,255,255,0.4); pointer-events: none;">
+                            <i class="fa-solid fa-hand-pointer"></i> DRAG TO INSPECT 3D TEMPORAL DEPTH
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button id="reset-btn" onclick="document.getElementById('btnRemove').click()">
@@ -223,6 +242,168 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+    <!-- ===== 3D TEMPORAL VIDEO FRAME MATRIX ENGINE ===== -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('video-3d-canvas');
+        const viewport = document.getElementById('video3DViewport');
+        if (!canvas || !viewport || typeof THREE === 'undefined') return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        camera.position.set(0, 1.2, 5.8);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Lighting
+        const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+        scene.add(ambient);
+        const pLight = new THREE.PointLight(0x06b6d4, 3, 20);
+        pLight.position.set(4, 4, 4);
+        scene.add(pLight);
+
+        // Matrix Master Group
+        const matrixGroup = new THREE.Group();
+        scene.add(matrixGroup);
+        matrixGroup.rotation.x = 0.2;
+        matrixGroup.rotation.y = -0.35;
+
+        // Create 3D Stack of Temporal Video Frames along Z-axis
+        const frameCount = 12;
+        const framePlanes = [];
+        const frameWidth = 2.4;
+        const frameHeight = 1.4;
+        const frameSpacing = 0.38;
+
+        for (let i = 0; i < frameCount; i++) {
+            const z = (i - frameCount / 2) * frameSpacing;
+            
+            // Frame Plane
+            const planeGeo = new THREE.PlaneGeometry(frameWidth, frameHeight);
+            const planeMat = new THREE.MeshStandardMaterial({
+                color: 0x06b6d4,
+                transparent: true,
+                opacity: 0.35,
+                roughness: 0.2,
+                metalness: 0.5,
+                side: THREE.DoubleSide
+            });
+            const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+            planeMesh.position.z = z;
+            matrixGroup.add(planeMesh);
+
+            // Frame Wireframe Edge
+            const edges = new THREE.EdgesGeometry(planeGeo);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 });
+            const wire = new THREE.LineSegments(edges, lineMat);
+            planeMesh.add(wire);
+
+            // Anomaly Marker Box (for deepfake glitch frames)
+            const anomalyGeo = new THREE.BoxGeometry(0.7, 0.7, 0.08);
+            const anomalyMat = new THREE.MeshBasicMaterial({ color: 0xef4444, wireframe: true, visible: false });
+            const anomalyMesh = new THREE.Mesh(anomalyGeo, anomalyMat);
+            anomalyMesh.position.set((Math.random() - 0.5) * 0.8, (Math.random() - 0.5) * 0.4, 0.05);
+            planeMesh.add(anomalyMesh);
+
+            framePlanes.push({ mesh: planeMesh, mat: planeMat, lineMat: lineMat, anomaly: anomalyMesh, isFakeFrame: (i % 3 === 1) });
+        }
+
+        // Temporal Continuity Connecting Rails
+        const railMat = new THREE.LineBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.4 });
+        [[-frameWidth/2, -frameHeight/2], [frameWidth/2, -frameHeight/2], [-frameWidth/2, frameHeight/2], [frameWidth/2, frameHeight/2]].forEach(corner => {
+            const railGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(corner[0], corner[1], -frameCount/2 * frameSpacing),
+                new THREE.Vector3(corner[0], corner[1], frameCount/2 * frameSpacing)
+            ]);
+            const rail = new THREE.Line(railGeo, railMat);
+            matrixGroup.add(rail);
+        });
+
+        // Interactive Drag
+        let isDragging = false;
+        let prevMousePos = { x: 0, y: 0 };
+        let targetRot = { x: 0.2, y: -0.35 };
+        let currentRot = { x: 0.2, y: -0.35 };
+
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        viewport.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - prevMousePos.x;
+                const dy = e.clientY - prevMousePos.y;
+                targetRot.y += dx * 0.008;
+                targetRot.x += dy * 0.008;
+                prevMousePos = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        // Global Updater
+        window.update3DVideoMatrix = function(isFake, conf) {
+            const statusEl = document.getElementById('video3DStatus');
+            if (isFake) {
+                framePlanes.forEach(fp => {
+                    if (fp.isFakeFrame) {
+                        fp.mat.color.setHex(0xef4444);
+                        fp.mat.opacity = 0.75;
+                        fp.lineMat.color.setHex(0xef4444);
+                        fp.anomaly.visible = true;
+                    } else {
+                        fp.mat.color.setHex(0xf59e0b);
+                        fp.lineMat.color.setHex(0xf59e0b);
+                        fp.anomaly.visible = false;
+                    }
+                });
+                if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">● SYNTHETIC TEMPORAL FLICKER DETECTED</span>';
+            } else {
+                framePlanes.forEach(fp => {
+                    fp.mat.color.setHex(0x10b981);
+                    fp.mat.opacity = 0.4;
+                    fp.lineMat.color.setHex(0x10b981);
+                    fp.anomaly.visible = false;
+                });
+                if (statusEl) statusEl.innerHTML = '<span style="color: #10b981;">● CONTINUOUS OPTICAL TEMPORAL FLOW</span>';
+            }
+        };
+
+        // Resize
+        window.addEventListener('resize', () => {
+            if (!viewport || !renderer || !camera) return;
+            camera.aspect = viewport.clientWidth / viewport.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        });
+
+        // Animation Loop
+        let clock = new THREE.Clock();
+        function animateVideoMatrix() {
+            requestAnimationFrame(animateVideoMatrix);
+            const elapsed = clock.getElapsedTime();
+
+            if (!isDragging) {
+                targetRot.y = -0.35 + Math.sin(elapsed * 0.6) * 0.25;
+            }
+
+            currentRot.x += (targetRot.x - currentRot.x) * 0.08;
+            currentRot.y += (targetRot.y - currentRot.y) * 0.08;
+            matrixGroup.rotation.x = currentRot.x;
+            matrixGroup.rotation.y = currentRot.y;
+
+            renderer.render(scene, camera);
+        }
+        animateVideoMatrix();
+    })();
+    </script>
 </body>
 </html>
 

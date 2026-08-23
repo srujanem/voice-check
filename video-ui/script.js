@@ -225,6 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fName = currentFile ? currentFile.name : 'Video File';
                 scanHistory.addScan('Video', fName, isFake, confidence);
             }
+
+            // Trigger 3D Temporal Video Frame Matrix
+            if (window.update3DVideoMatrix) {
+                window.update3DVideoMatrix(isFake, confidence);
+            }
         }, 50);
     }
 });
