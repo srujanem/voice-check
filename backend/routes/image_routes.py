@@ -145,26 +145,32 @@ def predict_image():
         laplacian = cv2.Laplacian(gray_u8, cv2.CV_64F)
         lap_var = float(laplacian.var())
 
-        # Calibrated Base Decision (1.0 = Human, 0.0 = AI)
+        # Calibrated Neural Ensemble Decision (1.0 = Human, 0.0 = AI)
         if vit_pred is not None:
-            base_prob = (vit_pred * 0.50) + (tf_pred * 0.50)
+            # ViT (0.65) + EfficientNet CNN (0.35)
+            base_prob = (vit_pred * 0.65) + (tf_pred * 0.35)
         else:
             base_prob = tf_pred
 
-        # Apply multi-modal forensic adjustments
-        is_natural_camera = (ela_std > 2.8 and chroma_var < 15.0 and lap_var < 920.0)
+        # Physical Forensic Bayesian Adjustments (subtle +/- 0.05 to 0.08, never overriding strong neural consensus)
+        forensic_adjustment = 0.0
+        
+        # High uncompressed sensor noise entropy indicates physical sensor
+        if ela_std > 3.0:
+            forensic_adjustment += 0.04
+        elif ela_std < 1.0 and chroma_var > 22.0:
+            # Overly smoothed synthetic diffusion gradient
+            forensic_adjustment -= 0.04
 
-        if chroma_var > 17.5 and ela_std < 2.3:
-            # Strong synthetic latent / diffusion face signature
-            base_prob = min(base_prob, 0.08)
-        elif is_natural_camera:
-            # Strong optical camera sensor PRNU grain signature
-            base_prob = max(base_prob, 0.92)
-        elif hf_ratio > 0.95 or lap_var > 950.0:
-            # High-frequency synthetic diffusion / AI illustration artifact
-            base_prob = min(base_prob, 0.12)
+        # FFT High Frequency artifacts
+        if hf_ratio > 0.98:
+            forensic_adjustment -= 0.03
+        elif hf_ratio < 0.85:
+            forensic_adjustment += 0.03
 
-        final_prob_human = float(np.clip(base_prob, 0.01, 0.99))
+        # Apply calibration
+        calibrated_prob = base_prob + forensic_adjustment
+        final_prob_human = float(np.clip(calibrated_prob, 0.01, 0.99))
         is_fake = bool(final_prob_human < 0.50)
         prob_real = round(final_prob_human * 100, 1)
         prob_fake = round((1.0 - final_prob_human) * 100, 1)
