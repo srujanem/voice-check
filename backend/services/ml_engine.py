@@ -34,25 +34,24 @@ class MLEngine:
                 base_dir = Config.BASE_DIR
                 self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "model_image_advanced.keras"))
                 
-                # Also load ViT
+                # Also load Advanced Model (ConvNeXt-V2 via timm)
                 import torch
-                import torch.nn as nn
-                from transformers import ViTModel
-                class DeepfakeViT(nn.Module):
-                    def __init__(self):
-                        super().__init__()
-                        self.vit = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
-                        self.classifier = nn.Sequential(nn.Linear(self.vit.config.hidden_size, 256), nn.ReLU(), nn.Dropout(0.3), nn.Linear(256, 1))
-                    def forward(self, pixel_values):
-                        return self.classifier(self.vit(pixel_values=pixel_values).pooler_output)
+                import timm
                 
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                self.vit_model = DeepfakeViT().to(device)
-                vit_path = os.path.join(base_dir, "model_image_vit_best.pth")
-                if os.path.exists(vit_path):
-                    self.vit_model.load_state_dict(torch.load(vit_path, map_location=device))
-                    self.vit_model.eval()
-                else:
+                
+                try:
+                    self.vit_model = timm.create_model('convnextv2_tiny.fcmae_ft_in22k_in1k', pretrained=False, num_classes=2)
+                    self.vit_model = self.vit_model.to(device)
+                    convnext_path = os.path.join(base_dir, "model_image_convnext_best.pth")
+                    
+                    if os.path.exists(convnext_path):
+                        self.vit_model.load_state_dict(torch.load(convnext_path, map_location=device))
+                        self.vit_model.eval()
+                    else:
+                        self.vit_model = None
+                except Exception as e:
+                    print(f"Error loading ConvNeXt model: {e}")
                     self.vit_model = None
             except Exception as e:
                 print(f"Error loading image models: {e}")

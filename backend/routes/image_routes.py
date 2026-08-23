@@ -95,19 +95,27 @@ def predict_image():
             print(f"Heatmap Error: {hm_e}")
             heatmap_base64 = None
         
-        # ViT Predict
-        vit_pred = None
+        # ConvNeXt Predict
+        vit_pred = None # Using the same variable name for backward compatibility in the ensemble
         if vit_model is not None:
             try:
                 import torch
                 from torchvision import transforms
-                transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize([0.5]*3, [0.5]*3)])
+                # ConvNeXt uses ImageNet standard normalization
+                transform = transforms.Compose([
+                    transforms.Resize((224, 224)),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
                 device = next(vit_model.parameters()).device
                 with torch.no_grad():
                     logits = vit_model(transform(img).unsqueeze(0).to(device))
-                    vit_pred = float(torch.sigmoid(logits).cpu().item())
+                    # Softmax to get probabilities. 
+                    # Assuming class 0 is 'fake' and class 1 is 'real' based on alphabetical sorting.
+                    probs = torch.softmax(logits, dim=1)
+                    vit_pred = float(probs[0][1].cpu().item())
             except Exception as vit_err:
-                print(f"ViT Inference error: {vit_err}")
+                print(f"ConvNeXt Inference error: {vit_err}")
                 vit_pred = None
                 
         # --- PHYSICAL FORENSIC LAYERS ---

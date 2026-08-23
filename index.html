@@ -27,6 +27,7 @@
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link href="global.css?v=999" rel="stylesheet"/>
 <style>
 
@@ -218,9 +219,206 @@
         /* ===== SMOOTH THEME TRANSITION ===== */
         body { transition: background-color 0.5s ease, color 0.5s ease; }
         * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease; }
-        /* exclude transform/opacity transitions being overridden */
-        .tilt-card, .floating-mockup {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+
+        /* ===== 3D INTERACTIVE HOLOGRAPHIC STAGE ===== */
+        .hero-3d-container {
+            width: 100%;
+            max-width: 960px;
+            margin: 35px auto 25px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .hero-3d-card {
+            background: rgba(12, 12, 18, 0.72);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 30px rgba(6, 182, 212, 0.2);
+            position: relative;
+            transition: all 0.35s ease;
+        }
+
+        [data-theme="light"] .hero-3d-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(2, 132, 199, 0.35);
+            box-shadow: 0 20px 45px rgba(2, 132, 199, 0.15), 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .hero-3d-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        [data-theme="light"] .hero-3d-header {
+            background: rgba(2, 132, 199, 0.05);
+            border-bottom: 1px solid rgba(2, 132, 199, 0.12);
+        }
+
+        .hero-3d-viewport {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            cursor: grab;
+            user-select: none;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+        }
+
+        [data-theme="light"] .hero-3d-viewport {
+            background: radial-gradient(circle at center, rgba(2, 132, 199, 0.06) 0%, transparent 70%);
+        }
+
+        .hero-3d-viewport:active {
+            cursor: grabbing;
+        }
+
+        #three-3d-canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .hero-3d-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+
+        [data-theme="light"] .hero-3d-controls {
+            background: rgba(2, 132, 199, 0.03);
+            border-top: 1px solid rgba(2, 132, 199, 0.1);
+        }
+
+        .hero-3d-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        [data-theme="light"] .hero-3d-btn {
+            background: rgba(2, 132, 199, 0.08);
+            border: 1px solid rgba(2, 132, 199, 0.2);
+            color: #0369a1;
+        }
+
+        .hero-3d-btn:hover {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: #06b6d4;
+            color: #06b6d4;
+            transform: translateY(-2px);
+        }
+
+        .hero-3d-btn.active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(139, 92, 246, 0.3));
+            border-color: #06b6d4;
+            color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+        }
+
+        [data-theme="light"] .hero-3d-btn.active {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(124, 58, 237, 0.2));
+            border-color: #0284c7;
+            color: #0284c7;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+        }
+
+        .hero-3d-hud-badge {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: var(--font-mono, monospace);
+            color: #06b6d4;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .hero-3d-hud-hint {
+            position: absolute;
+            bottom: 14px;
+            right: 16px;
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: var(--font-mono, monospace);
+            color: #a78bfa;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        [data-theme="light"] .hero-3d-hud-badge,
+        [data-theme="light"] .hero-3d-hud-hint {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(2, 132, 199, 0.3);
+            color: #0284c7;
+        }
+
+        /* ===== 3D CARD PARALLAX DEPTH ===== */
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.12s ease-out, box-shadow 0.25s ease !important;
+            will-change: transform;
+        }
+
+        .tilt-card h2, .tilt-card h3, .tilt-card .card-icon-3d, .tilt-card i {
+            transform: translateZ(28px);
+            transition: transform 0.2s ease;
+        }
+
+        .tilt-card p {
+            transform: translateZ(16px);
+            transition: transform 0.2s ease;
+        }
+
+        .card-glare {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.18), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            mix-blend-mode: overlay;
+            border-radius: inherit;
+            z-index: 10;
         }
 
         /* ===== PRESS LOGO STRIP ===== */
@@ -2429,8 +2627,48 @@
 <div class="hero-counter-label">Countries</div>
 </div>
 </div>
-  <!-- Interactive Neural Defense Arena (Theme-Adaptive) -->
-  <div class="interactive-arena-card border-beam-card">
+
+<!-- Interactive 3D Cyber Defense Stage (Hardware Accelerated WebGL) -->
+<div class="hero-3d-container">
+    <div class="hero-3d-card border-beam-card">
+        <div class="hero-3d-header">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <span style="width: 11px; height: 11px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                <span style="width: 11px; height: 11px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                <span style="width: 11px; height: 11px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-left: 10px; letter-spacing: 0.5px;">AUTHGUARD // 3D QUANTUM CORE MATRIX</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono, monospace); font-size: 11px; color: #06b6d4;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4; box-shadow: 0 0 10px #06b6d4;"></span>
+                <span>3D WEBGL ENGINE ACTIVE</span>
+            </div>
+        </div>
+
+        <div class="hero-3d-viewport" id="hero3DViewport">
+            <canvas id="three-3d-canvas"></canvas>
+            <div class="hero-3d-hud-badge"><i class="fa-solid fa-cube"></i> <span id="hud-model-name">NEURAL CORE</span> <span style="opacity:0.5;">|</span> <span id="hud-fps">60 FPS</span></div>
+            <div class="hero-3d-hud-hint"><i class="fa-solid fa-hand-pointer"></i> <span>DRAG TO ROTATE 360° • CLICK TO PULSE</span></div>
+        </div>
+
+        <div class="hero-3d-controls">
+            <button class="hero-3d-btn active" data-model="neural" onclick="switch3DModel('neural', this)">
+                <i class="fa-solid fa-brain"></i> Neural Core
+            </button>
+            <button class="hero-3d-btn" data-model="shield" onclick="switch3DModel('shield', this)">
+                <i class="fa-solid fa-shield-halved"></i> Cyber Shield
+            </button>
+            <button class="hero-3d-btn" data-model="torus" onclick="switch3DModel('torus', this)">
+                <i class="fa-solid fa-ring"></i> Quantum Torus
+            </button>
+            <button class="hero-3d-btn" data-model="dna" onclick="switch3DModel('dna', this)">
+                <i class="fa-solid fa-dna"></i> Biometric Helix
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Neural Defense Arena (Theme-Adaptive) -->
+<div class="interactive-arena-card border-beam-card">
       <!-- Console Header Bar -->
       <div class="arena-header-bar">
           <div style="display: flex; gap: 8px; align-items: center;">
@@ -3503,9 +3741,568 @@ document.querySelectorAll('.faq-question').forEach(button => {
             p.draw();
         });
 
-        requestAnimationFrame(animate);
-    }
     animate();
+})();
+</script>
+
+<!-- ===== INTERACTIVE 3D THREE.JS HOLOGRAPHIC QUANTUM ENGINE ===== -->
+<script>
+(function() {
+    const canvas = document.getElementById('three-3d-canvas');
+    const viewport = document.getElementById('hero3DViewport');
+    if (!canvas || !viewport || typeof THREE === 'undefined') return;
+
+    // --- Scene, Camera, Renderer ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 1000);
+    camera.position.z = 8.5;
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+    });
+    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // --- Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+
+    const lightCyan = new THREE.PointLight(0x06b6d4, 3, 20);
+    lightCyan.position.set(5, 5, 5);
+    scene.add(lightCyan);
+
+    const lightPurple = new THREE.PointLight(0x8b5cf6, 3, 20);
+    lightPurple.position.set(-5, -4, 4);
+    scene.add(lightPurple);
+
+    const lightPink = new THREE.PointLight(0xec4899, 2, 15);
+    lightPink.position.set(0, 6, -3);
+    scene.add(lightPink);
+
+    // --- Master Pivot Group ---
+    const masterGroup = new THREE.Group();
+    scene.add(masterGroup);
+
+    // --- Helper Texture Generator for Glowing Points ---
+    function createGlowDotTexture(colorHex) {
+        const c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        const ctx = c.getContext('2d');
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.3, colorHex || '#06b6d4');
+        grad.addColorStop(0.7, colorHex ? colorHex + '66' : 'rgba(6, 182, 212, 0.4)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+        return new THREE.CanvasTexture(c);
+    }
+    const cyanDotTex = createGlowDotTexture('#06b6d4');
+    const purpleDotTex = createGlowDotTexture('#8b5cf6');
+
+    // --- 3D Model Containers ---
+    const models = {
+        neural: new THREE.Group(),
+        shield: new THREE.Group(),
+        torus: new THREE.Group(),
+        dna: new THREE.Group()
+    };
+    let currentModelKey = 'neural';
+
+    // 1. MODEL: NEURAL CORE
+    {
+        const g = models.neural;
+
+        // Outer Icosahedron Wireframe
+        const icoGeo = new THREE.IcosahedronGeometry(2.3, 2);
+        const icoMat = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.65,
+            roughness: 0.2,
+            metalness: 0.8
+        });
+        const icoMesh = new THREE.Mesh(icoGeo, icoMat);
+        g.add(icoMesh);
+
+        // Glowing Vertex Points
+        const icoPointsMat = new THREE.PointsMaterial({
+            size: 0.22,
+            map: cyanDotTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const icoPoints = new THREE.Points(icoGeo, icoPointsMat);
+        g.add(icoPoints);
+
+        // Inner Core Sphere
+        const coreGeo = new THREE.SphereGeometry(1.2, 28, 28);
+        const coreMat = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            emissive: 0x4c1d95,
+            emissiveIntensity: 0.5,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.45
+        });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        g.add(coreMesh);
+        g.userData.coreMesh = coreMesh;
+
+        // Orbiting Quantum Ring 1
+        const ring1Geo = new THREE.TorusGeometry(3.3, 0.035, 16, 100);
+        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.8 });
+        const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+        ring1.rotation.x = Math.PI / 3;
+        ring1.rotation.y = Math.PI / 6;
+        g.add(ring1);
+        g.userData.ring1 = ring1;
+
+        // Orbiting Quantum Ring 2
+        const ring2Geo = new THREE.TorusGeometry(3.6, 0.025, 16, 100);
+        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xec4899, transparent: true, opacity: 0.6 });
+        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        ring2.rotation.x = -Math.PI / 4;
+        ring2.rotation.y = -Math.PI / 3;
+        g.add(ring2);
+        g.userData.ring2 = ring2;
+
+        masterGroup.add(g);
+    }
+
+    // 2. MODEL: CYBER SHIELD MATRIX
+    {
+        const g = models.shield;
+
+        // Shield Body: Custom Extrusion / Polygonal Facets
+        const shape = new THREE.Shape();
+        shape.moveTo(0, 2.6);
+        shape.quadraticCurveTo(2.2, 2.2, 2.2, 0.4);
+        shape.quadraticCurveTo(2.0, -1.8, 0, -2.6);
+        shape.quadraticCurveTo(-2.0, -1.8, -2.2, 0.4);
+        shape.quadraticCurveTo(-2.2, 2.2, 0, 2.6);
+
+        const extrudeSettings = { depth: 0.35, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.15, bevelThickness: 0.15 };
+        const shieldGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        shieldGeo.center();
+
+        const shieldWireMat = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.75
+        });
+        const shieldMesh = new THREE.Mesh(shieldGeo, shieldWireMat);
+        g.add(shieldMesh);
+
+        // Shield Vertex Points
+        const shieldPointsMat = new THREE.PointsMaterial({
+            size: 0.2,
+            map: cyanDotTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const shieldPoints = new THREE.Points(shieldGeo, shieldPointsMat);
+        g.add(shieldPoints);
+
+        // Inner Hologram Emblem
+        const emblemGeo = new THREE.OctahedronGeometry(1.0, 0);
+        const emblemMat = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            emissive: 0x8b5cf6,
+            emissiveIntensity: 0.6,
+            wireframe: true
+        });
+        const emblem = new THREE.Mesh(emblemGeo, emblemMat);
+        g.add(emblem);
+        g.userData.emblem = emblem;
+
+        // Surrounding Defense Rings
+        const shieldRingGeo = new THREE.TorusGeometry(3.2, 0.03, 16, 80);
+        const shieldRingMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.75 });
+        const shieldRing = new THREE.Mesh(shieldRingGeo, shieldRingMat);
+        shieldRing.rotation.x = Math.PI / 2;
+        g.add(shieldRing);
+        g.userData.ring = shieldRing;
+
+        g.visible = false;
+        masterGroup.add(g);
+    }
+
+    // 3. MODEL: QUANTUM TORUS KNOT
+    {
+        const g = models.torus;
+        const knotGeo = new THREE.TorusKnotGeometry(1.8, 0.45, 120, 18, 2, 3);
+        const knotMat = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.7,
+            roughness: 0.1,
+            metalness: 0.9
+        });
+        const knotMesh = new THREE.Mesh(knotGeo, knotMat);
+        g.add(knotMesh);
+
+        const knotPointsMat = new THREE.PointsMaterial({
+            size: 0.18,
+            map: purpleDotTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const knotPoints = new THREE.Points(knotGeo, knotPointsMat);
+        g.add(knotPoints);
+
+        g.visible = false;
+        masterGroup.add(g);
+    }
+
+    // 4. MODEL: BIOMETRIC DNA HELIX
+    {
+        const g = models.dna;
+        const helixGroup = new THREE.Group();
+        const strandCount = 36;
+        const radius = 1.4;
+        const heightSpan = 5.0;
+
+        const sphereGeo = new THREE.SphereGeometry(0.12, 12, 12);
+        const sphereMatCyan = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+        const sphereMatPurple = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
+
+        for (let i = 0; i < strandCount; i++) {
+            const t = i / strandCount;
+            const y = (t - 0.5) * heightSpan;
+            const angle = t * Math.PI * 4;
+
+            const x1 = Math.cos(angle) * radius;
+            const z1 = Math.sin(angle) * radius;
+
+            const x2 = Math.cos(angle + Math.PI) * radius;
+            const z2 = Math.sin(angle + Math.PI) * radius;
+
+            const node1 = new THREE.Mesh(sphereGeo, sphereMatCyan);
+            node1.position.set(x1, y, z1);
+            helixGroup.add(node1);
+
+            const node2 = new THREE.Mesh(sphereGeo, sphereMatPurple);
+            node2.position.set(x2, y, z2);
+            helixGroup.add(node2);
+
+            // Connecting Rung Line
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(x1, y, z1),
+                new THREE.Vector3(x2, y, z2)
+            ]);
+            const lineMat = new THREE.LineBasicMaterial({
+                color: (i % 2 === 0) ? 0x06b6d4 : 0xec4899,
+                transparent: true,
+                opacity: 0.45
+            });
+            const line = new THREE.Line(lineGeo, lineMat);
+            helixGroup.add(line);
+        }
+        g.add(helixGroup);
+        g.userData.helixGroup = helixGroup;
+
+        g.visible = false;
+        masterGroup.add(g);
+    }
+
+    // --- Ambient Particle Swarm ---
+    const swarmCount = 220;
+    const swarmGeo = new THREE.BufferGeometry();
+    const swarmPositions = new Float32Array(swarmCount * 3);
+    const swarmOriginalPositions = new Float32Array(swarmCount * 3);
+    const swarmVelocities = new Float32Array(swarmCount * 3);
+
+    for (let i = 0; i < swarmCount; i++) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        const r = Math.cbrt(Math.random()) * 4.5 + 1.5;
+        const sinPhi = Math.sin(phi);
+
+        const x = r * sinPhi * Math.cos(theta);
+        const y = r * sinPhi * Math.sin(theta);
+        const z = r * Math.cos(phi);
+
+        swarmPositions[i * 3] = x;
+        swarmPositions[i * 3 + 1] = y;
+        swarmPositions[i * 3 + 2] = z;
+
+        swarmOriginalPositions[i * 3] = x;
+        swarmOriginalPositions[i * 3 + 1] = y;
+        swarmOriginalPositions[i * 3 + 2] = z;
+
+        swarmVelocities[i * 3] = (Math.random() - 0.5) * 0.01;
+        swarmVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.01;
+        swarmVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.01;
+    }
+    swarmGeo.setAttribute('position', new THREE.BufferAttribute(swarmPositions, 3));
+
+    const swarmMat = new THREE.PointsMaterial({
+        size: 0.16,
+        map: cyanDotTex,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+    const swarm = new THREE.Points(swarmGeo, swarmMat);
+    scene.add(swarm);
+
+    // --- Interactive Mouse & Touch Drag Controls ---
+    let isDragging = false;
+    let prevMousePos = { x: 0, y: 0 };
+    let targetRotation = { x: 0.2, y: 0.4 };
+    let currentRotation = { x: 0.2, y: 0.4 };
+    let rotationVelocity = { x: 0, y: 0.006 };
+    let pulseWaveIntensity = 0;
+
+    viewport.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevMousePos = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    viewport.addEventListener('mousemove', (e) => {
+        const rect = viewport.getBoundingClientRect();
+        const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const normY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+
+        if (isDragging) {
+            const deltaX = e.clientX - prevMousePos.x;
+            const deltaY = e.clientY - prevMousePos.y;
+            rotationVelocity.y = deltaX * 0.006;
+            rotationVelocity.x = deltaY * 0.006;
+            targetRotation.y += rotationVelocity.y;
+            targetRotation.x += rotationVelocity.x;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        } else {
+            // Subtle Parallax Tracking
+            camera.position.x = normX * 0.8;
+            camera.position.y = normY * 0.6;
+            camera.lookAt(0, 0, 0);
+        }
+    });
+
+    // Touch Support
+    viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    viewport.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length === 1) {
+            const deltaX = e.touches[0].clientX - prevMousePos.x;
+            const deltaY = e.touches[0].clientY - prevMousePos.y;
+            targetRotation.y += deltaX * 0.008;
+            targetRotation.x += deltaY * 0.008;
+            prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+    }, { passive: true });
+
+    // Click to Pulse Shockwave
+    viewport.addEventListener('click', () => {
+        pulseWaveIntensity = 1.0;
+    });
+
+    // --- Switch 3D Model Handler ---
+    window.switch3DModel = function(modelKey, btnElement) {
+        if (!models[modelKey]) return;
+        currentModelKey = modelKey;
+
+        document.querySelectorAll('.hero-3d-btn').forEach(b => b.classList.remove('active'));
+        if (btnElement) btnElement.classList.add('active');
+
+        const hudName = document.getElementById('hud-model-name');
+        if (hudName) {
+            const names = {
+                neural: 'NEURAL CORE',
+                shield: 'CYBER SHIELD',
+                torus: 'QUANTUM TORUS',
+                dna: 'BIOMETRIC HELIX'
+            };
+            hudName.textContent = names[modelKey] || '3D CORE';
+        }
+
+        // Cross-scale transition
+        Object.keys(models).forEach(k => {
+            if (k === modelKey) {
+                models[k].visible = true;
+                models[k].scale.set(0.1, 0.1, 0.1);
+                pulseWaveIntensity = 0.8;
+            } else {
+                models[k].visible = false;
+            }
+        });
+    };
+
+    // --- Responsive Resize ---
+    window.addEventListener('resize', () => {
+        if (!viewport || !renderer || !camera) return;
+        const w = viewport.clientWidth;
+        const h = viewport.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+
+    // --- FPS Meter ---
+    let frameCount = 0;
+    let lastTime = performance.now();
+    const fpsElement = document.getElementById('hud-fps');
+
+    // --- Render Loop ---
+    let clock = new THREE.Clock();
+
+    function render3D() {
+        requestAnimationFrame(render3D);
+
+        const delta = clock.getDelta();
+        const elapsed = clock.getElapsedTime();
+
+        // FPS Calculation
+        frameCount++;
+        if (performance.now() - lastTime >= 1000) {
+            if (fpsElement) fpsElement.textContent = frameCount + ' FPS';
+            frameCount = 0;
+            lastTime = performance.now();
+        }
+
+        // Auto-rotation & Inertia Damping
+        if (!isDragging) {
+            targetRotation.y += 0.005;
+            rotationVelocity.x *= 0.92;
+            rotationVelocity.y *= 0.92;
+        }
+
+        currentRotation.x += (targetRotation.x - currentRotation.x) * 0.08;
+        currentRotation.y += (targetRotation.y - currentRotation.y) * 0.08;
+
+        masterGroup.rotation.x = currentRotation.x;
+        masterGroup.rotation.y = currentRotation.y;
+
+        // Smooth Scale In on Active Model
+        const activeModel = models[currentModelKey];
+        if (activeModel && activeModel.scale.x < 1.0) {
+            const nextScale = Math.min(activeModel.scale.x + 0.08, 1.0);
+            activeModel.scale.set(nextScale, nextScale, nextScale);
+        }
+
+        // Model Specific Micro-Animations
+        if (currentModelKey === 'neural') {
+            const m = models.neural;
+            if (m.userData.coreMesh) {
+                const s = 1.0 + Math.sin(elapsed * 3) * 0.08;
+                m.userData.coreMesh.scale.set(s, s, s);
+            }
+            if (m.userData.ring1) m.userData.ring1.rotation.z += 0.012;
+            if (m.userData.ring2) m.userData.ring2.rotation.z -= 0.018;
+        } else if (currentModelKey === 'shield') {
+            const m = models.shield;
+            if (m.userData.emblem) {
+                m.userData.emblem.rotation.y += 0.02;
+                m.userData.emblem.rotation.x += 0.01;
+            }
+            if (m.userData.ring) m.userData.ring.rotation.z += 0.01;
+        } else if (currentModelKey === 'torus') {
+            models.torus.rotation.z += 0.008;
+        } else if (currentModelKey === 'dna') {
+            const m = models.dna;
+            if (m.userData.helixGroup) {
+                m.userData.helixGroup.rotation.y += 0.02;
+            }
+        }
+
+        // Particle Swarm Orbit & Shockwave Pulse
+        const posAttr = swarmGeo.attributes.position;
+        const posArr = posAttr.array;
+
+        if (pulseWaveIntensity > 0.01) {
+            pulseWaveIntensity *= 0.94;
+        }
+
+        for (let i = 0; i < swarmCount; i++) {
+            const i3 = i * 3;
+            const ox = swarmOriginalPositions[i3];
+            const oy = swarmOriginalPositions[i3 + 1];
+            const oz = swarmOriginalPositions[i3 + 2];
+
+            // Wave pulse expansion
+            const pulseFactor = 1.0 + pulseWaveIntensity * 0.6 * Math.sin(elapsed * 6 + i);
+
+            posArr[i3] = ox * pulseFactor + Math.sin(elapsed * 0.8 + i) * 0.15;
+            posArr[i3 + 1] = oy * pulseFactor + Math.cos(elapsed * 0.7 + i) * 0.15;
+            posArr[i3 + 2] = oz * pulseFactor + Math.sin(elapsed * 0.9 + i) * 0.15;
+        }
+        posAttr.needsUpdate = true;
+        swarm.rotation.y = elapsed * 0.04;
+
+        // Rotating Cyber Lights
+        lightCyan.position.x = Math.cos(elapsed * 1.2) * 6;
+        lightCyan.position.z = Math.sin(elapsed * 1.2) * 6;
+        lightPurple.position.x = Math.sin(elapsed * 0.9) * 6;
+        lightPurple.position.z = Math.cos(elapsed * 0.9) * 6;
+
+        renderer.render(scene, camera);
+    }
+    render3D();
+})();
+</script>
+
+<!-- ===== INTERACTIVE 3D CARD PARALLAX TILT ENGINE ===== -->
+<script>
+(function() {
+    const tiltElements = document.querySelectorAll('.tilt-card, .border-beam-card, .feature-card, .pricing-card');
+
+    tiltElements.forEach(el => {
+        // Ensure glare element exists
+        let glare = el.querySelector('.card-glare');
+        if (!glare) {
+            glare = document.createElement('div');
+            glare.className = 'card-glare';
+            el.appendChild(glare);
+        }
+
+        el.addEventListener('mousemove', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = -((y - centerY) / centerY) * 10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+
+            el.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
+            el.style.boxShadow = `0 25px 50px -12px rgba(6, 182, 212, 0.25), 0 0 25px rgba(139, 92, 246, 0.2)`;
+
+            if (glare) {
+                glare.style.opacity = '1';
+                glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.22), transparent 60%)`;
+            }
+        });
+
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            el.style.boxShadow = '';
+            if (glare) glare.style.opacity = '0';
+        });
+    });
 })();
 </script>
 </body>
