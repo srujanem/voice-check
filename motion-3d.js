@@ -1,11 +1,11 @@
 /**
  * AuthGuard 3D Screen Motion, Scroll Parallax & Gyroscope Engine
- * Provides full-viewport 3D space warp, cursor depth parallax, and 3D card tilt physics.
+ * Provides a clean Infinite 3D Cyber Horizon Wave, ambient nebula dust, and 3D card tilt physics.
  */
 (function() {
     'use strict';
 
-    // 1. FULL-VIEWPORT 3D WEBGL CYBER SPACE & SCROLL WARP
+    // 1. FULL-VIEWPORT 3D INFINITE CYBER HORIZON & AMBIENT NEBULA ENGINE
     function initGlobal3DSpace() {
         if (typeof THREE === 'undefined') return;
 
@@ -17,8 +17,11 @@
         }
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 30;
+        // Deep space atmospheric fog for infinite horizon falloff
+        scene.fog = new THREE.FogExp2(0x0a0c16, 0.022);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 28);
 
         const renderer = new THREE.WebGLRenderer({
             canvas: canvas,
@@ -29,8 +32,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Starfield / Cyber Dust Field (350 floating particles)
-        const particleCount = 350;
+        // 1.1 Ambient Glowing Stardust Field (240 micro-particles)
+        const particleCount = 240;
         const pGeo = new THREE.BufferGeometry();
         const pPositions = new Float32Array(particleCount * 3);
         const pColors = new Float32Array(particleCount * 3);
@@ -41,7 +44,7 @@
 
         for (let i = 0; i < particleCount; i++) {
             const i3 = i * 3;
-            pPositions[i3]     = (Math.random() - 0.5) * 80;
+            pPositions[i3]     = (Math.random() - 0.5) * 90;
             pPositions[i3 + 1] = (Math.random() - 0.5) * 80;
             pPositions[i3 + 2] = (Math.random() - 0.5) * 60;
 
@@ -56,76 +59,41 @@
         pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
 
         const pMat = new THREE.PointsMaterial({
-            size: 0.22,
+            size: 0.18,
             vertexColors: true,
             transparent: true,
-            opacity: 0.65,
+            opacity: 0.55,
             blending: THREE.AdditiveBlending
         });
         const starField = new THREE.Points(pGeo, pMat);
         scene.add(starField);
 
-        // Floating 3D Geometric Shards (Crystals, Polyhedra)
-        const shardsGroup = new THREE.Group();
-        scene.add(shardsGroup);
+        // 1.2 Infinite 3D Cyber Horizon Wave (Tron / Futuristic Grid Ground)
+        const gridCols = 42;
+        const gridRows = 42;
+        const gridGeo = new THREE.PlaneGeometry(130, 110, gridCols - 1, gridRows - 1);
+        gridGeo.rotateX(-Math.PI / 2.15);
 
-        const shardGeos = [
-            new THREE.IcosahedronGeometry(0.7, 0),
-            new THREE.OctahedronGeometry(0.6, 0),
-            new THREE.TetrahedronGeometry(0.5, 0)
-        ];
+        const gridMat = new THREE.MeshBasicMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.16
+        });
+        const gridMesh = new THREE.Mesh(gridGeo, gridMat);
+        gridMesh.position.set(0, -15, -12);
+        scene.add(gridMesh);
 
-        const shardMats = [
-            new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true, transparent: true, opacity: 0.25 }),
-            new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.25 }),
-            new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.25 })
-        ];
-
-        const shards = [];
-        const shardCount = 14;
-
-        for (let i = 0; i < shardCount; i++) {
-            const geo = shardGeos[i % shardGeos.length];
-            const mat = shardMats[i % shardMats.length];
-            const mesh = new THREE.Mesh(geo, mat);
-
-            mesh.position.set(
-                (Math.random() - 0.5) * 55,
-                (Math.random() - 0.5) * 55,
-                (Math.random() - 0.5) * 35
-            );
-
-            mesh._rotSpeedX = (Math.random() - 0.5) * 0.015;
-            mesh._rotSpeedY = (Math.random() - 0.5) * 0.015;
-            mesh._baseY = mesh.position.y;
-            mesh._floatOffset = Math.random() * Math.PI * 2;
-
-            shardsGroup.add(mesh);
-            shards.push(mesh);
-        }
-
-        // 3D Neural Synapse Spark Constellation
-        const synapseLineCount = 24;
-        const synapseLines = [];
-        const synMat = new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.25, linewidth: 1 });
-        for (let i = 0; i < synapseLineCount; i++) {
-            const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
-            const line = new THREE.Line(geo, synMat.clone());
-            scene.add(line);
-            synapseLines.push({
-                line,
-                idxA: i % shardCount,
-                idxB: (i * 3 + 1) % shardCount
-            });
-        }
+        // Base original position cache for grid wave calculation
+        const baseGridPos = gridGeo.attributes.position.array.slice();
 
         // Mouse & Screen Movement State
         let mouseX = 0;
         let mouseY = 0;
         let targetCamX = 0;
-        let targetCamY = 0;
+        let targetCamY = 2;
         let currentCamX = 0;
-        let currentCamY = 0;
+        let currentCamY = 2;
 
         // Scroll Velocity State
         let lastScrollY = window.scrollY;
@@ -137,8 +105,8 @@
         window.addEventListener('mousemove', (e) => {
             mouseX = (e.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-            targetCamX = mouseX * 4.5;
-            targetCamY = mouseY * 4.5;
+            targetCamX = mouseX * 3.5;
+            targetCamY = 2 + mouseY * 2.5;
         }, { passive: true });
 
         // Scroll Movement Listener (3D Screen Warp Flythrough)
@@ -146,7 +114,7 @@
             const currentScroll = window.scrollY;
             const delta = currentScroll - lastScrollY;
             lastScrollY = currentScroll;
-            scrollVelocity = delta * 0.05;
+            scrollVelocity = delta * 0.04;
             targetScrollWarp += scrollVelocity;
         }, { passive: true });
 
@@ -154,8 +122,8 @@
         if (window.DeviceOrientationEvent) {
             window.addEventListener('deviceorientation', (e) => {
                 if (e.gamma !== null && e.beta !== null) {
-                    targetCamX = (e.gamma / 45) * 5;
-                    targetCamY = ((e.beta - 45) / 45) * 5;
+                    targetCamX = (e.gamma / 45) * 3.5;
+                    targetCamY = 2 + ((e.beta - 45) / 45) * 2.5;
                 }
             }, { passive: true });
         }
@@ -178,15 +146,15 @@
             currentCamY += (targetCamY - currentCamY) * 0.04;
             camera.position.x = currentCamX;
             camera.position.y = currentCamY;
-            camera.lookAt(0, 0, 0);
+            camera.lookAt(0, -4, 0);
 
             // Smooth scroll warp decay
             targetScrollWarp *= 0.92;
             currentScrollWarp += (targetScrollWarp - currentScrollWarp) * 0.1;
 
             // Rotate starfield slowly and shift with scroll
-            starField.rotation.y = elapsed * 0.02 + currentCamX * 0.01;
-            starField.rotation.x = elapsed * 0.01 + currentCamY * 0.01;
+            starField.rotation.y = elapsed * 0.015 + currentCamX * 0.01;
+            starField.rotation.x = elapsed * 0.008;
 
             // Stream particles along Z on screen scroll
             const pos = pGeo.attributes.position.array;
@@ -198,24 +166,16 @@
             }
             pGeo.attributes.position.needsUpdate = true;
 
-            // Rotate and float 3D shards
-            shards.forEach(mesh => {
-                mesh.rotation.x += mesh._rotSpeedX;
-                mesh.rotation.y += mesh._rotSpeedY;
-                mesh.position.y = mesh._baseY + Math.sin(elapsed * 1.2 + mesh._floatOffset) * 0.8;
-                mesh.position.z += currentScrollWarp * 0.15;
-                if (mesh.position.z > 20) mesh.position.z -= 40;
-                if (mesh.position.z < -20) mesh.position.z += 40;
-            });
-
-            // Animate 3D Synapse Spark Network
-            synapseLines.forEach((syn, i) => {
-                const pA = shards[syn.idxA].position;
-                const pB = shards[syn.idxB].position;
-                syn.line.geometry.setFromPoints([pA, pB]);
-                const spark = 0.15 + Math.sin(elapsed * 3.5 + i * 0.8) * 0.15;
-                syn.line.material.opacity = spark;
-            });
+            // Undulating 3D Cyber Horizon Wave Ground
+            const gPos = gridGeo.attributes.position.array;
+            for (let i = 0; i < gridGeo.attributes.position.count; i++) {
+                const i3 = i * 3;
+                const bx = baseGridPos[i3];
+                const bz = baseGridPos[i3 + 2];
+                const wave = Math.sin(bx * 0.10 + elapsed * 1.2) * Math.cos(bz * 0.08 + elapsed * 0.9) * 1.35;
+                gPos[i3 + 1] = baseGridPos[i3 + 1] + wave;
+            }
+            gridGeo.attributes.position.needsUpdate = true;
 
             renderer.render(scene, camera);
         }
