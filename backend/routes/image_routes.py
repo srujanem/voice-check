@@ -85,7 +85,7 @@ def predict_image():
                 img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 
                 # Superimpose the heatmap onto the image
-                superimposed_img = heatmap * 0.4 + img_cv * 0.6
+                superimposed_img = np.uint8(np.clip(heatmap * 0.4 + img_cv * 0.6, 0, 255))
                 
                 # Encode to base64
                 _, buffer = cv2.imencode('.jpg', superimposed_img)
@@ -127,6 +127,10 @@ def predict_image():
             pred_prob = tf_pred
 
         is_fake = pred_prob < 0.5
+        prob_real = round(pred_prob * 100, 1)
+        prob_fake = round((1.0 - pred_prob) * 100, 1)
+        confidence = prob_fake if is_fake else prob_real
+
         forensic_data = {
             "vit_prob_human": round(vit_pred * 100, 1) if vit_pred is not None else None,
             "cnn_prob_human": round(tf_pred * 100, 1),
