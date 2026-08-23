@@ -897,10 +897,13 @@
                         </div>
                     </div>
 
-                    <!-- 3D Forensic Mode Selector Toolbar -->
+                    <!-- 3D & 4D Forensic Mode Selector Toolbar -->
                     <div style="display: flex; gap: 6px; padding: 8px 14px; background: rgba(0, 0, 0, 0.25); border-bottom: 1px solid rgba(255, 255, 255, 0.05); overflow-x: auto;">
                         <button type="button" class="forensic-mode-btn active" data-mode="biometric" onclick="switchForensic3DMode('biometric', this)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono); font-weight: 600; border-radius: 8px; background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.5); cursor: pointer; transition: 0.2s;">
                             <i class="fa-solid fa-face-smile"></i> 3D Biometric
+                        </button>
+                        <button type="button" class="forensic-mode-btn" data-mode="tesseract4d" onclick="switchForensic3DMode('tesseract4d', this)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono); font-weight: 600; border-radius: 8px; background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); cursor: pointer; transition: 0.2s;">
+                            <i class="fa-solid fa-cube"></i> ✨ 4D Latent Tesseract
                         </button>
                         <button type="button" class="forensic-mode-btn" data-mode="lidar" onclick="switchForensic3DMode('lidar', this)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11px; font-family: var(--font-mono); font-weight: 600; border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; transition: 0.2s;">
                             <i class="fa-solid fa-braille"></i> LiDAR Depth Cloud
@@ -1591,6 +1594,47 @@
         const triLine = new THREE.Line(triGeo, new THREE.LineBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.7 }));
         caliperGroup.add(triLine);
 
+        // ═════════════════════════════════════════════════════════════
+        // MODE 5: 4D LATENT HYPERCUBE TESSERACT MANIFOLD
+        // ═════════════════════════════════════════════════════════════
+        const tesseract4dGroup = new THREE.Group();
+        tesseract4dGroup.visible = false;
+        studioGroup.add(tesseract4dGroup);
+
+        const vertices4D = [];
+        for (let i = 0; i < 16; i++) {
+            vertices4D.push([
+                (i & 1) ? 1 : -1,
+                (i & 2) ? 1 : -1,
+                (i & 4) ? 1 : -1,
+                (i & 8) ? 1 : -1
+            ]);
+        }
+        const edges4D = [];
+        for (let i = 0; i < 16; i++) {
+            for (let bit = 1; bit <= 8; bit <<= 1) {
+                if (!(i & bit)) edges4D.push([i, i | bit]);
+            }
+        }
+
+        const tessNodes = [];
+        const tessNodeMat = new THREE.MeshBasicMaterial({ color: 0xc084fc });
+        const tessNodeGeo = new THREE.SphereGeometry(0.09, 10, 10);
+        for (let i = 0; i < 16; i++) {
+            const m = new THREE.Mesh(tessNodeGeo, tessNodeMat.clone());
+            tesseract4dGroup.add(m);
+            tessNodes.push(m);
+        }
+
+        const tessEdges = [];
+        const tessEdgeMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.8, linewidth: 2 });
+        for (let i = 0; i < 32; i++) {
+            const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
+            const l = new THREE.Line(geo, tessEdgeMat.clone());
+            tesseract4dGroup.add(l);
+            tessEdges.push(l);
+        }
+
         // Orbiting HUD Target Rings
         const hudRingGeo = new THREE.RingGeometry(2.35, 2.38, 64);
         const hudRingMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
@@ -1652,16 +1696,17 @@
             });
             if (btn) {
                 btn.classList.add('active');
-                btn.style.background = 'rgba(6, 182, 212, 0.2)';
-                btn.style.color = '#22d3ee';
-                btn.style.borderColor = 'rgba(6, 182, 212, 0.5)';
+                btn.style.background = (mode === 'tesseract4d') ? 'rgba(168, 85, 247, 0.25)' : 'rgba(6, 182, 212, 0.2)';
+                btn.style.color = (mode === 'tesseract4d') ? '#c084fc' : '#22d3ee';
+                btn.style.borderColor = (mode === 'tesseract4d') ? 'rgba(168, 85, 247, 0.5)' : 'rgba(6, 182, 212, 0.5)';
             }
 
-            biometricGroup.visible = (mode === 'biometric');
-            lidarGroup.visible     = (mode === 'lidar');
-            fftGroup.visible       = (mode === 'fft');
-            caliperGroup.visible   = (mode === 'caliper');
-            scanPlane.visible      = (mode === 'biometric' || mode === 'lidar');
+            biometricGroup.visible   = (mode === 'biometric');
+            tesseract4dGroup.visible = (mode === 'tesseract4d');
+            lidarGroup.visible       = (mode === 'lidar');
+            fftGroup.visible         = (mode === 'fft');
+            caliperGroup.visible     = (mode === 'caliper');
+            scanPlane.visible        = (mode === 'biometric' || mode === 'lidar' || mode === 'tesseract4d');
         };
 
         window.toggle3DFaceAutoOrbit = function() {
@@ -1779,6 +1824,42 @@
 
             // Animate Laser Depth Blade
             scanPlane.position.y = Math.sin(elapsed * 2.2) * 1.35;
+
+            // Mode 5: 4D Tesseract Rotation
+            if (tesseract4dGroup.visible) {
+                const theta = elapsed * 0.8;
+                const phi = elapsed * 0.55;
+                const d = 2.4;
+                const projected3D = [];
+
+                for (let i = 0; i < 16; i++) {
+                    const [x, y, z, w] = vertices4D[i];
+                    const cosT = Math.cos(theta), sinT = Math.sin(theta);
+                    const x1 = x * cosT - w * sinT;
+                    const w1 = x * sinT + w * cosT;
+
+                    const cosP = Math.cos(phi), sinP = Math.sin(phi);
+                    const y1 = y * cosP - z * sinP;
+                    const z1 = y * sinP + z * cosP;
+
+                    const wFactor = 1.8 / (d - w1);
+                    const projX = x1 * wFactor;
+                    const projY = y1 * wFactor;
+                    const projZ = z1 * wFactor;
+
+                    projected3D.push(new THREE.Vector3(projX, projY, projZ));
+                    tessNodes[i].position.set(projX, projY, projZ);
+                    const wNorm = (w1 + 1) / 2;
+                    tessNodes[i].material.color.setRGB(0.1 + wNorm * 0.8, 0.7 - wNorm * 0.3, 0.95);
+                    const s = 0.8 + wFactor * 0.4;
+                    tessNodes[i].scale.set(s, s, s);
+                }
+
+                for (let i = 0; i < 32; i++) {
+                    const [idx1, idx2] = edges4D[i];
+                    tessEdges[i].geometry.setFromPoints([projected3D[idx1], projected3D[idx2]]);
+                }
+            }
 
             // Mode 3: FFT Spin
             if (fftGroup.visible) {

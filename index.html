@@ -2897,6 +2897,9 @@
             <button class="hero-3d-btn active" data-model="neural" onclick="switch3DModel('neural', this)">
                 <i class="fa-solid fa-brain"></i> Neural Core
             </button>
+            <button class="hero-3d-btn" data-model="tesseract" onclick="switch3DModel('tesseract', this)" style="border-color: rgba(168,85,247,0.5); color: #c084fc;">
+                <i class="fa-solid fa-cube"></i> 4D Tesseract
+            </button>
             <button class="hero-3d-btn" data-model="shield" onclick="switch3DModel('shield', this)">
                 <i class="fa-solid fa-shield-halved"></i> Cyber Shield
             </button>
@@ -4145,6 +4148,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
     // --- 3D Model Containers ---
     const models = {
         neural: new THREE.Group(),
+        tesseract: new THREE.Group(),
         shield: new THREE.Group(),
         torus: new THREE.Group(),
         dna: new THREE.Group()
@@ -4214,7 +4218,63 @@ document.querySelectorAll('.faq-question').forEach(button => {
         masterGroup.add(g);
     }
 
-    // 2. MODEL: CYBER SHIELD MATRIX
+    // 2. MODEL: 4D TESSERACT HYPERCUBE
+    {
+        const g = models.tesseract;
+
+        // 16 4D Vertices: (+-1, +-1, +-1, +-1)
+        const vertices4D = [];
+        for (let i = 0; i < 16; i++) {
+            vertices4D.push([
+                (i & 1) ? 1 : -1,
+                (i & 2) ? 1 : -1,
+                (i & 4) ? 1 : -1,
+                (i & 8) ? 1 : -1
+            ]);
+        }
+
+        // 32 4D Edges (pairs that differ by exactly 1 bit)
+        const edges4D = [];
+        for (let i = 0; i < 16; i++) {
+            for (let bit = 1; bit <= 8; bit <<= 1) {
+                if (!(i & bit)) {
+                    edges4D.push([i, i | bit]);
+                }
+            }
+        }
+
+        // 16 Vertex Node Spheres
+        const nodeSpheres = [];
+        const nodeMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+        const nodeGeo = new THREE.SphereGeometry(0.12, 12, 12);
+        for (let i = 0; i < 16; i++) {
+            const m = new THREE.Mesh(nodeGeo, nodeMat.clone());
+            g.add(m);
+            nodeSpheres.push(m);
+        }
+
+        // 32 Edge Line Segments
+        const edgeLines = [];
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0.75, linewidth: 2 });
+        for (let i = 0; i < 32; i++) {
+            const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
+            const line = new THREE.Line(geo, edgeMat.clone());
+            g.add(line);
+            edgeLines.push(line);
+        }
+
+        // Orbiting 4D Coordinate Rings
+        const tRingGeo = new THREE.TorusGeometry(3.0, 0.025, 16, 80);
+        const tRingMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.4 });
+        const tRing = new THREE.Mesh(tRingGeo, tRingMat);
+        g.add(tRing);
+
+        g.userData = { vertices4D, edges4D, nodeSpheres, edgeLines, tRing };
+        g.visible = false;
+        masterGroup.add(g);
+    }
+
+    // 3. MODEL: CYBER SHIELD MATRIX
     {
         const g = models.shield;
 
@@ -4470,6 +4530,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
         if (hudName) {
             const names = {
                 neural: 'NEURAL CORE',
+                tesseract: '4D TESSERACT HYPERCUBE',
                 shield: 'CYBER SHIELD',
                 torus: 'QUANTUM TORUS',
                 dna: 'BIOMETRIC HELIX'
@@ -4542,7 +4603,51 @@ document.querySelectorAll('.faq-question').forEach(button => {
         }
 
         // Model Specific Micro-Animations
-        if (currentModelKey === 'neural') {
+        if (currentModelKey === 'tesseract') {
+            const m = models.tesseract;
+            if (m.userData && m.userData.vertices4D) {
+                const { vertices4D, edges4D, nodeSpheres, edgeLines, tRing } = m.userData;
+                const theta = elapsed * 0.8;
+                const phi = elapsed * 0.55;
+                const d = 2.4;
+                const projected3D = [];
+
+                for (let i = 0; i < 16; i++) {
+                    const [x, y, z, w] = vertices4D[i];
+                    // 4D Rotation in X-W plane
+                    const cosT = Math.cos(theta), sinT = Math.sin(theta);
+                    const x1 = x * cosT - w * sinT;
+                    const w1 = x * sinT + w * cosT;
+
+                    // 4D Rotation in Y-Z plane
+                    const cosP = Math.cos(phi), sinP = Math.sin(phi);
+                    const y1 = y * cosP - z * sinP;
+                    const z1 = y * sinP + z * cosP;
+
+                    // 4D -> 3D Stereographic Perspective Projection
+                    const wFactor = 1.9 / (d - w1);
+                    const projX = x1 * wFactor;
+                    const projY = y1 * wFactor;
+                    const projZ = z1 * wFactor;
+
+                    projected3D.push(new THREE.Vector3(projX, projY, projZ));
+
+                    nodeSpheres[i].position.set(projX, projY, projZ);
+                    const wNorm = (w1 + 1) / 2;
+                    nodeSpheres[i].material.color.setRGB(0.1 + wNorm * 0.8, 0.7 - wNorm * 0.3, 0.95);
+                    const s = 0.8 + wFactor * 0.4;
+                    nodeSpheres[i].scale.set(s, s, s);
+                }
+
+                // Update 32 4D edge lines
+                for (let i = 0; i < 32; i++) {
+                    const [idx1, idx2] = edges4D[i];
+                    edgeLines[i].geometry.setFromPoints([projected3D[idx1], projected3D[idx2]]);
+                }
+
+                if (tRing) tRing.rotation.z = -elapsed * 0.35;
+            }
+        } else if (currentModelKey === 'neural') {
             const m = models.neural;
             if (m.userData.coreMesh) {
                 const s = 1.0 + Math.sin(elapsed * 3) * 0.08;
