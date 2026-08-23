@@ -2429,15 +2429,15 @@
 <div class="hero-counter-label">Countries</div>
 </div>
 </div>
-  <!-- Interactive Neural Defense Arena (Replaced Static Image) -->
-  <div class="interactive-arena-card" style="width: 95%; max-width: 900px; margin: 40px auto 0; background: rgba(14, 16, 26, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 35px rgba(6, 182, 212, 0.15); position: relative; z-index: 2; overflow: hidden; text-align: left;">
+  <!-- Interactive Neural Defense Arena (Theme-Adaptive) -->
+  <div class="interactive-arena-card border-beam-card">
       <!-- Console Header Bar -->
-      <div style="background: rgba(255, 255, 255, 0.03); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 10px;">
+      <div class="arena-header-bar">
           <div style="display: flex; gap: 8px; align-items: center;">
               <span style="width: 11px; height: 11px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
               <span style="width: 11px; height: 11px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
               <span style="width: 11px; height: 11px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-              <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: #94a3b8; margin-left: 10px; letter-spacing: 0.5px;">AUTHGUARD // MULTI-MODAL MATRIX v3.4</span>
+              <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-left: 10px; letter-spacing: 0.5px;">AUTHGUARD // MULTI-MODAL MATRIX v3.4</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono, monospace); font-size: 11px; color: #06b6d4;">
               <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
@@ -2446,17 +2446,17 @@
       </div>
 
       <!-- Channel Switcher Tabs -->
-      <div style="display: flex; gap: 8px; padding: 14px 20px 0; overflow-x: auto; border-bottom: 1px solid rgba(255, 255, 255, 0.05);" id="arenaTabs">
-          <button class="arena-tab active" onclick="switchArenaChannel('voice')" id="tab-voice" style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #06b6d4; padding: 10px 18px; border-radius: 12px 12px 0 0; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+      <div class="arena-tabs-row" id="arenaTabs">
+          <button class="arena-tab active" onclick="switchArenaChannel('voice')" id="tab-voice">
               <i class="fa-solid fa-microphone"></i> Voice Biometrics
           </button>
-          <button class="arena-tab" onclick="switchArenaChannel('image')" id="tab-image" style="background: transparent; border: 1px solid transparent; color: #94a3b8; padding: 10px 18px; border-radius: 12px 12px 0 0; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+          <button class="arena-tab" onclick="switchArenaChannel('image')" id="tab-image">
               <i class="fa-solid fa-image"></i> Image Forensics (ViT)
           </button>
-          <button class="arena-tab" onclick="switchArenaChannel('text')" id="tab-text" style="background: transparent; border: 1px solid transparent; color: #94a3b8; padding: 10px 18px; border-radius: 12px 12px 0 0; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+          <button class="arena-tab" onclick="switchArenaChannel('text')" id="tab-text">
               <i class="fa-solid fa-font"></i> Text NLP Perplexity
           </button>
-          <button class="arena-tab" onclick="switchArenaChannel('video')" id="tab-video" style="background: transparent; border: 1px solid transparent; color: #94a3b8; padding: 10px 18px; border-radius: 12px 12px 0 0; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+          <button class="arena-tab" onclick="switchArenaChannel('video')" id="tab-video">
               <i class="fa-solid fa-video"></i> Video Deepfake Scan
           </button>
       </div>
@@ -2466,8 +2466,8 @@
           <!-- Voice Channel -->
           <div id="channel-voice" class="arena-channel-view" style="display: block;">
               <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center;">
-                  <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 20px;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 12px; color: #94a3b8;">
+                  <div class="arena-preview-box">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 12px; color: var(--text-secondary);">
                           <span><i class="fa-solid fa-wave-square" style="color: #06b6d4;"></i> Spectrogram Audio Tensor</span>
                           <span style="color: #10b981; font-weight: 700; font-family: monospace;">● 99.4% Organic Pitch</span>
                       </div>
@@ -2483,13 +2483,13 @@
                           <div style="flex:1; background:linear-gradient(180deg,#06b6d4,#8b5cf6); border-radius:3px; animation: voiceBar 0.6s ease-in-out infinite alternate; height: 100%;"></div>
                           <div style="flex:1; background:linear-gradient(180deg,#06b6d4,#8b5cf6); border-radius:3px; animation: voiceBar 1.2s ease-in-out infinite alternate; height: 65%;"></div>
                       </div>
-                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: #64748b; margin-top: 10px;">
-                          Pitch Stability: <strong style="color: #f1f5f9;">0.0042 ms</strong> | Harmonic Phase: <strong style="color: #10b981;">Human Resonance</strong>
+                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-top: 10px;">
+                          Pitch Stability: <strong style="color: var(--text-primary);">0.0042 ms</strong> | Harmonic Phase: <strong style="color: #10b981;">Human Resonance</strong>
                       </div>
                   </div>
                   <div>
-                      <h4 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">Voice Clone & Deepfake Audio Guard</h4>
-                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 18px;">Detects ElevenLabs, Resemble.ai, and real-time generative voice cloning models using high-order acoustic residuals.</p>
+                      <h4 class="arena-title">Voice Clone & Deepfake Audio Guard</h4>
+                      <p class="arena-desc">Detects ElevenLabs, Resemble.ai, and real-time generative voice cloning models using high-order acoustic residuals.</p>
                       <a href="voice-ui/index.html" class="btn-primary" style="display: inline-flex; padding: 11px 22px; font-size: 13px; text-decoration: none; border-radius: 12px;">
                           <i class="fa-solid fa-microphone-lines"></i> Open Voice Detector
                       </a>
@@ -2500,22 +2500,22 @@
           <!-- Image Channel -->
           <div id="channel-image" class="arena-channel-view" style="display: none;">
               <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center;">
-                  <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 20px; position: relative; overflow: hidden;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: #94a3b8;">
+                  <div class="arena-preview-box" style="position: relative; overflow: hidden;">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">
                           <span><i class="fa-solid fa-microchip" style="color: #8b5cf6;"></i> ViT-B/16 Patch Projection</span>
                           <span style="color: #06b6d4; font-weight: 700; font-family: monospace;">● FFT 2D Spectrum</span>
                       </div>
                       <div style="height: 75px; border-radius: 10px; background: radial-gradient(circle at center, rgba(6,182,212,0.2) 0%, rgba(139,92,246,0.1) 60%, transparent 100%); display: flex; align-items: center; justify-content: center; position: relative; border: 1px dashed rgba(6,182,212,0.3);">
                           <div style="position: absolute; width: 100%; height: 2px; background: #06b6d4; box-shadow: 0 0 10px #06b6d4; animation: arenaScan 2s infinite ease-in-out;"></div>
-                          <span style="font-family: monospace; font-size: 12px; color: #f1f5f9; font-weight: 700;"><i class="fa-solid fa-circle-nodes"></i> 196 ATTENTION PATCHES SCANNED</span>
+                          <span style="font-family: monospace; font-size: 12px; color: var(--text-primary); font-weight: 700;"><i class="fa-solid fa-circle-nodes"></i> 196 ATTENTION PATCHES SCANNED</span>
                       </div>
-                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: #64748b; margin-top: 10px;">
-                          Diffusion Latents: <strong style="color: #10b981;">0.00% Detected</strong> | Grad-CAM: <strong style="color: #f1f5f9;">Active</strong>
+                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-top: 10px;">
+                          Diffusion Latents: <strong style="color: #10b981;">0.00% Detected</strong> | Grad-CAM: <strong style="color: var(--text-primary);">Active</strong>
                       </div>
                   </div>
                   <div>
-                      <h4 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">Vision Transformer (ViT) Forensics</h4>
-                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 18px;">Inspects Midjourney, Stable Diffusion, DALL-E 3, and Flux generated images with Grad-CAM XAI heatmaps.</p>
+                      <h4 class="arena-title">Vision Transformer (ViT) Forensics</h4>
+                      <p class="arena-desc">Inspects Midjourney, Stable Diffusion, DALL-E 3, and Flux generated images with Grad-CAM XAI heatmaps.</p>
                       <a href="deepfake-ui/index.html" class="btn-primary" style="display: inline-flex; padding: 11px 22px; font-size: 13px; text-decoration: none; border-radius: 12px;">
                           <i class="fa-solid fa-image"></i> Open Image Forensics
                       </a>
@@ -2526,22 +2526,22 @@
           <!-- Text Channel -->
           <div id="channel-text" class="arena-channel-view" style="display: none;">
               <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center;">
-                  <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 20px;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: #94a3b8;">
+                  <div class="arena-preview-box">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">
                           <span><i class="fa-solid fa-brain" style="color: #06b6d4;"></i> Perplexity & Burstiness</span>
                           <span style="color: #10b981; font-weight: 700; font-family: monospace;">● Dynamic Cadence</span>
                       </div>
                       <div style="display: flex; flex-direction: column; gap: 6px;">
-                          <div style="background: rgba(16,185,129,0.12); border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: #d1fae5;">"Authentic human writing exhibits natural variance." <span style="font-family:monospace; color:#34d399; font-weight:700;">[98% Human]</span></div>
-                          <div style="background: rgba(239,68,68,0.12); border-left: 3px solid #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: #fee2e2;">"Furthermore, it is crucial to delve into the tapestry..." <span style="font-family:monospace; color:#f87171; font-weight:700;">[99% AI]</span></div>
+                          <div style="background: rgba(16,185,129,0.12); border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: #10b981;">"Authentic human writing exhibits natural variance." <span style="font-family:monospace; color:#10b981; font-weight:700;">[98% Human]</span></div>
+                          <div style="background: rgba(239,68,68,0.12); border-left: 3px solid #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: #ef4444;">"Furthermore, it is crucial to delve into the tapestry..." <span style="font-family:monospace; color:#ef4444; font-weight:700;">[99% AI]</span></div>
                       </div>
-                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: #64748b; margin-top: 10px;">
-                          Lexical Diversity: <strong style="color: #f1f5f9;">84.2%</strong> | N-Gram Variance: <strong style="color: #10b981;">Calibrated</strong>
+                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-top: 10px;">
+                          Lexical Diversity: <strong style="color: var(--text-primary);">84.2%</strong> | N-Gram Variance: <strong style="color: #10b981;">Calibrated</strong>
                       </div>
                   </div>
                   <div>
-                      <h4 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">AI Text & Perplexity Detector</h4>
-                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 18px;">Flags ChatGPT, Claude 3.5, and Gemini generated content with real-time sentence thermal highlighting.</p>
+                      <h4 class="arena-title">AI Text & Perplexity Detector</h4>
+                      <p class="arena-desc">Flags ChatGPT, Claude 3.5, and Gemini generated content with real-time sentence thermal highlighting.</p>
                       <a href="text-ui/index.html" class="btn-primary" style="display: inline-flex; padding: 11px 22px; font-size: 13px; text-decoration: none; border-radius: 12px;">
                           <i class="fa-solid fa-file-lines"></i> Open Text Detector
                       </a>
@@ -2552,25 +2552,24 @@
           <!-- Video Channel -->
           <div id="channel-video" class="arena-channel-view" style="display: none;">
               <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center;">
-                  <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 20px;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: #94a3b8;">
+                  <div class="arena-preview-box">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">
                           <span><i class="fa-solid fa-film" style="color: #8b5cf6;"></i> Frame Temporal Inconsistency</span>
                           <span style="color: #06b6d4; font-weight: 700; font-family: monospace;">● 60 FPS Sync</span>
                       </div>
                       <div style="display: flex; gap: 6px; height: 60px; align-items: center;">
-                          <div style="flex:1; height:100%; border:1px solid rgba(6,182,212,0.4); border-radius:6px; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#06b6d4;">F01</div>
-                          <div style="flex:1; height:100%; border:1px solid rgba(6,182,212,0.4); border-radius:6px; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#06b6d4;">F02</div>
-                          <div style="flex:1; height:100%; border:1px solid rgba(6,182,212,0.4); border-radius:6px; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#06b6d4;">F03</div>
-                          <div style="flex:1; height:100%; border:1px solid rgba(139,92,246,0.6); border-radius:6px; background:rgba(139,92,246,0.2); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#d8b4fe;">F04 (ROI)</div>
-                          <div style="flex:1; height:100%; border:1px solid rgba(6,182,212,0.4); border-radius:6px; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#06b6d4;">F05</div>
+                          <div style="flex:1; height:100%; border-radius:6px; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:var(--text-primary);">FRAME 1</div>
+                          <div style="flex:1; height:100%; border-radius:6px; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:var(--text-primary);">FRAME 2</div>
+                          <div style="flex:1; height:100%; border-radius:6px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#ef4444;">ANOMALY</div>
+                          <div style="flex:1; height:100%; border-radius:6px; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:var(--text-primary);">FRAME 4</div>
                       </div>
-                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: #64748b; margin-top: 10px;">
-                          Facial Warp Metric: <strong style="color: #10b981;">0.018 Δ</strong> | Lip Sync Latency: <strong style="color: #f1f5f9;">Aligned</strong>
+                      <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-top: 10px;">
+                          Temporal Flow: <strong style="color: #10b981;">Aligned</strong> | Lip-Sync Residual: <strong style="color: #ef4444;">1.4% Deviation</strong>
                       </div>
                   </div>
                   <div>
-                      <h4 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">Video Deepfake & Face Swap Scan</h4>
-                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 18px;">Extracts continuous frames to detect deepfake face-swaps, Sora/Runway generations, and lip sync spoofing.</p>
+                      <h4 class="arena-title">Video Deepfake & Face Swap Scan</h4>
+                      <p class="arena-desc">Extracts continuous frames to detect deepfake face-swaps, Sora/Runway generations, and lip sync spoofing.</p>
                       <a href="video-ui/index.html" class="btn-primary" style="display: inline-flex; padding: 11px 22px; font-size: 13px; text-decoration: none; border-radius: 12px;">
                           <i class="fa-solid fa-video"></i> Open Video Detector
                       </a>
@@ -2581,6 +2580,77 @@
   </div>
 
   <style>
+  /* Theme Adaptive Arena Card Styles */
+  .interactive-arena-card {
+      width: 95%; max-width: 900px; margin: 40px auto 0;
+      background: rgba(14, 16, 26, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 35px rgba(6, 182, 212, 0.15);
+      position: relative; z-index: 2; overflow: hidden; text-align: left;
+      transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  [data-theme="light"] .interactive-arena-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.07), 0 0 25px rgba(6, 182, 212, 0.12);
+  }
+  .arena-header-bar {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap; gap: 10px;
+  }
+  [data-theme="light"] .arena-header-bar {
+      background: rgba(0, 0, 0, 0.03);
+      border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+  .arena-tabs-row {
+      display: flex; gap: 8px; padding: 14px 20px 0; overflow-x: auto;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  [data-theme="light"] .arena-tabs-row {
+      border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+  .arena-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 10px 18px; border-radius: 12px 12px 0 0;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+  }
+  .arena-tab.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: var(--accent-cyan);
+  }
+  [data-theme="light"] .arena-tab:not(.active) {
+      color: #64748b;
+  }
+  [data-theme="light"] .arena-tab:not(.active):hover {
+      color: #0f172a;
+      background: rgba(0,0,0,0.03);
+  }
+  .arena-preview-box {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px; padding: 20px;
+      transition: all 0.3s ease;
+  }
+  [data-theme="light"] .arena-preview-box {
+      background: #f8fafc;
+      border-color: rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .arena-title {
+      font-size: 19px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;
+  }
+  .arena-desc {
+      font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 18px;
+  }
   @keyframes voiceBar { 0% { height: 20%; } 100% { height: 95%; } }
   @keyframes arenaScan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
   @media (max-width: 768px) {
@@ -2592,24 +2662,45 @@
 
   <script>
   window.switchArenaChannel = function(ch) {
-      document.querySelectorAll('.arena-tab').forEach(t => {
-          t.style.background = 'transparent';
-          t.style.borderColor = 'transparent';
-          t.style.color = '#94a3b8';
-      });
+      document.querySelectorAll('.arena-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.arena-channel-view').forEach(v => v.style.display = 'none');
       
       const activeTab = document.getElementById('tab-' + ch);
       const activeView = document.getElementById('channel-' + ch);
-      if (activeTab) {
-          activeTab.style.background = 'rgba(6, 182, 212, 0.15)';
-          activeTab.style.borderColor = 'rgba(6, 182, 212, 0.4)';
-          activeTab.style.color = '#06b6d4';
-      }
-      if (activeView) {
-          activeView.style.display = 'block';
-      }
+      if (activeTab) activeTab.classList.add('active');
+      if (activeView) activeView.style.display = 'block';
   };
+
+  // Live Hero Counter Strip Animation
+  (function() {
+      function animateCounter(id, target, suffix = '', duration = 1800) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          let start = 0;
+          const stepTime = 20;
+          const steps = duration / stepTime;
+          const increment = target / steps;
+          const timer = setInterval(() => {
+              start += increment;
+              if (start >= target) {
+                  start = target;
+                  clearInterval(timer);
+              }
+              if (Number.isInteger(target)) {
+                  el.textContent = Math.floor(start).toLocaleString() + suffix;
+              } else {
+                  el.textContent = start.toFixed(1) + suffix;
+              }
+          }, stepTime);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+          animateCounter('hc-detections', 54820, '+', 1800);
+          animateCounter('hc-accuracy', 99.2, '%', 1800);
+          animateCounter('hc-users', 12400, '+', 1800);
+          animateCounter('hc-countries', 140, '+', 1800);
+      });
+  })();
   </script>
   </div>
   </div>
@@ -3364,7 +3455,9 @@ document.querySelectorAll('.faq-question').forEach(button => {
 
     function animate() {
         ctx.clearRect(0, 0, width, height);
-        ctx.globalAlpha = 1;
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light' || document.body.getAttribute('data-theme') === 'light';
+        const filamentColor = isLight ? '#0284c7' : '#06b6d4';
+        const mouseColor = isLight ? '#db2777' : '#ec4899';
 
         // Draw connecting filaments
         for (let i = 0; i < particles.length; i++) {
@@ -3373,10 +3466,10 @@ document.querySelectorAll('.faq-question').forEach(button => {
                 const dy = particles[i].y - particles[j].y;
                 const dist = Math.hypot(dx, dy);
                 if (dist < 115) {
-                    const alpha = (1 - dist / 115) * 0.25;
-                    ctx.strokeStyle = '#06b6d4';
+                    const alpha = (1 - dist / 115) * (isLight ? 0.32 : 0.25);
+                    ctx.strokeStyle = filamentColor;
                     ctx.globalAlpha = alpha;
-                    ctx.lineWidth = 0.8;
+                    ctx.lineWidth = isLight ? 1.0 : 0.8;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
@@ -3392,8 +3485,8 @@ document.querySelectorAll('.faq-question').forEach(button => {
                 const dy = mouse.y - particles[i].y;
                 const dist = Math.hypot(dx, dy);
                 if (dist < mouse.radius) {
-                    const alpha = (1 - dist / mouse.radius) * 0.45;
-                    ctx.strokeStyle = '#ec4899';
+                    const alpha = (1 - dist / mouse.radius) * (isLight ? 0.55 : 0.45);
+                    ctx.strokeStyle = mouseColor;
                     ctx.globalAlpha = alpha;
                     ctx.lineWidth = 1.2;
                     ctx.beginPath();
@@ -3406,6 +3499,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
 
         particles.forEach(p => {
             p.update();
+            p.baseColor = isLight ? (Math.random() > 0.5 ? '#0284c7' : '#7c3aed') : (Math.random() > 0.5 ? '#06b6d4' : '#8b5cf6');
             p.draw();
         });
 
