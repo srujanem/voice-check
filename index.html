@@ -2906,20 +2906,16 @@
 <!-- Interactive 3D Cyber Defense Stage (Hardware Accelerated WebGL) -->
 <div class="hero-3d-container">
     <div class="hero-3d-card border-beam-card">
-        <div class="hero-3d-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 18px;">
+        <div class="hero-3d-header">
             <div style="display: flex; gap: 8px; align-items: center;">
                 <span style="width: 11px; height: 11px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
                 <span style="width: 11px; height: 11px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
                 <span style="width: 11px; height: 11px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-                <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-left: 8px; letter-spacing: 0.5px;">AUTHGUARD // 3D QUANTUM CORE MATRIX</span>
+                <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-left: 10px; letter-spacing: 0.5px;">AUTHGUARD // 3D QUANTUM CORE MATRIX</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button type="button" class="hero-3d-btn" id="btnExplodeLayers" onclick="toggleExplodedView(this)" style="padding: 5px 12px; font-size: 11px; border-radius: 8px; border-color: rgba(6,182,212,0.4); color: #22d3ee; background: rgba(6,182,212,0.1);">
-                    <i class="fa-solid fa-layer-group"></i> <span>⚡ Explode Layers</span>
-                </button>
-                <button type="button" class="hero-3d-btn" id="btnShaderMode" onclick="cycleShaderMode(this)" style="padding: 5px 12px; font-size: 11px; border-radius: 8px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="shaderModeLabel">Glass Core</span>
-                </button>
+            <div style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono, monospace); font-size: 11px; color: #06b6d4;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4; box-shadow: 0 0 10px #06b6d4;"></span>
+                <span>3D WEBGL ENGINE ACTIVE</span>
             </div>
         </div>
 
@@ -2934,7 +2930,7 @@
                 <i class="fa-solid fa-brain"></i> Neural Core
             </button>
             <button class="hero-3d-btn" data-model="tesseract" onclick="switch3DModel('tesseract', this)" style="border-color: rgba(168,85,247,0.5); color: #c084fc;">
-                <i class="fa-solid fa-cube"></i> ✨ 4D Tesseract
+                <i class="fa-solid fa-cube"></i> 4D Tesseract
             </button>
             <button class="hero-3d-btn" data-model="shield" onclick="switch3DModel('shield', this)">
                 <i class="fa-solid fa-shield-halved"></i> Cyber Shield
@@ -4141,11 +4137,6 @@ document.querySelectorAll('.faq-question').forEach(button => {
     lightPink.position.set(0, 6, -3);
     scene.add(lightPink);
 
-    // Dynamic Real-Time Cursor Spotlight
-    const cursorSpotlight = new THREE.PointLight(0x22d3ee, 5, 22);
-    cursorSpotlight.position.set(0, 0, 7);
-    scene.add(cursorSpotlight);
-
     // --- Master Pivot Group ---
     const masterGroup = new THREE.Group();
     scene.add(masterGroup);
@@ -4498,12 +4489,6 @@ document.querySelectorAll('.faq-question').forEach(button => {
         const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         const normY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
 
-        // Real-Time 3D Cursor Spotlight Position
-        if (cursorSpotlight) {
-            cursorSpotlight.position.x = normX * 6.5;
-            cursorSpotlight.position.y = normY * 6.5;
-        }
-
         if (isDragging) {
             const deltaX = e.clientX - prevMousePos.x;
             const deltaY = e.clientY - prevMousePos.y;
@@ -4531,22 +4516,12 @@ document.querySelectorAll('.faq-question').forEach(button => {
     window.addEventListener('touchend', () => { isDragging = false; });
 
     viewport.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 1) {
-            const rect = viewport.getBoundingClientRect();
-            const normX = ((e.touches[0].clientX - rect.left) / rect.width) * 2 - 1;
-            const normY = -(((e.touches[0].clientY - rect.top) / rect.height) * 2 - 1);
-            if (cursorSpotlight) {
-                cursorSpotlight.position.x = normX * 6.5;
-                cursorSpotlight.position.y = normY * 6.5;
-            }
-
-            if (isDragging) {
-                const deltaX = e.touches[0].clientX - prevMousePos.x;
-                const deltaY = e.touches[0].clientY - prevMousePos.y;
-                targetRotation.y += deltaX * 0.008;
-                targetRotation.x += deltaY * 0.008;
-                prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
+        if (isDragging && e.touches.length === 1) {
+            const deltaX = e.touches[0].clientX - prevMousePos.x;
+            const deltaY = e.touches[0].clientY - prevMousePos.y;
+            targetRotation.y += deltaX * 0.008;
+            targetRotation.x += deltaY * 0.008;
+            prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         }
     }, { passive: true });
 
@@ -4554,60 +4529,6 @@ document.querySelectorAll('.faq-question').forEach(button => {
     viewport.addEventListener('click', () => {
         pulseWaveIntensity = 1.0;
     });
-
-    // --- Interactive 3D Exploded / X-Ray Inspector ---
-    let isExploded = false;
-    let explodeFactor = 0; // 0.0 (collapsed) -> 1.0 (separated)
-
-    window.toggleExplodedView = function(btn) {
-        isExploded = !isExploded;
-        if (btn) {
-            if (isExploded) {
-                btn.style.background = 'linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(139, 92, 246, 0.3))';
-                btn.style.borderColor = '#06b6d4';
-                btn.style.color = '#06b6d4';
-                const span = btn.querySelector('span');
-                if (span) span.textContent = 'Collapse Core';
-            } else {
-                btn.style.background = 'rgba(6, 182, 212, 0.1)';
-                btn.style.borderColor = 'rgba(6, 182, 212, 0.4)';
-                btn.style.color = '#22d3ee';
-                const span = btn.querySelector('span');
-                if (span) span.textContent = '⚡ Explode Layers';
-            }
-        }
-        pulseWaveIntensity = 0.9;
-    };
-
-    // --- Minimalist 3-Way Shader Shading Switcher ---
-    const shaderModes = ['glass', 'wireframe', 'points'];
-    let currentShaderIdx = 0;
-
-    window.cycleShaderMode = function(btn) {
-        currentShaderIdx = (currentShaderIdx + 1) % shaderModes.length;
-        const mode = shaderModes[currentShaderIdx];
-        const label = document.getElementById('shaderModeLabel');
-        if (label) {
-            label.textContent = mode === 'glass' ? 'Glass Core' : (mode === 'wireframe' ? 'Wire Lattice' : 'Point Cloud');
-        }
-
-        Object.values(models).forEach(group => {
-            group.traverse(child => {
-                if (child.isMesh) {
-                    if (mode === 'wireframe') {
-                        child.material.wireframe = true;
-                    } else if (mode === 'points') {
-                        child.material.wireframe = false;
-                        if (child.material.opacity) child.material.opacity = 0.25;
-                    } else {
-                        child.material.wireframe = false;
-                        if (child.material.opacity) child.material.opacity = 0.85;
-                    }
-                }
-            });
-        });
-        pulseWaveIntensity = 0.6;
-    };
 
     // --- Switch 3D Model Handler ---
     window.switch3DModel = function(modelKey, btnElement) {
@@ -4693,10 +4614,6 @@ document.querySelectorAll('.faq-question').forEach(button => {
             activeModel.scale.set(nextScale, nextScale, nextScale);
         }
 
-        // Smooth Explode Animation Lerp
-        const targetExplode = isExploded ? 1.0 : 0.0;
-        explodeFactor += (targetExplode - explodeFactor) * 0.08;
-
         // Model Specific Micro-Animations
         if (currentModelKey === 'tesseract') {
             const m = models.tesseract;
@@ -4745,7 +4662,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
         } else if (currentModelKey === 'neural') {
             const m = models.neural;
             if (m.userData && m.userData.plasmaMesh) {
-                const { glassMesh, glassWire, plasmaMesh, ring1, ring2, ring3, plasmaBase } = m.userData;
+                const { plasmaMesh, ring1, ring2, ring3, plasmaBase } = m.userData;
                 // Live fluid plasma morphing vertex displacement
                 const pos = plasmaMesh.geometry.attributes.position;
                 const basePos = plasmaBase.attributes.position;
@@ -4758,37 +4675,19 @@ document.querySelectorAll('.faq-question').forEach(button => {
                 }
                 pos.needsUpdate = true;
 
-                // Animate Exploded Separations
-                if (glassMesh) {
-                    glassMesh.position.z = explodeFactor * 1.6;
-                    if (glassWire) glassWire.position.z = explodeFactor * 1.6;
-                }
-                if (ring1) {
-                    ring1.position.x = explodeFactor * 1.8;
-                    ring1.rotation.x = elapsed * 0.8;
-                    ring1.rotation.y = elapsed * 0.5;
-                }
-                if (ring2) {
-                    ring2.position.x = -explodeFactor * 1.8;
-                    ring2.rotation.y = -elapsed * 0.7;
-                    ring2.rotation.z = elapsed * 0.6;
-                }
-                if (ring3) {
-                    ring3.position.y = explodeFactor * 1.6;
-                    ring3.rotation.z = -elapsed * 0.9;
-                    ring3.rotation.x = elapsed * 0.4;
-                }
-                if (plasmaMesh) {
-                    const pScale = 1.0 + explodeFactor * 0.25;
-                    plasmaMesh.scale.set(pScale, pScale, pScale);
-                }
+                // Triple Gyroscopic Gimbal Rotations
+                ring1.rotation.x = elapsed * 0.8;
+                ring1.rotation.y = elapsed * 0.5;
+                ring2.rotation.y = -elapsed * 0.7;
+                ring2.rotation.z = elapsed * 0.6;
+                ring3.rotation.z = -elapsed * 0.9;
+                ring3.rotation.x = elapsed * 0.4;
             }
         } else if (currentModelKey === 'shield') {
             const m = models.shield;
             if (m.userData.emblem) {
                 m.userData.emblem.rotation.y += 0.02;
                 m.userData.emblem.rotation.x += 0.01;
-                m.userData.emblem.position.z = explodeFactor * 1.2;
             }
             if (m.userData.ring) m.userData.ring.rotation.z += 0.01;
         } else if (currentModelKey === 'torus') {
