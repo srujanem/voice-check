@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = document.getElementById('result-icon');
             if (!isFake) {
                 if (resultCard)           resultCard.classList.add('status-authentic');
-                if (classificationResult) classificationResult.textContent = 'Authentic Image';
+                if (classificationResult) classificationResult.textContent = 'Human Image';
                 if (icon)                 icon.className = 'fa-solid fa-user-check';
             } else {
                 if (resultCard)           resultCard.classList.add('status-fake');
