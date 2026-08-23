@@ -1379,95 +1379,108 @@
         scene.add(studioGroup);
 
         // ═════════════════════════════════════════════════════════════
-        // MODE 1: 3D ANATOMICAL BIOMETRIC TOPOLOGY MESH
+        // MODE 1: SLEEK HOLOGRAPHIC BIOMETRIC CYBER-HEAD
         // ═════════════════════════════════════════════════════════════
         const biometricGroup = new THREE.Group();
         studioGroup.add(biometricGroup);
 
-        // Realistic Anatomical Parametric Facial Surface
-        const faceGeo = new THREE.SphereGeometry(1.6, 36, 30);
-        const facePos = faceGeo.attributes.position;
-        for (let i = 0; i < facePos.count; i++) {
-            let x = facePos.getX(i);
-            let y = facePos.getY(i);
-            let z = facePos.getZ(i);
-
-            // Anatomical sculpting:
-            // 1. Forehead curvature & temporal tapering
-            if (y > 0.6) { x *= 0.88; z *= 0.92; }
-            // 2. Eye Sockets (orbital cavities depression)
-            if (y > 0.15 && y < 0.45 && Math.abs(x) > 0.25 && Math.abs(x) < 0.75 && z > 0.4) {
-                z *= 0.72; // Recessed orbit
-            }
-            // 3. Nasal Bridge & Tip Protrusion
-            if (y > -0.25 && y < 0.35 && Math.abs(x) < 0.28 && z > 0.3) {
-                z *= (1.45 - Math.abs(x) * 1.5); // Sharp realistic nose ridge
-                if (y < 0.0) z *= 1.15; // Pronounced nose tip
-            }
-            // 4. Zygomatic Cheekbone Prominence
-            if (y > -0.2 && y < 0.25 && Math.abs(x) > 0.55 && z > 0.3) {
-                z *= 1.25;
-            }
-            // 5. Lips & Philtrum Contouring
-            if (y > -0.55 && y < -0.25 && Math.abs(x) < 0.45 && z > 0.4) {
-                z *= 1.22; // Forward lips projection
-            }
-            // 6. Jawline Contouring & Chin
-            if (y <= -0.55) {
-                x *= 0.75;
-                if (z > 0.2 && y > -0.85) z *= 1.35; // Defined chin prominence
-            }
-
-            facePos.setXYZ(i, x * 0.88, y * 1.12, z * 0.95);
-        }
+        // Smooth, Clean Anatomical Cranial Geometry (no pinched artifacts)
+        const headProfilePoints = [
+            new THREE.Vector2(0.01, 1.65),  // Top of cranium
+            new THREE.Vector2(0.65, 1.55),
+            new THREE.Vector2(1.05, 1.25),  // Forehead
+            new THREE.Vector2(1.15, 0.85),  // Brow ridge
+            new THREE.Vector2(1.05, 0.55),  // Eye cavity zone
+            new THREE.Vector2(1.22, 0.20),  // Nose bridge & apex
+            new THREE.Vector2(1.05, -0.05), // Philtrum
+            new THREE.Vector2(1.10, -0.25), // Lips
+            new THREE.Vector2(0.95, -0.55), // Chin curve
+            new THREE.Vector2(0.60, -0.85), // Chin base
+            new THREE.Vector2(0.35, -1.10), // Jaw/Neck transition
+            new THREE.Vector2(0.01, -1.20)  // Base
+        ];
+        const faceGeo = new THREE.LatheGeometry(headProfilePoints, 32);
+        // Scale to realistic facial aspect ratio (flatter in Z, oval in X/Y)
+        faceGeo.scale(0.92, 1.0, 0.82);
         faceGeo.computeVertexNormals();
 
-        // Dual-Layer Material: Solid holographic depth base + Neon Cyber Wireframe
-        const skinMat = new THREE.MeshPhongMaterial({
-            color: 0x083344,
-            emissive: 0x021720,
-            specular: 0x06b6d4,
-            shininess: 40,
+        // 1. Dark Cyber-Glass Inner Core
+        const skinMat = new THREE.MeshStandardMaterial({
+            color: 0x031d28,
+            emissive: 0x042838,
+            emissiveIntensity: 0.6,
+            roughness: 0.2,
+            metalness: 0.85,
             transparent: true,
-            opacity: 0.75,
+            opacity: 0.85,
             side: THREE.DoubleSide
         });
         const skinMesh = new THREE.Mesh(faceGeo, skinMat);
         biometricGroup.add(skinMesh);
 
+        // 2. High-Tech Cyber Wireframe Lattice
         const wireMat = new THREE.MeshBasicMaterial({
             color: 0x06b6d4,
             wireframe: true,
             transparent: true,
-            opacity: 0.45
+            opacity: 0.55
         });
         const wireMesh = new THREE.Mesh(faceGeo, wireMat);
         biometricGroup.add(wireMesh);
 
-        // 68 Glowing Biometric Facial Landmark Nodes
+        // 3. Biometric Target Lock Reticles (Left Eye, Right Eye, Nose, Chin)
+        const targetReticles = [];
+        const reticleTargets = [
+            { pos: new THREE.Vector3(-0.42, 0.35, 0.82), label: 'L-PUPIL', id: 'retL' },
+            { pos: new THREE.Vector3(0.42, 0.35, 0.82), label: 'R-PUPIL', id: 'retR' },
+            { pos: new THREE.Vector3(0.0, 0.12, 0.98), label: 'NASAL-APEX', id: 'retN' },
+            { pos: new THREE.Vector3(0.0, -0.75, 0.72), label: 'CHIN-ANCHOR', id: 'retC' }
+        ];
+
+        reticleTargets.forEach(t => {
+            const rGroup = new THREE.Group();
+            rGroup.position.copy(t.pos);
+
+            // Outer Reticle Ring
+            const rGeo = new THREE.RingGeometry(0.09, 0.11, 24);
+            const rMat = new THREE.MeshBasicMaterial({ color: 0x22d3ee, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+            const rMesh = new THREE.Mesh(rGeo, rMat);
+            rGroup.add(rMesh);
+
+            // Center Point Dot
+            const dotGeo = new THREE.SphereGeometry(0.035, 8, 8);
+            const dotMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+            const dotMesh = new THREE.Mesh(dotGeo, dotMat);
+            rGroup.add(dotMesh);
+
+            biometricGroup.add(rGroup);
+            targetReticles.push({ group: rGroup, rMesh, dotMesh, baseMat: rMat, dotMat });
+        });
+
+        // 4. 68 Biometric Facial Landmarks (Smoothly Distributed)
         const landmarkMeshes = [];
-        const lmGeo = new THREE.SphereGeometry(0.042, 10, 10);
+        const lmGeo = new THREE.SphereGeometry(0.038, 8, 8);
         const landmarkPoints = [];
 
         // Jawline (17 points)
         for (let i = -8; i <= 8; i++) {
-            const a = (i / 8) * Math.PI * 0.46;
-            landmarkPoints.push(new THREE.Vector3(Math.sin(a) * 1.08, -0.38 - Math.cos(a) * 0.82, Math.cos(a) * 0.92));
+            const a = (i / 8) * Math.PI * 0.44;
+            landmarkPoints.push(new THREE.Vector3(Math.sin(a) * 0.95, -0.35 - Math.cos(a) * 0.65, Math.cos(a) * 0.78));
         }
         // Eyebrows & Eyes (20 points)
         [-0.42, 0.42].forEach(side => {
             for (let j = 0; j < 5; j++) {
-                landmarkPoints.push(new THREE.Vector3(side + (j - 2) * 0.085, 0.46 + Math.sin(j * 0.7) * 0.08, 1.20));
-                landmarkPoints.push(new THREE.Vector3(side + (j - 2) * 0.075, 0.28, 1.15));
+                landmarkPoints.push(new THREE.Vector3(side + (j - 2) * 0.08, 0.46 + Math.sin(j * 0.7) * 0.06, 0.85));
+                landmarkPoints.push(new THREE.Vector3(side + (j - 2) * 0.07, 0.35, 0.84));
             }
         });
         // Nose (9 points)
-        for (let k = 0; k < 4; k++) landmarkPoints.push(new THREE.Vector3(0, 0.28 - k * 0.11, 1.48 - k * 0.02));
-        for (let l = -2; l <= 2; l++) landmarkPoints.push(new THREE.Vector3(l * 0.09, -0.12, 1.42));
+        for (let k = 0; k < 4; k++) landmarkPoints.push(new THREE.Vector3(0, 0.32 - k * 0.08, 0.94 - k * 0.01));
+        for (let l = -2; l <= 2; l++) landmarkPoints.push(new THREE.Vector3(l * 0.08, 0.02, 0.92));
         // Lips (12 points)
         for (let m = 0; m < 12; m++) {
             const a = (m / 12) * Math.PI * 2;
-            landmarkPoints.push(new THREE.Vector3(Math.cos(a) * 0.32, -0.40 + Math.sin(a) * 0.11, 1.30));
+            landmarkPoints.push(new THREE.Vector3(Math.cos(a) * 0.28, -0.28 + Math.sin(a) * 0.09, 0.88));
         }
 
         landmarkPoints.forEach((pt, idx) => {
@@ -1478,14 +1491,29 @@
             landmarkMeshes.push({ mesh: m, mat: mat, isAnomaly: (idx > 22 && idx < 42) });
         });
 
+        // 5. Holographic Scanning Pedestal Base & Concentric Sonar Rings
+        const baseRingGeo1 = new THREE.RingGeometry(1.6, 1.63, 64);
+        const baseRingMat1 = new THREE.MeshBasicMaterial({ color: 0x06b6d4, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const baseRing1 = new THREE.Mesh(baseRingGeo1, baseRingMat1);
+        baseRing1.rotation.x = Math.PI / 2;
+        baseRing1.position.y = -1.35;
+        biometricGroup.add(baseRing1);
+
+        const baseRingGeo2 = new THREE.RingGeometry(2.0, 2.03, 64);
+        const baseRingMat2 = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
+        const baseRing2 = new THREE.Mesh(baseRingGeo2, baseRingMat2);
+        baseRing2.rotation.x = Math.PI / 2;
+        baseRing2.position.y = -1.35;
+        biometricGroup.add(baseRing2);
+
         // ═════════════════════════════════════════════════════════════
-        // MODE 2: 3D LiDAR POINT CLOUD DEPTH MAP (2,800+ PARTICLES)
+        // MODE 2: 3D LiDAR POINT CLOUD DEPTH MAP (3,000+ PARTICLES)
         // ═════════════════════════════════════════════════════════════
         const lidarGroup = new THREE.Group();
         lidarGroup.visible = false;
         studioGroup.add(lidarGroup);
 
-        const lidarCount = 2800;
+        const lidarCount = 3000;
         const lidarGeo = new THREE.BufferGeometry();
         const lidarPos = new Float32Array(lidarCount * 3);
         const lidarColors = new Float32Array(lidarCount * 3);
@@ -1496,18 +1524,15 @@
             const v = Math.random();
             const theta = u * 2.0 * Math.PI;
             const phi = Math.acos(2.0 * v - 1.0);
-            const r = 1.45 + (Math.random() - 0.5) * 0.08;
+            const r = 1.35 + (Math.random() - 0.5) * 0.06;
 
             let x = r * Math.sin(phi) * Math.cos(theta);
             let y = r * Math.sin(phi) * Math.sin(theta);
             let z = r * Math.cos(phi);
 
-            // Sculpt into front-facing human depth map
-            if (z < -0.2) z = -0.2 + (z + 0.2) * 0.3;
-            if (y > 0.1 && y < 0.4 && Math.abs(x) < 0.6 && z > 0.4) z *= 0.8;
-            if (y > -0.25 && y < 0.35 && Math.abs(x) < 0.28 && z > 0.3) z *= (1.45 - Math.abs(x) * 1.5);
-
-            x *= 0.88; y *= 1.12; z *= 0.95;
+            // Sculpt into front-facing smooth depth silhouette
+            if (z < -0.1) z = -0.1 + (z + 0.1) * 0.3;
+            x *= 0.88; y *= 1.08; z *= 0.85;
 
             const i3 = i * 3;
             lidarPos[i3]     = x;
@@ -1515,8 +1540,7 @@
             lidarPos[i3 + 2] = z;
             lidarBasePos.push({ x, y, z });
 
-            // Depth color gradient (Z-depth mapping)
-            const depthNorm = Math.min(Math.max((z + 0.5) / 1.8, 0), 1);
+            const depthNorm = Math.min(Math.max((z + 0.3) / 1.5, 0), 1);
             const c = new THREE.Color().lerpColors(new THREE.Color(0x8b5cf6), new THREE.Color(0x06b6d4), depthNorm);
             lidarColors[i3]     = c.r;
             lidarColors[i3 + 1] = c.g;
@@ -1527,7 +1551,7 @@
         lidarGeo.setAttribute('color', new THREE.BufferAttribute(lidarColors, 3));
 
         const lidarMat = new THREE.PointsMaterial({
-            size: 0.05,
+            size: 0.055,
             vertexColors: true,
             transparent: true,
             opacity: 0.9,
@@ -1732,10 +1756,16 @@
             if (isFake) {
                 // Synthetic Deepfake Alarm State
                 skinMat.color.setHex(0x3b0764);
-                skinMat.specular.setHex(0xef4444);
+                skinMat.emissive.setHex(0x220538);
                 wireMat.color.setHex(0xef4444);
                 scanPlaneMat.color.setHex(0xef4444);
                 hudRingMat.color.setHex(0xef4444);
+                baseRingMat1.color.setHex(0xef4444);
+
+                targetReticles.forEach(tr => {
+                    tr.baseMat.color.setHex(0xef4444);
+                    tr.dotMat.color.setHex(0xef4444);
+                });
 
                 landmarkMeshes.forEach(lm => {
                     if (lm.isAnomaly) {
@@ -1765,11 +1795,17 @@
                 if (varEl) varEl.innerHTML = '<span style="color: #ef4444;">28.7 mm [WARPED]</span>';
             } else {
                 // Verified Authentic Organic State
-                skinMat.color.setHex(0x083344);
-                skinMat.specular.setHex(0x10b981);
-                wireMat.color.setHex(0x10b981);
+                skinMat.color.setHex(0x031d28);
+                skinMat.emissive.setHex(0x042838);
+                wireMat.color.setHex(0x06b6d4);
                 scanPlaneMat.color.setHex(0x10b981);
                 hudRingMat.color.setHex(0x10b981);
+                baseRingMat1.color.setHex(0x06b6d4);
+
+                targetReticles.forEach(tr => {
+                    tr.baseMat.color.setHex(0x22d3ee);
+                    tr.dotMat.color.setHex(0x10b981);
+                });
 
                 landmarkMeshes.forEach(lm => {
                     lm.mat.color.setHex(0x10b981);
@@ -1824,6 +1860,16 @@
 
             // Animate Laser Depth Blade
             scanPlane.position.y = Math.sin(elapsed * 2.2) * 1.35;
+
+            // Animate Biometric Reticles & Base
+            if (biometricGroup.visible) {
+                targetReticles.forEach((tr, idx) => {
+                    const pulse = 1.0 + Math.sin(elapsed * 4 + idx * 1.2) * 0.18;
+                    tr.rMesh.scale.set(pulse, pulse, pulse);
+                });
+                baseRing1.rotation.z = elapsed * 0.4;
+                baseRing2.rotation.z = -elapsed * 0.3;
+            }
 
             // Mode 5: 4D Tesseract Rotation
             if (tesseract4dGroup.visible) {
