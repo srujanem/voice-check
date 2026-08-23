@@ -528,7 +528,129 @@ a,
 
 [data-theme="light"] .tab-btn.active {
     background: #ffffff;
+    color: #0f172a;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ── Light Mode Icon Contrast & Clarity ── */
+[data-theme="light"] i,
+[data-theme="light"] .fa-solid,
+[data-theme="light"] .fa-regular,
+[data-theme="light"] .fa-brands {
+    color: inherit;
+}
+
+[data-theme="light"] .btn-secondary {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+[data-theme="light"] .btn-secondary i {
+    color: #0f172a;
+}
+[data-theme="light"] .btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: rgba(6, 182, 212, 0.4);
+    color: #0284c7;
+}
+[data-theme="light"] .btn-secondary:hover i {
+    color: #0284c7;
+}
+
+[data-theme="light"] .theme-toggle {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+[data-theme="light"] .theme-toggle i {
+    color: #0f172a;
+}
+
+[data-theme="light"] .nav-links a {
+    color: #475569;
+}
+[data-theme="light"] .nav-links a i {
+    color: #475569;
+}
+[data-theme="light"] .nav-links a:hover {
+    color: #0284c7;
+}
+[data-theme="light"] .nav-links a:hover i {
+    color: #0284c7;
+}
+
+[data-theme="light"] .hamburger-menu {
+    color: #0f172a;
+}
+[data-theme="light"] .hamburger-menu i {
+    color: #0f172a;
+}
+
+[data-theme="light"] .section-label {
+    color: #0284c7;
+}
+[data-theme="light"] .section-label i {
+    color: #0284c7;
+}
+
+[data-theme="light"] .hero-badge {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(6, 182, 212, 0.3);
+    color: #0f172a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .hero-badge i {
+    color: #0284c7;
+}
+
+[data-theme="light"] .nav-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+[data-theme="light"] .nav-card h2 {
+    color: #0f172a;
+}
+[data-theme="light"] .nav-card p {
+    color: #475569;
+}
+
+[data-theme="light"] .faq-item {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .faq-question {
+    color: #0f172a;
+}
+[data-theme="light"] .faq-question i {
+    color: #0284c7;
+}
+
+[data-theme="light"] .press-logo {
+    color: #475569;
+    opacity: 0.75;
+}
+[data-theme="light"] .press-logo i {
+    color: #475569;
+}
+
+[data-theme="light"] .mob-nav-item .mn-icon {
+    color: #64748b;
+}
+[data-theme="light"] .mob-nav-item.active .mn-icon {
+    color: #0284c7;
+}
+
+[data-theme="light"] .footer-social a {
+    color: #475569;
+}
+[data-theme="light"] .footer-social a i {
+    color: #475569;
+}
+[data-theme="light"] .footer-social a:hover i {
+    color: #0284c7;
 }
 
 .input-area { display: none; }
