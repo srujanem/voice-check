@@ -372,6 +372,11 @@ function initVoiceUI() {
                 scanHistory.addScan('Voice', fName, !isHuman, confidence);
             }
 
+            // Trigger 3D Topographic Audio Spectrogram
+            if (window.update3DVoiceSpectrogram) {
+                window.update3DVoiceSpectrogram(isHuman, confidence);
+            }
+
             // Show share button
             const shareBtn = document.getElementById('share-btn');
             if (shareBtn) {

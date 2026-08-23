@@ -16,6 +16,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="../global.css?v=4">
     <link rel="stylesheet" href="voice-ui-mobile.css?v=2">
 </head>
@@ -507,6 +508,24 @@
                     </div>
                 </div>
 
+                <!-- 3D Topographic Audio Spectrogram Waterfall -->
+                <div class="voice-3d-card" style="margin-top: 18px; background: rgba(10, 12, 20, 0.7); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 16px; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div style="font-size: 12px; font-weight: 700; font-family: var(--font-mono, monospace); color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-mountain"></i> 3D AUDIO SPECTROGRAM TOPOGRAPHY
+                        </div>
+                        <div style="font-size: 11px; font-family: var(--font-mono, monospace);" id="voice3DStatus">
+                            <span style="color: #10b981;">● SPECTRAL DYNAMICS: ORGANIC</span>
+                        </div>
+                    </div>
+                    <div style="position: relative; width: 100%; height: 230px; background: radial-gradient(circle at center, rgba(6,182,212,0.08) 0%, transparent 70%); cursor: grab;" id="voice3DViewport">
+                        <canvas id="voice-3d-spectrogram-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                        <div style="position: absolute; bottom: 10px; right: 12px; font-size: 10px; font-family: var(--font-mono, monospace); color: rgba(255,255,255,0.4); pointer-events: none;">
+                            <i class="fa-solid fa-hand-pointer"></i> DRAG TO TILT 3D SOUNDSCAPE
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Hidden compat spans -->
                 <span id="prob-human" style="display:none" aria-hidden="true"></span>
                 <span id="prob-ai"    style="display:none" aria-hidden="true"></span>
@@ -580,6 +599,162 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+    <!-- ===== 3D TOPOGRAPHIC AUDIO SPECTROGRAM WATERFALL ENGINE ===== -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('voice-3d-spectrogram-canvas');
+        const viewport = document.getElementById('voice3DViewport');
+        if (!canvas || !viewport || typeof THREE === 'undefined') return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        camera.position.set(0, 3.5, 4.8);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Lighting
+        const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+        scene.add(ambient);
+
+        const light1 = new THREE.PointLight(0x06b6d4, 3, 20);
+        light1.position.set(4, 5, 3);
+        scene.add(light1);
+
+        const light2 = new THREE.PointLight(0x8b5cf6, 2.5, 20);
+        light2.position.set(-4, 3, -2);
+        scene.add(light2);
+
+        // Terrain Master Group
+        const terrainGroup = new THREE.Group();
+        scene.add(terrainGroup);
+        terrainGroup.rotation.x = -Math.PI / 4.5;
+
+        // 1. 3D Spectrogram Topographic Mesh
+        const cols = 52;
+        const rows = 36;
+        const width = 6.2;
+        const depth = 4.2;
+
+        const planeGeo = new THREE.PlaneGeometry(width, depth, cols - 1, rows - 1);
+        planeGeo.rotateX(-Math.PI / 2);
+
+        const planeMat = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.75,
+            roughness: 0.2,
+            metalness: 0.8
+        });
+        const terrainMesh = new THREE.Mesh(planeGeo, planeMat);
+        terrainGroup.add(terrainMesh);
+
+        // 2. Vertex Points Overlay
+        const ptsMat = new THREE.PointsMaterial({
+            color: 0x10b981,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending
+        });
+        const ptsMesh = new THREE.Points(planeGeo, ptsMat);
+        terrainGroup.add(ptsMesh);
+
+        let currentVerdictIsHuman = true;
+        let isAnimating = true;
+
+        // Interactive Drag
+        let isDragging = false;
+        let prevMousePos = { x: 0, y: 0 };
+        let targetRotY = 0;
+        let currentRotY = 0;
+
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        viewport.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - prevMousePos.x;
+                targetRotY += dx * 0.008;
+                prevMousePos = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        // Global Updater
+        window.update3DVoiceSpectrogram = function(isHuman, conf) {
+            currentVerdictIsHuman = isHuman;
+            const statusEl = document.getElementById('voice3DStatus');
+            if (isHuman) {
+                planeMat.color.setHex(0x10b981);
+                ptsMat.color.setHex(0x06b6d4);
+                if (statusEl) statusEl.innerHTML = '<span style="color: #10b981;">● SPECTRAL DYNAMICS: ORGANIC BIO-HARMONICS</span>';
+            } else {
+                planeMat.color.setHex(0xef4444);
+                ptsMat.color.setHex(0xf59e0b);
+                if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">● FLAT HARMONIC SYNTHETIC PLATEAUS DETECTED</span>';
+            }
+        };
+
+        // Resize
+        window.addEventListener('resize', () => {
+            if (!viewport || !renderer || !camera) return;
+            camera.aspect = viewport.clientWidth / viewport.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        });
+
+        // Animation Loop
+        let clock = new THREE.Clock();
+        function animateSpectrogram() {
+            requestAnimationFrame(animateSpectrogram);
+            const elapsed = clock.getElapsedTime();
+
+            if (!isDragging) {
+                targetRotY = Math.sin(elapsed * 0.5) * 0.25;
+            }
+
+            currentRotY += (targetRotY - currentRotY) * 0.1;
+            terrainGroup.rotation.y = currentRotY;
+
+            // Compute dynamic height map
+            const posAttr = planeGeo.attributes.position;
+            const posArr = posAttr.array;
+
+            for (let i = 0; i < posAttr.count; i++) {
+                const i3 = i * 3;
+                const x = posArr[i3];
+                const z = posArr[i3 + 2];
+
+                if (currentVerdictIsHuman) {
+                    // Organic peaks and mountain ripples
+                    const wave1 = Math.sin(x * 2.2 + elapsed * 3.0) * Math.cos(z * 1.8 + elapsed * 2.0);
+                    const wave2 = Math.sin(x * 4.5 - elapsed * 2.5) * 0.25;
+                    const decay = Math.exp(-Math.abs(x) * 0.35);
+                    posArr[i3 + 1] = (wave1 + wave2) * 0.55 * decay;
+                } else {
+                    // Synthetic robotic flat stepped plateaus
+                    const step = Math.floor(Math.sin(x * 3.0 + elapsed * 4.0) * 3) / 3;
+                    const buzz = Math.sin(z * 10.0 + elapsed * 15.0) * 0.08;
+                    posArr[i3 + 1] = (step + buzz) * 0.4;
+                }
+            }
+            posAttr.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+        animateSpectrogram();
+    })();
+    </script>
 </body>
 </html>
 

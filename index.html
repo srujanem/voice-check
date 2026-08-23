@@ -421,6 +421,249 @@
             z-index: 10;
         }
 
+        /* ===== 3D CYBER THREAT GLOBE & FEED ===== */
+        .threat-globe-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+        @media (max-width: 992px) {
+            .threat-globe-grid { grid-template-columns: 1fr; }
+        }
+
+        .threat-globe-card {
+            background: rgba(12, 14, 22, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+            display: flex;
+            flex-direction: column;
+        }
+        [data-theme="light"] .threat-globe-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(2, 132, 199, 0.3);
+            box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12);
+        }
+
+        .threat-globe-header, .threat-feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        [data-theme="light"] .threat-globe-header,
+        [data-theme="light"] .threat-feed-header {
+            background: rgba(2, 132, 199, 0.04);
+            border-bottom: 1px solid rgba(2, 132, 199, 0.12);
+        }
+
+        .threat-globe-viewport {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            cursor: grab;
+            user-select: none;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.08) 0%, rgba(139, 92, 246, 0.03) 50%, transparent 75%);
+        }
+        [data-theme="light"] .threat-globe-viewport {
+            background: radial-gradient(circle at center, rgba(2, 132, 199, 0.08) 0%, transparent 75%);
+        }
+        .threat-globe-viewport:active { cursor: grabbing; }
+
+        #threat-globe-canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .globe-hud-badge {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: var(--font-mono, monospace);
+            color: #06b6d4;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        [data-theme="light"] .globe-hud-badge {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(2, 132, 199, 0.3);
+            color: #0284c7;
+        }
+
+        .globe-hud-controls {
+            position: absolute;
+            bottom: 14px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .globe-ctrl-btn {
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        [data-theme="light"] .globe-ctrl-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(2, 132, 199, 0.25);
+            color: #0284c7;
+        }
+        .globe-ctrl-btn:hover {
+            border-color: #06b6d4;
+            color: #06b6d4;
+            transform: scale(1.1);
+        }
+
+        .globe-stats-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: center;
+            gap: 10px;
+        }
+        [data-theme="light"] .globe-stats-strip {
+            background: rgba(2, 132, 199, 0.03);
+            border-top: 1px solid rgba(2, 132, 199, 0.1);
+        }
+        @media (max-width: 576px) {
+            .globe-stats-strip { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .globe-stat-val {
+            font-size: 16px;
+            font-weight: 800;
+            font-family: var(--font-mono, monospace);
+            display: block;
+        }
+        .globe-stat-lbl {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            display: block;
+        }
+
+        .threat-feed-card {
+            background: rgba(12, 14, 22, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+            display: flex;
+            flex-direction: column;
+            max-height: 540px;
+        }
+        [data-theme="light"] .threat-feed-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.12);
+        }
+
+        .feed-pulse-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #ef4444;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono, monospace);
+        }
+
+        .threat-feed-list {
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .threat-feed-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-left: 3px solid #ef4444;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.25s ease;
+            animation: feedItemSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-theme="light"] .threat-feed-item {
+            background: rgba(2, 132, 199, 0.04);
+            border: 1px solid rgba(2, 132, 199, 0.12);
+            border-left: 3px solid #ef4444;
+        }
+        .threat-feed-item.type-voice { border-left-color: #06b6d4; }
+        .threat-feed-item.type-image { border-left-color: #8b5cf6; }
+        .threat-feed-item.type-text { border-left-color: #10b981; }
+
+        @keyframes feedItemSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feed-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-family: var(--font-mono, monospace);
+        }
+        .feed-city { font-weight: 700; color: var(--text-primary); }
+        .feed-time { color: var(--text-secondary); opacity: 0.7; font-size: 10px; }
+        .feed-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+        .feed-score {
+            font-family: var(--font-mono, monospace);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        .feed-score.human {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
         /* ===== PRESS LOGO STRIP ===== */
         .press-section {
             padding: 50px 20px 30px; text-align: center;
@@ -3025,6 +3268,81 @@
 </div>
 <!-- Hall of Fakes Feed -->
 
+<!-- 3D Global Cyber Threat Telemetry Matrix -->
+<section class="threat-globe-section" id="telemetry" style="scroll-margin-top: 80px; padding: 70px 20px; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 35px;">
+        <div class="section-label" style="display: inline-flex; align-items: center; gap: 8px; justify-content: center;">
+            <i class="fa-solid fa-earth-americas" style="color: #06b6d4;"></i> GLOBAL RADAR
+        </div>
+        <h2 class="section-title" style="margin-top: 8px;">3D AI Threat Interception Matrix</h2>
+        <div class="section-glow-divider" style="margin: 12px auto 16px;"></div>
+        <p class="section-subtitle" style="margin: 0 auto; max-width: 680px;">
+            Real-time planetary telemetry showing active deepfake video, audio voice clone, and synthetic text interceptions across 180+ international edge nodes.
+        </p>
+    </div>
+
+    <div class="threat-globe-grid">
+        <!-- Left: 3D WebGL Globe Viewport -->
+        <div class="threat-globe-card border-beam-card">
+            <div class="threat-globe-header">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></span>
+                    <span style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-secondary); margin-left: 10px;">EDGE TELEMETRY // PLANETARY 3D MESH</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono, monospace); font-size: 11px; color: #10b981;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                    <span id="globe-node-status">184 NODES SYNCHRONIZED</span>
+                </div>
+            </div>
+
+            <div class="threat-globe-viewport" id="threatGlobeViewport">
+                <canvas id="threat-globe-canvas"></canvas>
+                <div class="globe-hud-badge"><i class="fa-solid fa-satellite"></i> <span>ORBITAL TRACKING: ACTIVE</span></div>
+                <div class="globe-hud-controls">
+                    <button class="globe-ctrl-btn" onclick="resetGlobeView()" title="Center View"><i class="fa-solid fa-crosshairs"></i></button>
+                    <button class="globe-ctrl-btn" onclick="toggleGlobeSpeed()" title="Toggle Rotation Speed" id="btn-globe-speed"><i class="fa-solid fa-gauge-high"></i></button>
+                </div>
+            </div>
+
+            <div class="globe-stats-strip">
+                <div class="globe-stat">
+                    <span class="globe-stat-val" id="g-threats-today" style="color: #06b6d4;">1,482,920</span>
+                    <span class="globe-stat-lbl">Daily Scans</span>
+                </div>
+                <div class="globe-stat">
+                    <span class="globe-stat-val" style="color: #ef4444;" id="g-fakes-stopped">84,120</span>
+                    <span class="globe-stat-lbl">Fakes Neutralized</span>
+                </div>
+                <div class="globe-stat">
+                    <span class="globe-stat-val" style="color: #10b981;">99.8%</span>
+                    <span class="globe-stat-lbl">Global Uptime</span>
+                </div>
+                <div class="globe-stat">
+                    <span class="globe-stat-val" style="color: #8b5cf6;">32ms</span>
+                    <span class="globe-stat-lbl">Edge Latency</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Live Interception Feed Console -->
+        <div class="threat-feed-card border-beam-card">
+            <div class="threat-feed-header">
+                <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:13px; color:var(--text-primary);">
+                    <i class="fa-solid fa-tower-broadcast" style="color:#ef4444;"></i>
+                    <span>Live Interceptions Stream</span>
+                </div>
+                <span class="feed-pulse-pill"><span class="pulse-dot"></span> LIVE STREAM</span>
+            </div>
+            
+            <div class="threat-feed-list" id="threatFeedList">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- About Section -->
 <section class="about-section" id="about" style="scroll-margin-top: 80px;">
 <div class="about-container">
@@ -4263,46 +4581,328 @@ document.querySelectorAll('.faq-question').forEach(button => {
 })();
 </script>
 
-<!-- ===== INTERACTIVE 3D CARD PARALLAX TILT ENGINE ===== -->
+<!-- ===== 3D WEBGL CYBER THREAT GLOBE ENGINE ===== -->
 <script>
 (function() {
-    const tiltElements = document.querySelectorAll('.tilt-card, .border-beam-card, .feature-card, .pricing-card');
+    const canvas = document.getElementById('threat-globe-canvas');
+    const viewport = document.getElementById('threatGlobeViewport');
+    if (!canvas || !viewport || typeof THREE === 'undefined') return;
 
-    tiltElements.forEach(el => {
-        // Ensure glare element exists
-        let glare = el.querySelector('.card-glare');
-        if (!glare) {
-            glare = document.createElement('div');
-            glare.className = 'card-glare';
-            el.appendChild(glare);
+    // --- Scene, Camera, Renderer ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 1000);
+    camera.position.z = 7.2;
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+    });
+    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // --- Lights ---
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambient);
+
+    const pLight1 = new THREE.PointLight(0x06b6d4, 3.5, 20);
+    pLight1.position.set(6, 6, 6);
+    scene.add(pLight1);
+
+    const pLight2 = new THREE.PointLight(0x8b5cf6, 3, 20);
+    pLight2.position.set(-6, -5, 4);
+    scene.add(pLight2);
+
+    // --- Globe Master Group ---
+    const globeGroup = new THREE.Group();
+    scene.add(globeGroup);
+    globeGroup.rotation.x = 0.25;
+
+    // 1. Globe Base Core (Translucent Blue-Violet Sphere)
+    const globeRadius = 2.5;
+    const coreGeo = new THREE.SphereGeometry(globeRadius * 0.98, 40, 40);
+    const coreMat = new THREE.MeshStandardMaterial({
+        color: 0x070b19,
+        emissive: 0x03112c,
+        roughness: 0.8,
+        metalness: 0.2,
+        transparent: true,
+        opacity: 0.92
+    });
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    globeGroup.add(coreMesh);
+
+    // 2. Wireframe / Latitude Longitude Grid
+    const wireGeo = new THREE.SphereGeometry(globeRadius, 28, 28);
+    const wireMat = new THREE.MeshBasicMaterial({
+        color: 0x06b6d4,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.18
+    });
+    const wireMesh = new THREE.Mesh(wireGeo, wireMat);
+    globeGroup.add(wireMesh);
+
+    // 3. Dot Matrix Continental Point Cloud
+    const dotCount = 1400;
+    const dotPositions = new Float32Array(dotCount * 3);
+    for (let i = 0; i < dotCount; i++) {
+        const phi = Math.acos(-1 + (2 * i) / dotCount);
+        const theta = Math.sqrt(dotCount * Math.PI) * phi;
+        const r = globeRadius * 1.008;
+
+        dotPositions[i * 3] = r * Math.cos(theta) * Math.sin(phi);
+        dotPositions[i * 3 + 1] = r * Math.sin(theta) * Math.sin(phi);
+        dotPositions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const dotGeo = new THREE.BufferGeometry();
+    dotGeo.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
+    const dotMat = new THREE.PointsMaterial({
+        color: 0x06b6d4,
+        size: 0.055,
+        transparent: true,
+        opacity: 0.75,
+        blending: THREE.AdditiveBlending
+    });
+    const dotsMesh = new THREE.Points(dotGeo, dotMat);
+    globeGroup.add(dotsMesh);
+
+    // 4. Glowing Atmosphere Rim
+    const ringGeo = new THREE.TorusGeometry(globeRadius * 1.08, 0.02, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.4 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    globeGroup.add(ring);
+
+    // Helper: Convert Lat/Lng to Vector3
+    function latLngToVector3(lat, lng, radius) {
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lng + 180) * (Math.PI / 180);
+        return new THREE.Vector3(
+            -(radius * Math.sin(phi) * Math.cos(theta)),
+            radius * Math.cos(phi),
+            radius * Math.sin(phi) * Math.sin(theta)
+        );
+    }
+
+    // 5. Major Cyber Security Nodes (Cities)
+    const nodes = [
+        { name: "Tokyo", lat: 35.6762, lng: 139.6503, color: 0xef4444 },
+        { name: "London", lat: 51.5074, lng: -0.1278, color: 0x06b6d4 },
+        { name: "New York", lat: 40.7128, lng: -74.0060, color: 0x8b5cf6 },
+        { name: "San Francisco", lat: 37.7749, lng: -122.4194, color: 0x10b981 },
+        { name: "Singapore", lat: 1.3521, lng: 103.8198, color: 0x06b6d4 },
+        { name: "Sydney", lat: -33.8688, lng: 151.2093, color: 0xef4444 },
+        { name: "Frankfurt", lat: 50.1109, lng: 8.6821, color: 0x8b5cf6 },
+        { name: "Bengaluru", lat: 12.9716, lng: 77.5946, color: 0x10b981 },
+        { name: "São Paulo", lat: -23.5505, lng: -46.6333, color: 0xec4899 },
+        { name: "Dubai", lat: 25.2048, lng: 55.2708, color: 0x06b6d4 }
+    ];
+
+    const beaconPulsers = [];
+    const nodeGeometry = new THREE.SphereGeometry(0.065, 12, 12);
+    const beaconRingGeo = new THREE.RingGeometry(0.08, 0.14, 16);
+
+    nodes.forEach(city => {
+        const pos = latLngToVector3(city.lat, city.lng, globeRadius * 1.01);
+
+        // Core Node Dot
+        const nodeMat = new THREE.MeshBasicMaterial({ color: city.color });
+        const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMat);
+        nodeMesh.position.copy(pos);
+        globeGroup.add(nodeMesh);
+
+        // Pulsing Beacon Ring
+        const pRingMat = new THREE.MeshBasicMaterial({
+            color: city.color,
+            transparent: true,
+            opacity: 0.8,
+            side: THREE.DoubleSide
+        });
+        const pRing = new THREE.Mesh(beaconRingGeo, pRingMat);
+        pRing.position.copy(pos.clone().multiplyScalar(1.01));
+        pRing.lookAt(pos.clone().multiplyScalar(2));
+        globeGroup.add(pRing);
+        beaconPulsers.push({ mesh: pRing, baseScale: 1.0, speed: 1.5 + Math.random() * 2 });
+    });
+
+    // 6. Connecting Bezier Cyber Arcs
+    const arcConnections = [
+        [0, 1], [1, 2], [2, 3], [3, 0], [4, 7], [1, 6], [2, 8], [7, 0], [6, 9], [9, 7]
+    ];
+    const photonPackets = [];
+
+    arcConnections.forEach(([fromIdx, toIdx], arcIndex) => {
+        const v1 = latLngToVector3(nodes[fromIdx].lat, nodes[fromIdx].lng, globeRadius);
+        const v2 = latLngToVector3(nodes[toIdx].lat, nodes[toIdx].lng, globeRadius);
+
+        // Midpoint raised for arc curvature
+        const mid = v1.clone().add(v2).multiplyScalar(0.5);
+        const distance = v1.distanceTo(v2);
+        mid.normalize().multiplyScalar(globeRadius + distance * 0.38);
+
+        const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
+        const points = curve.getPoints(36);
+        const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
+
+        const arcMat = new THREE.LineBasicMaterial({
+            color: (arcIndex % 2 === 0) ? 0x06b6d4 : 0x8b5cf6,
+            transparent: true,
+            opacity: 0.4
+        });
+        const arcLine = new THREE.Line(arcGeo, arcMat);
+        globeGroup.add(arcLine);
+
+        // Traveling Photon Packet
+        const photonGeo = new THREE.SphereGeometry(0.045, 8, 8);
+        const photonMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const photon = new THREE.Mesh(photonGeo, photonMat);
+        globeGroup.add(photon);
+        photonPackets.push({ curve, mesh: photon, t: Math.random(), speed: 0.25 + Math.random() * 0.35 });
+    });
+
+    // --- Interactive Mouse & Touch Drag ---
+    let isDragging = false;
+    let prevMousePos = { x: 0, y: 0 };
+    let targetRotation = { x: 0.2, y: -0.8 };
+    let currentRotation = { x: 0.2, y: -0.8 };
+    let rotSpeed = 0.0035;
+
+    viewport.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevMousePos = { x: e.clientX, y: e.clientY };
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    viewport.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const deltaX = e.clientX - prevMousePos.x;
+            const deltaY = e.clientY - prevMousePos.y;
+            targetRotation.y += deltaX * 0.006;
+            targetRotation.x += deltaY * 0.006;
+            prevMousePos = { x: e.clientX, y: e.clientY };
+        }
+    });
+
+    // Touch
+    viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+    }, { passive: true });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    viewport.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length === 1) {
+            const deltaX = e.touches[0].clientX - prevMousePos.x;
+            const deltaY = e.touches[0].clientY - prevMousePos.y;
+            targetRotation.y += deltaX * 0.008;
+            targetRotation.x += deltaY * 0.008;
+            prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+    }, { passive: true });
+
+    // Controls: Reset & Speed
+    window.resetGlobeView = function() {
+        targetRotation.x = 0.2;
+        targetRotation.y = -0.8;
+    };
+    window.toggleGlobeSpeed = function() {
+        rotSpeed = (rotSpeed === 0.0035) ? 0.012 : 0.0035;
+        const btn = document.getElementById('btn-globe-speed');
+        if (btn) btn.style.color = (rotSpeed > 0.005) ? '#06b6d4' : '';
+    };
+
+    // Resize
+    window.addEventListener('resize', () => {
+        if (!viewport || !renderer || !camera) return;
+        const w = viewport.clientWidth;
+        const h = viewport.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+
+    // --- Render Loop ---
+    let clock = new THREE.Clock();
+    function animateGlobe() {
+        requestAnimationFrame(animateGlobe);
+        const delta = clock.getDelta();
+        const elapsed = clock.getElapsedTime();
+
+        if (!isDragging) {
+            targetRotation.y += rotSpeed;
         }
 
-        el.addEventListener('mousemove', (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        currentRotation.x += (targetRotation.x - currentRotation.x) * 0.08;
+        currentRotation.y += (targetRotation.y - currentRotation.y) * 0.08;
 
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+        globeGroup.rotation.x = currentRotation.x;
+        globeGroup.rotation.y = currentRotation.y;
 
-            const rotateX = -((y - centerY) / centerY) * 10;
-            const rotateY = ((x - centerX) / centerX) * 10;
-
-            el.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
-            el.style.boxShadow = `0 25px 50px -12px rgba(6, 182, 212, 0.25), 0 0 25px rgba(139, 92, 246, 0.2)`;
-
-            if (glare) {
-                glare.style.opacity = '1';
-                glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.22), transparent 60%)`;
-            }
+        // Pulse Beacon Rings
+        beaconPulsers.forEach(b => {
+            const scale = 1.0 + Math.sin(elapsed * b.speed) * 0.6;
+            b.mesh.scale.set(scale, scale, scale);
+            b.mesh.material.opacity = 0.9 - (scale - 1.0) * 0.8;
         });
 
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-            el.style.boxShadow = '';
-            if (glare) glare.style.opacity = '0';
+        // Advance Photon Packets
+        photonPackets.forEach(p => {
+            p.t += p.speed * delta;
+            if (p.t > 1) p.t = 0;
+            const point = p.curve.getPoint(p.t);
+            p.mesh.position.copy(point);
         });
-    });
+
+        renderer.render(scene, camera);
+    }
+    animateGlobe();
+
+    // --- Live Threat Feed Stream Generator ---
+    const threatFeedList = document.getElementById('threatFeedList');
+    if (!threatFeedList) return;
+
+    const sampleThreats = [
+        { city: "Tokyo, JP", type: "video", title: "Sora 2.0 Face-Swap Stream", score: "99.7% AI", isAi: true, icon: "fa-video" },
+        { city: "London, UK", type: "voice", title: "ElevenLabs Voice Banking Clone", score: "98.9% AI", isAi: true, icon: "fa-microphone" },
+        { city: "New York, US", type: "image", title: "MidJourney v6 Photoreal Portrait", score: "96.4% AI", isAi: true, icon: "fa-image" },
+        { city: "San Francisco, US", type: "text", title: "Claude 3.5 Academic Ghostwrite", score: "99.1% AI", isAi: true, icon: "fa-file-lines" },
+        { city: "Frankfurt, DE", type: "voice", title: "Organic Human Voice Sample", score: "99.8% Human", isAi: false, icon: "fa-microphone" },
+        { city: "Singapore, SG", type: "image", title: "DSLR Canon EOS Capture", score: "99.5% Human", isAi: false, icon: "fa-image" },
+        { city: "Bengaluru, IN", type: "video", title: "Deepfake Political Speech Swap", score: "98.2% AI", isAi: true, icon: "fa-video" },
+        { city: "São Paulo, BR", type: "voice", title: "WhatsApp Voice Phishing Scam", score: "97.6% AI", isAi: true, icon: "fa-microphone" }
+    ];
+
+    function pushThreatFeedItem() {
+        const item = sampleThreats[Math.floor(Math.random() * sampleThreats.length)];
+        const el = document.createElement('div');
+        el.className = `threat-feed-item type-${item.type}`;
+        el.innerHTML = `
+            <div class="feed-item-top">
+                <span class="feed-city"><i class="fa-solid ${item.icon}"></i> ${item.city}</span>
+                <span class="feed-time">Just now</span>
+            </div>
+            <div class="feed-desc">${item.title}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-family:var(--font-mono, monospace);">${item.type.toUpperCase()} VECTOR</span>
+                <span class="feed-score ${item.isAi ? '' : 'human'}">${item.score}</span>
+            </div>
+        `;
+        threatFeedList.insertBefore(el, threatFeedList.firstChild);
+
+        // Keep maximum 6 items in list
+        while (threatFeedList.children.length > 6) {
+            threatFeedList.removeChild(threatFeedList.lastChild);
+        }
+    }
+
+    // Populate initial items
+    for (let i = 0; i < 4; i++) {
+        pushThreatFeedItem();
+    }
+    setInterval(pushThreatFeedItem, 3200);
 })();
 </script>
 </body>
