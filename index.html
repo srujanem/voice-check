@@ -3423,37 +3423,46 @@
 <h4>Multi-Language Support</h4>
 <p>Detect AI-generated text across 30+ languages including English, Spanish, Hindi, Mandarin, Arabic, and more. Our NLP models are trained on diverse multilingual datasets for global accuracy.</p>
 </div>
-<h3 class="subsection-title">How It Works</h3>
+</div> <!-- Close features-grid -->
 
-<!-- 3D Interactive Neural Data Pipeline -->
-<div style="position: relative; width: 100%; height: 220px; margin: 20px auto 30px; background: rgba(10, 12, 22, 0.6); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 18px; overflow: hidden; cursor: grab;" id="pipeline3DViewport">
-    <canvas id="pipeline-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-    <div style="position: absolute; top: 12px; left: 16px; font-size: 11px; font-family: var(--font-mono, monospace); color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
-        <i class="fa-solid fa-cube"></i> 3D NEURAL DATA PIPELINE
-    </div>
-    <div style="position: absolute; bottom: 10px; right: 14px; font-size: 10px; font-family: var(--font-mono, monospace); color: rgba(255,255,255,0.4); pointer-events: none;">
-        <i class="fa-solid fa-hand-pointer"></i> DRAG TO ROTATE 3D PIPELINE
-    </div>
-</div>
+<!-- How It Works Section Full Width Container -->
+<div class="how-it-works-wrapper" style="margin-top: 80px; width: 100%; text-align: center;">
+    <div class="section-label" style="display: inline-flex; align-items: center; gap: 8px; margin: 0 auto 12px;"><i class="fa-solid fa-network-wired"></i> Architecture</div>
+    <h3 class="subsection-title" style="margin: 0 auto 10px; font-size: 32px; font-weight: 800; color: var(--text-primary, #fff);">How It Works</h3>
+    <p class="section-subtitle" style="max-width: 600px; margin: 0 auto 30px; color: var(--text-secondary, #94a3b8);">End-to-end multi-modal deep neural inspection pipeline</p>
 
-<div class="steps-grid">
-<div class="step-card "><div class="step-number">1</div><h4>Upload or Record</h4><p>Choose your content type and upload a file, paste a URL, or record directly from your device.</p></div>
-<div class="step-connector"><i class="fa-solid fa-chevron-right"></i></div>
-<div class="step-card "><div class="step-number">2</div><h4>AI Analysis</h4><p>Our machine learning models process the content in seconds, scanning for patterns unique to AI generation.</p></div>
-<div class="step-connector"><i class="fa-solid fa-chevron-right"></i></div>
-<div class="step-card "><div class="step-number">3</div><h4>Get Results</h4><p>Receive a detailed confidence score and breakdown showing exactly why the content is classified as real or AI.</p></div>
+    <!-- 3D Interactive Neural Data Pipeline -->
+    <div style="position: relative; max-width: 960px; width: 100%; height: 260px; margin: 0 auto 40px; background: rgba(10, 12, 22, 0.6); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 20px; overflow: hidden; cursor: grab; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(16px);" id="pipeline3DViewport">
+        <canvas id="pipeline-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        <div style="position: absolute; top: 14px; left: 18px; font-size: 11px; font-family: var(--font-mono, monospace); color: var(--accent-cyan, #06b6d4); display: flex; align-items: center; gap: 6px; letter-spacing: 1px;">
+            <i class="fa-solid fa-cube"></i> 3D NEURAL DATA PIPELINE
+        </div>
+        <div style="position: absolute; bottom: 12px; right: 16px; font-size: 10px; font-family: var(--font-mono, monospace); color: rgba(255,255,255,0.4); pointer-events: none;">
+            <i class="fa-solid fa-hand-pointer"></i> DRAG TO ROTATE 3D PIPELINE
+        </div>
+    </div>
+
+    <!-- 3 Steps Horizontal Flex Grid -->
+    <div class="steps-grid" style="display: flex; justify-content: center; align-items: stretch; gap: 20px; max-width: 1100px; margin: 0 auto;">
+        <div class="step-card"><div class="step-number">1</div><h4>Upload or Record</h4><p>Choose your content type and upload a file, paste a URL, or record directly from your device.</p></div>
+        <div class="step-connector" style="display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step-card"><div class="step-number">2</div><h4>AI Analysis</h4><p>Our machine learning models process the content in seconds, scanning for patterns unique to AI generation.</p></div>
+        <div class="step-connector" style="display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step-card"><div class="step-number">3</div><h4>Get Results</h4><p>Receive a detailed confidence score and breakdown showing exactly why the content is classified as real or AI.</p></div>
+    </div>
+
+    <div class="tech-strip" style="margin-top: 40px;">
+        <span class="tech-label">Powered by</span>
+        <div class="tech-badges">
+            <span class="tech-badge"><i class="fa-brands fa-python"></i> Python</span>
+            <span class="tech-badge"><i class="fa-solid fa-brain"></i> TensorFlow</span>
+            <span class="tech-badge"><i class="fa-brands fa-google"></i> Firebase</span>
+            <span class="tech-badge"><i class="fa-solid fa-flask-vial"></i> Flask</span>
+            <span class="tech-badge"><i class="fa-solid fa-robot"></i> Keras</span>
+        </div>
+    </div>
 </div>
-<div class="tech-strip">
-<span class="tech-label">Powered by</span>
-<div class="tech-badges">
-<span class="tech-badge"><i class="fa-brands fa-python"></i> Python</span>
-<span class="tech-badge"><i class="fa-solid fa-brain"></i> TensorFlow</span>
-<span class="tech-badge"><i class="fa-brands fa-google"></i> Firebase</span>
-<span class="tech-badge"><i class="fa-solid fa-flask-vial"></i> Flask</span>
-<span class="tech-badge"><i class="fa-solid fa-robot"></i> Keras</span>
-</div>
-</div>
-</div>
+</div> <!-- Close about-container -->
 </section>
 
 <!-- Creator Profile Section -->
@@ -5122,6 +5131,12 @@ document.querySelectorAll('.faq-question').forEach(button => {
     function animatePipeline() {
         requestAnimationFrame(animatePipeline);
         const elapsed = clock.getElapsedTime();
+
+        if (viewport.clientWidth > 10 && Math.abs(camera.aspect - (viewport.clientWidth / viewport.clientHeight)) > 0.05) {
+            camera.aspect = viewport.clientWidth / viewport.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        }
 
         if (!isDragging) {
             targetRotY = Math.sin(elapsed * 0.5) * 0.2;
