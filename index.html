@@ -3806,6 +3806,7 @@
 
 
 <script src="theme.js?v=6"></script>
+<script src="history.js"></script>
 
 
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
@@ -4860,49 +4861,137 @@ document.querySelectorAll('.faq-question').forEach(button => {
     }
     animateGlobe();
 
-    // --- Live Threat Feed Stream Generator ---
+    // --- REAL USER TELEMETRY & LIVE SCAN STREAM ENGINE ---
     const threatFeedList = document.getElementById('threatFeedList');
     if (!threatFeedList) return;
 
-    const sampleThreats = [
-        { city: "Tokyo, JP", type: "video", title: "Sora 2.0 Face-Swap Stream", score: "99.7% AI", isAi: true, icon: "fa-video" },
-        { city: "London, UK", type: "voice", title: "ElevenLabs Voice Banking Clone", score: "98.9% AI", isAi: true, icon: "fa-microphone" },
-        { city: "New York, US", type: "image", title: "MidJourney v6 Photoreal Portrait", score: "96.4% AI", isAi: true, icon: "fa-image" },
-        { city: "San Francisco, US", type: "text", title: "Claude 3.5 Academic Ghostwrite", score: "99.1% AI", isAi: true, icon: "fa-file-lines" },
-        { city: "Frankfurt, DE", type: "voice", title: "Organic Human Voice Sample", score: "99.8% Human", isAi: false, icon: "fa-microphone" },
-        { city: "Singapore, SG", type: "image", title: "DSLR Canon EOS Capture", score: "99.5% Human", isAi: false, icon: "fa-image" },
-        { city: "Bengaluru, IN", type: "video", title: "Deepfake Political Speech Swap", score: "98.2% AI", isAi: true, icon: "fa-video" },
-        { city: "São Paulo, BR", type: "voice", title: "WhatsApp Voice Phishing Scam", score: "97.6% AI", isAi: true, icon: "fa-microphone" }
-    ];
-
-    function pushThreatFeedItem() {
-        const item = sampleThreats[Math.floor(Math.random() * sampleThreats.length)];
-        const el = document.createElement('div');
-        el.className = `threat-feed-item type-${item.type}`;
-        el.innerHTML = `
-            <div class="feed-item-top">
-                <span class="feed-city"><i class="fa-solid ${item.icon}"></i> ${item.city}</span>
-                <span class="feed-time">Just now</span>
-            </div>
-            <div class="feed-desc">${item.title}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-family:var(--font-mono, monospace);">${item.type.toUpperCase()} VECTOR</span>
-                <span class="feed-score ${item.isAi ? '' : 'human'}">${item.score}</span>
-            </div>
-        `;
-        threatFeedList.insertBefore(el, threatFeedList.firstChild);
-
-        // Keep maximum 6 items in list
-        while (threatFeedList.children.length > 6) {
-            threatFeedList.removeChild(threatFeedList.lastChild);
+    // Detect user's actual location or country/city
+    let userLocation = { city: "Your Node (Local)", lat: 12.9716, lng: 77.5946 };
+    try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+        if (tz.includes("Kolkata") || tz.includes("Calcutta") || tz.includes("Asia/Calcutta")) {
+            userLocation = { city: "India Node (You)", lat: 12.9716, lng: 77.5946 };
+        } else if (tz.includes("New_York") || tz.includes("America/New_York")) {
+            userLocation = { city: "New York, US", lat: 40.7128, lng: -74.0060 };
+        } else if (tz.includes("London") || tz.includes("Europe/London")) {
+            userLocation = { city: "London, UK", lat: 51.5074, lng: -0.1278 };
+        } else if (tz.includes("Tokyo") || tz.includes("Asia/Tokyo")) {
+            userLocation = { city: "Tokyo, JP", lat: 35.6762, lng: 139.6503 };
+        } else if (tz.includes("Berlin") || tz.includes("Europe/Berlin") || tz.includes("Frankfurt")) {
+            userLocation = { city: "Frankfurt, DE", lat: 50.1109, lng: 8.6821 };
         }
+    } catch(e) {}
+
+    // Add glowing User Node to 3D Globe
+    const userPos = latLngToVector3(userLocation.lat, userLocation.lng, globeRadius * 1.02);
+    const userNodeMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+    const userNode = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), userNodeMat);
+    userNode.position.copy(userPos);
+    globeGroup.add(userNode);
+
+    const userHaloGeo = new THREE.RingGeometry(0.12, 0.22, 20);
+    const userHaloMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+    const userHalo = new THREE.Mesh(userHaloGeo, userHaloMat);
+    userHalo.position.copy(userPos.clone().multiplyScalar(1.01));
+    userHalo.lookAt(userPos.clone().multiplyScalar(2));
+    globeGroup.add(userHalo);
+    beaconPulsers.push({ mesh: userHalo, baseScale: 1.2, speed: 2.8 });
+
+    function renderRealUserTelemetry() {
+        let history = [];
+        try {
+            history = JSON.parse(localStorage.getItem('ai_detection_history') || '[]');
+        } catch(e) {}
+
+        const dailyScansEl = document.getElementById('g-threats-today');
+        const fakesStoppedEl = document.getElementById('g-fakes-stopped');
+        const uptimeEl = document.getElementById('globe-node-status');
+
+        const totalScans = history.length;
+        const aiScans = history.filter(s => s.isAi).length;
+
+        if (dailyScansEl) dailyScansEl.textContent = totalScans > 0 ? (totalScans + ' Scans') : '0 Scans';
+        if (fakesStoppedEl) fakesStoppedEl.textContent = aiScans > 0 ? (aiScans + ' AI Threats') : '0 AI Threats';
+
+        // Check live edge connectivity
+        const startTime = performance.now();
+        const backendUrl = (localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+        fetch(`${backendUrl}/api/health`, { method: 'GET', mode: 'cors' })
+            .then(() => {
+                const latency = Math.round(performance.now() - startTime);
+                const latEl = document.querySelector('.globe-stats-strip .globe-stat:nth-child(4) .globe-stat-val');
+                if (latEl) latEl.textContent = `${latency}ms (Live)`;
+                if (uptimeEl) uptimeEl.innerHTML = '<span style="color:#10b981;">● BACKEND CONNECTED</span>';
+            })
+            .catch(() => {
+                const latEl = document.querySelector('.globe-stats-strip .globe-stat:nth-child(4) .globe-stat-val');
+                if (latEl) latEl.textContent = 'Active (Ready)';
+                if (uptimeEl) uptimeEl.innerHTML = '<span style="color:#06b6d4;">● SYSTEM READY</span>';
+            });
+
+        // Render stream items from real user scans
+        threatFeedList.innerHTML = '';
+
+        if (history.length === 0) {
+            threatFeedList.innerHTML = `
+                <div style="text-align: center; padding: 45px 20px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-satellite-dish" style="font-size: 38px; color: var(--accent-cyan); margin-bottom: 14px; opacity: 0.85; animation: pulse 2s infinite;"></i>
+                    <h4 style="font-size: 15px; color: var(--text-primary); margin-bottom: 6px; font-weight: 700;">Awaiting Live Telemetry</h4>
+                    <p style="font-size: 12px; margin-bottom: 18px; line-height: 1.4; max-width: 320px; margin-left: auto; margin-right: auto;">
+                        Your real-time scan activity will appear here automatically as you verify content.
+                    </p>
+                    <a href="#tools" class="btn-primary" style="display: inline-flex; font-size: 12px; padding: 9px 18px; text-decoration: none; border-radius: 10px;">
+                        <i class="fa-solid fa-shield-halved"></i> Run Your First Scan
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        history.slice(0, 6).forEach(scan => {
+            let icon = 'fa-file';
+            if (scan.type === 'Voice') icon = 'fa-microphone';
+            else if (scan.type === 'Image') icon = 'fa-image';
+            else if (scan.type === 'Text') icon = 'fa-file-lines';
+            else if (scan.type === 'Video') icon = 'fa-video';
+            else if (scan.type === 'URL') icon = 'fa-link';
+
+            const isAi = scan.isAi;
+            const conf = scan.confidence !== undefined ? Math.round(scan.confidence > 1 ? scan.confidence : scan.confidence * 100) : 99;
+            const scoreLabel = isAi ? `${conf}% Synthetic AI` : `${conf}% Verified Human`;
+            const dateStr = scan.date || 'Just now';
+
+            const el = document.createElement('div');
+            el.className = `threat-feed-item type-${(scan.type || 'text').toLowerCase()}`;
+            el.innerHTML = `
+                <div class="feed-item-top">
+                    <span class="feed-city"><i class="fa-solid ${icon}"></i> ${userLocation.city}</span>
+                    <span class="feed-time">${dateStr}</span>
+                </div>
+                <div class="feed-desc" style="font-weight:600; color:var(--text-primary);">${scan.fileName || 'Scanned Content'}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-family:var(--font-mono, monospace);">${scan.type ? scan.type.toUpperCase() : 'AI'} VERIFICATION</span>
+                    <span class="feed-score ${isAi ? '' : 'human'}">${scoreLabel}</span>
+                </div>
+            `;
+            threatFeedList.appendChild(el);
+        });
     }
 
-    // Populate initial items
-    for (let i = 0; i < 4; i++) {
-        pushThreatFeedItem();
-    }
-    setInterval(pushThreatFeedItem, 3200);
+    renderRealUserTelemetry();
+
+    // Listen for storage updates across tabs & scans
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'ai_detection_history') {
+            renderRealUserTelemetry();
+        }
+    });
+
+    window.addEventListener('authguard-scan', () => {
+        renderRealUserTelemetry();
+    });
+
+    setInterval(renderRealUserTelemetry, 2500);
 })();
 </script>
 </body>

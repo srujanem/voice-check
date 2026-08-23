@@ -22,6 +22,7 @@ class ScanHistory {
         
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(history));
         this.renderHistory();
+        window.dispatchEvent(new CustomEvent('authguard-scan', { detail: { type, fileName, isAi, confidence } }));
 
         // Push to Database if logged in
         const email = localStorage.getItem('user_email') || localStorage.getItem('user_id');
