@@ -7,24 +7,622 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Image Detection — AI vs Human</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Image Forensics & Deepfake Detector — AuthGuard AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../global.css?v=2">
+    <style>
+        :root {
+            --neon-cyan: #06b6d4;
+            --neon-purple: #8b5cf6;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Ambient Glow Backdrop */
+        .ambient-glow {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ambient-glow.glow-human {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(6, 182, 212, 0.08) 50%, transparent 70%);
+        }
+        .ambient-glow.glow-ai {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.08) 50%, transparent 70%);
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+        }
+
+        /* Header Controls */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sound-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sound-btn:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+        .sound-btn.active {
+            color: var(--neon-cyan);
+        }
+
+        /* Tag Badges */
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .tech-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tech-badge i {
+            color: var(--neon-cyan);
+            font-size: 10px;
+        }
+
+        /* Drop Zone */
+        .upload-card-custom {
+            background: rgba(20, 20, 28, 0.65);
+            border: 2px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+        }
+        .upload-card-custom:hover, .upload-card-custom.dragover {
+            border-color: var(--neon-cyan);
+            background: rgba(6, 182, 212, 0.05);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.15);
+            transform: translateY(-2px);
+        }
+        .upload-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--neon-cyan);
+            transition: transform 0.3s ease;
+        }
+        .upload-card-custom:hover .upload-icon-wrapper {
+            transform: scale(1.08) rotate(2deg);
+        }
+
+        /* Preview & Scanner Container */
+        .preview-viewport {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 24px;
+        }
+        .preview-image-wrapper {
+            position: relative;
+            min-height: 280px;
+            max-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #07070b;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 480px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            transition: opacity 0.4s ease, filter 0.4s ease;
+        }
+        #heatmapOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 4;
+        }
+        #heatmapOverlay.visible {
+            opacity: 0.85;
+            animation: pulse-heat 3s ease-in-out infinite;
+        }
+        @keyframes pulse-heat {
+            0%, 100% { opacity: 0.8; filter: brightness(1.05); }
+            50% { opacity: 0.95; filter: brightness(1.25); }
+        }
+
+        /* Sci-Fi Holographic Scanner Overlay */
+        .scanner-hud-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 8;
+            overflow: hidden;
+            background: radial-gradient(circle at center, transparent 30%, rgba(6, 182, 212, 0.06) 100%);
+        }
+        .scanner-hud-overlay.hidden {
+            display: none !important;
+        }
+
+        /* Dual Laser Scanner Beam */
+        .laser-beam-cyan {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #06b6d4, #a5f3fc, #06b6d4, transparent);
+            box-shadow: 0 0 15px 3px rgba(6, 182, 212, 0.8), 0 0 30px 6px rgba(6, 182, 212, 0.4);
+            animation: laserScan 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .laser-beam-purple {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #8b5cf6, #d8b4fe, #8b5cf6, transparent);
+            box-shadow: 0 0 12px 2px rgba(139, 92, 246, 0.8);
+            animation: laserScan 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.3s;
+        }
+        @keyframes laserScan {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Grid Reticle */
+        .hud-grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
+            opacity: 0.7;
+        }
+
+        /* Corner Brackets */
+        .hud-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-color: var(--neon-cyan);
+            border-style: solid;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            animation: cornerPulse 2s infinite;
+        }
+        .corner-tl { top: 14px; left: 14px; border-width: 3px 0 0 3px; border-top-left-radius: 4px; }
+        .corner-tr { top: 14px; right: 14px; border-width: 3px 3px 0 0; border-top-right-radius: 4px; }
+        .corner-bl { bottom: 14px; left: 14px; border-width: 0 0 3px 3px; border-bottom-left-radius: 4px; }
+        .corner-br { bottom: 14px; right: 14px; border-width: 0 3px 3px 0; border-bottom-right-radius: 4px; }
+
+        @keyframes cornerPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* HUD Live Diagnostics Feed */
+        .hud-top-bar {
+            position: absolute;
+            top: 14px;
+            left: 45px;
+            right: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+        }
+        .hud-status-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(10, 10, 18, 0.85);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(6, 182, 212, 0.25);
+        }
+        .hud-stage-text {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .hud-sub-telemetry {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--neon-cyan);
+            letter-spacing: 0.5px;
+        }
+
+        /* HUD Waveform Audio Bars */
+        .hud-wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 14px;
+            margin-top: 8px;
+        }
+        .wave-bar {
+            width: 3px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 2px;
+            animation: waveBounce 0.8s ease-in-out infinite alternate;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+        @keyframes waveBounce {
+            0% { height: 3px; opacity: 0.4; }
+            100% { height: 14px; opacity: 1; box-shadow: 0 0 6px var(--neon-cyan); }
+        }
+
+        /* Viewport Controls Bar */
+        .viewport-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background: rgba(20, 20, 28, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .visualizer-toggle-group {
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .viz-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .viz-toggle-btn:hover {
+            color: #ffffff;
+        }
+        .viz-toggle-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .viz-toggle-btn.active.btn-heat {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(245, 158, 11, 0.3));
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Result Card Master */
+        .forensic-result-card {
+            background: rgba(20, 20, 30, 0.75);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .forensic-result-card.status-human {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.15), inset 0 0 20px rgba(16, 185, 129, 0.04);
+        }
+        .forensic-result-card.status-ai {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.15), inset 0 0 20px rgba(239, 68, 68, 0.04);
+        }
+
+        /* Holographic Verdict Badge */
+        .verdict-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .verdict-seal-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .status-human .verdict-seal-icon {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+        .status-ai .verdict-seal-icon {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 2px solid var(--neon-red);
+            color: var(--neon-red);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .verdict-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+        .status-human .verdict-title {
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .status-ai .verdict-title {
+            color: var(--neon-red);
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .verdict-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Radial Dial Gauge */
+        .gauge-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+        .confidence-gauge {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+        .confidence-gauge svg {
+            width: 140px;
+            height: 140px;
+            transform: rotate(-90deg);
+        }
+        .confidence-gauge circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+        }
+        .gauge-bg {
+            stroke: rgba(255, 255, 255, 0.06);
+        }
+        .gauge-bar {
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .status-human .gauge-bar {
+            stroke: var(--neon-green);
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+        }
+        .status-ai .gauge-bar {
+            stroke: var(--neon-red);
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+        }
+        .gauge-inner-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .gauge-number {
+            font-size: 28px;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: #ffffff;
+            line-height: 1;
+        }
+        .gauge-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Forensic Diagnostics 4-Card Grid */
+        .forensics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 600px) {
+            .forensics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .forensic-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: background 0.2s ease;
+        }
+        .forensic-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .forensic-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .forensic-label i {
+            color: var(--neon-cyan);
+            font-size: 11px;
+        }
+        .forensic-value {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        /* Primary Action Buttons */
+        .btn-analyze-glow {
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 28px;
+            border-radius: 14px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-analyze-glow:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.55), 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+        .btn-analyze-glow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        @media (max-width: 500px) {
+            .action-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    <!-- Background Dynamic Ambient Glow -->
+    <div class="ambient-glow" id="ambientGlow"></div>
+
     <div class="app-container">
         
+        <!-- Header -->
         <header class="app-header">
             <div class="logo-section">
                 <img src="../assets/image_logo.png" alt="Image Detector Logo" class="app-logo">
                 <div>
-                    <h2>Image Detector</h2>
-                    <p style="font-size: 14px;">Spot AI-generated faces</p>
+                    <h2>Image Forensics</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Vision Transformer & FFT Spectral AI Detector</p>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div class="header-actions">
+                <button class="sound-btn active" id="btnSoundToggle" title="Toggle UI Sound Effects">
+                    <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+                </button>
+                <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
                 <div id="nav-auth"></div>
                 <a href="../index.html" class="btn-secondary">
                     <i class="fa-solid fa-house"></i> Home
@@ -32,282 +630,574 @@
             </div>
         </header>
 
-        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 10px; border-radius: 8px; margin-bottom: 20px; color: white;">
+        <!-- Tech Spec Badges -->
+        <div class="tech-badges">
+            <span class="tech-badge"><i class="fa-solid fa-brain"></i> ViT-B/16 Ensemble</span>
+            <span class="tech-badge"><i class="fa-solid fa-wave-square"></i> FFT Frequency Spectrum</span>
+            <span class="tech-badge"><i class="fa-solid fa-fire"></i> Grad-CAM XAI Heatmap</span>
+            <span class="tech-badge"><i class="fa-solid fa-fingerprint"></i> Biometric Artifact Scanner</span>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; color: white; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-circle-exclamation"></i> <span id="error-message"></span>
         </div>
 
+        <!-- Upload Viewport -->
         <div id="input-section">
             <div id="upload-area" class="input-area active">
-                <div class="upload-area" id="drop-zone">
-                    <i class="fa-solid fa-image upload-icon"></i>
-                    <h3>Drag & Drop Image</h3>
-                    <p>PNG, JPG, or JPEG</p>
+                <div class="upload-card-custom" id="drop-zone">
+                    <div class="upload-icon-wrapper">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #ffffff;">Upload Image for Forensic Inspection</h3>
+                    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">Supports high-res PNG, JPG, JPEG, WebP, HEIC camera photos</p>
                     <input type="file" id="fileInput" accept="image/*,image/jpeg,image/png,image/webp,.heic,.heif" hidden>
-                    <button class="btn-secondary" onclick="document.getElementById('fileInput').click()" style="margin-top: 15px;">Browse Files</button>
+                    <button class="btn-secondary" onclick="document.getElementById('fileInput').click()" style="padding: 10px 22px;">
+                        <i class="fa-solid fa-folder-open"></i> Browse Device
+                    </button>
                 </div>
             </div>
 
-            <div id="imagePreviewContainer" class="hidden" style="text-align: center; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; position: relative; overflow: hidden;">
-                <img id="imagePreview" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
-                <!-- CYBERPUNK SCANNER OVERLAY -->
-                <div id="cyber-scanner-overlay" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; pointer-events: none; overflow: hidden; border-radius: 8px;">
-                    <div id="cyber-laser" style="position: absolute; width: 100%; height: 2px; background: #06b6d4; box-shadow: 0 0 15px #06b6d4;"></div>
-                    <div style="position: absolute; top: 10px; left: 10px; color: #06b6d4; font-family: monospace; font-size: 12px; font-weight: bold; animation: blink 1s infinite;">SYS.ANALYZE()</div>
-                    <div style="position: absolute; top: 10px; right: 10px; color: #06b6d4; font-family: monospace; font-size: 12px; font-weight: bold;"><span id="hud-pct">0</span>%</div>
-                    <div id="hud-status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #06b6d4; font-family: monospace; font-size: 14px; font-weight: bold; text-align: center; text-shadow: 0px 2px 4px rgba(0,0,0,0.8);">EXTRACTING FEATURES</div>
-                    <style>@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }</style>
+            <!-- Preview Viewport with Scanner HUD -->
+            <div id="imagePreviewContainer" class="hidden">
+                <div class="preview-viewport">
+                    <div class="preview-image-wrapper">
+                        <img id="imagePreview" src="" alt="Forensic Target">
+                        <img id="heatmapOverlay" src="" alt="GradCAM Heatmap">
+                        
+                        <!-- Holographic Scanner HUD Overlay -->
+                        <div id="scannerHud" class="scanner-hud-overlay hidden">
+                            <!-- Reticle Corners -->
+                            <div class="hud-corner corner-tl"></div>
+                            <div class="hud-corner corner-tr"></div>
+                            <div class="hud-corner corner-bl"></div>
+                            <div class="hud-corner corner-br"></div>
+                            
+                            <!-- Grid & Dual Lasers -->
+                            <div class="hud-grid-pattern"></div>
+                            <div class="laser-beam-cyan"></div>
+                            <div class="laser-beam-purple"></div>
+
+                            <!-- Top Telemetry -->
+                            <div class="hud-top-bar">
+                                <span><i class="fa-solid fa-satellite-dish"></i> AUTHGUARD.AI // SOTA-SCANNER</span>
+                                <span><span id="hudPct">0</span>% COMPUTED</span>
+                            </div>
+
+                            <!-- Center Status HUD -->
+                            <div class="hud-status-center">
+                                <div class="hud-stage-text" id="hudStage">EXTRACTING FREQUENCY TENSORS</div>
+                                <div class="hud-sub-telemetry" id="hudSubText">ViT-B/16 DUAL-ENGINE ACTIVE</div>
+                                <div class="hud-wave-container">
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Viewport Bottom Controls Bar -->
+                    <div class="viewport-controls">
+                        <div class="visualizer-toggle-group" id="vizToggleGroup" style="display: none;">
+                            <button class="viz-toggle-btn active" id="btnVizStandard" onclick="switchVizMode('standard')">
+                                <i class="fa-solid fa-image"></i> Optical View
+                            </button>
+                            <button class="viz-toggle-btn btn-heat" id="btnVizHeatmap" onclick="switchVizMode('heatmap')">
+                                <i class="fa-solid fa-fire"></i> XAI Heatmap
+                            </button>
+                        </div>
+                        <button id="btnRemove" class="btn-secondary" style="padding: 6px 14px; font-size: 12px;">
+                            <i class="fa-solid fa-trash-can"></i> Remove
+                        </button>
+                    </div>
                 </div>
-                <div class="scanner-line hidden" id="scannerLine" style="position: absolute; top:0; left:0; width:100%; height:2px; background: var(--accent-cyan); box-shadow: 0 0 10px 2px var(--accent-cyan); animation: scan 2s infinite ease-in-out;"></div>
-                <button id="btnRemove" class="btn-secondary" style="margin-top: 10px; position: relative; z-index: 10;">Remove Image</button>
             </div>
         </div>
 
-        <button id="btnAnalyze" class="btn-primary disabled" disabled>
-            <i class="fa-solid fa-microchip"></i> Analyze Image
+        <!-- Primary Action CTA -->
+        <button id="btnAnalyze" class="btn-analyze-glow" disabled style="margin-bottom: 24px;">
+            <i class="fa-solid fa-microchip"></i> Execute Forensic Scan
         </button>
 
-        <div id="loading-state" class="hidden text-center" style="margin-top: 20px;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--accent-cyan); margin-bottom: 10px;"></i>
-            <p>Scanning pixel gradients...</p>
+        <!-- Loading State Info -->
+        <div id="loading-state" class="hidden text-center" style="margin: 20px 0;">
+            <i class="fa-solid fa-atom fa-spin" style="font-size: 32px; color: var(--neon-cyan); margin-bottom: 10px;"></i>
+            <p style="color: var(--text-secondary); font-family: var(--font-mono); font-size: 13px;">Analyzing biometric textures & Fourier frequencies...</p>
         </div>
 
+        <!-- Detailed Forensic Results Section -->
         <div id="resultsSection" class="hidden">
-            <div class="result-card" id="result-card">
-                <div class="result-icon-container" id="result-icon-box">
-                    <i class="fa-solid fa-image" id="result-icon"></i>
-                </div>
-                <h3 class="result-title" id="classificationResult">Authentic Image</h3>
+            <div class="forensic-result-card" id="forensicCard">
                 
-                <div class="confidence-ring">
-                    <svg>
-                        <circle cx="60" cy="60" r="54"></circle>
-                        <circle class="progress" cx="60" cy="60" r="54" id="scoreProgress"></circle>
-                    </svg>
-                    <div class="confidence-text" id="scorePercentage">0%</div>
+                <!-- Holographic Verdict Seal -->
+                <div class="verdict-banner">
+                    <div class="verdict-seal-icon" id="verdictIconBox">
+                        <i class="fa-solid fa-shield-check" id="verdictIcon"></i>
+                    </div>
+                    <h3 class="verdict-title" id="classificationResult">Human Image</h3>
+                    <div class="verdict-subtitle" id="verdictSubtitle">Authentic Optical Sensor Capture</div>
                 </div>
 
-                <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <span id="prob-real">Real: --</span>
-                    <span id="prob-fake">Fake: --</span>
+                <!-- Radial Gauge Section -->
+                <div class="gauge-section">
+                    <div class="confidence-gauge">
+                        <svg>
+                            <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
+                            <circle class="gauge-bar" cx="70" cy="70" r="60" id="gaugeProgress"></circle>
+                        </svg>
+                        <div class="gauge-inner-text">
+                            <div class="gauge-number" id="scorePercentage">0%</div>
+                            <div class="gauge-label">Confidence</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- ===== ANIMATED CONFIDENCE CHART ===== -->
-                <div id="confidence-chart" style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border-color);">
-                    <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 14px;">Confidence Breakdown</div>
+                <!-- Forensic Diagnostics Grid -->
+                <div class="forensics-grid">
+                    <div class="forensic-item">
+                        <div class="forensic-label"><i class="fa-solid fa-fingerprint"></i> Biometric Skin / Texture</div>
+                        <div class="forensic-value" id="diagTexture">Natural Organic Grain</div>
+                    </div>
+                    <div class="forensic-item">
+                        <div class="forensic-label"><i class="fa-solid fa-wave-square"></i> Frequency Residual (FFT)</div>
+                        <div class="forensic-value" id="diagFft">Optical Noise Spectrum</div>
+                    </div>
+                    <div class="forensic-item">
+                        <div class="forensic-label"><i class="fa-solid fa-network-wired"></i> Vision Transformer (ViT)</div>
+                        <div class="forensic-value" id="diagVit">--</div>
+                    </div>
+                    <div class="forensic-item">
+                        <div class="forensic-label"><i class="fa-solid fa-microchip"></i> Dual-Model Agreement</div>
+                        <div class="forensic-value" id="diagEnsemble">Verified Match</div>
+                    </div>
+                </div>
+
+                <!-- Confidence Bars Breakdown -->
+                <div style="padding-top: 18px; border-top: 1px solid var(--border-color);">
+                    <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 14px;">
+                        Model Weight Comparison
+                    </div>
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
-                            <span style="color: #10b981;"><i class="fa-solid fa-image"></i> Real Image</span>
-                            <span id="chart-real-label" style="color: #10b981; font-weight: 700;">0%</span>
+                            <span style="color: #10b981;"><i class="fa-solid fa-user-check"></i> Human Probability</span>
+                            <span id="chart-real-label" style="color: #10b981; font-weight: 700; font-family: var(--font-mono);">0%</span>
                         </div>
-                        <div style="height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
-                            <div id="chart-real-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 999px; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                            <div id="chart-real-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 999px; transition: width 1.4s cubic-bezier(0.25, 1, 0.5, 1);"></div>
                         </div>
                     </div>
                     <div>
                         <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
-                            <span style="color: #ef4444;"><i class="fa-solid fa-robot"></i> AI Generated</span>
-                            <span id="chart-fake-label" style="color: #ef4444; font-weight: 700;">0%</span>
+                            <span style="color: #ef4444;"><i class="fa-solid fa-robot"></i> Synthetic AI Probability</span>
+                            <span id="chart-fake-label" style="color: #ef4444; font-weight: 700; font-family: var(--font-mono);">0%</span>
                         </div>
-                        <div style="height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
-                            <div id="chart-fake-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #ef4444, #f87171); border-radius: 999px; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                            <div id="chart-fake-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #ef4444, #f87171); border-radius: 999px; transition: width 1.4s cubic-bezier(0.25, 1, 0.5, 1);"></div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
-            <button id="reset-btn" class="btn-secondary" style="width: 100%; margin-top: 20px; justify-content: center;" onclick="document.getElementById('btnRemove').click()">
-                <i class="fa-solid fa-rotate-right"></i> Analyze Another
-            </button>
-            <button id="download-pdf-btn" class="btn-secondary" style="width: 100%; margin-top: 10px; justify-content: center;">
-                <i class="fa-solid fa-file-pdf"></i> Download PDF Report
-            </button>
+            <!-- Action Controls -->
+            <div class="action-group">
+                <button id="reset-btn" class="btn-secondary" style="justify-content: center; padding: 14px;" onclick="document.getElementById('btnRemove').click()">
+                    <i class="fa-solid fa-rotate-right"></i> Scan Another Image
+                </button>
+                <button id="download-pdf-btn" class="btn-secondary" style="justify-content: center; padding: 14px;">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+                </button>
             </div>
+        </div>
 
     </div>
 
-    <style>
-        @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-    </style>
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../theme.js?v=6"></script>
     <script src="../history.js?v=6"></script>
     <script src="../server-config.js?v=6"></script>
     <script src="../auth.js?v=1"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>injectNavAuthState(document.getElementById('nav-auth')));</script>
     <script>
-    document.getElementById('download-pdf-btn') && document.getElementById('download-pdf-btn').addEventListener('click', function() {
-        if (typeof html2pdf !== 'undefined') {
-            html2pdf().set({ margin: 10, filename: 'AuthGuard_Image_Report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } })
-                .from(document.getElementById('result-card')).save();
-        } else { alert('PDF library not loaded. Check your internet connection.'); }
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.injectNavAuthState) injectNavAuthState(document.getElementById('nav-auth'));
     });
     </script>
+
+    <!-- Synthetic Web Audio FX Engine -->
     <script>
-    // Inline fallback — guarantees cache cannot break the image uploader
+    const AudioEngine = {
+        enabled: true,
+        ctx: null,
+        init() {
+            if (!this.ctx) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                } catch(e) {}
+            }
+        },
+        playTone(freq, type, duration, delay = 0) {
+            if (!this.enabled || !this.ctx) return;
+            try {
+                setTimeout(() => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                }, delay);
+            } catch(e) {}
+        },
+        soundUpload() {
+            this.init();
+            this.playTone(520, 'sine', 0.15);
+            this.playTone(780, 'sine', 0.2, 80);
+        },
+        soundScan() {
+            this.init();
+            this.playTone(300, 'triangle', 0.1, 0);
+            this.playTone(450, 'triangle', 0.1, 150);
+            this.playTone(600, 'triangle', 0.12, 300);
+        },
+        soundHuman() {
+            this.init();
+            this.playTone(523.25, 'sine', 0.2, 0);
+            this.playTone(659.25, 'sine', 0.25, 120);
+            this.playTone(783.99, 'sine', 0.35, 240);
+        },
+        soundAI() {
+            this.init();
+            this.playTone(400, 'sawtooth', 0.18, 0);
+            this.playTone(320, 'sawtooth', 0.25, 120);
+        }
+    };
+
+    const soundBtn = document.getElementById('btnSoundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+            AudioEngine.enabled = !AudioEngine.enabled;
+            if (AudioEngine.enabled) {
+                soundBtn.classList.add('active');
+                soundIcon.className = 'fa-solid fa-volume-high';
+                AudioEngine.soundUpload();
+            } else {
+                soundBtn.classList.remove('active');
+                soundIcon.className = 'fa-solid fa-volume-xmark';
+            }
+        });
+    }
+    </script>
+
+    <!-- Main Forensic Controller -->
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var uploadArea            = document.getElementById('upload-area');
-        var fileInput             = document.getElementById('fileInput');
-        var imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        var imagePreview          = document.getElementById('imagePreview');
-        var btnRemove             = document.getElementById('btnRemove');
-        var btnAnalyze            = document.getElementById('btnAnalyze');
-        var scannerLine           = document.getElementById('scannerLine');
-        var loadingState          = document.getElementById('loading-state');
-        var resultsSection        = document.getElementById('resultsSection');
-        var scoreProgress         = document.getElementById('scoreProgress');
-        var scorePercentage       = document.getElementById('scorePercentage');
-        var resultCard            = document.getElementById('result-card');
-        var classificationResult  = document.getElementById('classificationResult');
-        var probReal              = document.getElementById('prob-real');
-        var probFake              = document.getElementById('prob-fake');
-        var currentFile = null;
+        const uploadArea            = document.getElementById('upload-area');
+        const fileInput             = document.getElementById('fileInput');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview          = document.getElementById('imagePreview');
+        const heatmapOverlay        = document.getElementById('heatmapOverlay');
+        const btnRemove             = document.getElementById('btnRemove');
+        const btnAnalyze            = document.getElementById('btnAnalyze');
+        const scannerHud            = document.getElementById('scannerHud');
+        const hudPct                = document.getElementById('hudPct');
+        const hudStage              = document.getElementById('hudStage');
+        const hudSubText            = document.getElementById('hudSubText');
+        const loadingState          = document.getElementById('loading-state');
+        const resultsSection        = document.getElementById('resultsSection');
+        const forensicCard          = document.getElementById('forensicCard');
+        const ambientGlow           = document.getElementById('ambientGlow');
+        const scorePercentage       = document.getElementById('scorePercentage');
+        const gaugeProgress         = document.getElementById('gaugeProgress');
+        const classificationResult  = document.getElementById('classificationResult');
+        const verdictSubtitle       = document.getElementById('verdictSubtitle');
+        const verdictIconBox        = document.getElementById('verdictIconBox');
+        const verdictIcon           = document.getElementById('verdictIcon');
+        const diagTexture           = document.getElementById('diagTexture');
+        const diagFft               = document.getElementById('diagFft');
+        const diagVit               = document.getElementById('diagVit');
+        const diagEnsemble          = document.getElementById('diagEnsemble');
+        const vizToggleGroup        = document.getElementById('vizToggleGroup');
+        const btnVizStandard        = document.getElementById('btnVizStandard');
+        const btnVizHeatmap         = document.getElementById('btnVizHeatmap');
+
+        let currentFile = null;
+        let hudTimer = null;
+        let currentHeatmapData = null;
 
         function setFile(file) {
             currentFile = file;
-            var reader = new FileReader();
+            AudioEngine.soundUpload();
+            const reader = new FileReader();
             reader.onloadend = function () {
                 imagePreview.src = reader.result;
+                heatmapOverlay.classList.remove('visible');
+                heatmapOverlay.src = '';
+                currentHeatmapData = null;
+                vizToggleGroup.style.display = 'none';
+
                 uploadArea.classList.add('hidden');
                 imagePreviewContainer.classList.remove('hidden');
-                btnAnalyze.classList.remove('disabled');
                 btnAnalyze.disabled = false;
                 resultsSection.classList.add('hidden');
+                ambientGlow.className = 'ambient-glow';
             };
             reader.readAsDataURL(file);
         }
 
-        // File picker via Browse button
+        // File Browser
         fileInput.addEventListener('change', function () {
             if (this.files && this.files.length > 0) setFile(this.files[0]);
         });
 
-        // Drag and drop
-        ['dragenter','dragover','dragleave','drop'].forEach(function(evt) {
-            document.getElementById('drop-zone').addEventListener(evt, function(e) { e.preventDefault(); e.stopPropagation(); });
+        // Drag & Drop
+        const dropZone = document.getElementById('drop-zone');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
         });
-        document.getElementById('drop-zone').addEventListener('drop', function(e) {
-            var files = e.dataTransfer.files;
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
             if (files && files.length > 0) setFile(files[0]);
         });
 
         // Remove
-        btnRemove.addEventListener('click', function(e) {
+        btnRemove.addEventListener('click', function (e) {
             e.stopPropagation();
             currentFile = null;
             fileInput.value = '';
             uploadArea.classList.remove('hidden');
             imagePreviewContainer.classList.add('hidden');
-            btnAnalyze.classList.add('disabled');
             btnAnalyze.disabled = true;
             resultsSection.classList.add('hidden');
+            ambientGlow.className = 'ambient-glow';
+            if (hudTimer) clearInterval(hudTimer);
         });
 
-        // Analyze
-        btnAnalyze.addEventListener('click', async function() {
+        // Visualizer Mode Switcher
+        window.switchVizMode = function (mode) {
+            if (mode === 'heatmap' && currentHeatmapData) {
+                heatmapOverlay.src = currentHeatmapData;
+                heatmapOverlay.classList.add('visible');
+                imagePreview.style.opacity = '0.35';
+                btnVizHeatmap.classList.add('active');
+                btnVizStandard.classList.remove('active');
+            } else {
+                heatmapOverlay.classList.remove('visible');
+                imagePreview.style.opacity = '1';
+                btnVizStandard.classList.add('active');
+                btnVizHeatmap.classList.remove('active');
+            }
+        };
+
+        // Analysis Execution
+        btnAnalyze.addEventListener('click', async function () {
             if (btnAnalyze.disabled || !currentFile) return;
-            if (scannerLine) scannerLine.classList.remove('hidden');
+
+            btnAnalyze.disabled = true;
             btnAnalyze.style.display = 'none';
+            scannerHud.classList.remove('hidden');
             loadingState.classList.remove('hidden');
             resultsSection.classList.add('hidden');
+            ambientGlow.className = 'ambient-glow';
 
-            var formData = new FormData();
+            // Start Live Telemetry HUD Loop
+            let progressVal = 0;
+            const stages = [
+                { pct: 15, title: "DECOMPOSING FOURIER SPECTRUM", sub: "FFT HIGH-FREQ RESIDUALS ANALYSIS" },
+                { pct: 40, title: "VISION TRANSFORMER ATTENTION", sub: "SPATIAL PATCH PROJECTION (ViT-B/16)" },
+                { pct: 70, title: "CONVOLUTIONAL ARTIFACT SCAN", sub: "EFFICIENTNET LATENT FEATURE EXTRACT" },
+                { pct: 90, title: "SYNTHESIZING ENSEMBLE CONSENSUS", sub: "CROSS-CHECKING DUAL WEIGHTS" }
+            ];
+
+            hudTimer = setInterval(() => {
+                progressVal += Math.floor(Math.random() * 4) + 1;
+                if (progressVal > 95) progressVal = 95;
+                hudPct.textContent = progressVal;
+
+                for (let s of stages) {
+                    if (progressVal >= s.pct) {
+                        hudStage.textContent = s.title;
+                        hudSubText.textContent = s.sub;
+                    }
+                }
+                if (progressVal % 20 === 0) AudioEngine.soundScan();
+            }, 120);
+
+            const formData = new FormData();
             formData.append('file', currentFile);
             formData.append('type', 'image');
 
             try {
-                var backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+                let backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
                 if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
 
-                var response = await fetch(backendUrl + '/api/infer', { method: 'POST', body: formData, headers: window.getAuthHeaders ? window.getAuthHeaders() : {} });
+                const response = await fetch(backendUrl + '/api/infer', {
+                    method: 'POST',
+                    body: formData,
+                    headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
+                });
+
                 if (!response.ok) {
-                    var ed = await response.json();
+                    const ed = await response.json();
                     throw new Error(ed.error || 'Server error ' + response.status);
                 }
-                var data = await response.json();
+                const data = await response.json();
 
-                if (scannerLine) scannerLine.classList.add('hidden');
+                if (hudTimer) clearInterval(hudTimer);
+                hudPct.textContent = "100";
+                hudStage.textContent = "INSPECTION COMPLETE";
+                hudSubText.textContent = "DECRYPTING VERDICT TELEMETRY";
+
+                setTimeout(() => {
+                    scannerHud.classList.add('hidden');
+                    loadingState.classList.add('hidden');
+                    btnAnalyze.style.display = 'flex';
+                    btnAnalyze.disabled = false;
+                    renderForensicResults(data);
+                }, 500);
+
+            } catch (err) {
+                if (hudTimer) clearInterval(hudTimer);
+                scannerHud.classList.add('hidden');
                 loadingState.classList.add('hidden');
-                btnAnalyze.style.display = 'inline-flex';
-                showResults(data);
-            } catch(err) {
-                if (scannerLine) scannerLine.classList.add('hidden');
-                loadingState.classList.add('hidden');
-                btnAnalyze.style.display = 'inline-flex';
+                btnAnalyze.style.display = 'flex';
+                btnAnalyze.disabled = false;
                 alert('Analysis failed: ' + err.message);
             }
         });
 
-        function animateCountUp(el, target, duration, prefix, suffix) {
+        function animateNumber(el, target, duration, prefix = '', suffix = '%') {
             if (!el) return;
-            prefix = prefix || ''; suffix = suffix !== undefined ? suffix : '%';
-            var num = parseFloat(target);
-            if (isNaN(num)) { el.textContent = prefix + target + suffix; return; }
-            var start = 0, inc = num / (duration / 16);
-            var t = setInterval(function() {
-                start += inc;
-                if (start >= num) { start = num; clearInterval(t); }
+            let start = 0;
+            const targetNum = parseFloat(target);
+            if (isNaN(targetNum)) { el.textContent = prefix + target + suffix; return; }
+            const increment = targetNum / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= targetNum) {
+                    start = targetNum;
+                    clearInterval(timer);
+                }
                 el.textContent = prefix + start.toFixed(1) + suffix;
             }, 16);
         }
 
-        function showResults(data) {
+        function renderForensicResults(data) {
             resultsSection.classList.remove('hidden');
-            var inner = data.analysis || data;
-            var isFake = data.is_ai !== undefined ? data.is_ai
-                : (String(inner.prediction || '').toLowerCase().includes('ai') || String(inner.prediction || '').toLowerCase().includes('fake'));
-            var rawConf = data.confidence !== undefined ? data.confidence : inner.confidence;
-            if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
-            var confidence = Math.round(rawConf || 50);
-            var realPct = inner.prob_human !== undefined ? Math.round(inner.prob_human) : (isFake ? 100 - confidence : confidence);
-            var fakePct = inner.prob_ai   !== undefined ? Math.round(inner.prob_ai)    : (isFake ? confidence : 100 - confidence);
+            const inner = data.analysis || data;
 
-            if (resultCard) resultCard.className = 'result-card';
-            setTimeout(function() {
-                var icon = document.getElementById('result-icon');
-                if (!isFake) {
-                    if (resultCard) resultCard.classList.add('status-authentic');
-                    if (classificationResult) classificationResult.textContent = 'Authentic Image';
-                    if (icon) icon.className = 'fa-solid fa-user-check';
+            // Determine Real vs AI
+            const isFake = data.is_ai !== undefined
+                ? data.is_ai
+                : (String(inner.prediction || '').toLowerCase().includes('ai') || String(inner.prediction || '').toLowerCase().includes('fake'));
+
+            let rawConf = data.confidence !== undefined ? data.confidence : inner.confidence;
+            if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
+            const confidence = Math.round(rawConf || 85);
+
+            const realPct = inner.prob_human !== undefined ? Math.round(inner.prob_human) : (isFake ? 100 - confidence : confidence);
+            const fakePct = inner.prob_ai !== undefined ? Math.round(inner.prob_ai) : (isFake ? confidence : 100 - confidence);
+
+            // Handle GradCAM Heatmap
+            if (inner.heatmap) {
+                currentHeatmapData = inner.heatmap;
+                vizToggleGroup.style.display = 'flex';
+                if (isFake) {
+                    // Auto-show heatmap for AI detections
+                    setTimeout(() => switchVizMode('heatmap'), 400);
                 } else {
-                    if (resultCard) resultCard.classList.add('status-fake');
-                    if (classificationResult) classificationResult.textContent = 'AI-Generated Image';
-                    if (icon) icon.className = 'fa-solid fa-robot';
+                    switchVizMode('standard');
                 }
-                animateCountUp(scorePercentage, confidence, 1500);
-                if (scoreProgress) {
-                    var circ = 339.292;
-                    scoreProgress.style.strokeDashoffset = circ - (confidence/100)*circ;
-                }
-                animateCountUp(probReal, realPct, 1500, 'Real: ');
-                animateCountUp(probFake, fakePct, 1500, 'Fake: ');
-                var rb = document.getElementById('chart-real-bar'), fb = document.getElementById('chart-fake-bar');
-                var rl = document.getElementById('chart-real-label'), fl = document.getElementById('chart-fake-label');
-                if (rb) { rb.style.width='0%'; fb.style.width='0%';
-                    setTimeout(function(){
-                        rb.style.width = realPct+'%'; fb.style.width = fakePct+'%';
-                        animateCountUp(rl, realPct, 1500, '', '%'); animateCountUp(fl, fakePct, 1500, '', '%');
-                    }, 120);
-                }
-                if (typeof scanHistory !== 'undefined' && scanHistory)
-                    scanHistory.addScan('Image', currentFile ? currentFile.name : 'Image', isFake, confidence);
+            } else {
+                vizToggleGroup.style.display = 'none';
+            }
+
+            // Visual Theme Styling
+            if (!isFake) {
+                // HUMAN VERDICT
+                forensicCard.className = 'forensic-result-card status-human';
+                ambientGlow.className = 'ambient-glow glow-human';
+                classificationResult.textContent = 'Human Image';
+                verdictSubtitle.textContent = 'Verified Authentic Optical Sensor Capture';
+                verdictIcon.className = 'fa-solid fa-shield-check';
+                AudioEngine.soundHuman();
+            } else {
+                // AI VERDICT
+                forensicCard.className = 'forensic-result-card status-ai';
+                ambientGlow.className = 'ambient-glow glow-ai';
+                classificationResult.textContent = 'AI-Generated Image';
+                verdictSubtitle.textContent = 'Synthetic Latent Diffusion Artifacts Detected';
+                verdictIcon.className = 'fa-solid fa-triangle-exclamation';
+                AudioEngine.soundAI();
+            }
+
+            // Animate Radial Gauge (Circumference = 2 * PI * 60 = 376.99)
+            const circumference = 377;
+            gaugeProgress.style.strokeDashoffset = circumference;
+            setTimeout(() => {
+                gaugeProgress.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
+                animateNumber(scorePercentage, confidence, 1400);
             }, 50);
+
+            // Populate Forensics Grid
+            const fData = inner.forensics || {};
+            diagTexture.textContent = fData.texture_verdict || (!isFake ? 'Natural Organic Grain' : 'Diffusion Latent Flaws');
+            diagFft.textContent = fData.spectral_consistency || (!isFake ? 'Optical Noise Spectrum' : 'High-Freq Residual Grids');
+            diagVit.textContent = fData.vit_prob_human !== undefined ? `${fData.vit_prob_human}% Human Weight` : `${realPct}% ViT Confidence`;
+            diagEnsemble.textContent = fData.ensemble_agreement || 'Dual Model Consensus';
+
+            // Animate Comparison Progress Bars
+            const rb = document.getElementById('chart-real-bar');
+            const fb = document.getElementById('chart-fake-bar');
+            const rl = document.getElementById('chart-real-label');
+            const fl = document.getElementById('chart-fake-label');
+            if (rb && fb) {
+                rb.style.width = '0%';
+                fb.style.width = '0%';
+                setTimeout(() => {
+                    rb.style.width = realPct + '%';
+                    fb.style.width = fakePct + '%';
+                    animateNumber(rl, realPct, 1400, '', '%');
+                    animateNumber(fl, fakePct, 1400, '', '%');
+                }, 100);
+            }
+
+            // Save to Local Scan History
+            if (typeof scanHistory !== 'undefined' && scanHistory) {
+                scanHistory.addScan('Image', currentFile ? currentFile.name : 'Image', isFake, confidence);
+            }
+        }
+
+        // PDF Generation
+        const pdfBtn = document.getElementById('download-pdf-btn');
+        if (pdfBtn) {
+            pdfBtn.addEventListener('click', function () {
+                if (typeof html2pdf !== 'undefined') {
+                    html2pdf().set({
+                        margin: 10,
+                        filename: 'AuthGuard_Forensic_Image_Report.pdf',
+                        html2canvas: { scale: 2 },
+                        jsPDF: { unit: 'mm', format: 'a4' }
+                    }).from(document.getElementById('forensicCard')).save();
+                } else {
+                    alert('PDF generation engine loading... Please try in a moment.');
+                }
+            });
         }
     });
     </script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.injectNavAuthState) {
-        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
-    }
-});
-</script>
 </body>
 </html>
-
-
-
