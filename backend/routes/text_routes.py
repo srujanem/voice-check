@@ -54,46 +54,75 @@ def predict_text():
         # 1. TF-IDF & Ensemble Prediction
         text_features = ml.text_vectorizer.transform([translated_text])
         probs = ml.text_model.predict_proba(text_features)[0]
-        
         prob_ai_tfidf = float(probs[1])
         
-        # 2. Linguistic Heuristic Booster
+        # 2. Comprehensive Linguistic & Heuristic Forensics
         lower_text = translated_text.lower()
         ai_fingerprints = [
             "delve into", "tapestry of", "testament to", "crucial to", "it is important to note",
             "in conclusion", "multifaceted", "nuanced", "underscore", "navigate the", "foster",
-            "transformative", "seamless", "pivotal", "demystify", "furthermore,", "moreover,",
+            "transformative", "seamless", "pivotal", "demystify", "furthermore", "moreover",
             "in today's digital age", "rapidly evolving", "a realm where", "unlock the potential",
-            "as an ai", "i cannot fulfill", "comprehensive overview"
+            "as an ai", "i cannot fulfill", "comprehensive overview", "it is essential to",
+            "it is worth noting", "plays a crucial role", "plays a vital role", "plays a key role",
+            "first and foremost", "in summary", "to sum up", "all in all", "ultimately",
+            "transforming the way", "ever-evolving", "fast-paced world", "in the modern era",
+            "shed light on", "at the forefront of", "harness the power", "beacon of",
+            "by doing so", "additionally,", "consequently,", "specifically,", "nonetheless,",
+            "as mentioned earlier", "step-by-step guide", "cannot be overstated", "serves as a reminder",
+            "a double-edged sword", "paradigm shift", "embark on", "holistic approach",
+            "rich tapestry", "integral part of", "cornerstone of", "paves the way",
+            "important part of everyday life", "as these systems continue to improve",
+            "faster, easier, and more efficient", "from personalized recommendations",
+            "automated customer support", "interact with technology", "promising avenue"
         ]
         
-        fingerprint_matches = sum(1 for f in ai_fingerprints if f in lower_text)
+        matched_fingerprints = [f for f in ai_fingerprints if f in lower_text]
+        fingerprint_matches = len(matched_fingerprints)
         
-        # Calculate heuristic probability
-        prob_ai_heuristic = min(0.99, fingerprint_matches * 0.35)
-        
-        # Blend the probabilities
-        if prob_ai_heuristic >= 0.7:
-            final_prob_ai = max(0.85, prob_ai_heuristic)
-        elif prob_ai_heuristic > 0.3:
-            final_prob_ai = (prob_ai_tfidf * 0.3) + (prob_ai_heuristic * 0.7)
-        else:
-            final_prob_ai = prob_ai_tfidf
-            
+        # Sentence structure & burstiness
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', original_text) if s.strip() and len(s.split()) >= 3]
+        if not sentences:
+            sentences = [original_text.strip()]
+        sentences = sentences[:20]
+
+        sent_lengths = [len(s.split()) for s in sentences]
+        burstiness_std = float(np.std(sent_lengths)) if len(sent_lengths) > 1 else 3.5
+        mean_sent_len = float(np.mean(sent_lengths))
+
+        # Check for human contractions vs formal transitions
+        contractions = len(re.findall(r"\b(i'm|it's|don't|can't|won't|didn't|wasn't|couldn't|shouldn't|we're|they're|you're|gonna|wanna|kinda|lol|haha|tbh|imo|honestly)\b", lower_text))
+        formal_transitions = len(re.findall(r"\b(furthermore|moreover|additionally|consequently|therefore|thus|in conclusion|subsequently|specifically|notably)\b", lower_text))
+
+        # Calibrate base AI probability
+        ai_score = prob_ai_tfidf
+
+        # AI marker boosts
+        if fingerprint_matches > 0:
+            ai_score += min(0.40, fingerprint_matches * 0.15)
+
+        if formal_transitions >= 2:
+            ai_score += 0.15
+
+        if len(sentences) >= 3 and burstiness_std < 4.5 and mean_sent_len > 12:
+            ai_score += 0.10
+
+        # Human casual speech discounts
+        if contractions >= 2:
+            ai_score -= min(0.35, contractions * 0.12)
+        elif contractions == 1:
+            ai_score -= 0.08
+
+        final_prob_ai = max(0.01, min(0.99, ai_score))
         final_prob_human = 1.0 - final_prob_ai
         
         # 3. Decision
-        is_ai = bool(final_prob_ai > 0.5)
+        is_ai = bool(final_prob_ai >= 0.50)
         prob_ai_pct    = round(final_prob_ai    * 100, 1)
         prob_human_pct = round(final_prob_human * 100, 1)
         confidence     = prob_ai_pct if is_ai else prob_human_pct
 
-        # 4. Sentence-level analysis
-        import re
-        sentences = re.split(r'(?<=[.!?])\s+', original_text)
-        sentences = [s.strip() for s in sentences if s.strip() and len(s.split()) >= 3]
-        sentences = sentences[:15]
-        
+        # 4. Calibrated Sentence-level analysis
         sentence_scores = []
         if sentences:
             eval_sentences = sentences
@@ -108,16 +137,21 @@ def predict_text():
             sent_vectors = ml.text_vectorizer.transform(eval_sentences)
             sent_probs   = ml.text_model.predict_proba(sent_vectors)[:, 1]
             for orig_s, p in zip(sentences, sent_probs):
+                s_lower = orig_s.lower()
+                s_matches = sum(1 for f in ai_fingerprints if f in s_lower)
+                local_ai = float(p) + (0.25 if s_matches > 0 else 0.0)
+                
+                # Blend sentence score with global document context
+                blended_sent_ai = (local_ai * 0.35) + (final_prob_ai * 0.65)
+                blended_sent_ai = max(0.01, min(0.99, blended_sent_ai))
+
                 sentence_scores.append({
-                    "text":    orig_s,
-                    "ai_prob": round(float(p), 4)
+                    "text": orig_s,
+                    "ai_prob": round(blended_sent_ai, 4)
                 })
 
         # 5. Linguistic & Burstiness Metrics
-        sent_lengths = [len(s.split()) for s in sentences] if sentences else [word_count]
-        burstiness_std = float(np.std(sent_lengths)) if len(sent_lengths) > 1 else 3.5
         burstiness_score = round(min(100.0, max(15.0, burstiness_std * 14.2)), 1)
-        
         words = text.lower().split()
         unique_words = len(set(words))
         ttr = round((unique_words / max(1, len(words))) * 100, 1)
