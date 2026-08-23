@@ -2819,7 +2819,39 @@
 </div>
 </div>
 </nav>
-<!-- ===== PARTICLES NERVE NETWORK ===== -->
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-header">
+        <a href="index.html" class="mobile-drawer-logo">
+            <i class="fa-solid fa-shield-halved" style="color: #06b6d4;"></i>
+            <span>AuthGuard</span>
+        </a>
+        <button class="mobile-drawer-close" id="mobileDrawerClose" aria-label="Close menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="mobile-drawer-links">
+        <a href="#tools" class="mobile-drawer-link"><i class="fa-solid fa-layer-group"></i> 7 AI Detectors</a>
+        <a href="voice-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-microphone"></i> Voice Clone Detector</a>
+        <a href="deepfake-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-image"></i> Image Deepfake Detector</a>
+        <a href="video-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-video"></i> Video Deepfake Detector</a>
+        <a href="text-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-file-lines"></i> AI Text Detector</a>
+        <a href="url-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-link"></i> URL Web Scanner</a>
+        <a href="watermark-ui/index.html" class="mobile-drawer-link"><i class="fa-solid fa-fingerprint"></i> Provenance Watermark</a>
+        <a href="dashboard.html" class="mobile-drawer-link"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
+        <a href="#telemetry" class="mobile-drawer-link"><i class="fa-solid fa-earth-americas"></i> 3D Threat Map</a>
+        <a href="api-docs.html" class="mobile-drawer-link"><i class="fa-solid fa-code"></i> API Documentation</a>
+        <a href="blog.html" class="mobile-drawer-link"><i class="fa-solid fa-newspaper"></i> Cybersecurity Blog</a>
+        <a href="creator/profile.html" class="mobile-drawer-link"><i class="fa-solid fa-user-astronaut"></i> Creator Story</a>
+    </div>
+    <div class="mobile-drawer-footer">
+        <a href="login.html" class="btn-primary" style="justify-content: center; text-align: center; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign In / Get Started
+        </a>
+    </div>
+</div>
 
 <!-- Hero -->
 <section class="hero-section">
@@ -5269,6 +5301,35 @@ document.querySelectorAll('.faq-question').forEach(button => {
         renderer.render(scene, camera);
     }
     animatePipeline();
+})();
+</script>
+<script>
+// ===== MOBILE DRAWER CONTROLLER =====
+(function() {
+    const hamburger = document.getElementById('hamburgerMenu');
+    const drawer = document.getElementById('mobileDrawer');
+    const backdrop = document.getElementById('mobileDrawerBackdrop');
+    const closeBtn = document.getElementById('mobileDrawerClose');
+
+    function openDrawer() {
+        if (drawer) drawer.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        if (drawer) drawer.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (hamburger) hamburger.addEventListener('click', openDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.mobile-drawer-link').forEach(link => {
+        link.addEventListener('click', closeDrawer);
+    });
 })();
 </script>
 <script src="motion-3d.js?v=1"></script>
