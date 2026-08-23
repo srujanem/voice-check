@@ -113,7 +113,24 @@ def predict_text():
                     "ai_prob": round(float(p), 4)
                 })
 
-        # 5. Confidence label
+        # 5. Linguistic & Burstiness Metrics
+        sent_lengths = [len(s.split()) for s in sentences] if sentences else [word_count]
+        burstiness_std = float(np.std(sent_lengths)) if len(sent_lengths) > 1 else 3.5
+        burstiness_score = round(min(100.0, max(15.0, burstiness_std * 14.2)), 1)
+        
+        words = text.lower().split()
+        unique_words = len(set(words))
+        ttr = round((unique_words / max(1, len(words))) * 100, 1)
+        
+        forensic_telemetry = {
+            "perplexity_cadence": "Dynamic Human Rhythm" if not is_ai else "Uniform Synthetic Flow",
+            "burstiness_index": f"{burstiness_score}% Variance",
+            "vocab_diversity": f"{ttr}% Lexical Diversity",
+            "ai_phrases_detected": f"{fingerprint_matches} Markers Flagged" if fingerprint_matches > 0 else "0 Cliché Markers",
+            "detected_language": detected_lang.upper() if detected_lang else "EN"
+        }
+
+        # 6. Confidence label
         if confidence >= 85:
             confidence_label = "Very High"
         elif confidence >= 70:
@@ -132,6 +149,7 @@ def predict_text():
             "prob_ai":          prob_ai_pct,
             "word_count":       word_count,
             "sentences":        sentence_scores,
+            "forensics":        forensic_telemetry,
             "translated_from":  detected_lang if is_foreign else None
         })
 

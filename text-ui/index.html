@@ -7,203 +7,959 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>AI Text Detector — AuthGuard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AI Text Forensics & Perplexity Detector — AuthGuard AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../global.css?v=3">
     <style>
-        * { box-sizing: border-box; }
-        body { overflow-x: hidden; position: relative; min-height: 100vh; }
+        :root {
+            --neon-cyan: #06b6d4;
+            --neon-purple: #8b5cf6;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-        /* ── Animated Background Orbs ── */
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.18; pointer-events: none; z-index: 0; animation: floatOrb 12s ease-in-out infinite alternate; }
-        .bg-orb-1 { width: 500px; height: 500px; background: #06b6d4; top: -100px; left: -150px; animation-duration: 14s; }
-        .bg-orb-2 { width: 400px; height: 400px; background: #8b5cf6; bottom: -80px; right: -100px; animation-duration: 11s; animation-delay: -5s; }
-        @keyframes floatOrb { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px, 30px) scale(1.1); } }
+        body {
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #08090d;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #f1f5f9;
+        }
 
-        .app-container { position: relative; z-index: 1; }
+        /* Ambient Dynamic Backlight */
+        .ambient-glow {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 750px;
+            height: 750px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.04) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ambient-glow.glow-human {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(6, 182, 212, 0.06) 50%, transparent 70%);
+        }
+        .ambient-glow.glow-ai {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.06) 50%, transparent 70%);
+        }
 
-        /* ── Hero ── */
-        .hero-section { text-align: center; padding: 40px 20px 30px; animation: fadeInUp 0.6s ease both; }
-        .hero-icon-wrap { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)); border: 1px solid rgba(6,182,212,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(6,182,212,0.25); }
-        .hero-icon-wrap i { font-size: 32px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-title { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #06b6d4, #8b5cf6, #f1f5f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 10px; }
-        .hero-sub { color: #94a3b8; font-size: 1rem; margin: 0; }
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 840px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+        }
 
-        /* ── Glass Card ── */
-        .glass-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; margin-bottom: 20px; animation: fadeInUp 0.6s ease 0.15s both; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        /* Header Controls */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sound-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sound-btn:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        .sound-btn.active {
+            color: var(--neon-cyan);
+        }
 
-        /* ── Textarea ── */
-        #textInput { width: 100%; height: 220px; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.25); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 15px; resize: none; transition: border-color 0.3s, box-shadow 0.3s; outline: none; }
-        #textInput::placeholder { color: #64748b; }
-        #textInput:focus { border-color: #06b6d4; box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
-        .word-counter { text-align: right; font-size: 12px; color: #64748b; margin-top: 8px; }
+        /* Tech Spec Badges */
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 22px;
+            justify-content: center;
+        }
+        .tech-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-        /* ── Analyze Button ── */
-        #btnAnalyze { width: 100%; padding: 16px; border: none; border-radius: 12px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; animation: fadeInUp 0.6s ease 0.3s both; }
-        #btnAnalyze:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(6,182,212,0.4); }
-        #btnAnalyze:active { transform: translateY(0); }
+        /* Sample Prompts Row */
+        .sample-prompts-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .sample-prompt-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sample-prompt-btn:hover {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--neon-cyan);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
 
-        /* ── Loading ── */
-        #loading-state { margin-top: 24px; text-align: center; }
-        .loading-pulse { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #06b6d4, #8b5cf6); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes pulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(6,182,212,0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(6,182,212,0); } }
+        /* High-Tech Input Console */
+        .input-console-wrapper {
+            position: relative;
+            background: rgba(18, 19, 28, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .input-console-wrapper:focus-within {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 35px rgba(6, 182, 212, 0.18), inset 0 0 15px rgba(6, 182, 212, 0.03);
+        }
 
-        /* ── Results ── */
-        #resultsSection { animation: fadeInUp 0.5s ease both; }
-        .result-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
-        .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #06b6d4, #8b5cf6); }
-        .result-card.is-ai::before { background: linear-gradient(90deg, #ef4444, #f97316); }
+        #textInput {
+            width: 100%;
+            height: 220px;
+            background: transparent;
+            border: none;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            display: block;
+        }
+        #textInput::placeholder {
+            color: #475569;
+        }
 
-        /* ── XAI Sentences ── */
-        #xai-section { margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.15); border-radius: 10px; text-align: left; font-size: 14px; line-height: 1.7; max-height: 220px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.06); }
-        .ai-sentence { background: rgba(239,68,68,0.15); border-radius: 4px; padding: 2px 4px; color: #fca5a5; }
-        .human-sentence { background: rgba(16,185,129,0.15); border-radius: 4px; padding: 2px 4px; color: #6ee7b7; }
+        /* Console Telemetry Toolbar */
+        .console-telemetry-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #94a3b8;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .telemetry-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .telemetry-item strong {
+            color: var(--neon-cyan);
+            font-weight: 700;
+        }
 
-        /* ── Confidence Ring ── */
-        .confidence-ring { width: 120px; height: 120px; position: relative; margin: 20px auto; }
-        .confidence-ring svg { transform: rotate(-90deg); }
-        .confidence-ring circle { fill: none; stroke-width: 8; }
-        .confidence-ring circle:first-child { stroke: rgba(255,255,255,0.08); }
-        .confidence-ring circle.progress { stroke: #06b6d4; stroke-linecap: round; stroke-dasharray: 339.3; stroke-dashoffset: 339.3; transition: stroke-dashoffset 1.2s ease; }
-        .confidence-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; }
+        /* Holographic Text Scanner Laser HUD */
+        .text-scanner-hud {
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10;
+            background: rgba(10, 10, 18, 0.92);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .laser-beam-text {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #06b6d4, #a5f3fc, #06b6d4, transparent);
+            box-shadow: 0 0 16px 3px rgba(6, 182, 212, 0.9), 0 0 35px 6px rgba(6, 182, 212, 0.4);
+            animation: laserScanText 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes laserScanText {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
 
-        /* ── Prob bar ── */
-        .prob-row { display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .prob-item { text-align: center; }
-        .prob-item .label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
-        .prob-item .value { font-size: 18px; font-weight: 700; }
+        .hud-stage-center {
+            text-align: center;
+            padding: 16px 24px;
+            background: rgba(15, 15, 25, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+        .hud-stage-title {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .hud-stage-sub {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--neon-cyan);
+        }
 
-        /* ── Buttons ── */
-        #reset-btn, #download-pdf-btn { width: 100%; margin-top: 12px; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        #reset-btn:hover, #download-pdf-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+        /* Waveform Animation */
+        .wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 14px;
+            margin-top: 10px;
+        }
+        .wave-bar {
+            width: 3px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 2px;
+            animation: waveBounce 0.8s ease-in-out infinite alternate;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+        @keyframes waveBounce {
+            0% { height: 3px; opacity: 0.4; }
+            100% { height: 14px; opacity: 1; box-shadow: 0 0 6px var(--neon-cyan); }
+        }
 
-        /* ── Error ── */
-        #error-alert { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; color: #fca5a5; }
+        /* Primary Action Button */
+        .btn-analyze-glow {
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 28px;
+            border-radius: 16px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 25px rgba(6, 182, 212, 0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 24px;
+        }
+        .btn-analyze-glow:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(6, 182, 212, 0.55), 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        .btn-analyze-glow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
-        /* ── Animations ── */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        /* ===================================================
+           REVOLUTIONARY FORENSIC RESULT DECK
+           =================================================== */
+        .forensic-result-card {
+            background: rgba(18, 19, 28, 0.85);
+            border-radius: 28px;
+            padding: 36px 28px;
+            backdrop-filter: blur(28px);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        }
 
-        /* ── Mobile ── */
+        .forensic-result-card.status-human {
+            border-color: rgba(16, 185, 129, 0.45);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.15), inset 0 0 30px rgba(16, 185, 129, 0.05);
+        }
+        .forensic-result-card.status-ai {
+            border-color: rgba(239, 68, 68, 0.45);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.15), inset 0 0 30px rgba(239, 68, 68, 0.05);
+        }
+
+        /* Hero Verdict Header */
+        .verdict-hero-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* High-Tech Animated Emblem */
+        .emblem-wrapper {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        .emblem-outer-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            animation: rotateEmblem 20s linear infinite;
+        }
+        .status-human .emblem-outer-ring {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        .status-ai .emblem-outer-ring {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+        @keyframes rotateEmblem {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .emblem-center-core {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .status-human .emblem-center-core {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+        }
+        .status-ai .emblem-center-core {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, rgba(239, 68, 68, 0.1) 100%);
+            border: 2px solid var(--neon-red);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+        }
+        .emblem-center-core svg {
+            width: 32px;
+            height: 32px;
+        }
+        .status-human .emblem-center-core svg { fill: var(--neon-green); }
+        .status-ai .emblem-center-core svg { fill: var(--neon-red); }
+
+        /* Security Pill Badge */
+        .verdict-pill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+        .status-human .verdict-pill-tag {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+        .status-ai .verdict-pill-tag {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .verdict-title {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+        .status-human .verdict-title {
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+        }
+        .status-ai .verdict-title {
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        }
+
+        .verdict-meta-summary {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 2-Column Gauge & Probability Deck */
+        .verdict-metrics-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 24px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
         @media (max-width: 600px) {
-            .hero-title { font-size: 1.5rem; }
-            .hero-icon-wrap { width: 64px; height: 64px; }
-            .hero-icon-wrap i { font-size: 24px; }
-            #textInput { height: 180px; font-size: 16px; }
-            .app-container { padding: 12px; }
+            .verdict-metrics-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        /* Radial Dial Gauge */
+        .confidence-gauge-box {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+        }
+        .confidence-gauge-box svg {
+            width: 140px;
+            height: 140px;
+            transform: rotate(-90deg);
+        }
+        .confidence-gauge-box circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+        }
+        .gauge-bg { stroke: rgba(255, 255, 255, 0.06); }
+        .gauge-bar {
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .status-human .gauge-bar {
+            stroke: var(--neon-green);
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8));
+        }
+        .status-ai .gauge-bar {
+            stroke: var(--neon-red);
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8));
+        }
+        .gauge-inner-info {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .gauge-val-number {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: var(--font-mono);
+            color: #ffffff;
+            line-height: 1;
+        }
+        .gauge-val-caption {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Dual Model Probability Cards */
+        .probability-deck {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .prob-card-item {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+        .prob-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .prob-bar-container {
+            height: 7px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .prob-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            transition: width 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .fill-human { background: linear-gradient(90deg, #10b981, #34d399); box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        .fill-ai { background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+
+        /* Sleek Forensic Telemetry Table */
+        .forensic-table {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .forensic-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .forensic-row:hover {
+            background: rgba(255, 255, 255, 0.045);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .forensic-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .forensic-icon-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-cyan);
+            font-size: 14px;
+        }
+        .forensic-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .forensic-subtitle {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .forensic-pill {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+        .forensic-pill.pill-good {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+        .forensic-pill.pill-alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+
+        /* Interactive Sentence Thermal Heatmap Deck */
+        .sentence-heatmap-deck {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .heatmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .heatmap-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .heatmap-filter-group {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px;
+            border-radius: 10px;
+        }
+        .heatmap-filter-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .heatmap-filter-btn.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .sentences-stream-view {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .sent-item {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .sent-item.sent-human {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 3px solid var(--neon-green);
+            color: #d1fae5;
+        }
+        .sent-item.sent-ai {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--neon-red);
+            color: #fee2e2;
+        }
+        .sent-tag {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .sent-human .sent-tag {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+        .sent-ai .sent-tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 500px) {
+            .action-group { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-orb bg-orb-1"></div>
-    <div class="bg-orb bg-orb-2"></div>
-
-    <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
+    <!-- Ambient Dynamic Glow -->
+    <div class="ambient-glow" id="ambientGlow"></div>
 
     <div class="app-container">
+        
+        <!-- Header -->
         <header class="app-header">
             <div class="logo-section">
-                <i class="fa-solid fa-file-lines app-logo" style="font-size:28px;color:var(--accent-cyan);"></i>
+                <i class="fa-solid fa-file-lines app-logo" style="font-size:28px;color:var(--neon-cyan);"></i>
                 <div>
-                    <h2>Text Detector</h2>
-                    <p style="font-size:13px;color:#94a3b8;">Identify ChatGPT &amp; AI writing</p>
+                    <h2>AI Text Forensics</h2>
+                    <p style="font-size:13px;color:#94a3b8;">Perplexity, Burstiness & N-Gram Syntax Analysis</p>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div class="header-actions">
+                <button class="sound-btn active" id="btnSoundToggle" title="Toggle Sound FX">
+                    <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+                </button>
+                <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
                 <div id="nav-auth"></div>
-                <a href="../index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="../index.html" class="btn-secondary">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
             </div>
         </header>
 
-        <!-- Hero -->
-        <div class="hero-section">
-            <div class="hero-icon-wrap"><i class="fa-solid fa-file-lines"></i></div>
-            <h1 class="hero-title">AI Text Detector</h1>
-            <p class="hero-sub">Instantly detect ChatGPT, Claude &amp; AI-written content with sentence-level analysis</p>
+        <!-- Tech Spec Badges -->
+        <div class="tech-badges">
+            <span class="tech-badge"><i class="fa-solid fa-brain" style="color: var(--neon-cyan);"></i> TF-IDF & Perplexity Matrix</span>
+            <span class="tech-badge"><i class="fa-solid fa-chart-line" style="color: var(--neon-cyan);"></i> Sentence Cadence Burstiness</span>
+            <span class="tech-badge"><i class="fa-solid fa-globe" style="color: var(--neon-cyan);"></i> Multi-Lingual Auto-Translate</span>
         </div>
 
-        <div id="error-alert" class="hidden">
+        <!-- Quick 1-Click Test Prompts -->
+        <div class="sample-prompts-bar">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Quick Test:</span>
+            <button class="sample-prompt-btn" onclick="loadSamplePrompt('ai')">
+                <i class="fa-solid fa-robot" style="color: var(--neon-red);"></i> Sample ChatGPT Essay
+            </button>
+            <button class="sample-prompt-btn" onclick="loadSamplePrompt('human')">
+                <i class="fa-solid fa-user-pen" style="color: var(--neon-green);"></i> Sample Human Article
+            </button>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="error-alert" class="hidden" style="background: var(--color-error); padding: 12px 16px; border-radius: 14px; margin-bottom: 20px; color: white; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-circle-exclamation"></i> <span id="error-message"></span>
         </div>
 
-        <div id="input-section">
-            <div class="glass-card">
-                <textarea id="textInput" placeholder="Paste your essay, article, or text here to check if it was written by AI..."></textarea>
-                <div class="word-counter"><span id="word-count-live">0</span> words</div>
+        <!-- Input Console Viewport -->
+        <div class="input-console-wrapper" id="consoleWrapper">
+            <textarea id="textInput" placeholder="Paste your essay, article, email, or report here to analyze writing cadence and detect AI generation..."></textarea>
+            
+            <!-- Live Holographic Scanner HUD Overlay -->
+            <div id="scannerHud" class="text-scanner-hud hidden">
+                <div class="laser-beam-text"></div>
+                <div class="hud-stage-center">
+                    <div class="hud-stage-title" id="hudStage">DECOMPOSING PERPLEXITY TENSORS</div>
+                    <div class="hud-stage-sub" id="hudSub">N-GRAM CADENCE ANALYSIS ACTIVE</div>
+                    <div class="wave-container">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Console Stats -->
+            <div class="console-telemetry-bar">
+                <div class="telemetry-item"><i class="fa-solid fa-font"></i> <strong id="wordCountLive">0</strong> Words</div>
+                <div class="telemetry-item"><i class="fa-solid fa-clock"></i> <strong id="readTimeLive">0</strong>s Read Time</div>
+                <div class="telemetry-item"><i class="fa-solid fa-microchip"></i> <strong id="charCountLive">0</strong> Chars</div>
             </div>
         </div>
 
-        <button id="btnAnalyze">
-            <i class="fa-solid fa-magnifying-glass"></i> Analyze Text
+        <!-- Primary Action CTA -->
+        <button id="btnAnalyze" class="btn-analyze-glow">
+            <i class="fa-solid fa-magnifying-glass-chart"></i> Execute Deep Text Analysis
         </button>
 
-        <div id="loading-state" class="hidden">
-            <div class="loading-pulse"><i class="fa-solid fa-brain" style="font-size:24px;color:#fff;"></i></div>
-            <p style="color:#94a3b8;margin:0;">Analyzing writing patterns...</p>
-        </div>
-
-        <div id="resultsSection" class="hidden" style="margin-top:24px;">
-            <div class="result-card" id="result-card">
-                <div class="result-icon-container" id="result-icon-box">
-                    <i class="fa-solid fa-file-signature" id="result-icon"></i>
-                </div>
-                <h3 class="result-title" id="classificationResult">Human Written</h3>
-
-                <div class="confidence-ring">
-                    <svg viewBox="0 0 120 120" width="120" height="120">
-                        <circle cx="60" cy="60" r="54"></circle>
-                        <circle class="progress" cx="60" cy="60" r="54" id="scoreProgress"></circle>
-                    </svg>
-                    <div class="confidence-text" id="scorePercentage">0%</div>
-                </div>
-
-                <div class="prob-row">
-                    <div class="prob-item">
-                        <div class="label"><i class="fa-solid fa-user"></i> Human</div>
-                        <div class="value" id="prob-human" style="color:#10b981;">--</div>
+        <!-- Detailed Forensic Results Section -->
+        <div id="resultsSection" class="hidden">
+            <div class="forensic-result-card" id="forensicCard">
+                
+                <!-- Hero Verdict Header -->
+                <div class="verdict-hero-wrapper">
+                    <div class="emblem-wrapper">
+                        <div class="emblem-outer-ring"></div>
+                        <div class="emblem-center-core" id="emblemCore">
+                            <!-- Inlined Vector SVGs -->
+                            <svg id="svgShieldHuman" viewBox="0 0 24 24">
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                            </svg>
+                            <svg id="svgAlertAi" class="hidden" viewBox="0 0 24 24">
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="prob-item">
-                        <div class="label"><i class="fa-solid fa-robot"></i> AI</div>
-                        <div class="value" id="prob-ai" style="color:#ef4444;">--</div>
+
+                    <div class="verdict-pill-tag" id="verdictPill">
+                        <span id="verdictPillDot">●</span> <span id="verdictPillText">VERIFIED HUMAN</span>
+                    </div>
+                    
+                    <h3 class="verdict-title" id="classificationResult">Human Written</h3>
+                    <div class="verdict-meta-summary" id="verdictSubtitle">
+                        <i class="fa-solid fa-circle-check" style="color: var(--neon-green);"></i> Dynamic Organic Rhythm • Zero AI Markers
                     </div>
                 </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
-                    <span style="font-size:13px;color:#94a3b8;"><i class="fa-solid fa-align-left"></i> Words: <strong id="word-count">--</strong></span>
-                    <span id="confidence-label" style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(99,102,241,0.15);color:var(--accent-cyan);">--</span>
+                <!-- 2-Column Gauge & Probability Breakdown -->
+                <div class="verdict-metrics-row">
+                    <div class="confidence-gauge-box">
+                        <svg>
+                            <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
+                            <circle class="gauge-bar" cx="70" cy="70" r="60" id="gaugeProgress"></circle>
+                        </svg>
+                        <div class="gauge-inner-info">
+                            <div class="gauge-val-number" id="scorePercentage">0%</div>
+                            <div class="gauge-val-caption">Confidence</div>
+                        </div>
+                    </div>
+
+                    <div class="probability-deck">
+                        <div class="prob-card-item">
+                            <div class="prob-card-header">
+                                <span style="color: #10b981;"><i class="fa-solid fa-user-pen"></i> Human Probability</span>
+                                <span id="chart-real-label" style="color: #10b981; font-family: var(--font-mono); font-weight: 700;">0%</span>
+                            </div>
+                            <div class="prob-bar-container">
+                                <div id="chart-real-bar" class="prob-bar-fill fill-human"></div>
+                            </div>
+                        </div>
+
+                        <div class="prob-card-item">
+                            <div class="prob-card-header">
+                                <span style="color: #ef4444;"><i class="fa-solid fa-robot"></i> Synthetic AI Probability</span>
+                                <span id="chart-fake-label" style="color: #ef4444; font-family: var(--font-mono); font-weight: 700;">0%</span>
+                            </div>
+                            <div class="prob-bar-container">
+                                <div id="chart-fake-bar" class="prob-bar-fill fill-ai"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="xai-section" style="margin-top:20px;"></div>
+                <!-- Sleek Forensic Telemetry Table -->
+                <div class="forensic-table">
+                    <div class="forensic-row">
+                        <div class="forensic-meta">
+                            <div class="forensic-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <div class="forensic-title">Perplexity & Cadence Flow</div>
+                                <div class="forensic-subtitle">Sentence length & entropy variance</div>
+                            </div>
+                        </div>
+                        <div class="forensic-pill pill-good" id="diagPerplexity">Dynamic Human Rhythm</div>
+                    </div>
+
+                    <div class="forensic-row">
+                        <div class="forensic-meta">
+                            <div class="forensic-icon-box"><i class="fa-solid fa-wave-square"></i></div>
+                            <div>
+                                <div class="forensic-title">Burstiness Index</div>
+                                <div class="forensic-subtitle">Syntactic variance score</div>
+                            </div>
+                        </div>
+                        <div class="forensic-pill pill-good" id="diagBurstiness">78.4% Variance</div>
+                    </div>
+
+                    <div class="forensic-row">
+                        <div class="forensic-meta">
+                            <div class="forensic-icon-box"><i class="fa-solid fa-book-open"></i></div>
+                            <div>
+                                <div class="forensic-title">Lexical Diversity</div>
+                                <div class="forensic-subtitle">Unique vocabulary distribution</div>
+                            </div>
+                        </div>
+                        <div class="forensic-pill pill-good" id="diagDiversity">82.5% Lexicon</div>
+                    </div>
+
+                    <div class="forensic-row">
+                        <div class="forensic-meta">
+                            <div class="forensic-icon-box"><i class="fa-solid fa-fingerprint"></i></div>
+                            <div>
+                                <div class="forensic-title">AI Linguistic Cliché Markers</div>
+                                <div class="forensic-subtitle">Common GPT & Claude signatures</div>
+                            </div>
+                        </div>
+                        <div class="forensic-pill pill-good" id="diagPhrases">0 Cliché Markers</div>
+                    </div>
+                </div>
+
+                <!-- Sentence-Level Forensic Heatmap Deck -->
+                <div class="sentence-heatmap-deck" id="heatmapDeck">
+                    <div class="heatmap-header">
+                        <div class="heatmap-title">
+                            <i class="fa-solid fa-fire" style="color: var(--neon-cyan);"></i> Sentence-by-Sentence Forensic Heatmap
+                        </div>
+                        <div class="heatmap-filter-group">
+                            <button class="heatmap-filter-btn active" id="btnFilterAll" onclick="filterSentences('all')">All</button>
+                            <button class="heatmap-filter-btn" id="btnFilterAi" onclick="filterSentences('ai')">AI Flagged</button>
+                            <button class="heatmap-filter-btn" id="btnFilterHuman" onclick="filterSentences('human')">Human</button>
+                        </div>
+                    </div>
+                    <div class="sentences-stream-view" id="sentencesContainer"></div>
+                </div>
+
             </div>
 
-            <button id="reset-btn"><i class="fa-solid fa-rotate-right"></i> Check New Text</button>
-            <button id="download-pdf-btn"><i class="fa-solid fa-file-pdf"></i> Download PDF Report</button>
+            <!-- Action Controls -->
+            <div class="action-group">
+                <button id="reset-btn" class="btn-secondary" style="justify-content: center; padding: 14px;">
+                    <i class="fa-solid fa-rotate-right"></i> Check New Text
+                </button>
+                <button id="download-pdf-btn" class="btn-secondary" style="justify-content: center; padding: 14px;">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+                </button>
+            </div>
         </div>
+
     </div>
 
-    <script>
-        // Live word counter
-        const ta = document.getElementById('textInput');
-        const wc = document.getElementById('word-count-live');
-        if (ta && wc) ta.addEventListener('input', () => {
-            const words = ta.value.trim().split(/\s+/).filter(Boolean).length;
-            wc.textContent = words;
-        });
-    </script>
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../theme.js?v=6"></script>
     <script src="../history.js?v=6"></script>
     <script src="../server-config.js?v=6"></script>
     <script src="../auth.js?v=1"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>injectNavAuthState(document.getElementById('nav-auth')));</script>
-    <script src="script.js?v=6"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.injectNavAuthState) {
-        window.injectNavAuthState(document.getElementById('nav-auth-mobile'));
-    }
-});
-</script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.injectNavAuthState) injectNavAuthState(document.getElementById('nav-auth'));
+    });
+    </script>
+    <script src="script.js?v=7"></script>
 </body>
 </html>
-

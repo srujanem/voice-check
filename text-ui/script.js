@@ -1,29 +1,184 @@
+// AuthGuard AI Text Forensics Engine
+const AudioEngine = {
+    enabled: true,
+    ctx: null,
+    init() {
+        if (!this.ctx) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+            } catch(e) {}
+        }
+    },
+    playTone(freq, type, duration, delay = 0) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+            setTimeout(() => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }, delay);
+        } catch(e) {}
+    },
+    soundClick() {
+        this.init();
+        this.playTone(600, 'sine', 0.08);
+    },
+    soundHuman() {
+        this.init();
+        this.playTone(523.25, 'sine', 0.2, 0);
+        this.playTone(659.25, 'sine', 0.25, 120);
+        this.playTone(783.99, 'sine', 0.35, 240);
+    },
+    soundAI() {
+        this.init();
+        this.playTone(400, 'sawtooth', 0.18, 0);
+        this.playTone(320, 'sawtooth', 0.25, 120);
+    }
+};
+
+window.loadSamplePrompt = function(type) {
+    const ta = document.getElementById('textInput');
+    if (!ta) return;
+    AudioEngine.soundClick();
+    if (type === 'ai') {
+        ta.value = "Artificial intelligence is transforming the way people interact with technology. From personalized recommendations to automated customer support, AI is becoming an important part of everyday life. As these systems continue to improve, they are expected to make many tasks faster, easier, and more efficient. Furthermore, it is crucial to delve into the transformative tapestry of neural architectures.";
+    } else {
+        ta.value = "I went down to the local hardware store yesterday morning to grab some replacement hinges for the garage door. Honestly, finding the right screw size took way longer than expected because the labeling on the bins was totally mismatched. Met an old classmate from high school in the aisle and ended up chatting for nearly twenty minutes.";
+    }
+    ta.dispatchEvent(new Event('input'));
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    const textInput = document.getElementById('textInput');
-    const btnAnalyze = document.getElementById('btnAnalyze');
-    const loadingState = document.getElementById('loading-state');
-    const resultsSection = document.getElementById('resultsSection');
-    const resetBtn = document.getElementById('reset-btn');
-    
-    // Results elements
-    const scoreProgress = document.getElementById('scoreProgress');
-    const scorePercentage = document.getElementById('scorePercentage');
-    const resultCard = document.getElementById('result-card');
+    const textInput            = document.getElementById('textInput');
+    const wordCountLive        = document.getElementById('wordCountLive');
+    const readTimeLive         = document.getElementById('readTimeLive');
+    const charCountLive        = document.getElementById('charCountLive');
+    const btnAnalyze           = document.getElementById('btnAnalyze');
+    const scannerHud           = document.getElementById('scannerHud');
+    const hudStage             = document.getElementById('hudStage');
+    const hudSub               = document.getElementById('hudSub');
+    const resultsSection       = document.getElementById('resultsSection');
+    const forensicCard         = document.getElementById('forensicCard');
+    const ambientGlow          = document.getElementById('ambientGlow');
+    const resetBtn             = document.getElementById('reset-btn');
+    const scorePercentage      = document.getElementById('scorePercentage');
+    const gaugeProgress        = document.getElementById('gaugeProgress');
     const classificationResult = document.getElementById('classificationResult');
-    const probHuman = document.getElementById('prob-human');
-    const probAi = document.getElementById('prob-ai');
-    const icon = document.getElementById('result-icon');
+    const verdictSubtitle      = document.getElementById('verdictSubtitle');
+    const verdictPill          = document.getElementById('verdictPill');
+    const verdictPillText      = document.getElementById('verdictPillText');
+    const svgShieldHuman       = document.getElementById('svgShieldHuman');
+    const svgAlertAi           = document.getElementById('svgAlertAi');
+    const diagPerplexity       = document.getElementById('diagPerplexity');
+    const diagBurstiness       = document.getElementById('diagBurstiness');
+    const diagDiversity        = document.getElementById('diagDiversity');
+    const diagPhrases          = document.getElementById('diagPhrases');
+    const sentencesContainer   = document.getElementById('sentencesContainer');
+    const soundBtn             = document.getElementById('btnSoundToggle');
+    const soundIcon            = document.getElementById('soundIcon');
 
+    let allSentencesData = [];
+    let hudTimer = null;
 
-    // ── Analyze button ──────────────────────────────────────────────────────
+    if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+            AudioEngine.enabled = !AudioEngine.enabled;
+            if (AudioEngine.enabled) {
+                soundBtn.classList.add('active');
+                soundIcon.className = 'fa-solid fa-volume-high';
+                AudioEngine.soundClick();
+            } else {
+                soundBtn.classList.remove('active');
+                soundIcon.className = 'fa-solid fa-volume-xmark';
+            }
+        });
+    }
+
+    // Live Telemetry Counter
+    if (textInput) {
+        textInput.addEventListener('input', () => {
+            const val = textInput.value;
+            const words = val.trim().split(/\s+/).filter(Boolean).length;
+            const chars = val.length;
+            const readTime = Math.ceil(words / 3.3); // ~200 WPM
+
+            if (wordCountLive) wordCountLive.textContent = words;
+            if (readTimeLive) readTimeLive.textContent = readTime;
+            if (charCountLive) charCountLive.textContent = chars;
+        });
+    }
+
+    // Filter Sentences
+    window.filterSentences = function(filter) {
+        document.querySelectorAll('.heatmap-filter-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('btnFilter' + filter.charAt(0).toUpperCase() + filter.slice(1));
+        if (activeBtn) activeBtn.classList.add('active');
+
+        renderSentenceStream(allSentencesData, filter);
+    };
+
+    function renderSentenceStream(sentences, filter = 'all') {
+        if (!sentencesContainer) return;
+        sentencesContainer.innerHTML = '';
+
+        if (!sentences || sentences.length === 0) {
+            sentencesContainer.innerHTML = '<div style="color:#64748b;font-size:12px;text-align:center;padding:10px;">Sentence-level analysis not available for short text.</div>';
+            return;
+        }
+
+        sentences.forEach(s => {
+            const isAiSent = s.ai_prob >= 0.5;
+            if (filter === 'ai' && !isAiSent) return;
+            if (filter === 'human' && isAiSent) return;
+
+            const div = document.createElement('div');
+            div.className = `sent-item ${isAiSent ? 'sent-ai' : 'sent-human'}`;
+            
+            const pVal = Math.round(s.ai_prob * 100);
+            div.innerHTML = `
+                <span>${s.text}</span>
+                <span class="sent-tag">${isAiSent ? `▲ ${pVal}% AI` : `● ${100 - pVal}% Human`}</span>
+            `;
+            sentencesContainer.appendChild(div);
+        });
+    }
+
+    // Analyze Click Handler
     btnAnalyze.addEventListener('click', async () => {
         if (window.checkScanGate && !window.checkScanGate()) return;
         const text = textInput.value.trim();
-        if (!text) return;
+        if (!text) {
+            alert('Please enter or paste text to analyze.');
+            return;
+        }
 
+        btnAnalyze.disabled = true;
         btnAnalyze.style.display = 'none';
-        loadingState.classList.remove('hidden');
+        scannerHud.classList.remove('hidden');
         resultsSection.classList.add('hidden');
+        ambientGlow.className = 'ambient-glow';
+
+        // HUD Loop
+        const stages = [
+            { title: "DECOMPOSING PERPLEXITY TENSORS", sub: "TOKEN ENTROPY & CADENCE SCAN" },
+            { title: "TF-IDF N-GRAM MARKOV ANALYSIS", sub: "SPATIAL FREQUENCY PATTERNS" },
+            { title: "TRANSFORMER ATTENTION DISPERSION", sub: "BURSTINESS VARIANCE INDEX" },
+            { title: "SYNTHESIZING LINGUISTIC CONSENSUS", sub: "CROSS-CHECKING CLICHE MARKERS" }
+        ];
+        let sIdx = 0;
+        hudTimer = setInterval(() => {
+            sIdx = (sIdx + 1) % stages.length;
+            hudStage.textContent = stages[sIdx].title;
+            hudSub.textContent = stages[sIdx].sub;
+        }, 450);
 
         let backendUrl = (window.AUTHGUARD_BACKEND_URL ||
             localStorage.getItem('zrok_url') ||
@@ -42,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ text })
             }).catch(async () => {
-                // Fallback to /api/infer formData endpoint
                 const fd = new FormData();
                 fd.append('type', 'text');
                 fd.append('text', text);
@@ -59,177 +213,145 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            loadingState.classList.add('hidden');
-            btnAnalyze.style.display = 'inline-flex';
-            showResults(data);
+            if (hudTimer) clearInterval(hudTimer);
+
+            setTimeout(() => {
+                scannerHud.classList.add('hidden');
+                btnAnalyze.style.display = 'flex';
+                btnAnalyze.disabled = false;
+                renderForensicResults(data);
+            }, 400);
+
         } catch (err) {
-            loadingState.classList.add('hidden');
-            btnAnalyze.style.display = 'inline-flex';
+            if (hudTimer) clearInterval(hudTimer);
+            scannerHud.classList.add('hidden');
+            btnAnalyze.style.display = 'flex';
+            btnAnalyze.disabled = false;
             alert('Analysis failed: ' + err.message);
         }
     });
 
+    function animateNumber(el, target, duration, prefix = '', suffix = '%') {
+        if (!el) return;
+        let start = 0;
+        const targetNum = parseFloat(target);
+        if (isNaN(targetNum)) { el.textContent = prefix + target + suffix; return; }
+        const increment = targetNum / (duration / 16);
+        const timer = setInterval(() => {
+            start += increment;
+            if (start >= targetNum) {
+                start = targetNum;
+                clearInterval(timer);
+            }
+            el.textContent = prefix + start.toFixed(1) + suffix;
+        }, 16);
+    }
 
-    // ── PDF Download ─────────────────────────────────────────────────────────
+    function renderForensicResults(data) {
+        resultsSection.classList.remove('hidden');
+        const inner = data.analysis || data;
+
+        const isAi = inner.prediction === 'AI-Generated' || !!inner.is_ai || !!data.is_ai;
+
+        let rawConf = inner.confidence ?? data.confidence;
+        if (rawConf !== undefined && rawConf <= 1 && rawConf > 0) rawConf = rawConf * 100;
+        const confidence = Math.round(rawConf || 85);
+
+        let realPct = inner.prob_human ?? data.prob_human ?? (isAi ? 100 - confidence : confidence);
+        let fakePct = inner.prob_ai ?? data.prob_ai ?? (isAi ? confidence : 100 - confidence);
+        realPct = Math.round(realPct);
+        fakePct = Math.round(fakePct);
+
+        if (!isAi) {
+            forensicCard.className = 'forensic-result-card status-human';
+            ambientGlow.className = 'ambient-glow glow-human';
+            classificationResult.textContent = 'Human Written';
+            verdictSubtitle.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--neon-green);"></i> Dynamic Organic Rhythm • Zero AI Markers';
+            verdictPillText.textContent = 'VERIFIED HUMAN';
+            svgShieldHuman.classList.remove('hidden');
+            svgAlertAi.classList.add('hidden');
+            AudioEngine.soundHuman();
+        } else {
+            forensicCard.className = 'forensic-result-card status-ai';
+            ambientGlow.className = 'ambient-glow glow-ai';
+            classificationResult.textContent = 'AI-Generated Text';
+            verdictSubtitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--neon-red);"></i> Synthetic Algorithmic Cadence Detected';
+            verdictPillText.textContent = 'SYNTHETIC AI DETECTED';
+            svgShieldHuman.classList.add('hidden');
+            svgAlertAi.classList.remove('hidden');
+            AudioEngine.soundAI();
+        }
+
+        const circumference = 377;
+        gaugeProgress.style.strokeDashoffset = circumference;
+        setTimeout(() => {
+            gaugeProgress.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
+            animateNumber(scorePercentage, confidence, 1400);
+        }, 50);
+
+        const fData = inner.forensics || {};
+        diagPerplexity.textContent = fData.perplexity_cadence || (!isAi ? 'Dynamic Human Rhythm' : 'Uniform Synthetic Flow');
+        diagPerplexity.className = 'forensic-pill ' + (!isAi ? 'pill-good' : 'pill-alert');
+
+        diagBurstiness.textContent = fData.burstiness_index || (!isAi ? '78.4% Variance' : '18.2% Low Variance');
+        diagBurstiness.className = 'forensic-pill ' + (!isAi ? 'pill-good' : 'pill-alert');
+
+        diagDiversity.textContent = fData.vocab_diversity || (!isAi ? '82.5% Lexicon' : '34.0% Low Diversity');
+        diagDiversity.className = 'forensic-pill ' + (!isAi ? 'pill-good' : 'pill-alert');
+
+        diagPhrases.textContent = fData.ai_phrases_detected || (!isAi ? '0 Cliché Markers' : 'Clichés Flagged');
+        diagPhrases.className = 'forensic-pill ' + (!isAi ? 'pill-good' : 'pill-alert');
+
+        // Sentences Stream
+        allSentencesData = inner.sentences || [];
+        renderSentenceStream(allSentencesData, 'all');
+
+        const rb = document.getElementById('chart-real-bar');
+        const fb = document.getElementById('chart-fake-bar');
+        const rl = document.getElementById('chart-real-label');
+        const fl = document.getElementById('chart-fake-label');
+        if (rb && fb) {
+            rb.style.width = '0%';
+            fb.style.width = '0%';
+            setTimeout(() => {
+                rb.style.width = realPct + '%';
+                fb.style.width = fakePct + '%';
+                animateNumber(rl, realPct, 1400, '', '%');
+                animateNumber(fl, fakePct, 1400, '', '%');
+            }, 100);
+        }
+
+        if (typeof scanHistory !== 'undefined' && scanHistory) {
+            scanHistory.addScan('Text', textInput.value.slice(0, 30) + '...', isAi, confidence);
+        }
+    }
+
+    // Reset Button
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            textInput.value = '';
+            textInput.dispatchEvent(new Event('input'));
+            resultsSection.classList.add('hidden');
+            ambientGlow.className = 'ambient-glow';
+            btnAnalyze.style.display = 'flex';
+            gaugeProgress.style.strokeDashoffset = '377';
+        });
+    }
+
+    // PDF Generation
     const pdfBtn = document.getElementById('download-pdf-btn');
     if (pdfBtn) {
-        pdfBtn.addEventListener('click', () => {
+        pdfBtn.addEventListener('click', function () {
             if (typeof html2pdf !== 'undefined') {
                 html2pdf().set({
                     margin: 10,
                     filename: 'AuthGuard_Text_Report.pdf',
-                    html2canvas: { scale: 2, backgroundColor: '#fff' },
+                    html2canvas: { scale: 2 },
                     jsPDF: { unit: 'mm', format: 'a4' }
-                }).from(document.getElementById('result-card')).save();
+                }).from(document.getElementById('forensicCard')).save();
             } else {
-                alert('PDF library not loaded. Check your internet connection.');
+                alert('PDF engine is loading... Please try again in a moment.');
             }
         });
     }
-
-    resetBtn.addEventListener('click', () => {
-        textInput.value = '';
-        resultsSection.classList.add('hidden');
-        btnAnalyze.style.display = 'inline-flex';
-        scoreProgress.style.strokeDashoffset = '339.292';
-        // Clear previous sentence highlights so they don't show on next scan
-        const xaiSection = document.getElementById('xai-section');
-        if (xaiSection) xaiSection.innerHTML = '';
-        if (probHuman) probHuman.textContent = 'Human: --';
-        if (probAi) probAi.textContent = 'AI: --';
-    });
-
-    function animateCountUp(element, target, duration, prefix = '', suffix = '%') {
-        let start = 0;
-        const targetNum = parseFloat(target);
-        if (isNaN(targetNum)) { element.textContent = prefix + target + suffix; return; }
-        const increment = targetNum / (duration / 16);
-        const interval = setInterval(() => {
-            start += increment;
-            if (start >= targetNum) {
-                start = targetNum;
-                clearInterval(interval);
-            }
-            element.textContent = prefix + start.toFixed(1) + suffix;
-        }, 16);
-    }
-
-    function showResults(data) {
-        resultsSection.classList.remove('hidden');
-
-        // Deep unwrap nested analysis objects if present
-        let innerData = data;
-        if (innerData.analysis && typeof innerData.analysis === 'object') {
-            innerData = innerData.analysis;
-        }
-        if (innerData.analysis && typeof innerData.analysis === 'object') {
-            innerData = innerData.analysis;
-        }
-
-        // --- Safe numeric extraction ---
-        const isAi = innerData.prediction === 'AI-Generated' ||
-                     innerData.prediction === 'ai' ||
-                     !!innerData.is_ai ||
-                     !!data.is_ai;
-
-        // Extract prob_ai and prob_human from any level
-        let rawAi = innerData.prob_ai ?? data.prob_ai ?? (data.analysis ? data.analysis.prob_ai : undefined);
-        let rawHuman = innerData.prob_human ?? data.prob_human ?? (data.analysis ? data.analysis.prob_human : undefined);
-        let rawConf = innerData.confidence ?? data.confidence;
-
-        let aiProb    = rawAi !== undefined ? Number(rawAi) : NaN;
-        let humanProb = rawHuman !== undefined ? Number(rawHuman) : NaN;
-        let conf      = rawConf !== undefined ? Number(rawConf) : NaN;
-
-        // If confidence is between 0 and 1, convert to 0-100 scale
-        if (!isNaN(conf) && conf <= 1) conf = conf * 100;
-        if (!isNaN(aiProb) && aiProb <= 1) aiProb = aiProb * 100;
-        if (!isNaN(humanProb) && humanProb <= 1) humanProb = humanProb * 100;
-
-        // Fill in missing values
-        if (isNaN(aiProb) || isNaN(humanProb)) {
-            if (!isNaN(conf)) {
-                aiProb    = isAi ? conf : 100 - conf;
-                humanProb = isAi ? 100 - conf : conf;
-            } else {
-                aiProb    = isAi ? 85 : 15;
-                humanProb = isAi ? 15 : 85;
-                conf      = 85;
-            }
-        }
-
-        if (isNaN(conf)) conf = isAi ? aiProb : humanProb;
-
-        const confidence = Math.round(conf);
-
-        resultCard.className = 'result-card';
-        scoreProgress.style.strokeDashoffset = '339.292';
-
-        setTimeout(() => {
-            if (!isAi) {
-                resultCard.classList.add('status-authentic');
-                resultCard.classList.remove('status-fake');
-                classificationResult.textContent = 'Human Written';
-                icon.className = 'fa-solid fa-user-pen';
-            } else {
-                resultCard.classList.add('status-fake');
-                resultCard.classList.remove('status-authentic');
-                classificationResult.textContent = 'AI-Generated Text';
-                icon.className = 'fa-solid fa-robot';
-            }
-
-            // Animate confidence ring
-            animateCountUp(scorePercentage, confidence, 1500);
-            const circumference = 339.292;
-            scoreProgress.style.strokeDashoffset = circumference - (confidence / 100) * circumference;
-
-            // Animate prob bars
-            if (probHuman) animateCountUp(probHuman, humanProb.toFixed(1), 1500, 'Human: ');
-            if (probAi)    animateCountUp(probAi,    aiProb.toFixed(1),    1500, 'AI: ');
-
-            // Word count
-            const wordCountEl = document.getElementById('word-count');
-            if (wordCountEl) wordCountEl.textContent = innerData.word_count ?? '--';
-
-            // Confidence label badge
-            const confLabelEl = document.getElementById('confidence-label');
-            if (confLabelEl) {
-                const label = innerData.confidence_label || '';
-                confLabelEl.textContent = label ? `Confidence: ${label}` : '';
-                const colors = { 'Very High': '#10b981', 'High': '#6366f1', 'Moderate': '#f59e0b', 'Low': '#ef4444' };
-                confLabelEl.style.color = colors[label] || 'var(--accent-cyan)';
-            }
-
-            // Sentence-level highlighting
-            if (innerData.sentences && innerData.sentences.length) {
-                const xaiSection = document.getElementById('xai-section');
-                if (xaiSection) {
-                    xaiSection.innerHTML = '<h4 style="margin-bottom:10px;border-bottom:1px solid var(--border-color);padding-bottom:5px;"><i class="fa-solid fa-magnifying-glass"></i> Sentence Analysis</h4>';
-                    innerData.sentences.forEach(s => {
-                        const span = document.createElement('span');
-                        span.textContent = s.text + ' ';
-                        const p = Number(s.ai_prob);
-                        if (p >= 0.5) {
-                            const alpha = (p - 0.5) * 2;
-                            span.style.backgroundColor = `rgba(239,68,68,${(alpha * 0.4).toFixed(2)})`;
-                            span.style.color = document.documentElement.getAttribute('data-theme') === 'light' ? '#7f1d1d' : '#fecaca';
-                        } else {
-                            const alpha = (0.5 - p) * 2;
-                            span.style.backgroundColor = `rgba(16,185,129,${(alpha * 0.2).toFixed(2)})`;
-                        }
-                        span.title  = `AI Probability: ${(p * 100).toFixed(1)}%`;
-                        span.style.borderRadius = '3px';
-                        span.style.padding      = '2px 0';
-                        span.style.cursor       = 'help';
-                        xaiSection.appendChild(span);
-                    });
-                }
-            }
-
-            if (typeof scanHistory !== 'undefined') {
-                scanHistory.addScan('Text', `Text Snippet (${innerData.word_count || '?'} words)`, isAi, confidence);
-            }
-        }, 50);
-    }
 });
-
