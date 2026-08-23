@@ -25,15 +25,32 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingState.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
-        const backendUrl = (window.AUTHGUARD_BACKEND_URL ||
+        let backendUrl = (window.AUTHGUARD_BACKEND_URL ||
             localStorage.getItem('zrok_url') ||
             'http://localhost:5000').replace(/\/$/, '');
+        if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
+
+        const authHeaders = window.getAuthHeaders ? window.getAuthHeaders() : {};
 
         try {
-            const response = await fetch(`${backendUrl}/predict_text`, {
+            let response = await fetch(`${backendUrl}/predict_text`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                    ...authHeaders
+                },
                 body: JSON.stringify({ text })
+            }).catch(async () => {
+                // Fallback to /api/infer formData endpoint
+                const fd = new FormData();
+                fd.append('type', 'text');
+                fd.append('text', text);
+                return await fetch(`${backendUrl}/api/infer`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: fd
+                });
             });
 
             if (!response.ok) {

@@ -10,11 +10,11 @@ import PyPDF2
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     app = Flask(__name__, static_folder=base_dir, static_url_path='/')
-    # ── CORS: allow all origins for API routes (tighten in production) ──
-    CORS(app, resources={r"/api/*": {
+    # ── CORS: allow all origins for all routes ──
+    CORS(app, resources={r"/*": {
         "origins": "*",
-        "allow_headers": ["Content-Type", "Authorization"],
-        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "ngrok-skip-browser-warning", "X-Requested-With", "Accept"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "max_age": 600
     }})
     app.config.from_object(Config)
