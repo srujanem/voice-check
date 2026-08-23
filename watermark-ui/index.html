@@ -224,11 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const viewport = document.getElementById('seal3DViewport');
             if (!canvas || !viewport || typeof THREE === 'undefined') return;
 
-            if (isInitialized) return;
+            if (isInitialized) {
+                resizeRenderer();
+                return;
+            }
             isInitialized = true;
 
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+            const initialW = viewport.clientWidth || 600;
+            const initialH = viewport.clientHeight || 230;
+            camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 100);
             camera.position.set(0, 0, 5.2);
 
             renderer = new THREE.WebGLRenderer({
@@ -237,17 +242,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 antialias: true,
                 powerPreference: "high-performance"
             });
-            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+            renderer.setSize(initialW, initialH);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+            function resizeRenderer() {
+                if (!viewport || !renderer || !camera) return;
+                const w = viewport.clientWidth || viewport.parentElement?.clientWidth || 600;
+                const h = viewport.clientHeight || 230;
+                if (w > 0 && h > 0) {
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(w, h);
+                }
+            }
+
             // Lighting
-            const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+            const ambient = new THREE.AmbientLight(0xffffff, 1.0);
             scene.add(ambient);
-            const pLight1 = new THREE.PointLight(0x10b981, 4, 20);
-            pLight1.position.set(4, 4, 4);
+            const pLight1 = new THREE.PointLight(0x10b981, 4, 30);
+            pLight1.position.set(5, 5, 5);
             scene.add(pLight1);
-            const pLight2 = new THREE.PointLight(0x06b6d4, 3, 20);
-            pLight2.position.set(-4, -4, 4);
+            const pLight2 = new THREE.PointLight(0x06b6d4, 3, 30);
+            pLight2.position.set(-5, -5, 5);
             scene.add(pLight2);
 
             // Seal Master Group
@@ -279,10 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Etched Center Shield Emblem
             const shieldGeo = new THREE.OctahedronGeometry(0.65, 0);
-            const shieldMat = new THREE.MeshStandardMaterial({
+            const shieldMat = new THREE.MeshBasicMaterial({
                 color: 0x34d399,
-                wireframe: true,
-                emissive: 0x34d399
+                wireframe: true
             });
             const shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
             shieldMesh.position.z = 0.15;
@@ -301,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
             const pMat = new THREE.PointsMaterial({
                 color: 0x06b6d4,
-                size: 0.08,
+                size: 0.09,
                 transparent: true,
                 opacity: 0.9,
                 blending: THREE.AdditiveBlending
@@ -332,19 +347,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Resize
-            window.addEventListener('resize', () => {
-                if (!viewport || !renderer || !camera) return;
-                camera.aspect = viewport.clientWidth / viewport.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-            });
+            window.addEventListener('resize', resizeRenderer);
 
             // Animation Loop
             let clock = new THREE.Clock();
             function animateSeal() {
                 requestAnimationFrame(animateSeal);
                 const elapsed = clock.getElapsedTime();
+
+                if (viewport.clientWidth > 10 && Math.abs(camera.aspect - (viewport.clientWidth / viewport.clientHeight)) > 0.05) {
+                    resizeRenderer();
+                }
 
                 if (!isDragging) {
                     targetRotY += 0.012;
@@ -356,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 sealGroup.rotation.x = currentRotX;
                 sealGroup.rotation.y = currentRotY;
 
-                // Counter-rotate shield & particle ring
                 shieldMesh.rotation.z = elapsed * 0.8;
                 pCloud.rotation.z = -elapsed * 0.5;
 

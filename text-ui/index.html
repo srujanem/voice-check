@@ -989,7 +989,9 @@
         if (!canvas || !viewport || typeof THREE === 'undefined') return;
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        const initialW = viewport.clientWidth || 600;
+        const initialH = viewport.clientHeight || 260;
+        const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 100);
         camera.position.set(0, 0, 6.5);
 
         const renderer = new THREE.WebGLRenderer({
@@ -998,14 +1000,25 @@
             antialias: true,
             powerPreference: "high-performance"
         });
-        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setSize(initialW, initialH);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+        function resizeRenderer() {
+            if (!viewport || !renderer || !camera) return;
+            const w = viewport.clientWidth || viewport.parentElement?.clientWidth || 600;
+            const h = viewport.clientHeight || 260;
+            if (w > 0 && h > 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+        }
+
         // Lighting
-        const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+        const ambient = new THREE.AmbientLight(0xffffff, 1.0);
         scene.add(ambient);
-        const pLight = new THREE.PointLight(0x8b5cf6, 3, 20);
-        pLight.position.set(4, 4, 4);
+        const pLight = new THREE.PointLight(0x8b5cf6, 4, 30);
+        pLight.position.set(5, 5, 5);
         scene.add(pLight);
 
         // Vector Cluster Group
@@ -1018,13 +1031,13 @@
             color: 0x8b5cf6,
             wireframe: true,
             transparent: true,
-            opacity: 0.15
+            opacity: 0.25
         });
         const cageMesh = new THREE.Mesh(cageGeo, cageMat);
         vectorGroup.add(cageMesh);
 
         // 2. Center Centroid Marker
-        const centerGeo = new THREE.OctahedronGeometry(0.18, 0);
+        const centerGeo = new THREE.OctahedronGeometry(0.22, 0);
         const centerMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true });
         const centerMesh = new THREE.Mesh(centerGeo, centerMat);
         vectorGroup.add(centerMesh);
@@ -1032,15 +1045,12 @@
         // 3. Sentence Vector Nodes & Connecting Filaments
         const nodeSpheres = [];
         const nodeConnections = [];
-        const nodeGeo = new THREE.SphereGeometry(0.08, 12, 12);
+        const nodeGeo = new THREE.SphereGeometry(0.09, 12, 12);
         const totalNodes = 32;
 
-        const greenMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, metalness: 0.8, emissive: 0x064e3b });
-        const redMat   = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.8, emissive: 0x7f1d1d });
-        const cyanMat  = new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.3, metalness: 0.8, emissive: 0x083344 });
-
         for (let i = 0; i < totalNodes; i++) {
-            const mesh = new THREE.Mesh(nodeGeo, cyanMat.clone());
+            const mat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+            const mesh = new THREE.Mesh(nodeGeo, mat);
             mesh._basePos = new THREE.Vector3(
                 (Math.random() - 0.5) * 3.4,
                 (Math.random() - 0.5) * 2.4,
@@ -1048,15 +1058,15 @@
             );
             mesh.position.copy(mesh._basePos);
             vectorGroup.add(mesh);
-            nodeSpheres.push(mesh);
+            nodeSpheres.push({ mesh, mat });
         }
 
         // Connecting Filaments
-        const lineMat = new THREE.LineBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.25 });
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.35 });
         for (let i = 0; i < 18; i++) {
             const idx1 = Math.floor(Math.random() * totalNodes);
             const idx2 = (idx1 + 1 + Math.floor(Math.random() * 5)) % totalNodes;
-            const geo = new THREE.BufferGeometry().setFromPoints([nodeSpheres[idx1].position, nodeSpheres[idx2].position]);
+            const geo = new THREE.BufferGeometry().setFromPoints([nodeSpheres[idx1].mesh.position, nodeSpheres[idx2].mesh.position]);
             const line = new THREE.Line(geo, lineMat);
             vectorGroup.add(line);
             nodeConnections.push({ line, idx1, idx2 });
@@ -1085,6 +1095,10 @@
 
         // Global Updater
         window.update3DVectorSpace = function(isAi, sentenceData, conf) {
+            resizeRenderer();
+            setTimeout(resizeRenderer, 60);
+            setTimeout(resizeRenderer, 200);
+
             const statusEl = document.getElementById('vector3DStatus');
             if (isAi) {
                 // AI Text: Vectors collapse into tight unnatural cluster
@@ -1092,43 +1106,41 @@
                     const radius = 0.5 + Math.random() * 0.4;
                     const phi = Math.random() * Math.PI * 2;
                     const theta = Math.random() * Math.PI;
-                    m._targetPos = new THREE.Vector3(
+                    m.mesh._targetPos = new THREE.Vector3(
                         radius * Math.sin(theta) * Math.cos(phi),
                         radius * Math.sin(theta) * Math.sin(phi),
                         radius * Math.cos(theta)
                     );
-                    m.material.color.setHex(0xef4444);
+                    m.mat.color.setHex(0xef4444);
                 });
                 cageMat.color.setHex(0xef4444);
                 if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">● COLLAPSED SYNTHETIC AI CLUSTER</span>';
             } else {
                 // Human Text: Vectors disperse broadly across semantic space
                 nodeSpheres.forEach((m) => {
-                    m._targetPos = new THREE.Vector3(
+                    m.mesh._targetPos = new THREE.Vector3(
                         (Math.random() - 0.5) * 3.4,
                         (Math.random() - 0.5) * 2.4,
                         (Math.random() - 0.5) * 2.4
                     );
-                    m.material.color.setHex(0x10b981);
+                    m.mat.color.setHex(0x10b981);
                 });
                 cageMat.color.setHex(0x10b981);
                 if (statusEl) statusEl.innerHTML = '<span style="color: #10b981;">● DIVERSE ORGANIC SEMANTIC DISPERSION</span>';
             }
         };
 
-        // Resize
-        window.addEventListener('resize', () => {
-            if (!viewport || !renderer || !camera) return;
-            camera.aspect = viewport.clientWidth / viewport.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-        });
+        window.addEventListener('resize', resizeRenderer);
 
         // Animation Loop
         let clock = new THREE.Clock();
         function animateVectors() {
             requestAnimationFrame(animateVectors);
             const elapsed = clock.getElapsedTime();
+
+            if (viewport.clientWidth > 10 && Math.abs(camera.aspect - (viewport.clientWidth / viewport.clientHeight)) > 0.05) {
+                resizeRenderer();
+            }
 
             if (!isDragging) {
                 targetRot.y += 0.005;
@@ -1146,15 +1158,15 @@
 
             // Node subtle float or transition
             nodeSpheres.forEach(m => {
-                if (m._targetPos) {
-                    m.position.lerp(m._targetPos, 0.05);
+                if (m.mesh._targetPos) {
+                    m.mesh.position.lerp(m.mesh._targetPos, 0.05);
                 }
             });
 
             // Update line connections
             nodeConnections.forEach(c => {
-                const p1 = nodeSpheres[c.idx1].position;
-                const p2 = nodeSpheres[c.idx2].position;
+                const p1 = nodeSpheres[c.idx1].mesh.position;
+                const p2 = nodeSpheres[c.idx2].mesh.position;
                 c.line.geometry.setFromPoints([p1, p2]);
             });
 

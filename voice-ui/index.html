@@ -607,7 +607,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!canvas || !viewport || typeof THREE === 'undefined') return;
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        const initialW = viewport.clientWidth || 600;
+        const initialH = viewport.clientHeight || 230;
+        const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 100);
         camera.position.set(0, 3.5, 4.8);
         camera.lookAt(0, 0, 0);
 
@@ -617,19 +619,30 @@ document.addEventListener('DOMContentLoaded', () => {
             antialias: true,
             powerPreference: "high-performance"
         });
-        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setSize(initialW, initialH);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+        function resizeRenderer() {
+            if (!viewport || !renderer || !camera) return;
+            const w = viewport.clientWidth || viewport.parentElement?.clientWidth || 600;
+            const h = viewport.clientHeight || 230;
+            if (w > 0 && h > 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+        }
+
         // Lighting
-        const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+        const ambient = new THREE.AmbientLight(0xffffff, 1.0);
         scene.add(ambient);
 
-        const light1 = new THREE.PointLight(0x06b6d4, 3, 20);
-        light1.position.set(4, 5, 3);
+        const light1 = new THREE.PointLight(0x06b6d4, 4, 30);
+        light1.position.set(5, 5, 5);
         scene.add(light1);
 
-        const light2 = new THREE.PointLight(0x8b5cf6, 2.5, 20);
-        light2.position.set(-4, 3, -2);
+        const light2 = new THREE.PointLight(0x8b5cf6, 3, 30);
+        light2.position.set(-5, 4, -2);
         scene.add(light2);
 
         // Terrain Master Group
@@ -646,13 +659,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const planeGeo = new THREE.PlaneGeometry(width, depth, cols - 1, rows - 1);
         planeGeo.rotateX(-Math.PI / 2);
 
-        const planeMat = new THREE.MeshStandardMaterial({
+        const planeMat = new THREE.MeshBasicMaterial({
             color: 0x06b6d4,
             wireframe: true,
             transparent: true,
-            opacity: 0.75,
-            roughness: 0.2,
-            metalness: 0.8
+            opacity: 0.8
         });
         const terrainMesh = new THREE.Mesh(planeGeo, planeMat);
         terrainGroup.add(terrainMesh);
@@ -660,16 +671,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Vertex Points Overlay
         const ptsMat = new THREE.PointsMaterial({
             color: 0x10b981,
-            size: 0.05,
+            size: 0.06,
             transparent: true,
-            opacity: 0.85,
+            opacity: 0.9,
             blending: THREE.AdditiveBlending
         });
         const ptsMesh = new THREE.Points(planeGeo, ptsMat);
         terrainGroup.add(ptsMesh);
 
         let currentVerdictIsHuman = true;
-        let isAnimating = true;
 
         // Interactive Drag
         let isDragging = false;
@@ -693,6 +703,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Global Updater
         window.update3DVoiceSpectrogram = function(isHuman, conf) {
             currentVerdictIsHuman = isHuman;
+            resizeRenderer();
+            setTimeout(resizeRenderer, 60);
+            setTimeout(resizeRenderer, 200);
+
             const statusEl = document.getElementById('voice3DStatus');
             if (isHuman) {
                 planeMat.color.setHex(0x10b981);
@@ -705,19 +719,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Resize
-        window.addEventListener('resize', () => {
-            if (!viewport || !renderer || !camera) return;
-            camera.aspect = viewport.clientWidth / viewport.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-        });
+        window.addEventListener('resize', resizeRenderer);
 
         // Animation Loop
         let clock = new THREE.Clock();
         function animateSpectrogram() {
             requestAnimationFrame(animateSpectrogram);
             const elapsed = clock.getElapsedTime();
+
+            if (viewport.clientWidth > 10 && Math.abs(camera.aspect - (viewport.clientWidth / viewport.clientHeight)) > 0.05) {
+                resizeRenderer();
+            }
 
             if (!isDragging) {
                 targetRotY = Math.sin(elapsed * 0.5) * 0.25;
@@ -736,13 +748,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const z = posArr[i3 + 2];
 
                 if (currentVerdictIsHuman) {
-                    // Organic peaks and mountain ripples
                     const wave1 = Math.sin(x * 2.2 + elapsed * 3.0) * Math.cos(z * 1.8 + elapsed * 2.0);
                     const wave2 = Math.sin(x * 4.5 - elapsed * 2.5) * 0.25;
                     const decay = Math.exp(-Math.abs(x) * 0.35);
                     posArr[i3 + 1] = (wave1 + wave2) * 0.55 * decay;
                 } else {
-                    // Synthetic robotic flat stepped plateaus
                     const step = Math.floor(Math.sin(x * 3.0 + elapsed * 4.0) * 3) / 3;
                     const buzz = Math.sin(z * 10.0 + elapsed * 15.0) * 0.08;
                     posArr[i3 + 1] = (step + buzz) * 0.4;

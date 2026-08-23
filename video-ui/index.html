@@ -251,7 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!canvas || !viewport || typeof THREE === 'undefined') return;
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+        const initialW = viewport.clientWidth || 600;
+        const initialH = viewport.clientHeight || 250;
+        const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 100);
         camera.position.set(0, 1.2, 5.8);
 
         const renderer = new THREE.WebGLRenderer({
@@ -260,14 +262,25 @@ document.addEventListener('DOMContentLoaded', () => {
             antialias: true,
             powerPreference: "high-performance"
         });
-        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setSize(initialW, initialH);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+        function resizeRenderer() {
+            if (!viewport || !renderer || !camera) return;
+            const w = viewport.clientWidth || viewport.parentElement?.clientWidth || 600;
+            const h = viewport.clientHeight || 250;
+            if (w > 0 && h > 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+        }
+
         // Lighting
-        const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+        const ambient = new THREE.AmbientLight(0xffffff, 1.0);
         scene.add(ambient);
-        const pLight = new THREE.PointLight(0x06b6d4, 3, 20);
-        pLight.position.set(4, 4, 4);
+        const pLight = new THREE.PointLight(0x06b6d4, 4, 30);
+        pLight.position.set(5, 5, 5);
         scene.add(pLight);
 
         // Matrix Master Group
@@ -288,12 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Frame Plane
             const planeGeo = new THREE.PlaneGeometry(frameWidth, frameHeight);
-            const planeMat = new THREE.MeshStandardMaterial({
+            const planeMat = new THREE.MeshBasicMaterial({
                 color: 0x06b6d4,
                 transparent: true,
                 opacity: 0.35,
-                roughness: 0.2,
-                metalness: 0.5,
                 side: THREE.DoubleSide
             });
             const planeMesh = new THREE.Mesh(planeGeo, planeMat);
@@ -350,6 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Global Updater
         window.update3DVideoMatrix = function(isFake, conf) {
+            resizeRenderer();
+            setTimeout(resizeRenderer, 60);
+            setTimeout(resizeRenderer, 200);
+
             const statusEl = document.getElementById('video3DStatus');
             if (isFake) {
                 framePlanes.forEach(fp => {
@@ -376,19 +391,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Resize
-        window.addEventListener('resize', () => {
-            if (!viewport || !renderer || !camera) return;
-            camera.aspect = viewport.clientWidth / viewport.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-        });
+        window.addEventListener('resize', resizeRenderer);
 
         // Animation Loop
         let clock = new THREE.Clock();
         function animateVideoMatrix() {
             requestAnimationFrame(animateVideoMatrix);
             const elapsed = clock.getElapsedTime();
+
+            if (viewport.clientWidth > 10 && Math.abs(camera.aspect - (viewport.clientWidth / viewport.clientHeight)) > 0.05) {
+                resizeRenderer();
+            }
 
             if (!isDragging) {
                 targetRot.y = -0.35 + Math.sin(elapsed * 0.6) * 0.25;
