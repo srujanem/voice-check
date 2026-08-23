@@ -202,16 +202,6 @@
 
         cards.forEach(card => {
             card.classList.add('tilt-3d');
-            card.style.transformStyle = 'preserve-3d';
-
-            let glare = card.querySelector('.tilt-3d-glare');
-            if (!glare) {
-                glare = document.createElement('div');
-                glare.className = 'tilt-3d-glare';
-                card.appendChild(glare);
-            }
-
-            const floatElements = card.querySelectorAll('i, .tool-card-icon, .feature-icon, .step-num, h3, .pricing-price');
 
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
@@ -221,31 +211,14 @@
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
 
-                const rotateX = ((y - centerY) / centerY) * -9;
-                const rotateY = ((x - centerX) / centerX) * 9;
+                const rotateX = ((y - centerY) / centerY) * -6;
+                const rotateY = ((x - centerX) / centerX) * 6;
 
-                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
-
-                // Multi-Layer Depth Disparity
-                floatElements.forEach(el => {
-                    el.style.transform = 'translateZ(24px)';
-                    el.style.transition = 'transform 0.1s ease-out';
-                });
-
-                // Iridescent Glass Caustics
-                const glareX = (x / rect.width) * 100;
-                const glareY = (y / rect.height) * 100;
-                glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(6, 182, 212, 0.35) 0%, rgba(168, 85, 247, 0.22) 40%, rgba(16, 185, 129, 0.1) 60%, transparent 75%)`;
-                glare.style.opacity = '1';
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`;
             });
 
             card.addEventListener('mouseleave', () => {
                 card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-                floatElements.forEach(el => {
-                    el.style.transform = 'translateZ(0px)';
-                    el.style.transition = 'transform 0.3s ease-out';
-                });
-                glare.style.opacity = '0';
             });
         });
     }
