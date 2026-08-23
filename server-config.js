@@ -81,7 +81,7 @@
     async function tryUrl(url) {
         try {
             const res = await fetch(`${url}/api/health`, {
-                signal: AbortSignal.timeout(8000)
+                signal: AbortSignal.timeout(25000)
             });
             return res.ok;
         } catch {
@@ -131,6 +131,7 @@
     autoConnect();
     setInterval(autoConnect, 30000);   // Re-check every 30 seconds
 })();
+
 
 
 
