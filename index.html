@@ -4155,66 +4155,65 @@ document.querySelectorAll('.faq-question').forEach(button => {
     };
     let currentModelKey = 'neural';
 
-    // 1. MODEL: NEURAL CORE
+    // 1. MODEL: 3D QUANTUM GLASS PLASMA CORE (TRIPLE GYROSCOPIC GIMBALS)
     {
         const g = models.neural;
 
-        // Outer Icosahedron Wireframe
-        const icoGeo = new THREE.IcosahedronGeometry(2.3, 2);
-        const icoMat = new THREE.MeshStandardMaterial({
-            color: 0x06b6d4,
+        // Outer Refractive Glass Shell
+        const glassGeo = new THREE.SphereGeometry(2.0, 36, 36);
+        const glassMat = new THREE.MeshStandardMaterial({
+            color: 0x083344,
+            emissive: 0x06b6d4,
+            emissiveIntensity: 0.35,
+            roughness: 0.1,
+            metalness: 0.85,
+            transparent: true,
+            opacity: 0.45,
+            wireframe: false
+        });
+        const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+        g.add(glassMesh);
+
+        // Cyber Facet Wireframe Overlay
+        const glassWireMat = new THREE.MeshBasicMaterial({
+            color: 0x22d3ee,
             wireframe: true,
             transparent: true,
-            opacity: 0.65,
-            roughness: 0.2,
-            metalness: 0.8
+            opacity: 0.4
         });
-        const icoMesh = new THREE.Mesh(icoGeo, icoMat);
-        g.add(icoMesh);
+        const glassWire = new THREE.Mesh(glassGeo, glassWireMat);
+        g.add(glassWire);
 
-        // Glowing Vertex Points
-        const icoPointsMat = new THREE.PointsMaterial({
-            size: 0.22,
-            map: cyanDotTex,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const icoPoints = new THREE.Points(icoGeo, icoPointsMat);
-        g.add(icoPoints);
-
-        // Inner Core Sphere
-        const coreGeo = new THREE.SphereGeometry(1.2, 28, 28);
-        const coreMat = new THREE.MeshStandardMaterial({
+        // Inner Morphing Plasma Fluid Core
+        const plasmaGeo = new THREE.IcosahedronGeometry(1.2, 3);
+        const plasmaMat = new THREE.MeshStandardMaterial({
             color: 0x8b5cf6,
-            emissive: 0x4c1d95,
-            emissiveIntensity: 0.5,
+            emissive: 0x7c3aed,
+            emissiveIntensity: 0.85,
             wireframe: true,
             transparent: true,
-            opacity: 0.45
+            opacity: 0.75
         });
-        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-        g.add(coreMesh);
-        g.userData.coreMesh = coreMesh;
+        const plasmaMesh = new THREE.Mesh(plasmaGeo, plasmaMat);
+        g.add(plasmaMesh);
 
-        // Orbiting Quantum Ring 1
-        const ring1Geo = new THREE.TorusGeometry(3.3, 0.035, 16, 100);
-        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.8 });
+        // Triple Gyroscopic Laser Gimbal Rings
+        const ring1Geo = new THREE.TorusGeometry(2.8, 0.03, 16, 80);
+        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.85 });
         const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
-        ring1.rotation.x = Math.PI / 3;
-        ring1.rotation.y = Math.PI / 6;
         g.add(ring1);
-        g.userData.ring1 = ring1;
 
-        // Orbiting Quantum Ring 2
-        const ring2Geo = new THREE.TorusGeometry(3.6, 0.025, 16, 100);
-        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xec4899, transparent: true, opacity: 0.6 });
+        const ring2Geo = new THREE.TorusGeometry(3.15, 0.03, 16, 80);
+        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.75 });
         const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-        ring2.rotation.x = -Math.PI / 4;
-        ring2.rotation.y = -Math.PI / 3;
         g.add(ring2);
-        g.userData.ring2 = ring2;
 
+        const ring3Geo = new THREE.TorusGeometry(3.5, 0.03, 16, 80);
+        const ring3Mat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.65 });
+        const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
+        g.add(ring3);
+
+        g.userData = { glassMesh, plasmaMesh, ring1, ring2, ring3, plasmaBase: plasmaGeo.clone() };
         masterGroup.add(g);
     }
 
@@ -4649,12 +4648,28 @@ document.querySelectorAll('.faq-question').forEach(button => {
             }
         } else if (currentModelKey === 'neural') {
             const m = models.neural;
-            if (m.userData.coreMesh) {
-                const s = 1.0 + Math.sin(elapsed * 3) * 0.08;
-                m.userData.coreMesh.scale.set(s, s, s);
+            if (m.userData && m.userData.plasmaMesh) {
+                const { plasmaMesh, ring1, ring2, ring3, plasmaBase } = m.userData;
+                // Live fluid plasma morphing vertex displacement
+                const pos = plasmaMesh.geometry.attributes.position;
+                const basePos = plasmaBase.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const bx = basePos.getX(i);
+                    const by = basePos.getY(i);
+                    const bz = basePos.getZ(i);
+                    const wave = 1.0 + Math.sin(bx * 3.0 + elapsed * 4.0) * 0.14 + Math.cos(by * 3.0 + elapsed * 3.5) * 0.14;
+                    pos.setXYZ(i, bx * wave, by * wave, bz * wave);
+                }
+                pos.needsUpdate = true;
+
+                // Triple Gyroscopic Gimbal Rotations
+                ring1.rotation.x = elapsed * 0.8;
+                ring1.rotation.y = elapsed * 0.5;
+                ring2.rotation.y = -elapsed * 0.7;
+                ring2.rotation.z = elapsed * 0.6;
+                ring3.rotation.z = -elapsed * 0.9;
+                ring3.rotation.x = elapsed * 0.4;
             }
-            if (m.userData.ring1) m.userData.ring1.rotation.z += 0.012;
-            if (m.userData.ring2) m.userData.ring2.rotation.z -= 0.018;
         } else if (currentModelKey === 'shield') {
             const m = models.shield;
             if (m.userData.emblem) {

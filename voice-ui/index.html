@@ -671,13 +671,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Vertex Points Overlay
         const ptsMat = new THREE.PointsMaterial({
             color: 0x10b981,
-            size: 0.06,
+            size: 0.065,
             transparent: true,
             opacity: 0.9,
             blending: THREE.AdditiveBlending
         });
         const ptsMesh = new THREE.Points(planeGeo, ptsMat);
         terrainGroup.add(ptsMesh);
+
+        // 3. 3D Floating Vocal Formant Resonance Nodes (10 Harmonic Beacons)
+        const formantNodes = [];
+        const formantGeo = new THREE.SphereGeometry(0.08, 12, 12);
+        for (let i = 0; i < 10; i++) {
+            const fMat = new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true });
+            const fMesh = new THREE.Mesh(formantGeo, fMat);
+            fMesh.position.set((i - 4.5) * 0.55, 0.4, (Math.random() - 0.5) * 1.5);
+            terrainGroup.add(fMesh);
+            formantNodes.push({ mesh: fMesh, mat: fMat, baseX: (i - 4.5) * 0.55, offset: i * 0.7 });
+        }
+
+        // 4. Harmonic Frequency Scan Blade
+        const fBladeGeo = new THREE.PlaneGeometry(width * 1.05, 0.04);
+        const fBladeMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+        const fBlade = new THREE.Mesh(fBladeGeo, fBladeMat);
+        fBlade.rotation.x = -Math.PI / 2;
+        terrainGroup.add(fBlade);
 
         let currentVerdictIsHuman = true;
 
@@ -711,10 +729,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isHuman) {
                 planeMat.color.setHex(0x10b981);
                 ptsMat.color.setHex(0x06b6d4);
+                fBladeMat.color.setHex(0x10b981);
+                formantNodes.forEach(fn => fn.mat.color.setHex(0x22d3ee));
                 if (statusEl) statusEl.innerHTML = '<span style="color: #10b981;">● SPECTRAL DYNAMICS: ORGANIC BIO-HARMONICS</span>';
             } else {
                 planeMat.color.setHex(0xef4444);
                 ptsMat.color.setHex(0xf59e0b);
+                fBladeMat.color.setHex(0xef4444);
+                formantNodes.forEach(fn => fn.mat.color.setHex(0xef4444));
                 if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">● FLAT HARMONIC SYNTHETIC PLATEAUS DETECTED</span>';
             }
         };
@@ -738,6 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentRotY += (targetRotY - currentRotY) * 0.1;
             terrainGroup.rotation.y = currentRotY;
 
+            // Animate Frequency Scan Blade
+            fBlade.position.z = Math.sin(elapsed * 2.0) * (depth * 0.45);
+
             // Compute dynamic height map
             const posAttr = planeGeo.attributes.position;
             const posArr = posAttr.array;
@@ -759,6 +784,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             posAttr.needsUpdate = true;
+
+            // Animate Formant Nodes floating on audio wave crests
+            formantNodes.forEach(fn => {
+                const wave = Math.sin(fn.baseX * 2.5 + elapsed * 3.2 + fn.offset) * 0.45;
+                fn.mesh.position.y = 0.55 + wave;
+                fn.mesh.rotation.y = elapsed * 1.5;
+                const s = 0.8 + Math.abs(wave) * 0.4;
+                fn.mesh.scale.set(s, s, s);
+            });
 
             renderer.render(scene, camera);
         }

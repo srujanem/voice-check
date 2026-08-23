@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AuthGuard 3D Screen Motion, Scroll Parallax & Gyroscope Engine
  * Provides full-viewport 3D space warp, cursor depth parallax, and 3D card tilt physics.
  */
@@ -104,6 +104,21 @@
             shards.push(mesh);
         }
 
+        // 3D Neural Synapse Spark Constellation
+        const synapseLineCount = 24;
+        const synapseLines = [];
+        const synMat = new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.25, linewidth: 1 });
+        for (let i = 0; i < synapseLineCount; i++) {
+            const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
+            const line = new THREE.Line(geo, synMat.clone());
+            scene.add(line);
+            synapseLines.push({
+                line,
+                idxA: i % shardCount,
+                idxB: (i * 3 + 1) % shardCount
+            });
+        }
+
         // Mouse & Screen Movement State
         let mouseX = 0;
         let mouseY = 0;
@@ -193,6 +208,15 @@
                 if (mesh.position.z < -20) mesh.position.z += 40;
             });
 
+            // Animate 3D Synapse Spark Network
+            synapseLines.forEach((syn, i) => {
+                const pA = shards[syn.idxA].position;
+                const pB = shards[syn.idxB].position;
+                syn.line.geometry.setFromPoints([pA, pB]);
+                const spark = 0.15 + Math.sin(elapsed * 3.5 + i * 0.8) * 0.15;
+                syn.line.material.opacity = spark;
+            });
+
             renderer.render(scene, camera);
         }
         animateSpace();
@@ -218,6 +242,7 @@
 
         cards.forEach(card => {
             card.classList.add('tilt-3d');
+            card.style.transformStyle = 'preserve-3d';
 
             let glare = card.querySelector('.tilt-3d-glare');
             if (!glare) {
@@ -225,6 +250,8 @@
                 glare.className = 'tilt-3d-glare';
                 card.appendChild(glare);
             }
+
+            const floatElements = card.querySelectorAll('i, .tool-card-icon, .feature-icon, .step-num, h3, .pricing-price');
 
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
@@ -234,19 +261,30 @@
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
 
-                const rotateX = ((y - centerY) / centerY) * -8;
-                const rotateY = ((x - centerX) / centerX) * 8;
+                const rotateX = ((y - centerY) / centerY) * -9;
+                const rotateY = ((x - centerX) / centerX) * 9;
 
-                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
 
+                // Multi-Layer Depth Disparity
+                floatElements.forEach(el => {
+                    el.style.transform = 'translateZ(24px)';
+                    el.style.transition = 'transform 0.1s ease-out';
+                });
+
+                // Iridescent Glass Caustics
                 const glareX = (x / rect.width) * 100;
                 const glareY = (y / rect.height) * 100;
-                glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(6, 182, 212, 0.25) 0%, transparent 65%)`;
+                glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(6, 182, 212, 0.35) 0%, rgba(168, 85, 247, 0.22) 40%, rgba(16, 185, 129, 0.1) 60%, transparent 75%)`;
                 glare.style.opacity = '1';
             });
 
             card.addEventListener('mouseleave', () => {
                 card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+                floatElements.forEach(el => {
+                    el.style.transform = 'translateZ(0px)';
+                    el.style.transition = 'transform 0.3s ease-out';
+                });
                 glare.style.opacity = '0';
             });
         });
