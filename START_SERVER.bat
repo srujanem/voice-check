@@ -7,7 +7,7 @@ echo   AuthGuard — Starting Server and Cloudflare Tunnel
 echo  ====================================================
 echo.
 
-cd /d "D:\voice-check\voice-check"
+cd /d "%~dp0"
 
 :: ─── Step 1: Kill old instances ────────────────────────────────────────────
 echo [1/4] Stopping old processes...
@@ -28,9 +28,10 @@ echo.
 :: ─── Step 3: Start tunnel and capture URL ──────────────────────────────────
 echo [3/4] Starting Cloudflare tunnel...
 set LOG_FILE=%TEMP%\cf_tunnel.log
+if exist "%LOG_FILE%" del "%LOG_FILE%"
 
 :: Start cloudflared in background, redirect output to log file
-start "" /min cmd /c "cloudflared tunnel --url http://localhost:5000 --no-autoupdate > %LOG_FILE% 2>&1"
+start "" /min cmd /c "npx -y cloudflared tunnel --url http://localhost:5000 --no-autoupdate > %LOG_FILE% 2>&1"
 
 :: Wait for tunnel URL to appear in log
 echo       Waiting for tunnel URL...
@@ -39,13 +40,13 @@ set /a WAIT=0
 :WAIT_LOOP
 timeout /t 2 /nobreak >nul
 set /a WAIT+=2
-findstr /C:"trycloudflare.com" %LOG_FILE% >nul 2>&1
+findstr /C:"trycloudflare.com" "%LOG_FILE%" >nul 2>&1
 if %errorlevel%==0 goto FOUND_URL
 if %WAIT% GEQ 30 goto TIMEOUT
 goto WAIT_LOOP
 
 :FOUND_URL
-for /f "tokens=*" %%a in ('findstr "trycloudflare.com" %LOG_FILE%') do set LINE=%%a
+for /f "tokens=*" %%a in ('findstr "trycloudflare.com" "%LOG_FILE%"') do set LINE=%%a
 :: Extract just the URL from the line
 for %%a in (%LINE%) do (
     echo %%a | findstr /C:"https://" >nul 2>&1
@@ -69,7 +70,7 @@ python -c "
 import re, sys
 sys.stdout.reconfigure(encoding='utf-8')
 url = '%TUNNEL_URL%'
-path = 'D:/voice-check/voice-check/server-config.js'
+path = 'server-config.js'
 content = open(path, encoding='utf-8').read()
 new_content = re.sub(
     r\"const DEFAULT_URL = '[^']*'\",

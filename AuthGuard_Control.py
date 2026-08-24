@@ -9,10 +9,10 @@ import requests
 import time
 
 # ─── Config ──────────────────────────────────────────────────────────────────
-SERVER_DIR  = r"D:\voice-check\voice-check"
+SERVER_DIR  = os.path.dirname(os.path.abspath(__file__))
 SERVER_CMD  = [sys.executable, "run.py"]
 HEALTH_URL  = "http://localhost:5000/api/health"
-WEBSITE_URL = "https://voice-check.vercel.app"
+WEBSITE_URL = "https://authguard.vercel.app"
 
 # ─── Colors ───────────────────────────────────────────────────────────────────
 BG_MAIN    = "#0a0a0f"

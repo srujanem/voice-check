@@ -9,8 +9,17 @@ __pycache__/
 *.keras
 *.pkl
 *.pt
+*.pth
+*.onnx
+*.onnx.data
 *.safetensors
 *.h5
+frontend/
+text_ai_results/
+dataset_custom/
+dataset_image_expanded/
+model_text_finetuned/
+api_keys.db
 .env
 
 .vercel

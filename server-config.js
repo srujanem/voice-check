@@ -13,7 +13,7 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://brochures-abc-dictionaries-bay.trycloudflare.com';
+    const DEFAULT_URL = 'https://operational-beach-read-jake.trycloudflare.com';
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
