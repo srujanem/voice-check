@@ -125,6 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSentenceStream(allSentencesData, filter);
     };
 
+    function renderSentenceStream(sentences, filter = 'all') {
+        if (!sentencesContainer) return;
+        sentencesContainer.innerHTML = '';
+        if (!sentences || !sentences.length) return;
+
         // Perplexity & Cadence Flow Visualizer
         const flowSummary = document.createElement('div');
         flowSummary.style.cssText = 'background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;';
@@ -166,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             sentencesContainer.appendChild(div);
         });
+    }
 
     // Analyze Click Handler
     btnAnalyze.addEventListener('click', async () => {

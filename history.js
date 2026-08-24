@@ -27,7 +27,8 @@ class ScanHistory {
         // Push to Database if logged in
         const email = localStorage.getItem('user_email') || localStorage.getItem('user_id');
         if (email) {
-            fetch(`http://localhost:5001/api/history`, {
+            const backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            fetch(`${backendUrl}/api/history`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -50,7 +51,6 @@ class ScanHistory {
         this.renderHistory();
     }
 
-    
     renderHistory() {
         const history = this.getHistory();
         
@@ -60,22 +60,26 @@ class ScanHistory {
             if (history.length === 0) {
                 container.innerHTML = '<p style="text-align:center; color: var(--text-secondary); margin-top: 20px;">No recent scans.</p>';
             } else {
-                container.innerHTML = history.map(scan => 
-                    <div class="history-item " style="padding: 15px; border-radius: 12px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                container.innerHTML = history.map(scan => {
+                    const statusColor = scan.isAi ? 'var(--color-error, #ef4444)' : 'var(--color-success, #10b981)';
+                    const statusIcon = scan.isAi ? 'fa-triangle-exclamation' : 'fa-circle-check';
+                    const statusText = scan.isAi ? 'AI Generated' : 'Authentic';
+                    return `
+                    <div class="history-item" style="padding: 15px; border-radius: 12px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
                         <div>
                             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
-                                <i class="fa-solid "></i> 
+                                <i class="fa-solid ${scan.type === 'Voice' ? 'fa-microphone' : scan.type === 'Image' ? 'fa-image' : 'fa-font'}"></i> ${scan.type} • ${scan.date}
                             </div>
-                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;"></div>
-                            <div style="font-size: 12px; font-weight: bold; color: ">
-                                 (%)
+                            <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">${scan.fileName}</div>
+                            <div style="font-size: 12px; font-weight: bold; color: ${statusColor}">
+                                 ${statusText} (${scan.confidence}%)
                             </div>
                         </div>
-                        <div style="font-size: 24px; color: ">
-                            <i class="fa-solid "></i>
+                        <div style="font-size: 24px; color: ${statusColor}">
+                            <i class="fa-solid ${statusIcon}"></i>
                         </div>
-                    </div>
-                ).join('');
+                    </div>`;
+                }).join('');
             }
         }
 
@@ -96,28 +100,27 @@ class ScanHistory {
                     if (scan.type === 'Text') typeIcon = 'fa-font';
                     if (scan.type === 'Video') typeIcon = 'fa-video';
                     
-                    return 
+                    return `
                         <tr>
                             <td>
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:#fff;">
-                                        <i class="fa-solid "></i>
+                                        <i class="fa-solid ${typeIcon}"></i>
                                     </div>
-                                    <span style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                                    <span style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${scan.fileName}</span>
                                 </div>
                             </td>
-                            <td></td>
+                            <td>${scan.type}</td>
                             <td>
-                                <span class="status-badge ">
-                                    <i class="fa-solid "></i>  (%)
+                                <span class="status-badge ${statusClass}">
+                                    <i class="fa-solid ${statusIcon}"></i> ${statusText} (${scan.confidence}%)
                                 </span>
                             </td>
-                            <td style="color:#94a3b8;font-size:13px;"></td>
+                            <td style="color:#94a3b8;font-size:13px;">${scan.date}</td>
                             <td>
-                                <button onclick="alert('View report feature coming soon!')" style="background:none;border:none;color:var(--accent-cyan);cursor:pointer;font-weight:600;">View Report</button>
+                                <button onclick="alert('View report feature coming soon!')" style="background:none;border:none;color:var(--accent-cyan, #06b6d4);cursor:pointer;font-weight:600;">View Report</button>
                             </td>
-                        </tr>
-                    ;
+                        </tr>`;
                 }).join('');
             }
             
@@ -132,16 +135,15 @@ class ScanHistory {
                 const avg = history.reduce((sum, s) => sum + parseFloat(s.confidence || 0), 0) / history.length;
                 avgConfEl.innerText = avg.toFixed(1) + '%';
             }
-
         }
     }
-
 
     async fetchHistoryFromDB() {
         const email = localStorage.getItem('user_email') || localStorage.getItem('user_id');
         if (!email) return;
         try {
-            const res = await fetch(`http://localhost:5001/api/history?email=${email}`, {
+            const backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
+            const res = await fetch(`${backendUrl}/api/history?email=${email}`, {
                 headers: {
                     ...(window.getAuthHeaders ? window.getAuthHeaders() : {})
                 }
@@ -190,31 +192,36 @@ class ScanHistory {
         const closeBtn = document.getElementById('close-history');
         const clearBtn = document.getElementById('clear-history');
 
-        openBtn.addEventListener('click', () => {
-            sidebar.classList.remove('hidden');
-            overlay.classList.remove('hidden');
-            this.renderHistory();
-        });
+        if (openBtn) {
+            openBtn.addEventListener('click', () => {
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+                this.renderHistory();
+            });
+        }
 
         const closeSidebar = () => {
-            sidebar.classList.add('hidden');
-            overlay.classList.add('hidden');
+            if (sidebar) sidebar.classList.add('hidden');
+            if (overlay) overlay.classList.add('hidden');
         };
 
-        closeBtn.addEventListener('click', closeSidebar);
-        overlay.addEventListener('click', closeSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
         
-        clearBtn.addEventListener('click', () => {
-            if(confirm("Are you sure you want to clear all scan history?")) {
-                this.clearHistory();
-            }
-        });
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if(confirm("Are you sure you want to clear all scan history?")) {
+                    this.clearHistory();
+                }
+            });
+        }
 
         this.renderHistory();
     }
 }
 
 const scanHistory = new ScanHistory();
+window.scanHistory = scanHistory;
 
 function initHistory() {
     scanHistory.initSidebar();
@@ -226,4 +233,3 @@ if (document.readyState === 'loading') {
 } else {
     initHistory();
 }
-\nwindow.scanHistory = new ScanHistory();\ndocument.addEventListener('DOMContentLoaded', () => { if (window.scanHistory) window.scanHistory.renderHistory(); });\n
