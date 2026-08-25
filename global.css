@@ -1733,13 +1733,13 @@ p {
 
     /* Hero counter strip */
     .hero-counter-strip {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         gap: 12px !important;
     }
 
     /* ── Tool Cards — 2 column on mobile ── */
     .cards-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         gap: 12px !important;
         padding: 0 16px !important;
     }
@@ -1765,7 +1765,7 @@ p {
 
     /* ── Stats Bar ── */
     .stats-bar {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         gap: 12px !important;
     }
 
@@ -1917,7 +1917,7 @@ p {
 @media (max-width: 375px) {
     .cards-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
     .nav-card { padding: 18px 12px !important; }
-    .hero-counter-strip { grid-template-columns: repeat(2, 1fr) !important; }
+    .hero-counter-strip { grid-template-columns: 1fr !important; }
     .stats-bar { grid-template-columns: 1fr 1fr !important; }
 }
 
