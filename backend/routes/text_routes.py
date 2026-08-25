@@ -51,10 +51,29 @@ def predict_text():
                 print(f"[text_routes] Translation failed: {e}")
                 translated_text = text
 
-        # 1. TF-IDF & Ensemble Prediction
-        text_features = ml.text_vectorizer.transform([translated_text])
-        probs = ml.text_model.predict_proba(text_features)[0]
-        prob_ai_tfidf = float(probs[1])
+        # 1. Model Prediction (Transformer if available, else TF-IDF)
+        if hasattr(ml, 'text_transformer_model') and ml.text_transformer_model is not None:
+            import torch
+            import torch.nn.functional as F
+            
+            # Chunking to handle large texts beyond 512 tokens
+            words = translated_text.split()
+            chunks = [' '.join(words[i:i+400]) for i in range(0, len(words), 400)]
+            if not chunks: chunks = [translated_text]
+            
+            chunk_probs = []
+            with torch.no_grad():
+                for chunk in chunks[:5]: # Max 5 chunks (2000 words) for speed
+                    inputs = ml.text_transformer_tokenizer(chunk, padding="max_length", truncation=True, max_length=512, return_tensors="pt").to(ml.text_transformer_device)
+                    outputs = ml.text_transformer_model(**inputs)
+                    probs = F.softmax(outputs.logits, dim=-1)[0]
+                    chunk_probs.append(float(probs[1].item()))
+            
+            prob_ai_tfidf = sum(chunk_probs) / len(chunk_probs)
+        else:
+            text_features = ml.text_vectorizer.transform([translated_text])
+            probs = ml.text_model.predict_proba(text_features)[0]
+            prob_ai_tfidf = float(probs[1])
         
         # 2. Comprehensive Linguistic & Heuristic Forensics
         lower_text = translated_text.lower()
@@ -84,7 +103,9 @@ def predict_text():
         sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', original_text) if s.strip() and len(s.split()) >= 3]
         if not sentences:
             sentences = [original_text.strip()]
-        sentences = sentences[:20]
+        
+        # Increase limit for massive inputs
+        sentences = sentences[:150]
 
         sent_lengths = [len(s.split()) for s in sentences]
         burstiness_std = float(np.std(sent_lengths)) if len(sent_lengths) > 1 else 3.5
@@ -134,8 +155,20 @@ def predict_text():
                     except:
                         eval_sentences.append(s)
             
-            sent_vectors = ml.text_vectorizer.transform(eval_sentences)
-            sent_probs   = ml.text_model.predict_proba(sent_vectors)[:, 1]
+            sent_probs = []
+            if hasattr(ml, 'text_transformer_model') and ml.text_transformer_model is not None:
+                import torch
+                import torch.nn.functional as F
+                for s in eval_sentences:
+                    inputs = ml.text_transformer_tokenizer(s, padding="max_length", truncation=True, max_length=128, return_tensors="pt").to(ml.text_transformer_device)
+                    with torch.no_grad():
+                        outputs = ml.text_transformer_model(**inputs)
+                        probs = F.softmax(outputs.logits, dim=-1)[0]
+                        sent_probs.append(float(probs[1].item()))
+            else:
+                sent_vectors = ml.text_vectorizer.transform(eval_sentences)
+                sent_probs   = ml.text_model.predict_proba(sent_vectors)[:, 1]
+
             for orig_s, p in zip(sentences, sent_probs):
                 s_lower = orig_s.lower()
                 s_matches = sum(1 for f in ai_fingerprints if f in s_lower)

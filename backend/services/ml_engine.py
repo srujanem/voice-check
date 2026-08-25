@@ -10,6 +10,10 @@ class MLEngine:
         self.vit_model = None
         self.text_model = None
         self.text_vectorizer = None
+        
+        self.text_transformer_model = None
+        self.text_transformer_tokenizer = None
+        self.text_transformer_device = None
 
         self._voice_attempted = False
         self._image_attempted = False
@@ -59,10 +63,33 @@ class MLEngine:
 
     def reload_text_model(self):
         import joblib
+        import os
         base_dir = Config.BASE_DIR
+        
+        # Load transformer model if it exists
+        transformer_path = os.path.join(base_dir, "model_text_finetuned")
+        if os.path.exists(transformer_path):
+            try:
+                from transformers import AutoTokenizer, AutoModelForSequenceClassification
+                import torch
+                self.text_transformer_tokenizer = AutoTokenizer.from_pretrained(transformer_path)
+                self.text_transformer_model = AutoModelForSequenceClassification.from_pretrained(transformer_path)
+                self.text_transformer_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                self.text_transformer_model.to(self.text_transformer_device)
+                self.text_transformer_model.eval()
+                print("PyTorch Fine-Tuned Transformer text model loaded successfully!")
+            except Exception as e:
+                print(f"Error loading transformer text model: {e}")
+                self.text_transformer_model = None
+        else:
+            self.text_transformer_model = None
+
+        # Fallback to TF-IDF
         try:
             self.text_model = joblib.load(os.path.join(base_dir, "text_model.pkl"))
             self.text_vectorizer = joblib.load(os.path.join(base_dir, "text_vectorizer.pkl"))
+            if not self.text_transformer_model:
+                print("Sklearn TF-IDF text model loaded successfully!")
         except: pass
 
 ml = MLEngine()

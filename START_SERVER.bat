@@ -14,14 +14,14 @@ echo [1/4] Stopping old processes...
 taskkill /F /IM python.exe >nul 2>&1
 taskkill /F /IM pythonw.exe >nul 2>&1
 taskkill /F /IM cloudflared.exe >nul 2>&1
-timeout /t 2 /nobreak >nul
+ping -n 3 127.0.0.1 >nul
 echo       Done.
 echo.
 
 :: ─── Step 2: Start Flask server ────────────────────────────────────────────
 echo [2/4] Starting Flask backend server...
 start "" /min python run.py
-timeout /t 6 /nobreak >nul
+ping -n 7 127.0.0.1 >nul
 echo       Server started on http://localhost:5000
 echo.
 
@@ -38,7 +38,7 @@ echo       Waiting for tunnel URL...
 set TUNNEL_URL=
 set /a WAIT=0
 :WAIT_LOOP
-timeout /t 2 /nobreak >nul
+ping -n 3 127.0.0.1 >nul
 set /a WAIT+=2
 findstr /C:"trycloudflare.com" "%LOG_FILE%" >nul 2>&1
 if %errorlevel%==0 goto FOUND_URL
