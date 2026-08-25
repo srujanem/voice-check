@@ -14,10 +14,10 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://copyrighted-appreciate-university-baths.trycloudflare.com';
+    const DEFAULT_URL = 'https://resist-ing-defense-kevin.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = 'v=10';
+    v=11
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
