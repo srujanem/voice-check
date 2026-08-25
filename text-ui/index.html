@@ -746,7 +746,8 @@
                 </button>
                 <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
                 <div id="nav-auth"></div>
-                <a href="/index.html?v=1787591944" class="btn-secondary">
+                <button id="connectWalletBtn" class="btn-secondary" style="margin-left: 10px; border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
+                <a href="/index.html?v=1787591944" class="btn-secondary" style="margin-left: 10px;">
                     <i class="fa-solid fa-house"></i> Home
                 </a>
             </div>
@@ -963,13 +964,18 @@
                 <button id="download-pdf-btn" class="btn-secondary" style="justify-content: center; padding: 14px;">
                     <i class="fa-solid fa-file-pdf"></i> Download PDF Report
                 </button>
+                <button id="mint-report-btn" class="btn-primary" style="justify-content: center; padding: 14px; display: none; background: linear-gradient(135deg, #8b5cf6, #d946ef); border: none; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                    <i class="fa-brands fa-ethereum"></i> Anchor to Blockchain
+                </button>
             </div>
         </div>
 
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.10.0/ethers.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="/web3.js?v=1"></script>
     <script src="/theme.js?v=1787591944"></script>
     <script src="/history.js?v=1787591944"></script>
     <script src="/server-config.js?v=1787591944"></script>

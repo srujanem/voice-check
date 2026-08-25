@@ -271,6 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderForensicResults(data) {
         resultsSection.classList.remove('hidden');
+        
+        // Make Mint button ready
+        const mintBtn = document.getElementById('mint-report-btn');
+        if (mintBtn) {
+            mintBtn.dataset.ready = "true";
+            if (typeof updateWalletUI === 'function') updateWalletUI();
+        }
+
         const inner = data.analysis || data;
 
         const isAi = inner.prediction === 'AI-Generated' || !!inner.is_ai || !!data.is_ai;
@@ -378,6 +386,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).from(document.getElementById('forensicCard')).save();
             } else {
                 alert('PDF engine is loading... Please try again in a moment.');
+            }
+        });
+    }
+
+    // Web3 Minting
+    const mintBtn = document.getElementById('mint-report-btn');
+    if (mintBtn) {
+        mintBtn.addEventListener('click', async function() {
+            const resultData = {
+                prediction: document.getElementById('classificationResult').innerText,
+                ai_probability: document.getElementById('prob-ai').innerText,
+                human_probability: document.getElementById('prob-human').innerText,
+                word_count: document.getElementById('word-count').innerText,
+                confidence: document.getElementById('confidence-label').innerText,
+                timestamp: new Date().toISOString()
+            };
+            
+            mintBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Minting...';
+            
+            try {
+                const txHash = await window.mintReportToBlockchain(JSON.stringify(resultData));
+                if (txHash) {
+                    alert(`Success! Report anchored to blockchain.\nTransaction Hash: ${txHash}`);
+                    mintBtn.innerHTML = '<i class="fa-solid fa-check"></i> Anchored';
+                    mintBtn.style.background = '#10b981';
+                } else {
+                    mintBtn.innerHTML = '<i class="fa-brands fa-ethereum"></i> Anchor to Blockchain';
+                }
+            } catch (err) {
+                alert("Transaction failed or was rejected.");
+                mintBtn.innerHTML = '<i class="fa-brands fa-ethereum"></i> Anchor to Blockchain';
             }
         });
     }
