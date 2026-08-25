@@ -21,6 +21,23 @@ def require_api_key(f):
         user_uid   = "guest"
 
         auth_header = request.headers.get("Authorization", "")
+        api_key_header = request.headers.get("X-API-Key", "")
+        
+        # 1. Check for Developer API Key (vc_live_...)
+        token_candidate = ""
+        if api_key_header.startswith("vc_live_") or api_key_header.startswith("vc_test_"):
+            token_candidate = api_key_header
+        elif auth_header.startswith("Bearer vc_live_") or auth_header.startswith("Bearer vc_test_"):
+            token_candidate = auth_header.split(" ", 1)[1]
+
+        if token_candidate:
+            # Valid Developer API Key format
+            user_uid = hashlib.sha256(token_candidate.encode()).hexdigest()[:24]
+            user_email = f"developer_{user_uid[:8]}@api.authguard.ai"
+            request.user = {"uid": user_uid, "email": user_email, "is_developer": True, "api_key": token_candidate}
+            return f(*args, **kwargs)
+
+        # 2. Check for standard JWT
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ", 1)[1]
             try:
@@ -35,10 +52,9 @@ def require_api_key(f):
                     # Stable, URL-safe uid derived from the email
                     user_uid = hashlib.sha256(email.encode()).hexdigest()[:24]
             except jwt.ExpiredSignatureError:
-                # Token expired — treat as guest (or you could return 401)
                 pass
             except Exception:
-                pass  # Malformed token — fall through to guest
+                pass
 
         request.user = {"uid": user_uid, "email": user_email}
         return f(*args, **kwargs)

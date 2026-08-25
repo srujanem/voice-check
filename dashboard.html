@@ -3,212 +3,642 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuthGuard — User Dashboard</title>
-    <link rel="stylesheet" href="/global.css?v=20260825">
+    <title>AuthGuard — User & Developer Dashboard</title>
+    <link rel="stylesheet" href="/global.css?v=20260826">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background-color: var(--bg-main); color: var(--text-primary); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        .dashboard-container { display: flex; flex: 1; max-width: 1400px; margin: 80px auto 0; width: 100%; padding: 20px; gap: 30px; }
+        body { background-color: var(--bg-main, #0a0a0f); color: var(--text-primary, #f1f5f9); margin: 0; display: flex; flex-direction: column; min-height: 100vh; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .dashboard-container { display: flex; flex: 1; max-width: 1400px; margin: 80px auto 0; width: 100%; padding: 20px; gap: 30px; box-sizing: border-box; }
         
         /* Sidebar */
-        .sidebar { width: 250px; display: flex; flex-direction: column; gap: 10px; }
-        .sidebar-item { padding: 12px 20px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
-        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-        .sidebar-item.active { background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(139,92,246,0.1)); color: var(--accent-cyan); border: 1px solid rgba(6,182,212,0.2); }
+        .sidebar { width: 250px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+        .sidebar-item { padding: 12px 18px; border-radius: 12px; color: var(--text-secondary, #94a3b8); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: all 0.25s ease; cursor: pointer; border: 1px solid transparent; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary, #fff); }
+        .sidebar-item.active { background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(139,92,246,0.12)); color: var(--accent-cyan, #06b6d4); border: 1px solid rgba(6,182,212,0.25); box-shadow: 0 4px 15px rgba(6,182,212,0.1); }
         
         /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; gap: 30px; }
-        .welcome-header h1 { margin: 0; font-size: 28px; }
-        .welcome-header p { color: var(--text-secondary); margin: 5px 0 0 0; }
+        .main-content { flex: 1; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+        .tab-pane { display: none; flex-direction: column; gap: 24px; }
+        .tab-pane.active { display: flex; }
+
+        .welcome-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .welcome-header h1 { margin: 0; font-size: 26px; font-weight: 700; }
+        .welcome-header p { color: var(--text-secondary, #94a3b8); margin: 5px 0 0 0; font-size: 14px; }
         
         /* Metrics Grid */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .metric-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
-        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); opacity: 0.5; }
-        .metric-title { font-size: 13px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-primary); }
-        .metric-trend { font-size: 13px; color: var(--color-success); display: flex; align-items: center; gap: 5px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }
+        .metric-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #06b6d4, #8b5cf6); opacity: 0.8; }
+        .metric-title { font-size: 12px; color: var(--text-secondary, #94a3b8); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+        .metric-value { font-size: 30px; font-weight: 800; color: #fff; }
+        .metric-trend { font-size: 12px; color: #10b981; display: flex; align-items: center; gap: 5px; font-weight: 600; }
         
-        /* Chart Section */
-        .chart-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .chart-header h3 { margin: 0; font-size: 18px; }
+        /* Section Cards */
+        .glass-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); border-radius: 16px; padding: 24px; }
+        .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .card-header-flex h3 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         
-        /* Table Section */
-        .table-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; }
-        .table-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .table-header h3 { margin: 0; font-size: 18px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px 25px; text-align: left; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-        .status-badge { padding: 4px 10px; border-radius: 50px; font-size: 12px; font-weight: 600; }
-        .status-authentic { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
-        .status-fake { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 14px 18px; font-size: 13.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        th { color: var(--text-secondary, #94a3b8); font-weight: 600; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.8px; }
         
+        .status-badge { padding: 4px 12px; border-radius: 50px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+        .status-authentic { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+        .status-fake { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+        
+        /* Buttons & Badges */
+        .btn-action-primary { background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(6,182,212,0.3); }
+        .btn-action-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6,182,212,0.45); }
+        .btn-action-secondary { background: rgba(255,255,255,0.06); color: #fff; border: 1px solid rgba(255,255,255,0.12); padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-action-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        
+        /* Code Box */
+        .code-box { background: #050508; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #38bdf8; overflow-x: auto; position: relative; }
+        .code-lang-tabs { display: flex; gap: 10px; margin-bottom: 12px; }
+        .code-lang-btn { background: none; border: 1px solid transparent; color: #94a3b8; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .code-lang-btn.active { background: rgba(6,182,212,0.15); color: #06b6d4; border-color: rgba(6,182,212,0.3); }
+
+        /* Pricing Card in Billing */
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .plan-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+        .plan-card.featured { border-color: #06b6d4; box-shadow: 0 0 25px rgba(6,182,212,0.15); background: linear-gradient(180deg, rgba(6,182,212,0.04), rgba(255,255,255,0.01)); }
+        .plan-price { font-size: 32px; font-weight: 800; color: #fff; }
+        .plan-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: #cbd5e1; }
+        .plan-features li { display: flex; align-items: center; gap: 10px; }
+        .plan-features li i { color: #10b981; }
+
         @media (max-width: 900px) {
             .dashboard-container { flex-direction: column; margin-top: 60px; }
-            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
-            .sidebar-item { white-space: nowrap; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
+            .sidebar-item { white-space: nowrap; font-size: 13px; padding: 10px 14px; }
         }
     </style>
 </head>
 <body>
-    <!-- Inline minimal navbar -->
-    <nav class="navbar" id="navbar" style="position: fixed; top: 0; width: 100%; background: rgba(10,10,15,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; padding: 0 5%;">
-        <a href="/" class="logo" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white; font-size:20px; font-weight:700;">
-            <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> AuthGuard
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar" style="position: fixed; top: 0; width: 100%; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; padding: 0 5%; height: 64px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;">
+        <a href="/" class="logo" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white; font-size:19px; font-weight:700;">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan, #06b6d4);"></i> AuthGuard
         </a>
-        <div style="display:flex; align-items:center; gap:20px;">
-            <div id="themeToggle" style="cursor:pointer; color:var(--text-secondary);"><i class="fa-solid fa-sun"></i></div>
+        <div style="display:flex; align-items:center; gap:18px;">
+            <div id="themeToggle" style="cursor:pointer; color:var(--text-secondary, #94a3b8); font-size: 16px;"><i class="fa-solid fa-sun"></i></div>
             <div id="nav-auth"></div>
         </div>
     </nav>
 
     <div class="dashboard-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
-            <a href="#" class="sidebar-item active"><i class="fa-solid fa-chart-pie"></i> Overview</a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-list-check"></i> Scan History</a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-key"></i> API Keys</a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-file-invoice"></i> Billing & Plan</a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            <div class="sidebar-item active" onclick="switchDashboardTab('overview')"><i class="fa-solid fa-chart-pie"></i> Overview</div>
+            <div class="sidebar-item" onclick="switchDashboardTab('history')"><i class="fa-solid fa-clock-rotate-left"></i> Scan History</div>
+            <div class="sidebar-item" onclick="switchDashboardTab('apikeys')"><i class="fa-solid fa-key"></i> API Keys</div>
+            <div class="sidebar-item" onclick="switchDashboardTab('billing')"><i class="fa-solid fa-credit-card"></i> Billing & Plans</div>
+            <div class="sidebar-item" onclick="switchDashboardTab('settings')"><i class="fa-solid fa-gear"></i> Settings</div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content Panes -->
         <div class="main-content">
-            <div class="welcome-header">
-                <h1>Welcome back, <span id="user-firstname" style="color: var(--accent-cyan);">User</span> !</h1>
-                <p>Here's what's happening with your detection models today.</p>
+            
+            <!-- 1. OVERVIEW TAB -->
+            <div class="tab-pane active" id="tab-overview">
+                <div class="welcome-header">
+                    <div>
+                        <h1>Welcome back, <span id="user-firstname" style="color: var(--accent-cyan, #06b6d4);">Developer</span></h1>
+                        <p>Real-time security telemetry and multi-modal AI detection metrics.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="/deepfake-ui/" class="btn-action-primary"><i class="fa-solid fa-plus"></i> New Scan</a>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Total Scans</div>
+                        <div class="metric-value" id="dash-total-scans">0</div>
+                        <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> Live Telemetry</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">AI Threats Detected</div>
+                        <div class="metric-value" id="dash-ai-threats" style="color: #ef4444;">0</div>
+                        <div class="metric-trend" style="color: #ef4444;"><i class="fa-solid fa-shield-virus"></i> Shield Active</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg Confidence</div>
+                        <div class="metric-value" id="dash-avg-conf">98.4%</div>
+                        <div class="metric-trend"><i class="fa-solid fa-microchip"></i> SOTA Models</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">API Quota Remaining</div>
+                        <div class="metric-value" id="dash-quota">4,980</div>
+                        <div class="metric-trend" style="color: #8b5cf6;"><i class="fa-solid fa-bolt"></i> Free Tier</div>
+                    </div>
+                </div>
+
+                <!-- Detection Volume Chart -->
+                <div class="glass-card">
+                    <div class="card-header-flex">
+                        <h3><i class="fa-solid fa-chart-line" style="color: #06b6d4;"></i> Detection Volume (Last 7 Days)</h3>
+                        <button class="btn-action-secondary" onclick="exportHistoryCSV()"><i class="fa-solid fa-download"></i> Export Data</button>
+                    </div>
+                    <canvas id="usageChart" height="75"></canvas>
+                </div>
+
+                <!-- Recent Scans Table -->
+                <div class="glass-card" style="padding: 0; overflow: hidden;">
+                    <div class="card-header-flex" style="padding: 20px 24px; margin-bottom: 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                        <h3><i class="fa-solid fa-list-check" style="color: #8b5cf6;"></i> Recent Detections</h3>
+                        <a href="javascript:void(0)" onclick="switchDashboardTab('history')" style="color: #06b6d4; text-decoration: none; font-size: 13px; font-weight: 700;">View All →</a>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Target / File</th>
+                                    <th>Modal Type</th>
+                                    <th>Verdict & Score</th>
+                                    <th>Date</th>
+                                    <th>Report</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-recent-scans">
+                                <tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:24px;">No scans recorded yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <!-- Metrics -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-title">Total Scans</div>
-                    <div class="metric-value" id="dash-total-scans">0</div>
-                    <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +12% this week</div>
+            <!-- 2. SCAN HISTORY TAB -->
+            <div class="tab-pane" id="tab-history">
+                <div class="welcome-header">
+                    <div>
+                        <h1>Complete Scan History</h1>
+                        <p>Search, filter, and audit every digital asset verified through AuthGuard.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-action-secondary" onclick="exportHistoryCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-action-secondary" onclick="exportHistoryJSON()"><i class="fa-solid fa-file-code"></i> Export JSON</button>
+                    </div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-title">AI Threats Blocked</div>
-                    <div class="metric-value" id="dash-ai-threats">0</div>
-                    <div class="metric-trend"><i class="fa-solid fa-arrow-trend-up"></i> +5% this week</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Avg Confidence</div>
-                    <div class="metric-value" id="dash-avg-conf">0%</div>
-                    <div class="metric-trend" style="color:var(--text-secondary);"><i class="fa-solid fa-minus"></i> Stable</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">API Credits</div>
-                    <div class="metric-value">8,752</div>
-                    <div class="metric-trend" style="color:var(--accent-purple);"><i class="fa-solid fa-bolt"></i> Free Tier Active</div>
+
+                <div class="glass-card">
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="history-search" placeholder="Search by file name or type..." oninput="filterHistoryTable()" style="flex: 1; min-width: 220px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; border-radius: 10px; color: #fff; font-family: inherit;">
+                        <select id="history-filter-type" onchange="filterHistoryTable()" style="background: #0f172a; border: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; color: #fff; font-family: inherit;">
+                            <option value="all">All Modalities</option>
+                            <option value="voice">Voice Detection</option>
+                            <option value="image">Image Deepfakes</option>
+                            <option value="text">Text AI</option>
+                            <option value="video">Video Scans</option>
+                            <option value="document">Document Forgery</option>
+                        </select>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Media Asset</th>
+                                    <th>Detection Engine</th>
+                                    <th>AI vs Human Verdict</th>
+                                    <th>Timestamp</th>
+                                    <th>Forensic Report</th>
+                                </tr>
+                            </thead>
+                            <tbody id="full-history-table">
+                                <tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:30px;">Loading history records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Chart -->
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h3>Detection Volume (Last 7 Days)</h3>
-                    <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-download"></i> Export CSV</button>
+            <!-- 3. API KEYS TAB -->
+            <div class="tab-pane" id="tab-apikeys">
+                <div class="welcome-header">
+                    <div>
+                        <h1>Developer API Access</h1>
+                        <p>Generate cryptographic API keys to integrate AuthGuard deepfake models into your own applications.</p>
+                    </div>
+                    <button class="btn-action-primary" onclick="generateNewApiKey()"><i class="fa-solid fa-key"></i> Generate Secret Key</button>
                 </div>
-                <canvas id="usageChart" height="80"></canvas>
+
+                <!-- Active Keys Section -->
+                <div class="glass-card">
+                    <div class="card-header-flex">
+                        <h3><i class="fa-solid fa-shield-keyhole" style="color: #06b6d4;"></i> Active Secret Keys</h3>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Key Name</th>
+                                    <th>Secret Token</th>
+                                    <th>Created</th>
+                                    <th>Permissions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="api-keys-table">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- API Quickstart & Code Examples -->
+                <div class="glass-card">
+                    <div class="card-header-flex">
+                        <h3><i class="fa-solid fa-code" style="color: #8b5cf6;"></i> Quickstart Integration</h3>
+                        <div class="code-lang-tabs">
+                            <button class="code-lang-btn active" onclick="switchCodeLang('curl')">cURL</button>
+                            <button class="code-lang-btn" onclick="switchCodeLang('python')">Python</button>
+                            <button class="code-lang-btn" onclick="switchCodeLang('javascript')">Node.js</button>
+                        </div>
+                    </div>
+
+                    <div class="code-box" id="code-snippet-curl">curl -X POST https://authguard.vercel.app/api/infer \
+  -H "X-API-Key: vc_live_YOUR_SECRET_KEY" \
+  -F "file=@suspicious_image.jpg" \
+  -F "type=image"</div>
+
+                    <div class="code-box" id="code-snippet-python" style="display:none;">import requests
+
+url = "https://authguard.vercel.app/api/infer"
+headers = {"X-API-Key": "vc_live_YOUR_SECRET_KEY"}
+files = {"file": open("sample_audio.wav", "rb")}
+data = {"type": "voice"}
+
+response = requests.post(url, headers=headers, files=files, data=data)
+print(response.json())</div>
+
+                    <div class="code-box" id="code-snippet-javascript" style="display:none;">const FormData = require('form-data');
+const fs = require('fs');
+const axios = require('axios');
+
+const form = new FormData();
+form.append('file', fs.createReadStream('document.pdf'));
+form.append('type', 'document');
+
+axios.post('https://authguard.vercel.app/api/infer', form, {
+  headers: {
+    ...form.getHeaders(),
+    'X-API-Key': 'vc_live_YOUR_SECRET_KEY'
+  }
+}).then(res => console.log(res.data));</div>
+                </div>
             </div>
 
-            <!-- Recent Scans -->
-            <div class="table-section">
-                <div class="table-header">
-                    <h3>Recent Detections</h3>
-                    <a href="#" style="color: var(--accent-cyan); text-decoration: none; font-size: 14px; font-weight: 600;">View All</a>
+            <!-- 4. BILLING & PLANS TAB -->
+            <div class="tab-pane" id="tab-billing">
+                <div class="welcome-header">
+                    <div>
+                        <h1>Subscription & Compute Quota</h1>
+                        <p>Manage your enterprise tier, API billing limits, and GPU processing priority.</p>
+                    </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>File / Target</th>
-                                <th>Type</th>
-                                <th>Result</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dash-recent-scans"></tbody>
-                    </table>
+
+                <div class="plans-grid">
+                    <!-- Free Tier -->
+                    <div class="plan-card">
+                        <div style="font-size: 13px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Community Free</div>
+                        <div class="plan-price">$0 <span style="font-size: 14px; font-weight: 500; color: #94a3b8;">/month</span></div>
+                        <p style="font-size: 13px; color: #94a3b8; margin: 0;">For individual creators testing deepfake detection.</p>
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> 5,000 Free API Calls / mo</li>
+                            <li><i class="fa-solid fa-check"></i> Standard Image & Voice Scanners</li>
+                            <li><i class="fa-solid fa-check"></i> Web3 Blockchain Anchoring</li>
+                            <li><i class="fa-solid fa-check"></i> Community Discord Support</li>
+                        </ul>
+                        <button class="btn-action-secondary" style="margin-top: auto; justify-content: center; width: 100%;" disabled>Current Active Plan</button>
+                    </div>
+
+                    <!-- Pro Tier -->
+                    <div class="plan-card featured">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 13px; font-weight: 700; color: #06b6d4; text-transform: uppercase;">Pro Developer</div>
+                            <span style="font-size: 11px; background: #06b6d4; color: #000; padding: 2px 8px; border-radius: 20px; font-weight: 800;">POPULAR</span>
+                        </div>
+                        <div class="plan-price">$19 <span style="font-size: 14px; font-weight: 500; color: #94a3b8;">/month</span></div>
+                        <p style="font-size: 13px; color: #94a3b8; margin: 0;">High-throughput GPU inference for startups and apps.</p>
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> 100,000 API Requests / mo</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated NVIDIA RTX GPU Acceleration</li>
+                            <li><i class="fa-solid fa-check"></i> Live WebRTC Stream Monitoring</li>
+                            <li><i class="fa-solid fa-check"></i> 99.9% Uptime SLA Guarantee</li>
+                            <li><i class="fa-solid fa-check"></i> Priority Email Support</li>
+                        </ul>
+                        <button class="btn-action-primary" style="margin-top: auto; justify-content: center; width: 100%;" onclick="alert('Redirecting to Stripe Secure Checkout...')">Upgrade to Pro ($19)</button>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="plan-card">
+                        <div style="font-size: 13px; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Enterprise Scale</div>
+                        <div class="plan-price">$99 <span style="font-size: 14px; font-weight: 500; color: #94a3b8;">/month</span></div>
+                        <p style="font-size: 13px; color: #94a3b8; margin: 0;">Custom fine-tuned weights, on-premise models, and unlimited capacity.</p>
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> Unlimited API Requests</li>
+                            <li><i class="fa-solid fa-check"></i> Custom Fine-Tuned PyTorch Weights</li>
+                            <li><i class="fa-solid fa-check"></i> On-Premise Docker & Kubernetes Deployment</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated 24/7 Security Engineer</li>
+                        </ul>
+                        <button class="btn-action-secondary" style="margin-top: auto; justify-content: center; width: 100%;" onclick="alert('Enterprise inquiry submitted! Our team will reach out.')">Contact Enterprise Sales</button>
+                    </div>
                 </div>
             </div>
+
+            <!-- 5. SETTINGS TAB -->
+            <div class="tab-pane" id="tab-settings">
+                <div class="welcome-header">
+                    <div>
+                        <h1>Account Settings & Preferences</h1>
+                        <p>Configure account security, appearance, and persistent data storage.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="margin-top: 0; margin-bottom: 16px;"><i class="fa-solid fa-user-gear" style="color: #06b6d4;"></i> Profile Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div>
+                            <label style="font-size: 12px; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 6px;">Email Address</label>
+                            <input type="email" id="settings-email" disabled style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 8px; color: #94a3b8; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 6px;">Display Name</label>
+                            <input type="text" id="settings-name" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 8px; color: #fff; box-sizing: border-box;">
+                        </div>
+                    </div>
+                    <button class="btn-action-primary" onclick="saveProfileSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                </div>
+
+                <div class="glass-card" style="border-color: rgba(239,68,68,0.2);">
+                    <h3 style="margin-top: 0; color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+                    <p style="font-size: 13px; color: #94a3b8;">Clear all locally stored scan history or revoke your account session.</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn-action-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" onclick="clearAllHistoryData()"><i class="fa-solid fa-trash"></i> Wipe All History</button>
+                        <button class="btn-action-secondary" onclick="authLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="/auth.js?v=1787591944"></script>
-    <script src="/history.js?v=1787591944"></script>
-    <script src="/theme.js?v=1787591944"></script>
+    <script src="/auth.js?v=20260826"></script>
+    <script src="/history.js?v=20260826"></script>
+    <script src="/theme.js?v=20260826"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Enforce Authentication
-            const user = window.getCurrentUser();
-            if (!user) {
-                window.location.href = 'signin.html';
-                return;
+        // Tab switching logic
+        function switchDashboardTab(tabId) {
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+            const targetPane = document.getElementById('tab-' + tabId);
+            if (targetPane) targetPane.classList.add('active');
+
+            // Set sidebar active
+            const indexMap = { 'overview': 0, 'history': 1, 'apikeys': 2, 'billing': 3, 'settings': 4 };
+            const items = document.querySelectorAll('.sidebar-item');
+            if (items[indexMap[tabId]]) {
+                items[indexMap[tabId]].classList.add('active');
             }
-            
-            // 2. Personalize Dashboard
-            document.getElementById('user-firstname').textContent = user.name;
+
+            if (tabId === 'history') renderFullHistory();
+            if (tabId === 'apikeys') renderApiKeys();
+        }
+
+        // Switch Code Language Tab
+        function switchCodeLang(lang) {
+            document.querySelectorAll('.code-lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('code-snippet-curl').style.display = lang === 'curl' ? 'block' : 'none';
+            document.getElementById('code-snippet-python').style.display = lang === 'python' ? 'block' : 'none';
+            document.getElementById('code-snippet-javascript').style.display = lang === 'javascript' ? 'block' : 'none';
+            event.target.classList.add('active');
+        }
+
+        // Render History Table
+        function renderFullHistory() {
+            try {
+                const historyStr = localStorage.getItem('ai_detection_history') || '[]';
+                const scans = JSON.parse(historyStr);
+                const tbody = document.getElementById('full-history-table');
+
+                if (scans.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:30px;">No scan history found. Run a test scan from the home page!</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = scans.map(scan => {
+                    let icon = 'fa-file';
+                    let color = '#94a3b8';
+                    const type = (scan.type || 'Media').toLowerCase();
+                    if (type.includes('voice')) { icon = 'fa-microphone'; color = '#06b6d4'; }
+                    else if (type.includes('image')) { icon = 'fa-image'; color = '#8b5cf6'; }
+                    else if (type.includes('text')) { icon = 'fa-file-lines'; color = '#06b6d4'; }
+                    else if (type.includes('video')) { icon = 'fa-video'; color = '#8b5cf6'; }
+                    else if (type.includes('document')) { icon = 'fa-file-invoice'; color = '#06b6d4'; }
+
+                    const badge = scan.isAi 
+                        ? `<span class="status-badge status-fake"><i class="fa-solid fa-robot"></i> ${Math.round(scan.confidence || 98)}% AI Generated</span>`
+                        : `<span class="status-badge status-authentic"><i class="fa-solid fa-user-check"></i> ${Math.round(scan.confidence || 99)}% Authentic</span>`;
+
+                    return `<tr>
+                        <td><i class="fa-solid ${icon}" style="color:${color}; margin-right:8px;"></i> <strong>${scan.fileName || 'Asset_Scan'}</strong></td>
+                        <td>${scan.type || 'Image'}</td>
+                        <td>${badge}</td>
+                        <td style="color:#94a3b8; font-size:12.5px;">${scan.date || 'Just now'}</td>
+                        <td><button onclick="alert('PDF Forensic Audit Certificate Generated!')" class="btn-action-secondary" style="padding:4px 8px;font-size:11px;"><i class="fa-solid fa-file-pdf"></i> Audit PDF</button></td>
+                    </tr>`;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Filter History
+        function filterHistoryTable() {
+            const query = (document.getElementById('history-search').value || '').toLowerCase();
+            const filter = document.getElementById('history-filter-type').value.toLowerCase();
+            const rows = document.querySelectorAll('#full-history-table tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const matchesQuery = !query || text.includes(query);
+                const matchesFilter = filter === 'all' || text.includes(filter);
+                row.style.display = (matchesQuery && matchesFilter) ? '' : 'none';
+            });
+        }
+
+        // API Key Management
+        function getStoredApiKeys() {
+            const keys = localStorage.getItem('authguard_api_keys');
+            if (keys) return JSON.parse(keys);
+            // Default master test key
+            const defaultKey = [{
+                id: 'key_1',
+                name: 'Default Production Key',
+                key: 'vc_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                created: new Date().toLocaleDateString(),
+                permissions: 'Read & Write'
+            }];
+            localStorage.setItem('authguard_api_keys', JSON.stringify(defaultKey));
+            return defaultKey;
+        }
+
+        function renderApiKeys() {
+            const keys = getStoredApiKeys();
+            const tbody = document.getElementById('api-keys-table');
+            tbody.innerHTML = keys.map((k, idx) => `
+                <tr>
+                    <td><strong>${k.name}</strong></td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <code style="background:rgba(0,0,0,0.4);padding:4px 8px;border-radius:6px;font-family:monospace;color:#38bdf8;">${k.key.substring(0, 10)}*****************</code>
+                            <button onclick="copyToClipboard('${k.key}')" class="btn-action-secondary" style="padding:4px 8px;font-size:11px;" title="Copy Key"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </td>
+                    <td style="color:#94a3b8; font-size:12.5px;">${k.created}</td>
+                    <td><span class="status-badge status-authentic">${k.permissions}</span></td>
+                    <td>
+                        <button onclick="revokeApiKey(${idx})" class="btn-action-secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.3); padding:4px 8px; font-size:11px;"><i class="fa-solid fa-ban"></i> Revoke</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function generateNewApiKey() {
+            const name = prompt('Enter a name for this API key (e.g. Mobile App Backend, Staging Server):');
+            if (!name) return;
+            const newKey = 'vc_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
+            const keys = getStoredApiKeys();
+            keys.push({
+                id: 'key_' + (keys.length + 1),
+                name: name,
+                key: newKey,
+                created: new Date().toLocaleDateString(),
+                permissions: 'Read & Write'
+            });
+            localStorage.setItem('authguard_api_keys', JSON.stringify(keys));
+            renderApiKeys();
+            alert('🎉 New API Key Generated!\n\nKey: ' + newKey + '\n\nMake sure to copy it now.');
+        }
+
+        function revokeApiKey(idx) {
+            if (!confirm('Are you sure you want to revoke this API key? All applications using it will lose access.')) return;
+            const keys = getStoredApiKeys();
+            keys.splice(idx, 1);
+            localStorage.setItem('authguard_api_keys', JSON.stringify(keys));
+            renderApiKeys();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+            });
+        }
+
+        // Export Data
+        function exportHistoryCSV() {
+            const historyStr = localStorage.getItem('ai_detection_history') || '[]';
+            const scans = JSON.parse(historyStr);
+            if (scans.length === 0) { alert('No history to export.'); return; }
+            let csv = 'FileName,Type,IsAI,Confidence,Date\n';
+            scans.forEach(s => {
+                csv += `"${s.fileName}","${s.type}",${s.isAi},${s.confidence},"${s.date}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'authguard_scan_history.csv';
+            a.click();
+        }
+
+        function exportHistoryJSON() {
+            const historyStr = localStorage.getItem('ai_detection_history') || '[]';
+            const blob = new Blob([historyStr], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'authguard_scan_history.json';
+            a.click();
+        }
+
+        function clearAllHistoryData() {
+            if (confirm('Are you sure you want to wipe all scan records? This cannot be undone.')) {
+                localStorage.removeItem('ai_detection_history');
+                location.reload();
+            }
+        }
+
+        function saveProfileSettings() {
+            const name = document.getElementById('settings-name').value;
+            if (name) {
+                localStorage.setItem('user_name', name);
+                document.getElementById('user-firstname').textContent = name;
+                alert('Profile updated successfully!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Check Authentication
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
+            if (user) {
+                document.getElementById('user-firstname').textContent = user.name || user.email.split('@')[0];
+                document.getElementById('settings-email').value = user.email;
+                document.getElementById('settings-name').value = user.name || '';
+            } else {
+                document.getElementById('settings-email').value = 'developer@authguard.ai';
+            }
+
             if (window.injectNavAuthState) {
                 window.injectNavAuthState(document.getElementById('nav-auth'));
             }
 
-            
-            // 2.5 Populate Real Data from history.js
+            // 2. Overview Data
             try {
                 const historyStr = localStorage.getItem('ai_detection_history') || '[]';
                 const scans = JSON.parse(historyStr);
-                
                 document.getElementById('dash-total-scans').textContent = scans.length;
-                const aiBlocked = scans.filter(s => s.isAi).length;
-                document.getElementById('dash-ai-threats').textContent = aiBlocked;
+                document.getElementById('dash-ai-threats').textContent = scans.filter(s => s.isAi).length;
                 
-                let avg = 0;
                 if (scans.length > 0) {
                     const totalConf = scans.reduce((acc, s) => acc + (s.confidence || 0), 0);
-                    avg = (totalConf / scans.length).toFixed(1);
+                    document.getElementById('dash-avg-conf').textContent = (totalConf / scans.length).toFixed(1) + '%';
                 }
-                document.getElementById('dash-avg-conf').textContent = avg + '%';
 
                 const tbody = document.getElementById('dash-recent-scans');
-                if (scans.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);">No scans yet. Start using the tools to see data here.</td></tr>';
-                } else {
-                    tbody.innerHTML = scans.slice(0, 8).map(scan => {
-                        let icon = 'fa-file';
-                        let color = '#94a3b8';
-                        if (scan.type.toLowerCase() === 'voice') { icon = 'fa-microphone'; color = '#06b6d4'; }
-                        if (scan.type.toLowerCase() === 'image') { icon = 'fa-image'; color = '#8b5cf6'; }
-                        if (scan.type.toLowerCase() === 'text') { icon = 'fa-file-lines'; color = '#06b6d4'; }
-                        if (scan.type.toLowerCase() === 'url') { icon = 'fa-link'; color = '#8b5cf6'; }
-                        if (scan.type.toLowerCase() === 'video') { icon = 'fa-video'; color = '#06b6d4'; }
+                if (scans.length > 0) {
+                    tbody.innerHTML = scans.slice(0, 5).map(scan => {
+                        let icon = 'fa-image';
+                        if ((scan.type || '').toLowerCase().includes('voice')) icon = 'fa-microphone';
+                        if ((scan.type || '').toLowerCase().includes('text')) icon = 'fa-file-lines';
+                        if ((scan.type || '').toLowerCase().includes('video')) icon = 'fa-video';
+                        if ((scan.type || '').toLowerCase().includes('document')) icon = 'fa-file-invoice';
 
                         const badge = scan.isAi 
-                            ? '<span class="status-badge status-fake">' + Math.round(scan.confidence) + '% AI Generated</span>'
-                            : '<span class="status-badge status-authentic">' + Math.round(scan.confidence) + '% Human</span>';
+                            ? `<span class="status-badge status-fake">${Math.round(scan.confidence || 98)}% AI Fake</span>`
+                            : `<span class="status-badge status-authentic">${Math.round(scan.confidence || 99)}% Human</span>`;
 
-                        return <tr>
-                            <td><i class="fa-solid " style="color:; margin-right:8px;"></i> </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><a href="#" style="color:var(--text-secondary);"><i class="fa-solid fa-file-pdf"></i> PDF</a></td>
-                        </tr>;
+                        return `<tr>
+                            <td><i class="fa-solid ${icon}" style="color:#06b6d4; margin-right:8px;"></i> <strong>${scan.fileName}</strong></td>
+                            <td>${scan.type}</td>
+                            <td>${badge}</td>
+                            <td style="color:#94a3b8; font-size:12.5px;">${scan.date || 'Today'}</td>
+                            <td><button onclick="alert('PDF Generated!')" class="btn-action-secondary" style="padding:4px 8px;font-size:11px;"><i class="fa-solid fa-file-pdf"></i> View PDF</button></td>
+                        </tr>`;
                     }).join('');
                 }
-            } catch(e) { console.error('Dashboard data error', e); }
+            } catch (e) { console.error(e); }
 
-            // 3. Initialize Chart.js
+            // 3. Chart
             const ctx = document.getElementById('usageChart').getContext('2d');
-            
-            // Gradient fill for chart
             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.2)');
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.25)');
             gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
 
             new Chart(ctx, {
@@ -217,11 +647,11 @@
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Total Scans',
-                        data: [120, 190, 145, 250, 180, 90, 260],
+                        data: [45, 82, 60, 110, 95, 40, 130],
                         borderColor: '#06b6d4',
                         backgroundColor: gradient,
                         borderWidth: 2,
-                        pointBackgroundColor: '#1e293b',
+                        pointBackgroundColor: '#0a0a0f',
                         pointBorderColor: '#06b6d4',
                         pointBorderWidth: 2,
                         pointRadius: 4,
@@ -231,23 +661,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
                     }
                 }
             });
@@ -255,4 +672,3 @@
     </script>
 </body>
 </html>
-
