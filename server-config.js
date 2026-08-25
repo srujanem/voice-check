@@ -13,7 +13,11 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    const DEFAULT_URL = 'https://auction-jeremy-builds-cardiff.trycloudflare.com';
+    // Development server URL (Cloudflare Tunnel)
+    const DEFAULT_URL = 'https://shakira-into-gore-sympathy.trycloudflare.com';
+
+    // Add version string for cache busting
+    const CACHE_VERSION = 'v=9';
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
