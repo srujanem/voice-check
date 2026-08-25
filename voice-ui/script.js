@@ -287,6 +287,13 @@ function initVoiceUI() {
     function showResult(isHuman, confidence, probHuman, probAi) {
         loadingState.classList.add('hidden');
         resultState.classList.remove('hidden');
+        // Make Mint button ready
+        const mintBtn = document.getElementById('mint-report-btn');
+        if (mintBtn) {
+            mintBtn.dataset.ready = "true";
+            if (typeof updateWalletUI === 'function') updateWalletUI();
+        }
+        
 
         // ── Voice Animation Banner ─────────────────────────────────────────
         const humanAnim = document.getElementById('human-anim');

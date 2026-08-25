@@ -192,6 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showResults(data) {
         resultsSection.classList.remove('hidden');
+        // Make Mint button ready
+        const mintBtn = document.getElementById('mint-report-btn');
+        if (mintBtn) {
+            mintBtn.dataset.ready = "true";
+            if (typeof updateWalletUI === 'function') updateWalletUI();
+        }
+        
         
         const isFake = data.prediction === "AI-Generated";
         const confidence = Math.round(data.confidence);

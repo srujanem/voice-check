@@ -216,6 +216,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Show results ──────────────────────────────────────────────────────────
     function showResults(data) {
         resultsSection.classList.remove('hidden');
+        // Make Mint button ready
+        const mintBtn = document.getElementById('mint-report-btn');
+        if (mintBtn) {
+            mintBtn.dataset.ready = "true";
+            if (typeof updateWalletUI === 'function') updateWalletUI();
+        }
+        
 
         const inner     = data.analysis || data;
         const isFake    = data.is_ai !== undefined
