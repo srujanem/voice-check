@@ -14,10 +14,10 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://shakira-into-gore-sympathy.trycloudflare.com';
+    const DEFAULT_URL = 'https://copyrighted-appreciate-university-baths.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = 'v=9';
+    const CACHE_VERSION = 'v=10';
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
