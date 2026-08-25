@@ -49,6 +49,7 @@ def create_app():
     from backend.routes.results_routes import results_bp
     from backend.routes.alias_routes import alias_bp
     from backend.routes.feedback_routes import feedback_bp
+    from backend.routes.document_routes import document_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -63,6 +64,7 @@ def create_app():
     app.register_blueprint(results_bp)
     app.register_blueprint(alias_bp)
     app.register_blueprint(feedback_bp)
+    app.register_blueprint(document_bp)
 
     @app.route("/", methods=["GET"])
     def home():
@@ -108,7 +110,7 @@ def create_app():
             return jsonify({"error": "No file uploaded"}), 400
 
         # Comprehensive file validation (type, size, magic bytes)
-        scan_type = req_type if req_type in ("image", "audio", "video", "text") else "audio"
+        scan_type = req_type if req_type in ("image", "audio", "video", "text", "document") else "audio"
         if req_type == "voice":
             scan_type = "voice"
         is_valid, err_msg = validate_file_upload(file, scan_type)
@@ -122,7 +124,8 @@ def create_app():
         type_map = {
             "voice": ("/predict_voice", "audio"),
             "image": ("/predict_image", "image"),
-            "video": ("/predict_video", "video")
+            "video": ("/predict_video", "video"),
+            "document": ("/predict_document", "document")
         }
         
         if req_type == "text":
