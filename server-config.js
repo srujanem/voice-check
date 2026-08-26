@@ -14,7 +14,7 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://resist-ing-defense-kevin.trycloudflare.com';
+    const DEFAULT_URL = 'https://commissioner-motor-housewives-specialized.trycloudflare.com';
 
     // Add version string for cache busting
     v=11
