@@ -50,6 +50,7 @@ def create_app():
     from backend.routes.alias_routes import alias_bp
     from backend.routes.feedback_routes import feedback_bp
     from backend.routes.document_routes import document_bp
+    from backend.routes.billing_routes import billing_bp
 
     app.register_blueprint(voice_bp)
     app.register_blueprint(image_bp)
@@ -65,6 +66,7 @@ def create_app():
     app.register_blueprint(alias_bp)
     app.register_blueprint(feedback_bp)
     app.register_blueprint(document_bp)
+    app.register_blueprint(billing_bp)
 
     @app.route("/", methods=["GET"])
     def home():

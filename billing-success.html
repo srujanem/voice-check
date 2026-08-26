@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - AuthGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="global.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .success-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .icon {
+            font-size: 64px;
+            color: #10b981; /* green */
+            margin-bottom: 20px;
+        }
+        h2 { margin-bottom: 10px; }
+        p { color: #94a3b8; margin-bottom: 25px; line-height: 1.5; }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="success-card">
+        <div class="icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h2>Payment Successful!</h2>
+        <p>Thank you for upgrading. Your account quota has been automatically increased, and you now have access to premium priority GPU processing.</p>
+        <a href="/dashboard.html" class="btn">Return to Dashboard</a>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // On load, update local storage quota simulation so the UI reflects the upgrade immediately
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const plan = urlParams.get('plan');
+            
+            if (plan === 'pro') {
+                localStorage.setItem('authguard_quota', 100000); // 100k Pro limit
+                localStorage.setItem('authguard_plan', 'Pro');
+            } else if (plan === 'enterprise') {
+                localStorage.setItem('authguard_quota', 99999999); // Unlimited
+                localStorage.setItem('authguard_plan', 'Enterprise');
+            }
+        });
+    </script>
+</body>
+</html>
