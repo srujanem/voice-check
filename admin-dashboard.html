@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Founder Admin - AuthGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="global.css" rel="stylesheet">
+    <script src="server-config.js"></script>
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+        }
+        .admin-content {
+            padding: 40px;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .users-table th, .users-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .users-table th {
+            color: #94a3b8;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge.pro { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+        .badge.free { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <div class="admin-sidebar">
+            <h2 style="margin-bottom: 30px;"><i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan)"></i> AuthGuard</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 15px;"><a href="#" style="color: #fff; text-decoration: none;"><i class="fa-solid fa-chart-pie" style="width: 25px;"></i> Overview</a></li>
+                <li style="margin-bottom: 15px;"><a href="#" style="color: #94a3b8; text-decoration: none;"><i class="fa-solid fa-users" style="width: 25px;"></i> Users</a></li>
+                <li style="margin-bottom: 15px;"><a href="/" style="color: #94a3b8; text-decoration: none;"><i class="fa-solid fa-arrow-right-from-bracket" style="width: 25px;"></i> Exit Admin</a></li>
+            </ul>
+        </div>
+        
+        <div class="admin-content">
+            <h1 style="margin-bottom: 30px;">Founder Dashboard</h1>
+            
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="val-users">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-value" id="val-mrr" style="color: #10b981;">$-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pro Subscribers</div>
+                    <div class="stat-value" id="val-pro">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Scans</div>
+                    <div class="stat-value" id="val-scans">-</div>
+                </div>
+            </div>
+
+            <h2 style="margin-bottom: 20px;">Recent Signups (Leads)</h2>
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email Address</th>
+                        <th>Plan</th>
+                        <th>Scans Used</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <tr><td colspan="4" style="text-align: center;">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadAdminData() {
+            try {
+                const res = await fetch(SERVER_URL + '/api/admin/stats');
+                const data = await res.json();
+                
+                document.getElementById('val-users').innerText = data.total_users;
+                document.getElementById('val-mrr').innerText = '$' + data.mrr;
+                document.getElementById('val-pro').innerText = data.pro_users;
+                document.getElementById('val-scans').innerText = data.total_scans;
+                
+                const tbody = document.getElementById('users-tbody');
+                tbody.innerHTML = '';
+                
+                data.recent_users.forEach(u => {
+                    const tr = document.createElement('tr');
+                    const badgeClass = u.plan === 'pro' ? 'pro' : 'free';
+                    tr.innerHTML = `
+                        <td><strong>${u.name || 'Anonymous'}</strong></td>
+                        <td>${u.email || 'N/A'}</td>
+                        <td><span class="badge ${badgeClass}">${u.plan}</span></td>
+                        <td>${u.scans} API Calls</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                document.getElementById('users-tbody').innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ef4444;">Error connecting to backend database.</td></tr>';
+            }
+        }
+        
+        loadAdminData();
+    </script>
+</body>
+</html>

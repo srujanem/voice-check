@@ -681,12 +681,22 @@
             headers: { 'Authorization': 'Bearer ' + accessToken }
         })
         .then(r => r.json())
-        .then(user => {
+        .then(async (user) => {
             try {
                 localStorage.setItem('auth_token', accessToken);
                 localStorage.setItem('auth_email', user.email);
                 localStorage.setItem('user_name', user.name || user.email.split('@')[0]);
                 localStorage.setItem('user_picture', user.picture || '');
+                
+                // Admin Tracking Ping
+                try {
+                    await fetch(getBackendUrl() + '/api/admin/register_login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ uid: user.id || user.email, email: user.email, name: user.name || user.email.split('@')[0] })
+                    });
+                } catch(err) { console.error('Admin tracking ping failed'); }
+
             } catch(e) {
                 alert('Storage blocked. Please disable Private/Incognito mode.');
                 return;
