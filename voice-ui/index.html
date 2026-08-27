@@ -534,6 +534,9 @@
 
             <!-- Action buttons -->
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+                <button id="download-pdf-btn" class="btn-secondary" style="width:100%; justify-content:center; padding:12px; border-color:rgba(6,182,212,0.4); color:#22d3ee;" aria-label="Download Forensic PDF">
+                    <i class="fa-solid fa-file-pdf"></i> Download Forensic Audit Report (PDF)
+                </button>
                 <button id="reset-btn" class="btn-secondary"
                         style="width:100%; justify-content:center;" aria-label="Check another audio">
                     <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Check Another
@@ -821,6 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animateSpectrogram();
     })();
     </script>
+    <script src="/pdf-report.js?v=1"></script>
     <script src="/motion-3d.js?v=1787591944"></script>
 </body>
 </html>

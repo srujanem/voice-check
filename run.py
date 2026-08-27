@@ -30,4 +30,4 @@ app = create_app()
 if __name__ == "__main__":
     from waitress import serve
     print("Starting server with Waitress on port 5000...")
-    serve(app, host="127.0.0.1", port=5000, threads=6)
+    serve(app, host="127.0.0.1", port=5000, threads=1)

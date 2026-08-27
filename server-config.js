@@ -14,7 +14,7 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://earned-beautiful-gives-growing.trycloudflare.com';
+    const DEFAULT_URL = 'https://turbo-perth-hook-sides.trycloudflare.com';
 
     // Add version string for cache busting
     const CACHE_VERSION = "v=11";
