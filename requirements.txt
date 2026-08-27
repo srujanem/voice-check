@@ -8,7 +8,7 @@ joblib==1.4.2
 scipy
 opencv-python-headless
 onnxruntime==1.18.0
-tflite-runtime==2.14.0
+ai-edge-litert
 librosa==0.10.2
 soundfile
 Pillow==10.4.0

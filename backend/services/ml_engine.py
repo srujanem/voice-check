@@ -4,12 +4,17 @@ from backend.config import Config
 
 class TFLiteWrapper:
     def __init__(self, model_path):
+        self.interpreter = None
         try:
-            import tflite_runtime.interpreter as tflite
-            self.interpreter = tflite.Interpreter(model_path=model_path)
+            from ai_edge_litert.interpreter import Interpreter
+            self.interpreter = Interpreter(model_path=model_path)
         except Exception:
-            import tensorflow as tf
-            self.interpreter = tf.lite.Interpreter(model_path=model_path)
+            try:
+                import tflite_runtime.interpreter as tflite
+                self.interpreter = tflite.Interpreter(model_path=model_path)
+            except Exception:
+                import tensorflow as tf
+                self.interpreter = tf.lite.Interpreter(model_path=model_path)
             
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
@@ -17,7 +22,6 @@ class TFLiteWrapper:
 
     def predict(self, x, verbose=0):
         x = np.array(x, dtype=np.float32)
-        # Handle dynamic or static batch shapes
         self.interpreter.set_tensor(self.input_details[0]['index'], x)
         self.interpreter.invoke()
         return self.interpreter.get_tensor(self.output_details[0]['index'])
@@ -65,9 +69,9 @@ class MLEngine:
             if os.path.exists(tflite_path):
                 try:
                     self.voice_model = TFLiteWrapper(tflite_path)
-                    print("[ML Engine] Loaded ultra-fast Voice TFLite model!")
+                    print("[ML Engine] Loaded ultra-fast Voice LiteRT model!")
                 except Exception as e:
-                    print(f"Failed to load Voice TFLite: {e}")
+                    print(f"Failed to load Voice LiteRT: {e}")
 
             if self.voice_model is None and os.path.exists(keras_path):
                 try:
@@ -89,9 +93,9 @@ class MLEngine:
             if os.path.exists(tflite_path):
                 try:
                     self.image_model = TFLiteWrapper(tflite_path)
-                    print("[ML Engine] Loaded ultra-fast Image TFLite model!")
+                    print("[ML Engine] Loaded ultra-fast Image LiteRT model!")
                 except Exception as e:
-                    print(f"Failed to load Image TFLite: {e}")
+                    print(f"Failed to load Image LiteRT: {e}")
 
             if self.image_model is None and os.path.exists(keras_path):
                 try:
@@ -120,23 +124,20 @@ class MLEngine:
         onnx_path = os.path.join(base_dir, "models", "model_document_forgery.onnx")
         pth_path = os.path.join(base_dir, "models", "model_document_forgery.pth")
 
-        # 1. Try ONNX (Fast, < 30MB RAM)
         if os.path.exists(onnx_path):
             if self.document_model is None or not isinstance(self.document_model, ONNXWrapper):
                 self.document_model = ONNXWrapper(onnx_path)
                 print("[ML Engine] Using Document Forgery ONNX engine.")
 
-            # Resize and normalize
             img_res = img.resize((224, 224))
             arr = np.array(img_res, dtype=np.float32) / 255.0
             mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
             std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
             arr = (arr - mean) / std
-            arr = np.transpose(arr, (2, 0, 1)) # (3, 224, 224)
-            arr = np.expand_dims(arr, 0)       # (1, 3, 224, 224)
+            arr = np.transpose(arr, (2, 0, 1))
+            arr = np.expand_dims(arr, 0)
 
             logits = self.document_model.predict(arr)[0]
-            # Softmax
             exp_logits = np.exp(logits - np.max(logits))
             probs = exp_logits / np.sum(exp_logits)
             prob_real = float(probs[0]) * 100
@@ -156,7 +157,6 @@ class MLEngine:
                 }
             }
 
-        # 2. Fallback to PyTorch
         if os.path.exists(pth_path):
             import torch
             from torchvision import transforms, models
