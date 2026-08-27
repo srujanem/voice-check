@@ -15,7 +15,7 @@ import threading
 
 FLASK_CMD = [sys.executable, "run.py"]
 CLOUDFLARED = r"C:\voice-check\cloudflared.exe"
-TUNNEL_CMD = [CLOUDFLARED, "tunnel", "--url", "http://localhost:5000", "--no-autoupdate"]
+TUNNEL_CMD = [CLOUDFLARED, "tunnel", "--url", "http://127.0.0.1:5000", "--no-autoupdate"]
 SERVER_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "server-config.js")
 
 flask_proc = None
