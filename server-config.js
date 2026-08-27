@@ -14,7 +14,7 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://katie-capable-book-regarded.trycloudflare.com';
+    const DEFAULT_URL = 'https://urge-diverse-accompanying-organize.trycloudflare.com';
 
     // Add version string for cache busting
     const CACHE_VERSION = "v=11";
