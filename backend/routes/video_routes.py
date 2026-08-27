@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify, current_app
+﻿from flask import Blueprint, request, jsonify, current_app
 import os
 import shutil
 import subprocess
 from PIL import Image
-import tensorflow as tf
+import numpy as np
 import threading
 import uuid
 import json
@@ -16,7 +16,6 @@ video_bp = Blueprint('video', __name__)
 
 def process_video_task(app, task_id, path):
     with app.app_context():
-        # Update status to PROCESSING
         external_db.update_document('video_tasks', task_id, {"status": "PROCESSING"})
         
         try:
@@ -36,13 +35,13 @@ def process_video_task(app, task_id, path):
             total_prob = 0.0
             frame_count = 0
 
-            image_model = ml.get_image_model()
+            image_model, _ = ml.get_image_model()
             for frame_file in frames:
                 frame_path = os.path.join(frames_dir, frame_file)
                 img = Image.open(frame_path).convert('RGB')
                 img = img.resize((224, 224))
-                img_array = tf.keras.preprocessing.image.img_to_array(img)
-                img_array = tf.expand_dims(img_array, 0)
+                img_array = np.array(img, dtype=np.float32)
+                img_array = np.expand_dims(img_array, 0)
                 
                 pred_prob = float(image_model.predict(img_array, verbose=0)[0][0])
                 total_prob += pred_prob
@@ -59,79 +58,53 @@ def process_video_task(app, task_id, path):
             prob_fake = round((1.0 - avg_prob) * 100, 1)
             confidence = prob_fake if is_fake else prob_real
 
-            result_dict = {
-                "prediction": result,
-                "confidence": confidence,
-                "prob_human": prob_real,
-                "prob_ai": prob_fake
-            }
-
             external_db.update_document('video_tasks', task_id, {
-                "result_data": json.dumps(result_dict),
-                "status": "COMPLETED"
+                "status": "COMPLETED",
+                "result": result,
+                "confidence": confidence,
+                "prob_real": prob_real,
+                "prob_fake": prob_fake
             })
-            
+
         except Exception as e:
-            print(f"Error processing video task {task_id}: {e}")
             external_db.update_document('video_tasks', task_id, {
                 "status": "FAILED",
-                "error_msg": str(e)
+                "error": str(e)
             })
         finally:
             if os.path.exists(path):
                 os.remove(path)
 
-
 @video_bp.route("/predict_video", methods=["POST"])
 @require_api_key
 def predict_video():
-    # Trigger lazy load and check if model is available
-    _image_model = ml.get_image_model()
-    if _image_model is None:
-        return jsonify({"error": "Image model not loaded. Cannot process video frames."}), 500
-
-    if "video" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-
-    file = request.files["video"]
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
+    file = request.files.get("video") or request.files.get("file")
+    if not file or file.filename == '':
+        return jsonify({"error": "No video file selected"}), 400
 
     task_id = str(uuid.uuid4())
-    # Save the file temporarily
-    path = os.path.join(Config.UPLOAD_FOLDER, f"{task_id}_{file.filename}")
-    file.save(path)
+    file_ext = os.path.splitext(file.filename)[1]
+    file_path = os.path.join(Config.UPLOAD_FOLDER, f"{task_id}{file_ext}")
+    file.save(file_path)
 
-    # Insert into External DB
-    external_db.create_document('video_tasks', {"id": task_id, "status": "PENDING"})
+    external_db.set_document('video_tasks', task_id, {
+        "status": "QUEUED",
+        "created_at": None
+    })
 
-    # Start background thread
     app = current_app._get_current_object()
-    thread = threading.Thread(target=process_video_task, args=(app, task_id, path))
-    thread.daemon = True
-    thread.start()
+    threading.Thread(target=process_video_task, args=(app, task_id, file_path)).start()
 
-    return jsonify({"task_id": task_id, "status": "PENDING"}), 202
-
+    return jsonify({
+        "status": "QUEUED",
+        "task_id": task_id,
+        "message": "Video processing started in background"
+    })
 
 @video_bp.route("/video_status/<task_id>", methods=["GET"])
 @require_api_key
 def video_status(task_id):
-    resp = external_db.list_documents('video_tasks')
-    if not resp.get("success"):
-        return jsonify({"error": "Could not fetch task status"}), 500
-        
-    tasks = resp.get("data", [])
-    task_data = next((t for t in tasks if t.get("id") == task_id or t.get("_id") == task_id), None)
-    
-    if not task_data:
+    task = external_db.get_document('video_tasks', task_id)
+    if not task:
         return jsonify({"error": "Task not found"}), 404
-        
-    status = task_data.get("status")
-    
-    if status == 'COMPLETED':
-        return jsonify(json.loads(task_data.get("result_data", "{}")))
-    elif status == 'FAILED':
-        return jsonify({"error": task_data.get("error_msg", "Task failed")}), 500
-    else:
-        return jsonify({"status": status})
+    return jsonify(task)

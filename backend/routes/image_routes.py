@@ -1,5 +1,4 @@
-from flask import Blueprint, request, jsonify
-import tensorflow as tf
+﻿from flask import Blueprint, request, jsonify
 from PIL import Image
 from backend.services.ml_engine import ml
 from backend.decorators import require_api_key
@@ -13,8 +12,8 @@ pillow_heif.register_heif_opener()
 image_bp = Blueprint('image', __name__)
 
 def generate_gradcam(img_array, model, last_conv_layer_name="efficientnetb0"):
-    import tensorflow as tf
     try:
+        import tensorflow as tf
         last_conv_layer = model.get_layer(last_conv_layer_name)
         last_conv_layer_model = tf.keras.Model(last_conv_layer.inputs, last_conv_layer.output)
         
@@ -42,8 +41,7 @@ def generate_gradcam(img_array, model, last_conv_layer_name="efficientnetb0"):
         heatmap = tf.squeeze(heatmap)
         heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
         return heatmap.numpy()
-    except Exception as e:
-        print("GradCAM Generation Failed:", e)
+    except Exception:
         return None
 
 @image_bp.route("/predict_image", methods=["POST"])
@@ -66,9 +64,9 @@ def predict_image():
         img = Image.open(file).convert('RGB')
         img_tf = img.resize((224, 224))
         
-        # TF Predict
-        img_array = tf.keras.preprocessing.image.img_to_array(img_tf)
-        img_array = tf.expand_dims(img_array, 0)
+        # Predict using NumPy array (Compatible with LiteRT / TFLite and Keras)
+        img_array = np.array(img_tf, dtype=np.float32)
+        img_array = np.expand_dims(img_array, 0)
         tf_pred = float(image_model.predict(img_array, verbose=0)[0][0])
         
         # Heatmap Generation
@@ -76,32 +74,22 @@ def predict_image():
         try:
             heatmap = generate_gradcam(img_array, image_model)
             if heatmap is not None:
-                # Resize heatmap to match original image
                 heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
                 heatmap = np.uint8(255 * heatmap)
                 heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-                
-                # Convert original image to opencv format
                 img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-                
-                # Superimpose the heatmap onto the image
                 superimposed_img = np.uint8(np.clip(heatmap * 0.4 + img_cv * 0.6, 0, 255))
-                
-                # Encode to base64
                 _, buffer = cv2.imencode('.jpg', superimposed_img)
                 heatmap_base64 = base64.b64encode(buffer).decode('utf-8')
                 heatmap_base64 = f"data:image/jpeg;base64,{heatmap_base64}"
-        except Exception as hm_e:
-            print(f"Heatmap Error: {hm_e}")
+        except Exception:
             heatmap_base64 = None
         
-        # ConvNeXt Predict
-        vit_pred = None # Using the same variable name for backward compatibility in the ensemble
+        vit_pred = None
         if vit_model is not None:
             try:
                 import torch
                 from torchvision import transforms
-                # ConvNeXt uses ImageNet standard normalization
                 transform = transforms.Compose([
                     transforms.Resize((224, 224)),
                     transforms.ToTensor(),
@@ -110,7 +98,6 @@ def predict_image():
                 device = next(vit_model.parameters()).device
                 with torch.no_grad():
                     logits = vit_model(transform(img).unsqueeze(0).to(device))
-                    # BCEWithLogitsLoss uses a single output node. Sigmoid gives probability of class 1 (Human)
                     prob = torch.sigmoid(logits)
                     vit_pred = float(prob.cpu().item())
             except Exception as vit_err:
@@ -118,8 +105,7 @@ def predict_image():
                 vit_pred = None
                 
         # --- PHYSICAL FORENSIC LAYERS ---
-        # 1. Error Level Analysis (ELA) for sensor noise & compression artifacts
-        import io
+        # 1. Error Level Analysis (ELA)
         from PIL import ImageChops
         buf = io.BytesIO()
         img.save(buf, format='JPEG', quality=90)
@@ -152,9 +138,8 @@ def predict_image():
         laplacian = cv2.Laplacian(gray_u8, cv2.CV_64F)
         lap_var = float(laplacian.var())
 
-        # Calibrated Neural Ensemble Decision (1.0 = Human, 0.0 = AI)
+        # Calibrated Neural Ensemble Decision
         if vit_pred is not None:
-            # ViT (0.65) + EfficientNet CNN (0.35)
             base_prob = (vit_pred * 0.65) + (tf_pred * 0.35)
         else:
             base_prob = tf_pred
@@ -162,26 +147,22 @@ def predict_image():
         # Physical Forensic Bayesian Adjustments
         forensic_adjustment = 0.0
         
-        # High uncompressed sensor noise entropy indicates physical sensor
         if ela_std > 4.0:
             forensic_adjustment += 0.04
         elif ela_std < 1.0 and chroma_var > 22.0:
             forensic_adjustment -= 0.04
 
-        # FFT High Frequency artifacts
         if hf_ratio > 0.98:
             forensic_adjustment -= 0.03
         elif hf_ratio < 0.85:
             forensic_adjustment += 0.03
             
-        # VAE Grid Artifact Detection (Catches Midjourney/Dall-E/Gemini)
-        # Latent diffusion models use 8x8 spatial decoders that leave a faint high-frequency grid
+        # VAE Grid Detection
         kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
         hp = cv2.filter2D(np.array(img.convert('L'), dtype=np.float32), -1, kernel)
         f = np.fft.fft2(hp)
         mag_vae = np.abs(np.fft.fftshift(f))
         
-        # Mask out center frequencies
         cy_vae, cx_vae = mag_vae.shape[0]//2, mag_vae.shape[1]//2
         mag_vae[cy_vae-10:cy_vae+10, :] = 0
         mag_vae[:, cx_vae-10:cx_vae+10] = 0
@@ -193,14 +174,14 @@ def predict_image():
         row_ratio = np.max(row_sums) / (np.mean(row_sums) + 1e-5)
         max_grid_ratio = max(col_ratio, row_ratio)
         
-        # Apply calibration
         calibrated_prob = base_prob + forensic_adjustment
         
-        # VAE Grid Override (if strong synthetic grid is found, override CNN)
-        if max_grid_ratio > 1.95:
-            print(f"STRONG VAE GRID DETECTED! Ratio: {max_grid_ratio:.2f}. Overriding neural networks.")
-            # Heavily push towards AI (fake)
-            calibrated_prob = min(calibrated_prob, 0.15)
+        if max_grid_ratio > 2.0:
+            if max_grid_ratio > 3.0:
+                calibrated_prob -= 0.25
+            else:
+                calibrated_prob -= 0.15
+
         final_prob_human = float(np.clip(calibrated_prob, 0.01, 0.99))
         is_fake = bool(final_prob_human < 0.50)
         prob_real = round(final_prob_human * 100, 1)
@@ -211,8 +192,8 @@ def predict_image():
             "vit_prob_human": round(vit_pred * 100, 1) if vit_pred is not None else None,
             "cnn_prob_human": round(tf_pred * 100, 1),
             "fft_hf_ratio": round(float(hf_ratio) * 100, 2),
-            "laplacian_sharpness": f"{round(lap_var, 1)} Δ",
-            "ela_noise_entropy": f"{round(ela_std, 2)} σ (Sensor Grain)" if (not is_fake) else f"{round(ela_std, 2)} σ (Synthetic Smooth)",
+            "laplacian_sharpness": f"{round(lap_var, 1)}",
+            "ela_noise_entropy": f"{round(ela_std, 2)} (Sensor Grain)" if (not is_fake) else f"{round(ela_std, 2)} (Synthetic Smooth)",
             "chroma_variance": f"{round(chroma_var, 1)} (Natural Spectrum)" if (not is_fake) else f"{round(chroma_var, 1)} (Diffusion Latent)",
             "texture_verdict": "Natural Organic Camera Grain" if (not is_fake) else "Synthetic Latent Artifacts Detected",
             "spectral_consistency": "Consistent with Optical Sensor" if (not is_fake) else "High-Frequency Diffusion Grid Flaws",

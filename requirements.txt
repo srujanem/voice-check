@@ -18,6 +18,8 @@ beautifulsoup4==4.12.3
 requests==2.32.3
 cloudscraper==1.2.71
 charset-normalizer==3.3.2
+langdetect==1.0.9
+deep-translator==1.11.4
 PyJWT==2.9.0
 firebase-admin==6.5.0
 waitress==3.0.0
