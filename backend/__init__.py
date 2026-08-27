@@ -7,31 +7,25 @@ from backend.security import apply_security_headers, log_request
 import os
 import PyPDF2
 
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["1000 per day", "100 per minute"],
+    storage_uri="memory://"
+)
+
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     app = Flask(__name__, static_folder=base_dir, static_url_path='/')
-    # ── CORS: allow all origins for all routes ──
-    CORS(app, resources={r"/*": {
-        "origins": "*",
-        "allow_headers": ["Content-Type", "Authorization", "ngrok-skip-browser-warning", "X-Requested-With", "Accept"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "max_age": 600
-    }})
-    app.config.from_object(Config)
-    # Reduce max upload to 50 MB hard ceiling
-    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
+    limiter.init_app(app)
 
-    # ── Security hooks ──
-    app.after_request(apply_security_headers)
-    app.before_request(log_request)
+    # ── CORS: allow all origins (browser -> Cloudflare tunnel -> Flask) ──
+    CORS(app, origins="*", supports_credentials=False,
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"])
 
-    # ── Rate limiter ──
-    limiter = Limiter(
-        get_remote_address,
-        app=app,
-        default_limits=["200 per day", "50 per hour"],
-        storage_uri="memory://"
-    )
+    # Increase max upload size to 50 MB
+    app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+    
 
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
