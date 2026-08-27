@@ -29,5 +29,8 @@ app = create_app()
 
 if __name__ == "__main__":
     from waitress import serve
-    print("Starting server with Waitress on port 5000...")
-    serve(app, host="127.0.0.1", port=5000, threads=1)
+    port = int(os.environ.get("PORT", 5000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    threads = int(os.environ.get("WAITRESS_THREADS", 2))
+    print(f"Starting AuthGuard server with Waitress on {host}:{port} (Threads: {threads})...")
+    serve(app, host=host, port=port, threads=threads)
