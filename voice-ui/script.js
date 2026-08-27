@@ -222,11 +222,29 @@ function initVoiceUI() {
         formData.append('type', 'voice');
 
         try {
-            const response = await fetch(`${backendUrl}/api/infer`, {
-                method: 'POST',
-                body: formData,
-                headers: window.getAuthHeaders ? window.getAuthHeaders() : {}
-            });
+            let response;
+            try {
+                response = await fetch(`${backendUrl}/api/infer`, {
+                    method: 'POST',
+                    body: formData,
+                    signal: AbortSignal.timeout(60000)
+                });
+            } catch (fetchErr) {
+                localStorage.removeItem('zrok_url');
+                window.AUTHGUARD_BACKEND_URL = null;
+                const fallbackUrl = (typeof DEFAULT_URL !== 'undefined' ? DEFAULT_URL : null) || 'http://localhost:5000';
+                if (fallbackUrl !== backendUrl) {
+                    const newFormData = new FormData();
+                    newFormData.append('file', currentFile);
+                    newFormData.append('type', 'voice');
+                    response = await fetch(`${fallbackUrl}/api/infer`, {
+                        method: 'POST',
+                        body: newFormData,
+                        signal: AbortSignal.timeout(60000)
+                    });
+                    window.AUTHGUARD_BACKEND_URL = fallbackUrl;
+                } else { throw fetchErr; }
+            }
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));

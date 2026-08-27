@@ -83,15 +83,37 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'image');
 
         try {
-            // Use the server-config URL discovery (window.AUTHGUARD_BACKEND_URL),
-            // then fall back to localhost:5000
+            // Get the best available backend URL - prefer window.AUTHGUARD_BACKEND_URL set by server-config.js
             let backendUrl = (window.AUTHGUARD_BACKEND_URL || localStorage.getItem('zrok_url') || 'http://localhost:5000').replace(/\/$/, '');
             if (backendUrl === 'http://localhost:8000') backendUrl = 'http://localhost:5000';
 
-            const response = await fetch(`${backendUrl}/api/infer`, {
-                method: 'POST',
-                body: formData
-            });
+            let response;
+            try {
+                response = await fetch(`${backendUrl}/api/infer`, {
+                    method: 'POST',
+                    body: formData,
+                    signal: AbortSignal.timeout(60000)
+                });
+            } catch (fetchErr) {
+                // Primary URL failed — clear stale cache and try DEFAULT_URL from server-config
+                localStorage.removeItem('zrok_url');
+                window.AUTHGUARD_BACKEND_URL = null;
+                const fallbackUrl = (typeof DEFAULT_URL !== 'undefined' ? DEFAULT_URL : null)
+                                 || 'http://localhost:5000';
+                if (fallbackUrl !== backendUrl) {
+                    const newFormData = new FormData();
+                    newFormData.append('file', currentFile);
+                    newFormData.append('type', 'image');
+                    response = await fetch(`${fallbackUrl}/api/infer`, {
+                        method: 'POST',
+                        body: newFormData,
+                        signal: AbortSignal.timeout(60000)
+                    });
+                    window.AUTHGUARD_BACKEND_URL = fallbackUrl;
+                } else {
+                    throw fetchErr;
+                }
+            }
 
             if (!response.ok) {
                 let errMsg = 'Server error ' + response.status;

@@ -80,11 +80,11 @@
         label.textContent = 'Server Offline';
     }
 
-    // â”€â”€â”€ Try a single URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    async function tryUrl(url) {
+    // ─── Try a single URL ─────────────────────────────────────────────────────
+    async function tryUrl(url, timeoutMs = 5000) {
         try {
             const res = await fetch(`${url}/api/health`, {
-                signal: AbortSignal.timeout(25000)
+                signal: AbortSignal.timeout(timeoutMs)
             });
             return res.ok;
         } catch {
@@ -92,61 +92,40 @@
         }
     }
 
-    // â”€â”€â”€ Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback â”€â”€â”€â”€â”€
+    // ─── Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback ─────
     async function autoConnect() {
         const savedUrl = localStorage.getItem(STORAGE_KEY_URL);
 
         // 1. Try localhost first (works when user's PC is the server)
-        const localPorts = ['http://localhost:8000', 'http://localhost:5000'];
+        const localPorts = ['http://localhost:5000', 'http://localhost:8000'];
         for (const url of localPorts) {
-            if (await tryUrl(url)) {
-                // While on localhost, fetch and update the tunnel URL in background
-                fetch(`${url}/api/tunnel-url`)
-                    .then(r => r.json())
-                    .then(d => { if (d.url) localStorage.setItem('zrok_url', d.url); })
-                    .catch(() => {});
+            if (await tryUrl(url, 3000)) {
                 setOnline(url);
                 return;
             }
         }
 
-        // 2. If we have a saved URL, ask the server for the LIVE tunnel URL first
+        // 2. If we have a saved URL, try it with a short timeout
         if (savedUrl && !localPorts.includes(savedUrl)) {
             const clean = savedUrl.replace(/\/$/, '');
-            if (await tryUrl(clean)) {
-                // Refresh the live URL in the background
-                fetch(`${clean}/api/tunnel-url`)
-                    .then(r => r.json())
-                    .then(d => { if (d.url && d.url !== clean) { localStorage.setItem('zrok_url', d.url); } })
-                    .catch(() => {});
+            if (await tryUrl(clean, 5000)) {
                 setOnline(clean);
                 return;
+            } else {
+                // Saved URL is dead — clear it immediately so fetch() calls don't use it
+                localStorage.removeItem(STORAGE_KEY_URL);
+                localStorage.removeItem(STORAGE_KEY_STATUS);
+                window.AUTHGUARD_BACKEND_URL = null;
             }
         }
 
-        // 3. Try the baked-in DEFAULT_URL
-        if (await tryUrl(DEFAULT_URL)) { setOnline(DEFAULT_URL); return; }
+        // 3. Try the baked-in DEFAULT_URL (always up to date from Vercel deploy)
+        if (await tryUrl(DEFAULT_URL, 8000)) { setOnline(DEFAULT_URL); return; }
 
         // 4. Nothing worked
         setOffline();
     }
 
     autoConnect();
-    setInterval(autoConnect, 30000);   // Re-check every 30 seconds
+    setInterval(autoConnect, 20000);   // Re-check every 20 seconds
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
