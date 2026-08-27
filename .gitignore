@@ -63,3 +63,19 @@ vercel_token.txt
 *.pyc
 *.pyo
 .pytest_cache/
+
+# === CRITICAL: Large files that were accidentally tracked ===
+dataset_image/
+dataset_image_balanced/
+dataset_document/
+model_image.keras
+model_text_finetuned_BACKUP_roberta/
+model_text_finetuned/
+models/
+*.keras
+watchdog.py
+fix_*.py
+update_url.py
+check_theme.py
+users.db
+cf_tunnel.log

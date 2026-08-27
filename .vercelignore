@@ -1,50 +1,73 @@
-# Python files and backend
+# =============================================
+#  .vercelignore — Keep Vercel deploy UNDER 100MB
+#  Vercel only serves STATIC frontend files.
+#  The Flask backend runs locally via Cloudflare.
+# =============================================
+
+# ── Python backend (runs locally, NOT on Vercel) ──
+backend/
+*.py
+*.pyc
+__pycache__/
 venv/
 env/
 .env
-__pycache__/
-.pytest_cache/
-*.py
-*.pyc
-*.ps1
-*.bat
+*.env
 requirements.txt
 runtime.txt
-render.yaml
-Procfile
-Dockerfile
-docker-compose.yml
+run.py
+train_deberta_v3.py
+fix_*.py
+update_url.py
+check_theme.py
 
-# Heavy ML Models and Weights
-*.pth
-*.keras
-*.onnx
-*.onnx.data
-*.h5
-*.pkl
-*.data
+# ── ML Models (huge, run locally) ──
 models/
 model_text_finetuned/
+model_text_finetuned_BACKUP_roberta/
+*.pth
+*.pt
+*.ckpt
+*.keras
+*.h5
+*.onnx
+*.onnx.data
+*.pkl
+*.bin
+*.safetensors
+*.npy
+*.npz
 
-# Datasets and training data
-dataset*/
+# ── Datasets (training data, never needed on Vercel) ──
+dataset/
 dataset_image/
 dataset_image_balanced/
 dataset_image_expanded/
 dataset_text/
+dataset_document/
 dataset_voice/
 dataset_custom/
 text_ai_results/
-uploads/
-video_frames_temp/
 
-# Node and React dev files
+# ── Node / React dev (not needed — static files already compiled) ──
 node_modules/
 **/node_modules/
-.next/
 frontend/
+.next/
+package-lock.json
 
-# Git and tooling
+# ── Server infrastructure ──
+server/
+uploads/
+recordings/
+video_frames_temp/
+cf_tunnel.log
+users.db
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Dev / build tooling ──
 .git/
 .github/
 .agents/
@@ -52,3 +75,19 @@ frontend/
 *.log
 *.exe
 *.tmp
+*.bat
+*.ps1
+Dockerfile
+docker-compose.yml
+Procfile
+render.yaml
+
+# ── Misc large files ──
+*.zip
+*.tar
+*.tar.gz
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mkv
