@@ -6,7 +6,6 @@ scikit-learn==1.5.1
 numpy<2.0.0
 joblib==1.4.2
 scipy
-opencv-python-headless
 onnxruntime==1.18.0
 ai-edge-litert
 librosa==0.10.2
@@ -24,3 +23,5 @@ PyJWT==2.9.0
 firebase-admin==6.5.0
 waitress==3.0.0
 gunicorn==22.0.0
+lightgbm==4.5.0
+xgboost==2.1.1

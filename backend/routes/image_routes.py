@@ -1,12 +1,18 @@
-﻿from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify
 from PIL import Image
 from backend.services.ml_engine import ml
 from backend.decorators import require_api_key
 import pillow_heif
 import numpy as np
 import io
-import cv2
 import base64
+
+# OpenCV is optional — heatmap is disabled if cv2 not available
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
 
 pillow_heif.register_heif_opener()
 image_bp = Blueprint('image', __name__)
@@ -69,21 +75,22 @@ def predict_image():
         img_array = np.expand_dims(img_array, 0)
         tf_pred = float(image_model.predict(img_array, verbose=0)[0][0])
         
-        # Heatmap Generation
+        # Heatmap Generation (requires OpenCV — gracefully skipped if not installed)
         heatmap_base64 = None
-        try:
-            heatmap = generate_gradcam(img_array, image_model)
-            if heatmap is not None:
-                heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
-                heatmap = np.uint8(255 * heatmap)
-                heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-                img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-                superimposed_img = np.uint8(np.clip(heatmap * 0.4 + img_cv * 0.6, 0, 255))
-                _, buffer = cv2.imencode('.jpg', superimposed_img)
-                heatmap_base64 = base64.b64encode(buffer).decode('utf-8')
-                heatmap_base64 = f"data:image/jpeg;base64,{heatmap_base64}"
-        except Exception:
-            heatmap_base64 = None
+        if CV2_AVAILABLE:
+            try:
+                heatmap = generate_gradcam(img_array, image_model)
+                if heatmap is not None:
+                    heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
+                    heatmap = np.uint8(255 * heatmap)
+                    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+                    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+                    superimposed_img = np.uint8(np.clip(heatmap * 0.4 + img_cv * 0.6, 0, 255))
+                    _, buffer = cv2.imencode('.jpg', superimposed_img)
+                    heatmap_base64 = base64.b64encode(buffer).decode('utf-8')
+                    heatmap_base64 = f"data:image/jpeg;base64,{heatmap_base64}"
+            except Exception:
+                heatmap_base64 = None
         
         vit_pred = None
         if vit_model is not None:
@@ -116,10 +123,13 @@ def predict_image():
         ela_mean = float(np.mean(ela_arr))
         ela_std = float(np.std(ela_arr))
 
-        # 2. YCbCr Chrominance Variance
-        ycbcr = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2YCrCb)
-        cb_std = float(np.std(ycbcr[:, :, 1]))
-        cr_std = float(np.std(ycbcr[:, :, 2]))
+        # 2. YCbCr Chrominance Variance (Pure NumPy — no cv2 needed)
+        img_arr = np.array(img, dtype=np.float32)
+        r, g, b = img_arr[:,:,0], img_arr[:,:,1], img_arr[:,:,2]
+        cb = 128 - 0.16874*r - 0.33126*g + 0.5*b
+        cr = 128 + 0.5*r - 0.41869*g - 0.08131*b
+        cb_std = float(np.std(cb))
+        cr_std = float(np.std(cr))
         chroma_var = (cb_std + cr_std) / 2.0
 
         # 3. Fourier 2D Spectral High-Frequency Grid Ratio
@@ -133,9 +143,11 @@ def predict_image():
         mask = (x-cx)**2 + (y-cy)**2 <= (min(h, w)*0.15)**2
         hf_ratio = float(np.sum(mag[~mask]) / (np.sum(mag) + 1e-10))
 
-        # 4. Laplacian Edge Sharpness Variance
-        gray_u8 = np.array(img.convert('L'), dtype=np.uint8)
-        laplacian = cv2.Laplacian(gray_u8, cv2.CV_64F)
+        # 4. Laplacian Edge Sharpness Variance (Pure NumPy)
+        gray_arr = np.array(img.convert('L'), dtype=np.float64)
+        lap_kernel = np.array([[0,1,0],[1,-4,1],[0,1,0]], dtype=np.float64)
+        from scipy.ndimage import convolve
+        laplacian = convolve(gray_arr, lap_kernel)
         lap_var = float(laplacian.var())
 
         # Calibrated Neural Ensemble Decision
@@ -157,9 +169,9 @@ def predict_image():
         elif hf_ratio < 0.85:
             forensic_adjustment += 0.03
             
-        # VAE Grid Detection
-        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
-        hp = cv2.filter2D(np.array(img.convert('L'), dtype=np.float32), -1, kernel)
+        # VAE Grid Detection (Pure NumPy/Scipy — no cv2 needed)
+        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], dtype=np.float32)
+        hp = convolve(np.array(img.convert('L'), dtype=np.float32), kernel)
         f = np.fft.fft2(hp)
         mag_vae = np.abs(np.fft.fftshift(f))
         
