@@ -14,10 +14,10 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://turbo-perth-hook-sides.trycloudflare.com';
+    const DEFAULT_URL = 'https://casey-stickers-binary-historic.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=11";
+    const CACHE_VERSION = "v=12";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
