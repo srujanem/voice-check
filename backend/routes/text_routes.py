@@ -6,8 +6,6 @@ from datetime import datetime
 import numpy as np
 import uuid
 import re
-from langdetect import detect
-from deep_translator import GoogleTranslator
 
 text_bp = Blueprint('text', __name__)
 
@@ -35,8 +33,12 @@ def predict_text():
     try:
         # --- MULTI-LANGUAGE SUPPORT ---
         try:
-            detected_lang = detect(text)
-        except:
+            try:
+                from langdetect import detect
+                detected_lang = detect(text)
+            except Exception:
+                detected_lang = 'en'
+        except Exception:
             detected_lang = 'en'
             
         original_text = text
@@ -46,6 +48,7 @@ def predict_text():
         if is_foreign:
             print(f"[text_routes] Translating from {detected_lang} to English...")
             try:
+                from deep_translator import GoogleTranslator
                 translated_text = GoogleTranslator(source=detected_lang, target='en').translate(text[:4500])
             except Exception as e:
                 print(f"[text_routes] Translation failed: {e}")
