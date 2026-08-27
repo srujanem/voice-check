@@ -110,10 +110,9 @@ def predict_image():
                 device = next(vit_model.parameters()).device
                 with torch.no_grad():
                     logits = vit_model(transform(img).unsqueeze(0).to(device))
-                    # Softmax to get probabilities. 
-                    # Assuming class 0 is 'fake' and class 1 is 'real' based on alphabetical sorting.
-                    probs = torch.softmax(logits, dim=1)
-                    vit_pred = float(probs[0][1].cpu().item())
+                    # BCEWithLogitsLoss uses a single output node. Sigmoid gives probability of class 1 (Human)
+                    prob = torch.sigmoid(logits)
+                    vit_pred = float(prob.cpu().item())
             except Exception as vit_err:
                 print(f"ConvNeXt Inference error: {vit_err}")
                 vit_pred = None
@@ -160,14 +159,13 @@ def predict_image():
         else:
             base_prob = tf_pred
 
-        # Physical Forensic Bayesian Adjustments (subtle +/- 0.05 to 0.08, never overriding strong neural consensus)
+        # Physical Forensic Bayesian Adjustments
         forensic_adjustment = 0.0
         
         # High uncompressed sensor noise entropy indicates physical sensor
-        if ela_std > 3.0:
+        if ela_std > 4.0:
             forensic_adjustment += 0.04
         elif ela_std < 1.0 and chroma_var > 22.0:
-            # Overly smoothed synthetic diffusion gradient
             forensic_adjustment -= 0.04
 
         # FFT High Frequency artifacts
@@ -175,9 +173,34 @@ def predict_image():
             forensic_adjustment -= 0.03
         elif hf_ratio < 0.85:
             forensic_adjustment += 0.03
-
+            
+        # VAE Grid Artifact Detection (Catches Midjourney/Dall-E/Gemini)
+        # Latent diffusion models use 8x8 spatial decoders that leave a faint high-frequency grid
+        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        hp = cv2.filter2D(np.array(img.convert('L'), dtype=np.float32), -1, kernel)
+        f = np.fft.fft2(hp)
+        mag_vae = np.abs(np.fft.fftshift(f))
+        
+        # Mask out center frequencies
+        cy_vae, cx_vae = mag_vae.shape[0]//2, mag_vae.shape[1]//2
+        mag_vae[cy_vae-10:cy_vae+10, :] = 0
+        mag_vae[:, cx_vae-10:cx_vae+10] = 0
+        
+        col_sums = np.sum(mag_vae, axis=0)
+        row_sums = np.sum(mag_vae, axis=1)
+        
+        col_ratio = np.max(col_sums) / (np.mean(col_sums) + 1e-5)
+        row_ratio = np.max(row_sums) / (np.mean(row_sums) + 1e-5)
+        max_grid_ratio = max(col_ratio, row_ratio)
+        
         # Apply calibration
         calibrated_prob = base_prob + forensic_adjustment
+        
+        # VAE Grid Override (if strong synthetic grid is found, override CNN)
+        if max_grid_ratio > 1.95:
+            print(f"STRONG VAE GRID DETECTED! Ratio: {max_grid_ratio:.2f}. Overriding neural networks.")
+            # Heavily push towards AI (fake)
+            calibrated_prob = min(calibrated_prob, 0.15)
         final_prob_human = float(np.clip(calibrated_prob, 0.01, 0.99))
         is_fake = bool(final_prob_human < 0.50)
         prob_real = round(final_prob_human * 100, 1)

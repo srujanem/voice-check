@@ -37,22 +37,38 @@ class MLEngine:
                 import tensorflow as tf
                 base_dir = Config.BASE_DIR
                 self.image_model = tf.keras.models.load_model(os.path.join(base_dir, "model_image_advanced.keras"))
-                
-                # Also load Advanced Model (ConvNeXt-V2 via timm)
+                # Also load Advanced Model (ConvNeXt-V2 Pro)
                 import torch
                 import timm
+                import torch.nn as nn
                 
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
                 
+                class ConvNextPro(nn.Module):
+                    def __init__(self):
+                        super().__init__()
+                        self.backbone = timm.create_model('convnextv2_base.fcmae_ft_in22k_in1k', pretrained=False, num_classes=0)
+                        self.classifier = nn.Sequential(
+                            nn.Dropout(0.4),
+                            nn.Linear(self.backbone.num_features, 256),
+                            nn.GELU(),
+                            nn.Dropout(0.2),
+                            nn.Linear(256, 1)
+                        )
+                    def forward(self, x):
+                        features = self.backbone(x)
+                        return self.classifier(features)
+                
                 try:
-                    self.vit_model = timm.create_model('convnextv2_tiny.fcmae_ft_in22k_in1k', pretrained=False, num_classes=2)
+                    self.vit_model = ConvNextPro()
                     self.vit_model = self.vit_model.to(device)
-                    convnext_path = os.path.join(base_dir, "model_image_convnext_best.pth")
+                    convnext_path = os.path.join(base_dir, "model_image_convnext_pro.pth")
                     
                     if os.path.exists(convnext_path):
-                        self.vit_model.load_state_dict(torch.load(convnext_path, map_location=device))
+                        self.vit_model.load_state_dict(torch.load(convnext_path, map_location=device, weights_only=True))
                         self.vit_model.eval()
                     else:
+                        print("WARNING: model_image_convnext_pro.pth not found!")
                         self.vit_model = None
                 except Exception as e:
                     print(f"Error loading ConvNeXt model: {e}")
