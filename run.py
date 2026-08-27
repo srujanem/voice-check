@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Firebase credentials from env var (Render / cloud deployment) ──────────
-# On Render, paste the entire contents of serviceAccountKey.json
-# as the FIREBASE_CREDENTIALS environment variable.
 firebase_creds_json = os.environ.get("FIREBASE_CREDENTIALS")
 if firebase_creds_json and not os.path.exists("serviceAccountKey.json"):
     try:
@@ -19,18 +17,19 @@ if firebase_creds_json and not os.path.exists("serviceAccountKey.json"):
         json.dump(creds, tmp)
         tmp.close()
         os.rename(tmp.name, "serviceAccountKey.json")
-        print("✅ Firebase credentials written from environment variable.")
+        print("Firebase credentials written from environment variable.")
     except Exception as e:
-        print(f"⚠️  Could not write Firebase credentials: {e}")
+        print(f"Could not write Firebase credentials: {e}")
 
 from backend import create_app
 
 app = create_app()
 
-if __name__ == "__main__":
-    from waitress import serve
-    port = int(os.environ.get("PORT", 5000))
-    host = os.environ.get("HOST", "0.0.0.0")
-    threads = int(os.environ.get("WAITRESS_THREADS", 2))
-    print(f"Starting AuthGuard server with Waitress on {host}:{port} (Threads: {threads})...")
-    serve(app, host=host, port=port, threads=threads)
+port = int(os.environ.get("PORT", 5000))
+host = os.environ.get("HOST", "0.0.0.0")
+threads = int(os.environ.get("WAITRESS_THREADS", 4))
+
+print(f"Starting AuthGuard on {host}:{port} ...")
+
+from waitress import serve
+serve(app, host=host, port=port, threads=threads)
