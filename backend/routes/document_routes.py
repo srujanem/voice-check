@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from backend.services.ml_engine import ml
-from backend.security import require_api_key
+from backend.decorators import require_api_key
 import io
 from PIL import Image
 
