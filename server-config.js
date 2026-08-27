@@ -14,10 +14,10 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://commissioner-motor-housewives-specialized.trycloudflare.com';
+    const DEFAULT_URL = 'https://katie-capable-book-regarded.trycloudflare.com';
 
     // Add version string for cache busting
-    v=11
+    const CACHE_VERSION = "v=11";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
@@ -50,7 +50,6 @@
                 transform: none; 
                 box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             }
-        }
         }
     `;
     document.head.appendChild(style);
