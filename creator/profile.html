@@ -245,48 +245,7 @@
             transform: translateY(-2px);
         }
 
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
-            100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.5); }
         }
-
-        @keyframes float {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(30px, 50px); }
-        }
-
-        @media (max-width: 900px) {
-            .creator-container { grid-template-columns: 1fr; padding: 40px 20px; text-align: center; }
-            .bio-section h1 { font-size: 36px; }
-            .skills-grid { justify-content: center; }
-        }
-    
-        /* ── Light Theme Fixes ── */
-        [data-theme="light"] .bio-section h1 {
-            background: linear-gradient(135deg, #0f172a, #1e40af) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-        }
-        [data-theme="light"] .bio-text { color: #374151 !important; }
-        [data-theme="light"] .bio-text strong { color: #0f172a !important; }
-        [data-theme="light"] h3[style*="color: #fff"] { color: #0f172a !important; }
-        [data-theme="light"] .profile-wrapper > div {
-            background: rgba(255,255,255,0.9) !important;
-            border-color: rgba(0,0,0,0.07) !important;
-        }
-        [data-theme="light"] .social-btn {
-            background: rgba(0,0,0,0.06) !important;
-            color: #1e293b !important;
-        }
-        [data-theme="light"] .skill-tag {
-            background: rgba(14,165,233,0.08) !important;
-            color: #0284c7 !important;
-            border-color: rgba(14,165,233,0.2) !important;
-        }
-        [data-theme="light"] body {
-            background: #f0f4f8;
-        }
-
         </style>
 </head>
 <body>
@@ -355,6 +314,10 @@
     </div>
 <!-- Creator Hero -->
     <main class="creator-hero">
+        <!-- Animated background orbs -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
         <div class="creator-container">
             
             <!-- Left Side: Avatar & Socials -->
@@ -365,14 +328,19 @@
                 <div class="social-links">
                     <a href="https://github.com/srujanem" target="_blank" class="social-btn github" title="GitHub"><i class="fa-brands fa-github"></i></a>
                     <a href="https://www.linkedin.com/in/srujan-em-10092b336" target="_blank" class="social-btn linkedin" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="/creator/mailto:srujanem222@gmail.com?v=1787591944" class="social-btn email" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                    <a href="mailto:srujanem222@gmail.com" class="social-btn email" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+                <div class="avatar-stats">
+                    <span class="stat-badge"><i class="fa-solid fa-star"></i> Open to Work</span>
+                    <span class="stat-badge"><i class="fa-solid fa-location-dot"></i> India</span>
                 </div>
             </div>
 
             <!-- Right Side: Bio & Skills -->
             <div class="bio-section">
                 <h1>Srujan EM</h1>
-                <h2>Computer Science Engineer (AI & ML)</h2>
+                <h2>Computer Science Engineer (AI &amp; ML)</h2>
+                <div class="bio-divider"></div>
                 
                 <p class="bio-text">
                     Welcome! I am <strong>Srujan</strong>, a Computer Science Engineer specializing in Artificial Intelligence and Machine Learning. 
@@ -384,14 +352,16 @@
                     Driven by a passion for ethical AI, algorithmic transparency, and cutting-edge neural networks, I am dedicated to building the tools that will secure our digital future.
                 </p>
 
-                <h3 style="color: #fff; font-size: 16px; margin-bottom: 15px; font-weight: 600;">Core Expertise</h3>
+                <p class="skills-label">Core Expertise</p>
                 <div class="skills-grid">
                     <div class="skill-tag"><i class="fa-solid fa-brain"></i> Artificial Intelligence</div>
                     <div class="skill-tag"><i class="fa-solid fa-network-wired"></i> Machine Learning</div>
-                    <div class="skill-tag"><i class="fa-brands fa-python"></i> Python & TensorFlow</div>
+                    <div class="skill-tag"><i class="fa-brands fa-python"></i> Python &amp; TensorFlow</div>
                     <div class="skill-tag"><i class="fa-brands fa-node-js"></i> Node.js Backend</div>
                     <div class="skill-tag"><i class="fa-solid fa-shield-virus"></i> Cyber Security</div>
                     <div class="skill-tag"><i class="fa-solid fa-code"></i> Full-Stack Dev</div>
+                    <div class="skill-tag"><i class="fa-brands fa-react"></i> React &amp; Next.js</div>
+                    <div class="skill-tag"><i class="fa-solid fa-database"></i> Firebase &amp; SQL</div>
                 </div>
             </div>
 
