@@ -5,12 +5,13 @@ from datetime import datetime
 
 admin_bp = Blueprint("admin_bp", __name__)
 
-DB_PATH = "c:/voice-check/users.db"
+# Use a relative path so it works on both Windows (local) and Linux (Render/cloud)
+DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "users.db")
+DB_PATH = os.path.abspath(DB_PATH)
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    # Create users table for lead capture
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             uid TEXT PRIMARY KEY,
@@ -21,13 +22,17 @@ def init_db():
             last_login TIMESTAMP
         )
     ''')
-    # Insert a dummy user just so the table isn't empty for the demo
     c.execute("INSERT OR IGNORE INTO users (uid, email, name, plan, scans_used, last_login) VALUES (?, ?, ?, ?, ?, ?)",
               ("demo_1", "investor@example.com", "John Doe", "pro", 42, datetime.now()))
     conn.commit()
     conn.close()
 
-init_db()
+# Guard so a crash here never kills the whole server
+try:
+    init_db()
+except Exception as _admin_db_err:
+    print(f"[admin_routes] DB init skipped: {_admin_db_err}")
+
 
 @admin_bp.route("/api/admin/stats", methods=["GET"])
 def get_admin_stats():
