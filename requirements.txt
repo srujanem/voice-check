@@ -2,12 +2,13 @@
 Flask-Cors==4.0.1
 Flask-Limiter==3.5.0
 python-dotenv==1.0.1
-tensorflow-cpu==2.16.2
 scikit-learn==1.5.1
 numpy<2.0.0
 joblib==1.4.2
 scipy
 opencv-python-headless
+onnxruntime==1.18.0
+tflite-runtime==2.14.0
 librosa==0.10.2
 soundfile
 Pillow==10.4.0
