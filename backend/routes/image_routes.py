@@ -168,6 +168,111 @@ def predict_image():
             forensic_adjustment -= 0.03
         elif hf_ratio < 0.85:
             forensic_adjustment += 0.03
+
+        # ── Modern Diffusion Model Detection (Gemini, DALL-E 3, MJ v6) ──
+        # These generators produce images that fool CNNs but have telltale
+        # statistical signatures in the frequency and pixel domain.
+        modern_ai_score = 0.0
+
+        # 1. DCT Block Artifact Consistency
+        gray_f32 = np.array(img.convert('L'), dtype=np.float32)
+        h_g, w_g = gray_f32.shape
+        if h_g >= 64 and w_g >= 64:
+            block_vars = []
+            for by in range(0, h_g - 7, 8):
+                for bx in range(0, w_g - 7, 8):
+                    block = gray_f32[by:by+8, bx:bx+8]
+                    block_vars.append(float(np.var(block)))
+            if block_vars:
+                block_var_std = float(np.std(block_vars))
+                block_var_mean = float(np.mean(block_vars)) + 1e-10
+                block_uniformity = block_var_std / block_var_mean
+                if block_uniformity < 0.8:
+                    modern_ai_score += 0.12
+                elif block_uniformity < 1.0:
+                    modern_ai_score += 0.06
+
+        # 2. Color Channel Histogram Smoothness
+        hist_smoothness = 0.0
+        for ch in range(3):
+            channel = np.array(img)[:, :, ch].ravel()
+            hist, _ = np.histogram(channel, bins=256, range=(0, 255))
+            hist_f = hist.astype(np.float64)
+            diffs = np.abs(np.diff(hist_f))
+            smoothness = float(np.mean(diffs)) / (float(np.mean(hist_f)) + 1e-10)
+            hist_smoothness += smoothness
+        hist_smoothness /= 3.0
+        if hist_smoothness < 0.25:
+            modern_ai_score += 0.10
+        elif hist_smoothness < 0.40:
+            modern_ai_score += 0.05
+
+        # 3. Local Noise Residual Kurtosis — strongest single signal
+        #    Real sensor noise: robust kurtosis ~3-6. AI noise: often >7.
+        from scipy.ndimage import median_filter
+        noise_residual = gray_f32 - median_filter(gray_f32, size=3)
+        nr_flat = noise_residual.ravel()
+        nr_std = float(np.std(nr_flat)) + 1e-10
+        nr_mean = float(np.mean(nr_flat))
+        nr_normalized = (nr_flat - nr_mean) / nr_std
+        # Robust kurtosis: clip at ±5σ to ignore JPEG edge outliers in real photos
+        nr_clipped = np.clip(nr_normalized, -5, 5)
+        kurtosis = float(np.mean(nr_clipped**4)) - 3.0
+        # Graduated scoring based on robust kurtosis
+        # Real cameras: ~3-6, Gemini/DALL-E/MJ: ~7-12+
+        if kurtosis > 9.0:
+            modern_ai_score += 0.35
+        elif kurtosis > 7.0:
+            modern_ai_score += 0.25
+        elif kurtosis > 6.0:
+            modern_ai_score += 0.12
+        elif kurtosis < 1.5:
+            modern_ai_score += 0.12
+
+        # 4. Saturation Distribution Analysis
+        img_hsv = np.array(img, dtype=np.float32)
+        r_c, g_c, b_c = img_hsv[:,:,0]/255.0, img_hsv[:,:,1]/255.0, img_hsv[:,:,2]/255.0
+        cmax = np.maximum(np.maximum(r_c, g_c), b_c)
+        cmin = np.minimum(np.minimum(r_c, g_c), b_c)
+        saturation = np.where(cmax > 0, (cmax - cmin) / (cmax + 1e-10), 0)
+        sat_std = float(np.std(saturation))
+        if sat_std < 0.12:
+            modern_ai_score += 0.06
+
+        # 5. Gradient Magnitude Coherence
+        #    AI images have suspiciously consistent gradient patterns
+        #    across the image compared to real camera optics.
+        gx = np.diff(gray_f32, axis=1)
+        gy = np.diff(gray_f32, axis=0)
+        min_h = min(gx.shape[0], gy.shape[0])
+        min_w = min(gx.shape[1], gy.shape[1])
+        grad_mag = np.sqrt(gx[:min_h, :min_w]**2 + gy[:min_h, :min_w]**2)
+        # Divide image into quadrants, compare gradient distributions
+        qh, qw = min_h // 2, min_w // 2
+        if qh > 32 and qw > 32:
+            q_stds = [
+                float(np.std(grad_mag[:qh, :qw])),
+                float(np.std(grad_mag[:qh, qw:])),
+                float(np.std(grad_mag[qh:, :qw])),
+                float(np.std(grad_mag[qh:, qw:]))
+            ]
+            q_mean = np.mean(q_stds)
+            q_cv = float(np.std(q_stds)) / (q_mean + 1e-10)
+            # AI images often have very consistent gradients across quadrants
+            if q_cv < 0.15:
+                modern_ai_score += 0.08
+
+        # Apply modern AI adjustment (cap at 0.50 to override strong CNN misses)
+        modern_ai_score = min(modern_ai_score, 0.50)
+
+        # When strong forensic AI signals are found, reduce CNN trust
+        # because the CNN was not trained on modern generators (Gemini, DALL-E 3, MJ v6)
+        if modern_ai_score >= 0.20 and base_prob > 0.6:
+            # Blend CNN toward 0.5 (uncertain) before applying forensic penalty
+            base_prob = base_prob * 0.6 + 0.5 * 0.4  # shrink toward 0.5
+
+        forensic_adjustment -= modern_ai_score
+
             
         # VAE Grid Detection (Pure NumPy/Scipy — no cv2 needed)
         kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], dtype=np.float32)
@@ -193,6 +298,7 @@ def predict_image():
                 calibrated_prob -= 0.25
             else:
                 calibrated_prob -= 0.15
+
 
         final_prob_human = float(np.clip(calibrated_prob, 0.01, 0.99))
         is_fake = bool(final_prob_human < 0.50)
