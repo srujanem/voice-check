@@ -33,6 +33,23 @@
         return window.jspdf.jsPDF;
     }
 
+    // Helper: Safe Image to Data URL converter
+    function getImageDataUrl(imgEl) {
+        if (!imgEl || !imgEl.src) return null;
+        if (imgEl.src.startsWith('data:image/')) return imgEl.src;
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = imgEl.naturalWidth || imgEl.width || 300;
+            canvas.height = imgEl.naturalHeight || imgEl.height || 300;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.85);
+        } catch (e) {
+            console.warn('Could not extract image data URL for PDF:', e);
+            return null;
+        }
+    }
+
     // Generate random serial certificate number
     function generateCertSerial() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -114,18 +131,8 @@
         }
 
         // Extract image preview thumbnail if available
-        let previewImg = null;
-        const imgEl = document.getElementById('imagePreview') || document.getElementById('preview-img');
-        if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
-            previewImg = imgEl.src;
-        }
-
-        // Extract heatmap if available
-        let heatmapImg = null;
-        const hmEl = document.getElementById('heatmapOverlay');
-        if (hmEl && hmEl.src && hmEl.src.startsWith('data:image')) {
-            heatmapImg = hmEl.src;
-        }
+        let previewImg = getImageDataUrl(document.getElementById('imagePreview') || document.getElementById('preview-img'));
+        let heatmapImg = getImageDataUrl(document.getElementById('heatmapOverlay'));
 
         return {
             toolType,

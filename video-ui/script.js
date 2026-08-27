@@ -20,18 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentFile = null;
 
-    // ── PDF Download ────────────────────────────────────────────────────────
-    const pdfBtn = document.getElementById('download-pdf-btn');
-    if (pdfBtn) {
-        pdfBtn.addEventListener('click', () => {
-            if (typeof html2pdf !== 'undefined') {
-                html2pdf().set({ margin: 10, filename: 'AuthGuard_Video_Report.pdf',
-                    html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }
-                }).from(document.getElementById('result-card')).save();
-            } else { alert('PDF library not loaded. Check your internet connection.'); }
-        });
-    }
-
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();

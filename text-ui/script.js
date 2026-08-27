@@ -373,23 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // PDF Generation
-    const pdfBtn = document.getElementById('download-pdf-btn');
-    if (pdfBtn) {
-        pdfBtn.addEventListener('click', function () {
-            if (typeof html2pdf !== 'undefined') {
-                html2pdf().set({
-                    margin: 10,
-                    filename: 'AuthGuard_Text_Report.pdf',
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4' }
-                }).from(document.getElementById('forensicCard')).save();
-            } else {
-                alert('PDF engine is loading... Please try again in a moment.');
-            }
-        });
-    }
-
     // Web3 Minting
     const mintBtn = document.getElementById('mint-report-btn');
     if (mintBtn) {

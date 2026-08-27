@@ -7,18 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorAlert = document.getElementById('error-alert');
     const errorMessage = document.getElementById('error-message');
 
-    // ── PDF Download ─────────────────────────────────────────────────────────
-    const pdfBtn = document.getElementById('download-pdf-btn');
-    if (pdfBtn) {
-        pdfBtn.addEventListener('click', () => {
-            if (typeof html2pdf !== 'undefined') {
-                html2pdf().set({ margin: 10, filename: 'AuthGuard_URL_Report.pdf',
-                    html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }
-                }).from(document.getElementById('result-card')).save();
-            } else { alert('PDF library not loaded.'); }
-        });
-    }
-
     // Results elements
     const scoreProgress = document.getElementById('scoreProgress');
     const scorePercentage = document.getElementById('scorePercentage');

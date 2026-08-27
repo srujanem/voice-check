@@ -967,7 +967,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.10.0/ethers.umd.min.js"></script>
     <script src="/web3.js?v=20260825"></script>
     <script src="/theme.js?v=1787591944"></script>
@@ -1314,22 +1313,6 @@
             if (window.update3DFaceMesh) {
                 window.update3DFaceMesh(isFake, confidence);
             }
-        }
-
-        const pdfBtn = document.getElementById('download-pdf-btn');
-        if (pdfBtn) {
-            pdfBtn.addEventListener('click', function () {
-                if (typeof html2pdf !== 'undefined') {
-                    html2pdf().set({
-                        margin: 10,
-                        filename: 'AuthGuard_Forensic_Image_Report.pdf',
-                        html2canvas: { scale: 2 },
-                        jsPDF: { unit: 'mm', format: 'a4' }
-                    }).from(document.getElementById('forensicCard')).save();
-                } else {
-                    alert('PDF engine is loading... Please try again in a second.');
-                }
-            });
         }
     });
     </script>
