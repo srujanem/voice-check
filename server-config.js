@@ -13,11 +13,11 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    // Development server URL (Cloudflare Tunnel)
-    const DEFAULT_URL = 'https://casey-stickers-binary-historic.trycloudflare.com';
+    // Production Cloud Backend (Render 24/7)
+    const DEFAULT_URL = 'https://authguard-backend-sme0.onrender.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=12";
+    const CACHE_VERSION = "v=13";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
