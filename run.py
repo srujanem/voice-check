@@ -25,11 +25,13 @@ from backend import create_app
 
 app = create_app()
 
-port = int(os.environ.get("PORT", 5000))
-host = os.environ.get("HOST", "0.0.0.0")
-threads = int(os.environ.get("WAITRESS_THREADS", 4))
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    threads = int(os.environ.get("WAITRESS_THREADS", 4))
 
-print(f"Starting AuthGuard on {host}:{port} ...")
+    print(f"Starting AuthGuard on {host}:{port} ...")
 
-from waitress import serve
-serve(app, host=host, port=port, threads=threads)
+    from waitress import serve
+    serve(app, host=host, port=port, threads=threads)
+

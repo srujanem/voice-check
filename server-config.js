@@ -14,7 +14,7 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Production Cloud Backend (Render 24/7)
-    const DEFAULT_URL = 'https://authguard-backend-sme0.onrender.com';
+    const DEFAULT_URL = 'https://lanes-mortality-hung-donald.trycloudflare.com';
 
     // Add version string for cache busting
     const CACHE_VERSION = "v=13";

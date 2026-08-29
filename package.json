@@ -5,5 +5,8 @@
     "firebase-admin": "^13.10.0",
     "multer": "^2.2.0",
     "puppeteer": "^24.43.1"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
   }
 }
