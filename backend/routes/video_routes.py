@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app
 import os
 import shutil
 import subprocess
@@ -87,7 +87,7 @@ def predict_video():
     file_path = os.path.join(Config.UPLOAD_FOLDER, f"{task_id}{file_ext}")
     file.save(file_path)
 
-    external_db.set_document('video_tasks', task_id, {
+    external_db.update_document('video_tasks', task_id, {
         "status": "QUEUED",
         "created_at": None
     })

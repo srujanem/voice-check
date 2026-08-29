@@ -180,6 +180,13 @@ def api_infer():
         res = client.post('/predict_video', data={'video': (io.BytesIO(file_content), file.filename)}, content_type='multipart/form-data')
         return Response(res.data, status=res.status_code, headers=dict(res.headers))
 
+    elif infer_type == 'document':
+        if not file:
+            return jsonify({"error": "No document file provided."}), 400
+        file_content = file.read()
+        res = client.post('/predict_document', data={'document': (io.BytesIO(file_content), file.filename)}, content_type='multipart/form-data')
+        return Response(res.data, status=res.status_code, headers=dict(res.headers))
+
     else:
         return jsonify({"error": f"Invalid inference type: '{infer_type}'"}), 400
 

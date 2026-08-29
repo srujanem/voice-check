@@ -111,6 +111,7 @@ MAX_FILE_SIZES = {
     "voice": 25 * 1024 * 1024,   # 25 MB
     "video": 50 * 1024 * 1024,   # 50 MB
     "text":  5  * 1024 * 1024,   # 5 MB
+    "document": 15 * 1024 * 1024, # 15 MB
     "url":   0,                   # no file
 }
 
@@ -120,6 +121,7 @@ ALLOWED_EXTENSIONS = {
     "voice": {'.mp3', '.wav', '.ogg', '.flac', '.aac', '.m4a', '.mpeg', '.webm', '.mp4'},
     "video": {'.mp4', '.mpeg', '.webm', '.mov', '.avi'},
     "text":  {'.txt', '.pdf', '.doc', '.docx'},
+    "document": {'.jpg', '.jpeg', '.png', '.webp', '.pdf'},
 }
 
 

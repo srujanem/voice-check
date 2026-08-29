@@ -33,7 +33,7 @@ class ONNXWrapper:
         self.session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
         self.input_name = self.session.get_inputs()[0].name
 
-    def predict(self, x):
+    def predict(self, x, **kwargs):
         x = np.array(x, dtype=np.float32)
         return self.session.run(None, {self.input_name: x})[0]
 
@@ -57,7 +57,8 @@ class MLEngine:
         if not self._voice_attempted:
             self._voice_attempted = True
             base_dir = Config.BASE_DIR
-            onnx_path = os.path.join(base_dir, "model_voice.onnx")
+            tflite_path = os.path.join(base_dir, "model_voice.tflite")
+            keras_path = os.path.join(base_dir, "model.keras")
             
             try:
                 import joblib
@@ -65,12 +66,20 @@ class MLEngine:
             except Exception as e:
                 print(f"Voice scaler load error: {e}")
 
-            if os.path.exists(onnx_path):
+            if os.path.exists(tflite_path):
                 try:
-                    self.voice_model = ONNXWrapper(onnx_path)
-                    print("[ML Engine] Loaded ultra-fast Voice ONNX model!")
+                    self.voice_model = TFLiteWrapper(tflite_path)
+                    print("[ML Engine] Loaded ultra-fast Voice LiteRT model!")
                 except Exception as e:
-                    print(f"Failed to load Voice ONNX: {e}")
+                    print(f"Failed to load Voice LiteRT: {e}")
+
+            if self.voice_model is None and os.path.exists(keras_path):
+                try:
+                    import tensorflow as tf
+                    self.voice_model = tf.keras.models.load_model(keras_path)
+                    print("[ML Engine] Loaded Voice Keras model.")
+                except Exception as e:
+                    print(f"Voice Keras load error: {e}")
 
         return self.voice_model, self.voice_scaler
 
@@ -78,14 +87,23 @@ class MLEngine:
         if not self._image_attempted:
             self._image_attempted = True
             base_dir = Config.BASE_DIR
-            onnx_path = os.path.join(base_dir, "model_image.onnx")
+            tflite_path = os.path.join(base_dir, "model_image.tflite")
+            keras_path = os.path.join(base_dir, "model_image_advanced.keras")
 
-            if os.path.exists(onnx_path):
+            if os.path.exists(tflite_path):
                 try:
-                    self.image_model = ONNXWrapper(onnx_path)
-                    print("[ML Engine] Loaded ultra-fast Image ONNX model!")
+                    self.image_model = TFLiteWrapper(tflite_path)
+                    print("[ML Engine] Loaded ultra-fast Image LiteRT model!")
                 except Exception as e:
-                    print(f"Failed to load Image ONNX: {e}")
+                    print(f"Failed to load Image LiteRT: {e}")
+
+            if self.image_model is None and os.path.exists(keras_path):
+                try:
+                    import tensorflow as tf
+                    self.image_model = tf.keras.models.load_model(keras_path)
+                    print("[ML Engine] Loaded Image Keras model.")
+                except Exception as e:
+                    print(f"Image Keras load error: {e}")
 
             self.vit_model = None
 
