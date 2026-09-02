@@ -327,5 +327,8 @@ def predict_image():
             "forensics": forensic_data
         })
     except Exception as e:
+        import traceback
+        with open("waitress_error.log", "a") as f:
+            f.write(traceback.format_exc() + "\n")
         print(f"Error: {e}")
         return jsonify({"error": "Failed to process image."}), 500

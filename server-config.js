@@ -14,10 +14,10 @@
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
     // Production Cloud Backend (Render 24/7)
-    const DEFAULT_URL = 'https://bones-liable-ser-jungle.trycloudflare.com';
+    const DEFAULT_URL = 'https://julie-kings-structures-aurora.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=15";
+    const CACHE_VERSION = "v=16";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');

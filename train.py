@@ -127,4 +127,14 @@ print(classification_report(y_test, y_pred, target_names=["Human", "AI"]))
 model.save("model.keras")
 joblib.dump(scaler, "scaler.pkl")
 print("model.keras and scaler.pkl saved!")
-print("Now run: python app.py")
+
+try:
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    tflite_model = converter.convert()
+    with open("model_voice.tflite", "wb") as f:
+        f.write(tflite_model)
+    print("model_voice.tflite exported successfully!")
+except Exception as e:
+    print(f"TFLite export notice: {e}")
+
+print("Training finished! Ready for inference.")
