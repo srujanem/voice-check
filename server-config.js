@@ -17,7 +17,7 @@
     const DEFAULT_URL = 'https://julie-kings-structures-aurora.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=16";
+    const CACHE_VERSION = "v=17";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
@@ -107,15 +107,20 @@
 
         // 2. If we have a saved URL, try it with a short timeout
         if (savedUrl && !localPorts.includes(savedUrl)) {
-            const clean = savedUrl.replace(/\/$/, '');
-            if (await tryUrl(clean, 5000)) {
-                setOnline(clean);
-                return;
-            } else {
-                // Saved URL is dead — clear it immediately so fetch() calls don't use it
+            // Force remove old Render URLs that don't have the image models loaded
+            if (savedUrl.includes('onrender.com')) {
                 localStorage.removeItem(STORAGE_KEY_URL);
-                localStorage.removeItem(STORAGE_KEY_STATUS);
-                window.AUTHGUARD_BACKEND_URL = null;
+            } else {
+                const clean = savedUrl.replace(/\/$/, '');
+                if (await tryUrl(clean, 5000)) {
+                    setOnline(clean);
+                    return;
+                } else {
+                    // Saved URL is dead — clear it immediately so fetch() calls don't use it
+                    localStorage.removeItem(STORAGE_KEY_URL);
+                    localStorage.removeItem(STORAGE_KEY_STATUS);
+                    window.AUTHGUARD_BACKEND_URL = null;
+                }
             }
         }
 
