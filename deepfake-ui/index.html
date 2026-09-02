@@ -664,6 +664,25 @@
         @media (max-width: 500px) {
             .action-group { grid-template-columns: 1fr; }
         }
+
+        /* ═══ MOBILE RESPONSIVE FIXES ═══ */
+        @media (max-width: 480px) {
+          .app-header { flex-wrap: wrap; gap: 8px; }
+          .app-header > div:last-child { gap: 6px !important; flex-wrap: wrap; justify-content: flex-end; }
+          .app-header .btn-secondary .btn-label { display: none; }
+          .app-header .btn-secondary { padding: 8px 10px !important; min-width: 36px; }
+          [id*='connectWallet'], [id*='wallet'] { padding: 8px 10px !important; font-size: 0 !important; }
+          [id*='connectWallet'] i, [id*='wallet'] i { font-size: 14px !important; margin: 0 !important; }
+          #upload-area, .upload-row { flex-direction: column !important; }
+          .result-stats-grid { grid-template-columns: 1fr 1fr !important; }
+          .app-container { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+          .forensic-grid, .stats-grid { grid-template-columns: 1fr !important; }
+          .btn-primary, .btn-secondary { min-height: 44px; }
+        }
+        @media (max-width: 360px) {
+          .logo-section h2 { font-size: 15px !important; }
+          .app-header .logo-section img { width: 28px !important; height: 28px !important; }
+        }
     </style>
 </head>
 <body>
@@ -689,7 +708,7 @@
                 <div id="nav-auth"></div>
                 <button id="connectWalletBtn" class="btn-secondary" style="margin-left: 10px; border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
                 <a href="/index.html?v=1787591944" class="btn-secondary">
-                    <i class="fa-solid fa-house"></i> Home
+                    <i class="fa-solid fa-house"></i> <span class="btn-label">Home</span>
                 </a>
             </div>
         </header>

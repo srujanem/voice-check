@@ -19,6 +19,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="/global.css?v=20260825">
     <link rel="stylesheet" href="/voice-ui/voice-ui-mobile.css?v=1787591944">
+    <style>
+        /* ═══ MOBILE RESPONSIVE FIXES ═══ */
+        @media (max-width: 480px) {
+          .app-header { flex-wrap: wrap; gap: 8px; }
+          .app-header > div:last-child { gap: 6px !important; }
+          #connectWalletBtn { padding: 8px 10px !important; font-size: 0 !important; }
+          #connectWalletBtn i { font-size: 14px !important; margin: 0 !important; }
+          #connectWalletBtn i::after { content: ''; }
+          .app-header .btn-secondary .btn-label { display: none; }
+          .app-header .btn-secondary { padding: 8px 10px !important; min-width: 36px; }
+          #upload-area { flex-direction: column !important; }
+          .voice-anim-wrap { height: 150px !important; }
+          #voice3DViewport { height: 180px !important; }
+          .app-container { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+          .prob-duel { gap: 8px !important; }
+          .prob-duel__val { font-size: 24px !important; }
+        }
+        @media (max-width: 360px) {
+          .logo-section h2 { font-size: 15px !important; }
+          #upload-area .vc-card { padding: 16px 12px !important; }
+          .upload-icon { font-size: 22px !important; }
+        }
+    </style>
 </head>
 <body>
     <div class="theme-toggle" id="themeToggle" role="button" aria-label="Toggle theme" tabindex="0">
@@ -36,7 +59,7 @@
                     <p style="font-size:13px; margin:0;">AI vs Human speech</p>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
                 <div id="nav-auth"></div>
                 <button id="connectWalletBtn" class="btn-secondary" style="margin-left: 10px; border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
                 <a href="/index.html?v=1787591944" class="btn-secondary" aria-label="Go home">
