@@ -79,3 +79,5 @@ update_url.py
 check_theme.py
 users.db
 cf_tunnel.log
+
+video_frames_temp/
