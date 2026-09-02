@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  authguard-api:
+    build: .
+    container_name: authguard_api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - REDIS_URL=redis://authguard-redis:6379/0
+    volumes:
+      # Mount the massive model weights without baking them into the container
+      - ./model_image_convnext_pro.pth:/app/model_image_convnext_pro.pth
+      - ./model_image_vit_best.pth:/app/model_image_vit_best.pth
+      - ./model.keras:/app/model.keras
+      - ./model_image_advanced.keras:/app/model_image_advanced.keras
+      - ./scaler.pkl:/app/scaler.pkl
+      - ./model_image_convnext_pro.onnx:/app/model_image_convnext_pro.onnx
+      - ./model_image_vit_best.onnx:/app/model_image_vit_best.onnx
+    depends_on:
+      - authguard-redis
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  authguard-redis:
+    image: redis:alpine
+    container_name: authguard_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:

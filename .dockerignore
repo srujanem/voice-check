@@ -1,0 +1,17 @@
+dataset/
+dataset_image/
+dataset_image_balanced/
+dataset_text/
+dataset_custom/
+dataset_image_expanded/
+text_ai_results/
+uploads/
+node_modules/
+.git/
+.agents/
+.firebase/
+.vercel/
+frontend/
+video_frames_temp/
+__pycache__/
+*.log

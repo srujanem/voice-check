@@ -2933,3 +2933,11 @@ audio {
 }
 
 
+
+/* ── Theme toggle: works inline inside header-actions (not absolute) ── */
+.header-actions .theme-toggle,
+.app-header .theme-toggle {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+}
