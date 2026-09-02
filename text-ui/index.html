@@ -723,6 +723,19 @@
         @media (max-width: 500px) {
             .action-group { grid-template-columns: 1fr; }
         }
+
+        /* MOBILE FIXES */
+        @media (max-width: 480px) {
+          .app-header { flex-wrap: wrap; gap: 8px; }
+          .app-header > div:last-child { gap: 6px !important; }
+          .app-header .btn-secondary .btn-label { display: none; }
+          .app-header .btn-secondary { padding: 8px 10px !important; min-width: 36px; }
+          #connectWalletBtn { padding: 8px 10px !important; font-size: 0 !important; }
+          #connectWalletBtn i { font-size: 14px !important; margin: 0 !important; }
+          #textInput, textarea { font-size: 16px !important; /* prevents iOS zoom */ }
+          .btn-primary, .btn-secondary { min-height: 44px; }
+          .app-container { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+        }
     </style>
 </head>
 <body>
@@ -746,9 +759,9 @@
                 </button>
                 <div class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></div>
                 <div id="nav-auth"></div>
-                <button id="connectWalletBtn" class="btn-secondary" style="margin-left: 10px; border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
-                <a href="/index.html?v=1787591944" class="btn-secondary" style="margin-left: 10px;">
-                    <i class="fa-solid fa-house"></i> Home
+                <button id="connectWalletBtn" class="btn-secondary" style="border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
+                <a href="/index.html?v=1787591944" class="btn-secondary">
+                    <i class="fa-solid fa-house"></i> <span class="btn-label">Home</span>
                 </a>
             </div>
         </header>

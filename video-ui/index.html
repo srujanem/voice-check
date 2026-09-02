@@ -101,6 +101,20 @@
             .analysis-steps { flex-wrap: wrap; justify-content: center; gap: 16px; }
             .a-connector { display: none; }
         }
+
+        /* MOBILE FIXES */
+        @media (max-width: 480px) {
+          .app-header { flex-wrap: wrap; gap: 8px; }
+          .app-header > div:last-child { gap: 6px !important; }
+          .app-header .btn-secondary .btn-label { display: none; }
+          .app-header .btn-secondary { padding: 8px 10px !important; min-width: 36px; }
+          #connectWalletBtn { padding: 8px 10px !important; font-size: 0 !important; }
+          #connectWalletBtn i { font-size: 14px !important; margin: 0 !important; }
+          .btn-primary, .btn-secondary { min-height: 44px; }
+          .app-container { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+          video, #video-preview { max-height: 220px !important; width: 100% !important; border-radius: 12px; }
+          .progress-steps { flex-direction: column !important; gap: 8px !important; }
+        }
     </style>
 </head>
 <body>
@@ -118,10 +132,10 @@
                     <p style="font-size:13px;color:#94a3b8;">Analyze frames to spot deepfakes</p>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
                 <div id="nav-auth"></div>
                 <button id="connectWalletBtn" class="btn-secondary" style="margin-left: 10px; border-color: rgba(255,255,255,0.1);"><i class="fa-solid fa-wallet"></i> Connect Wallet</button>
-                <a href="/index.html?v=1787591944" class="btn-secondary"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/index.html?v=1787591944" class="btn-secondary"><i class="fa-solid fa-house"></i><span class="btn-label"> Home</span></a>
             </div>
         </header>
 
