@@ -97,9 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             loadingState.classList.add('hidden');
             successState.classList.remove('hidden');
-            if (window.init3DCryptoSeal) {
-                setTimeout(() => window.init3DCryptoSeal(), 50);
-            }
         } catch (error) {
             loadingState.classList.add('hidden');
             btnProtect.style.display = 'inline-flex';
