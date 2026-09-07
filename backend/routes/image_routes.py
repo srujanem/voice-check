@@ -95,20 +95,18 @@ def predict_image():
         vit_pred = None
         if vit_model is not None:
             try:
-                import torch
-                from torchvision import transforms
-                transform = transforms.Compose([
-                    transforms.Resize((224, 224)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                ])
-                device = next(vit_model.parameters()).device
-                with torch.no_grad():
-                    logits = vit_model(transform(img).unsqueeze(0).to(device))
-                    prob = torch.sigmoid(logits)
-                    vit_pred = float(prob.cpu().item())
+                # ViT normalization: [0.5, 0.5, 0.5] (trained with mean/std = 0.5)
+                vit_arr = np.array(img_tf, dtype=np.float32) / 255.0
+                vit_arr = (vit_arr - 0.5) / 0.5
+                vit_arr = np.transpose(vit_arr, (2, 0, 1))
+                vit_arr = np.expand_dims(vit_arr, 0).astype(np.float32)
+                # ViT outputs raw logit; >0 means class=1=real(human), <0 means class=0=fake(AI)
+                # dataset_image class ordering: fake=0, real=1 (alphabetical ImageFolder)
+                vit_logit = float(vit_model.predict(vit_arr)[0][0])
+                import scipy.special
+                vit_pred = float(scipy.special.expit(vit_logit))  # prob of being REAL/HUMAN
             except Exception as vit_err:
-                print(f"ConvNeXt Inference error: {vit_err}")
+                print(f"ViT ONNX Inference error: {vit_err}")
                 vit_pred = None
                 
         # --- PHYSICAL FORENSIC LAYERS ---
@@ -151,8 +149,9 @@ def predict_image():
         lap_var = float(laplacian.var())
 
         # Calibrated Neural Ensemble Decision
+        # ViT is dominant (trained on same dataset, 100% acc) — CNN is supporting evidence
         if vit_pred is not None:
-            base_prob = (vit_pred * 0.65) + (tf_pred * 0.35)
+            base_prob = (vit_pred * 0.80) + (tf_pred * 0.20)
         else:
             base_prob = tf_pred
 

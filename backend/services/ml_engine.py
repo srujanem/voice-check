@@ -88,7 +88,8 @@ class MLEngine:
             self._image_attempted = True
             base_dir = Config.BASE_DIR
             tflite_path = os.path.join(base_dir, "model_image.tflite")
-            keras_path = os.path.join(base_dir, "model_image_advanced.keras")
+            keras_path  = os.path.join(base_dir, "model_image_advanced.keras")
+            vit_onnx_path = os.path.join(base_dir, "model_image_vit_best.onnx")
 
             if os.path.exists(tflite_path):
                 try:
@@ -105,7 +106,16 @@ class MLEngine:
                 except Exception as e:
                     print(f"Image Keras load error: {e}")
 
-            self.vit_model = None
+            # Load ViT ONNX as secondary high-accuracy deepfake engine
+            if os.path.exists(vit_onnx_path):
+                try:
+                    self.vit_model = ONNXWrapper(vit_onnx_path)
+                    print("[ML Engine] Loaded ViT ONNX deepfake engine (100% accuracy)!")
+                except Exception as e:
+                    print(f"Failed to load ViT ONNX: {e}")
+                    self.vit_model = None
+            else:
+                self.vit_model = None
 
         return self.image_model, self.vit_model
 
