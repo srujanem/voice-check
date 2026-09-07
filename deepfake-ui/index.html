@@ -784,7 +784,7 @@
             .action-group { grid-template-columns: 1fr; }
         }
 
-        /* ═══ MOBILE RESPONSIVE FIXES ═══ */
+        /* ═══ COMPREHENSIVE MOBILE RESPONSIVE OPTIMIZATIONS ═══ */
         @media (max-width: 480px) {
           .app-header { flex-wrap: wrap; gap: 8px; }
           .app-header > div:last-child { gap: 6px !important; flex-wrap: wrap; justify-content: flex-end; }
@@ -793,14 +793,124 @@
           [id*='connectWallet'], [id*='wallet'] { padding: 8px 10px !important; font-size: 0 !important; }
           [id*='connectWallet'] i, [id*='wallet'] i { font-size: 14px !important; margin: 0 !important; }
           #upload-area, .upload-row { flex-direction: column !important; }
-          .result-stats-grid { grid-template-columns: 1fr 1fr !important; }
-          .app-container { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-          .forensic-grid, .stats-grid { grid-template-columns: 1fr !important; }
+          .app-container { padding: 16px 12px max(24px, env(safe-area-inset-bottom)) !important; }
           .btn-primary, .btn-secondary { min-height: 44px; }
+
+          /* Primary CTA */
+          .btn-analyze-glow {
+              font-size: 15px !important;
+              padding: 14px 18px !important;
+              min-height: 48px !important;
+              border-radius: 14px !important;
+          }
+
+          /* Interactive Forensic Loupe on Mobile */
+          .preview-image-wrapper {
+              touch-action: none !important; /* Prevents whole-page scrolling while dragging loupe */
+          }
+          .forensic-loupe {
+              width: 124px !important;
+              height: 124px !important;
+          }
+          .loupe-toolbar {
+              padding: 8px 10px !important;
+              gap: 8px !important;
+          }
+          .loupe-filter-group {
+              width: 100%;
+              display: flex;
+              gap: 5px;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none;
+              padding-bottom: 2px;
+          }
+          .loupe-filter-group::-webkit-scrollbar { display: none; }
+          .loupe-filter-btn {
+              font-size: 10px !important;
+              padding: 6px 10px !important;
+              white-space: nowrap;
+              flex-shrink: 0;
+          }
+
+          /* 6-Axis Forensic Radar on Mobile */
+          .forensic-radar-card {
+              padding: 16px 12px !important;
+              border-radius: 16px !important;
+              margin-bottom: 18px !important;
+          }
+          .radar-canvas-wrap {
+              height: 240px !important;
+          }
+          .radar-canvas-wrap canvas {
+              max-width: 100% !important;
+              height: auto !important;
+          }
+
+          /* Verdict Header & Gauge on Mobile */
+          .forensic-result-card {
+              padding: 24px 16px !important;
+              border-radius: 20px !important;
+          }
+          .verdict-title {
+              font-size: 22px !important;
+          }
+          .verdict-metrics-row {
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 16px !important;
+          }
+          .probability-deck {
+              width: 100% !important;
+          }
+          .confidence-gauge-box {
+              margin: 0 auto !important;
+          }
+
+          /* Sleek Forensic Telemetry Table on Mobile */
+          .forensic-table .forensic-row {
+              padding: 11px 12px !important;
+          }
+          .forensic-icon-box {
+              width: 30px !important;
+              height: 30px !important;
+              font-size: 12px !important;
+          }
+          .forensic-title {
+              font-size: 12px !important;
+          }
+          .forensic-subtitle {
+              font-size: 10px !important;
+          }
+          .forensic-pill {
+              font-size: 10.5px !important;
+              padding: 3px 8px !important;
+          }
+
+          /* 3D Forensic Studio on Mobile */
+          #face3DViewport {
+              height: 240px !important;
+              touch-action: none !important;
+          }
+          .forensic-mode-btn {
+              font-size: 10px !important;
+              padding: 6px 10px !important;
+              white-space: nowrap;
+              flex-shrink: 0;
+          }
+          div[onclick*="switchForensic3DMode"] {
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none;
+          }
         }
+
         @media (max-width: 360px) {
           .logo-section h2 { font-size: 15px !important; }
           .app-header .logo-section img { width: 28px !important; height: 28px !important; }
+          .forensic-loupe { width: 110px !important; height: 110px !important; }
+          .radar-canvas-wrap { height: 220px !important; }
+          #face3DViewport { height: 210px !important; }
         }
     </style>
 </head>
@@ -1313,12 +1423,20 @@
 
         draw() {
             if (!this.ctx || !this.canvas) return;
+            const wrap = this.canvas.parentElement;
+            if (wrap && wrap.clientWidth > 0) {
+                const targetW = Math.min(380, wrap.clientWidth - 10);
+                if (Math.abs(this.canvas.width - targetW) > 6) {
+                    this.canvas.width = targetW;
+                    this.canvas.height = Math.round(targetW * 0.76);
+                }
+            }
             const ctx = this.ctx;
             const w = this.canvas.width;
             const h = this.canvas.height;
             const cx = w / 2;
             const cy = h / 2;
-            const maxR = Math.min(cx, cy) - 38;
+            const maxR = Math.min(cx, cy) - 34;
 
             ctx.clearRect(0, 0, w, h);
 
@@ -1468,8 +1586,9 @@
                     return;
                 }
                 const rect = this.wrapper.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const isTouch = !!e.touches;
+                const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+                const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
                 if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
                     if (this.loupeEl) this.loupeEl.classList.remove('active');
@@ -1480,8 +1599,11 @@
                 const relX = clientX - rect.left;
                 const relY = clientY - rect.top;
 
+                // On touch screens: offset upward by 72px so the user's thumb does not cover the glass!
+                const displayY = isTouch ? Math.max(62, relY - 72) : relY;
+
                 this.loupeEl.style.left = `${relX}px`;
-                this.loupeEl.style.top = `${relY}px`;
+                this.loupeEl.style.top = `${displayY}px`;
 
                 this.renderMagnified(relX, relY, rect.width, rect.height);
             };
