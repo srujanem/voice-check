@@ -13,11 +13,11 @@
 (function () {
     const STORAGE_KEY_URL    = 'zrok_url';
     const STORAGE_KEY_STATUS = 'server_online';
-    // Production Cloud Backend (Render 24/7)
-    const DEFAULT_URL = 'https://julie-kings-structures-aurora.trycloudflare.com';
+    // Production Cloud Backend (Cloudflare Tunnel to PC)
+    const DEFAULT_URL = 'https://cant-britain-demonstrates-fans.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=17";
+    const CACHE_VERSION = "v=18";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
@@ -94,6 +94,14 @@
 
     // ─── Smart auto-connect: LOCAL FIRST, then live tunnel URL, then fallback ─────
     async function autoConnect() {
+        // Invalidate stale cached tunnel URL instantly if cache version bumped
+        const savedVer = localStorage.getItem('ag_cache_ver');
+        if (savedVer !== CACHE_VERSION) {
+            localStorage.setItem('ag_cache_ver', CACHE_VERSION);
+            localStorage.removeItem(STORAGE_KEY_URL);
+            localStorage.removeItem(STORAGE_KEY_STATUS);
+        }
+
         const savedUrl = localStorage.getItem(STORAGE_KEY_URL);
 
         // 1. Try localhost first (works when user's PC is the server)

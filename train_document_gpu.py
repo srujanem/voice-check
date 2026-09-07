@@ -14,9 +14,9 @@ print("==================================================")
 DATA_DIR = "dataset_document"
 MODEL_SAVE_PATH = os.path.join("models", "model_document_forgery.pth")
 BATCH_SIZE = 16
-EPOCHS = 5
+EPOCHS = 50
 IMG_SIZE = 224
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 2e-4
 
 # Check for GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -24,8 +24,17 @@ print(f"Using compute device: {device.type.upper()}")
 if device.type == "cuda":
     print(f"GPU: {torch.cuda.get_device_name(0)}")
 
-# Transformations (Resize, Convert to Tensor, Normalize)
-transform = transforms.Compose([
+# Transformations (Data Augmentation for Training, standard for Validation)
+train_transform = transforms.Compose([
+    transforms.Resize((IMG_SIZE, IMG_SIZE)),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(10),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+val_transform = transforms.Compose([
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -34,30 +43,35 @@ transform = transforms.Compose([
 print("\nLoading dataset from disk...")
 # Load dataset
 # ImageFolder expects subdirectories to be the class names (real, fake)
-full_dataset = datasets.ImageFolder(root=DATA_DIR, transform=transform)
+# We load twice to apply different transforms
+full_dataset = datasets.ImageFolder(root=DATA_DIR, transform=train_transform)
 print(f"Classes found: {full_dataset.classes}")
 print(f"Total documents: {len(full_dataset)}")
 
 # Split into Train (80%) and Validation (20%)
 train_size = int(0.8 * len(full_dataset))
 val_size = len(full_dataset) - train_size
-train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
+
+train_dataset, val_dataset_temp = random_split(full_dataset, [train_size, val_size])
+
+# Override validation transform
+import copy
+val_dataset = copy.deepcopy(val_dataset_temp)
+val_dataset.dataset.transform = val_transform
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-# Build Model: Using ResNet18 (Excellent for local pixel anomalies like ELA/Forgery)
+# Build Model: Using ResNet18 (Fully Unfrozen for maximum feature learning)
 print("\nLoading Pretrained ResNet18 architecture...")
 model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 
-# Freeze early layers to retain generic edge detection
-for param in list(model.parameters())[:-15]:
-    param.requires_grad = False
+# Do NOT freeze any layers! We want the model to learn the custom dataset features deeply.
 
 # Replace the final fully connected layer for 2 classes (Real vs Fake)
 num_ftrs = model.fc.in_features
 model.fc = nn.Sequential(
-    nn.Dropout(0.3),
+    nn.Dropout(0.4),
     nn.Linear(num_ftrs, 2)
 )
 
@@ -65,9 +79,10 @@ model = model.to(device)
 
 # Loss and Optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
-print("\nStarting Training Loop...")
+print("\nStarting Advanced Training Loop...")
 start_time = time.time()
 
 for epoch in range(EPOCHS):
@@ -113,6 +128,8 @@ for epoch in range(EPOCHS):
             
     val_epoch_loss = val_loss / len(val_dataset)
     val_epoch_acc = val_correct / val_total
+    
+    scheduler.step()
     
     print(f"Epoch [{epoch+1}/{EPOCHS}] - Train Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} | Val Loss: {val_epoch_loss:.4f} Acc: {val_epoch_acc:.4f}")
 

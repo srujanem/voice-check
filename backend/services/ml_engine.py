@@ -140,8 +140,9 @@ class MLEngine:
             logits = self.document_model.predict(arr)[0]
             exp_logits = np.exp(logits - np.max(logits))
             probs = exp_logits / np.sum(exp_logits)
-            prob_real = float(probs[0]) * 100
-            prob_fake = float(probs[1]) * 100
+            # ImageFolder classes are sorted alphabetically: {'fake': 0, 'real': 1}
+            prob_fake = float(probs[0]) * 100
+            prob_real = float(probs[1]) * 100
 
             is_fake = prob_fake > 50.0
             confidence = prob_fake if is_fake else prob_real
@@ -162,11 +163,11 @@ class MLEngine:
             from torchvision import transforms, models
             import torch.nn as nn
 
-            if self.document_model is None:
+            if self.document_model is None or not isinstance(self.document_model, torch.nn.Module):
                 device = torch.device("cpu")
                 model = models.resnet18(weights=None)
                 num_ftrs = model.fc.in_features
-                model.fc = nn.Sequential(nn.Dropout(0.3), nn.Linear(num_ftrs, 2))
+                model.fc = nn.Sequential(nn.Dropout(0.4), nn.Linear(num_ftrs, 2))
                 model.load_state_dict(torch.load(pth_path, map_location=device, weights_only=True))
                 model.eval()
                 self.document_model = model
@@ -180,8 +181,9 @@ class MLEngine:
             with torch.no_grad():
                 outputs = self.document_model(input_tensor)
                 probs = torch.nn.functional.softmax(outputs, dim=1)[0]
-                prob_real = float(probs[0]) * 100
-                prob_fake = float(probs[1]) * 100
+                # ImageFolder classes are sorted alphabetically: {'fake': 0, 'real': 1}
+                prob_fake = float(probs[0]) * 100
+                prob_real = float(probs[1]) * 100
 
             is_fake = prob_fake > 50.0
             confidence = prob_fake if is_fake else prob_real
