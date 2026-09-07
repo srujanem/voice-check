@@ -333,106 +333,6 @@
             box-shadow: none;
         }
 
-        /* ── INTERACTIVE FORENSIC X-RAY LOUPE & MULTI-FILTER LENS ── */
-        .preview-image-wrapper {
-            position: relative;
-            cursor: crosshair;
-        }
-        .forensic-loupe {
-            position: absolute;
-            width: 144px;
-            height: 144px;
-            border-radius: 50%;
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 28px rgba(6, 182, 212, 0.75), inset 0 0 15px rgba(0, 0, 0, 0.85);
-            pointer-events: none;
-            overflow: hidden;
-            display: none;
-            z-index: 50;
-            background: #06080e;
-            transform: translate(-50%, -50%);
-        }
-        .forensic-loupe.active { display: block; }
-        .forensic-loupe canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .loupe-crosshair {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 2;
-        }
-        .loupe-crosshair::before, .loupe-crosshair::after {
-            content: '';
-            position: absolute;
-            background: rgba(6, 182, 212, 0.6);
-        }
-        .loupe-crosshair::before { top: 0; bottom: 0; left: 50%; width: 1px; }
-        .loupe-crosshair::after { left: 0; right: 0; top: 50%; height: 1px; }
-        .loupe-hud-badge {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: var(--font-mono);
-            font-size: 9px;
-            font-weight: 700;
-            color: #22d3ee;
-            background: rgba(0, 0, 0, 0.85);
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(6, 182, 212, 0.4);
-            white-space: nowrap;
-            z-index: 3;
-        }
-
-        /* Loupe Controls Toolbar */
-        .loupe-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 16px;
-            background: rgba(10, 13, 22, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .loupe-filter-group {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            overflow-x: auto;
-        }
-        .loupe-filter-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #94a3b8;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .loupe-filter-btn:hover {
-            color: #fff;
-            border-color: rgba(6, 182, 212, 0.4);
-        }
-        .loupe-filter-btn.active {
-            background: rgba(6, 182, 212, 0.15);
-            border-color: var(--neon-cyan);
-            color: #22d3ee;
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
-        }
-
         /* ── MULTI-VECTOR 6-AXIS RADAR HOLOGRAM CARD ── */
         .forensic-radar-card {
             background: rgba(12, 15, 25, 0.85);
@@ -804,34 +704,6 @@
               border-radius: 14px !important;
           }
 
-          /* Interactive Forensic Loupe on Mobile */
-          .preview-image-wrapper {
-              touch-action: none !important; /* Prevents whole-page scrolling while dragging loupe */
-          }
-          .forensic-loupe {
-              width: 124px !important;
-              height: 124px !important;
-          }
-          .loupe-toolbar {
-              padding: 8px 10px !important;
-              gap: 8px !important;
-          }
-          .loupe-filter-group {
-              width: 100%;
-              display: flex;
-              gap: 5px;
-              overflow-x: auto;
-              -webkit-overflow-scrolling: touch;
-              scrollbar-width: none;
-              padding-bottom: 2px;
-          }
-          .loupe-filter-group::-webkit-scrollbar { display: none; }
-          .loupe-filter-btn {
-              font-size: 10px !important;
-              padding: 6px 10px !important;
-              white-space: nowrap;
-              flex-shrink: 0;
-          }
 
           /* 6-Axis Forensic Radar on Mobile */
           .forensic-radar-card {
@@ -908,7 +780,6 @@
         @media (max-width: 360px) {
           .logo-section h2 { font-size: 15px !important; }
           .app-header .logo-section img { width: 28px !important; height: 28px !important; }
-          .forensic-loupe { width: 110px !important; height: 110px !important; }
           .radar-canvas-wrap { height: 220px !important; }
           #face3DViewport { height: 210px !important; }
         }
@@ -973,42 +844,9 @@
             <!-- Preview Viewport with Scanner HUD -->
             <div id="imagePreviewContainer" class="hidden">
                 <div class="preview-viewport">
-                    <!-- Interactive Forensic Loupe Toolbar -->
-                    <div class="loupe-toolbar" id="loupeToolbar">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--neon-cyan); display: flex; align-items: center; gap: 6px;">
-                                <i class="fa-solid fa-magnifying-glass"></i> FORENSIC LOUPE:
-                            </span>
-                            <button class="loupe-filter-btn active" id="btnLoupeToggle" onclick="window.toggleForensicLoupe && window.toggleForensicLoupe()">
-                                <i class="fa-solid fa-power-off"></i> ON
-                            </button>
-                        </div>
-                        <div class="loupe-filter-group">
-                            <button class="loupe-filter-btn active" data-filter="standard" onclick="window.setLoupeFilter && window.setLoupeFilter('standard', this)">
-                                <i class="fa-solid fa-eye"></i> Optical
-                            </button>
-                            <button class="loupe-filter-btn" data-filter="ela" onclick="window.setLoupeFilter && window.setLoupeFilter('ela', this)">
-                                <i class="fa-solid fa-bolt"></i> ELA X-Ray
-                            </button>
-                            <button class="loupe-filter-btn" data-filter="edge" onclick="window.setLoupeFilter && window.setLoupeFilter('edge', this)">
-                                <i class="fa-solid fa-bezier-curve"></i> Edge Contours
-                            </button>
-                            <button class="loupe-filter-btn" data-filter="chroma" onclick="window.setLoupeFilter && window.setLoupeFilter('chroma', this)">
-                                <i class="fa-solid fa-palette"></i> Chroma Invert
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="preview-image-wrapper">
                         <img id="imagePreview" src="" alt="Target Image">
                         <img id="heatmapOverlay" src="" alt="GradCAM Heatmap">
-                        
-                        <!-- Interactive Forensic Loupe Lens -->
-                        <div id="forensicLoupe" class="forensic-loupe">
-                            <canvas id="loupeCanvas" width="144" height="144"></canvas>
-                            <div class="loupe-crosshair"></div>
-                            <div id="loupeHudBadge" class="loupe-hud-badge">OPTICAL 2.5X</div>
-                        </div>
                         
                         <!-- Holographic Scanner HUD Overlay -->
                         <div id="scannerHud" class="scanner-hud-overlay hidden">
@@ -1349,7 +1187,7 @@
     </script>
 
     <!-- ═════════════════════════════════════════════════════════════
-         ADVANCED GRAPHICS: FORENSIC LOUPE & 6-AXIS RADAR ENGINES
+         ADVANCED GRAPHICS: 6-AXIS FORENSIC RADAR ENGINE
          ═════════════════════════════════════════════════════════════ -->
     <script>
     // 6-AXIS MULTI-VECTOR FORENSIC HOLOGRAM RADAR
@@ -1555,152 +1393,7 @@
         }
     };
 
-    // INTERACTIVE FORENSIC X-RAY LOUPE & MULTI-FILTER LENS
-    const ForensicLoupe = {
-        enabled: true,
-        currentFilter: 'standard',
-        zoom: 2.5,
-        loupeEl: null,
-        canvas: null,
-        ctx: null,
-        imageEl: null,
-        wrapper: null,
-        badgeEl: null,
-
-        init() {
-            this.loupeEl = document.getElementById('forensicLoupe');
-            this.canvas = document.getElementById('loupeCanvas');
-            this.imageEl = document.getElementById('imagePreview');
-            this.wrapper = document.querySelector('.preview-image-wrapper');
-            this.badgeEl = document.getElementById('loupeHudBadge');
-
-            if (!this.loupeEl || !this.canvas || !this.imageEl || !this.wrapper) return;
-            this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-            this.bindEvents();
-        },
-
-        bindEvents() {
-            const onPointerMove = (e) => {
-                if (!this.enabled || !this.imageEl.src || this.imageEl.naturalWidth === 0) {
-                    if (this.loupeEl) this.loupeEl.classList.remove('active');
-                    return;
-                }
-                const rect = this.wrapper.getBoundingClientRect();
-                const isTouch = !!e.touches;
-                const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-                const clientY = isTouch ? e.touches[0].clientY : e.clientY;
-
-                if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
-                    if (this.loupeEl) this.loupeEl.classList.remove('active');
-                    return;
-                }
-
-                this.loupeEl.classList.add('active');
-                const relX = clientX - rect.left;
-                const relY = clientY - rect.top;
-
-                // On touch screens: offset upward by 72px so the user's thumb does not cover the glass!
-                const displayY = isTouch ? Math.max(62, relY - 72) : relY;
-
-                this.loupeEl.style.left = `${relX}px`;
-                this.loupeEl.style.top = `${displayY}px`;
-
-                this.renderMagnified(relX, relY, rect.width, rect.height);
-            };
-
-            this.wrapper.addEventListener('mousemove', onPointerMove);
-            this.wrapper.addEventListener('touchmove', onPointerMove, { passive: true });
-            this.wrapper.addEventListener('mouseleave', () => this.loupeEl && this.loupeEl.classList.remove('active'));
-            this.wrapper.addEventListener('touchend', () => this.loupeEl && this.loupeEl.classList.remove('active'));
-        },
-
-        setFilter(filter, btn) {
-            this.currentFilter = filter;
-            document.querySelectorAll('.loupe-filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            if (this.badgeEl) {
-                const names = {
-                    standard: `OPTICAL ${this.zoom}X`,
-                    ela: `ELA X-RAY ${this.zoom}X`,
-                    edge: `EDGE CONTOUR ${this.zoom}X`,
-                    chroma: `CHROMA INVERT ${this.zoom}X`
-                };
-                this.badgeEl.textContent = names[filter] || `${filter.toUpperCase()} ${this.zoom}X`;
-            }
-        },
-
-        toggle() {
-            this.enabled = !this.enabled;
-            const btn = document.getElementById('btnLoupeToggle');
-            if (btn) {
-                btn.innerHTML = this.enabled ? '<i class="fa-solid fa-power-off"></i> ON' : '<i class="fa-solid fa-power-off"></i> OFF';
-                if (this.enabled) btn.classList.add('active');
-                else btn.classList.remove('active');
-            }
-            if (!this.enabled && this.loupeEl) this.loupeEl.classList.remove('active');
-        },
-
-        renderMagnified(relX, relY, dispW, dispH) {
-            if (!this.ctx || !this.imageEl.complete) return;
-            const img = this.imageEl;
-            const natW = img.naturalWidth;
-            const natH = img.naturalHeight;
-            if (!natW || !natH) return;
-
-            const scaleX = natW / dispW;
-            const scaleY = natH / dispH;
-            const natX = relX * scaleX;
-            const natY = relY * scaleY;
-
-            const loupeW = this.canvas.width;
-            const loupeH = this.canvas.height;
-            const srcSize = (loupeW / this.zoom) * scaleX;
-
-            const srcX = Math.max(0, Math.min(natW - srcSize, natX - srcSize / 2));
-            const srcY = Math.max(0, Math.min(natH - srcSize, natY - srcSize / 2));
-
-            this.ctx.clearRect(0, 0, loupeW, loupeH);
-            this.ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, loupeW, loupeH);
-
-            if (this.currentFilter !== 'standard') {
-                const imgData = this.ctx.getImageData(0, 0, loupeW, loupeH);
-                const data = imgData.data;
-
-                if (this.currentFilter === 'ela') {
-                    for (let i = 0; i < data.length; i += 4) {
-                        const avg = (data[i] + data[i+1] + data[i+2]) / 3;
-                        const diff = Math.abs(data[i] - avg) * 8 + 20;
-                        data[i]   = Math.min(255, diff * 1.6);
-                        data[i+1] = Math.min(255, diff * 0.4);
-                        data[i+2] = Math.min(255, diff * 2.2);
-                    }
-                } else if (this.currentFilter === 'edge') {
-                    for (let y = 0; y < loupeH; y++) {
-                        for (let x = 0; x < loupeW - 1; x++) {
-                            const idx = (y * loupeW + x) * 4;
-                            const nextIdx = (y * loupeW + x + 1) * 4;
-                            const diff = Math.abs(data[idx] - data[nextIdx]) * 5;
-                            data[idx]   = 0;
-                            data[idx+1] = Math.min(255, diff);
-                            data[idx+2] = Math.min(255, diff * 1.5);
-                        }
-                    }
-                } else if (this.currentFilter === 'chroma') {
-                    for (let i = 0; i < data.length; i += 4) {
-                        data[i]   = 255 - data[i];
-                        data[i+1] = Math.min(255, data[i+1] * 1.4);
-                        data[i+2] = 255 - data[i+2];
-                    }
-                }
-                this.ctx.putImageData(imgData, 0, 0);
-            }
-        }
-    };
-
     window.ForensicRadar = ForensicRadar;
-    window.ForensicLoupe = ForensicLoupe;
-    window.toggleForensicLoupe = () => ForensicLoupe.toggle();
-    window.setLoupeFilter = (filter, btn) => ForensicLoupe.setFilter(filter, btn);
     </script>
 
     <!-- Main Forensic Controller -->
@@ -1758,7 +1451,6 @@
                 ambientGlow.className = 'ambient-glow';
 
                 setTimeout(() => {
-                    if (window.ForensicLoupe) window.ForensicLoupe.init();
                     if (window.ForensicRadar) window.ForensicRadar.init();
                 }, 120);
             };
@@ -1791,9 +1483,6 @@
             resultsSection.classList.add('hidden');
             ambientGlow.className = 'ambient-glow';
             if (hudTimer) clearInterval(hudTimer);
-            if (window.ForensicLoupe && window.ForensicLoupe.loupeEl) {
-                window.ForensicLoupe.loupeEl.classList.remove('active');
-            }
         });
 
         window.switchVizMode = function (mode) {
@@ -1986,6 +1675,39 @@
                 window.ForensicRadar.update(data, isFake);
             }
         }
+
+        // Auto-load transferred file or sample
+        (function checkAutoLoad() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('sample') === 'ai-image') {
+                fetch('/assets/samples/sample_ai_image.jpg')
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const sampleFile = new File([blob], 'synthetic_diffusion_sample.jpg', { type: 'image/jpeg' });
+                        setFile(sampleFile);
+                    })
+                    .catch(err => console.warn('Could not load sample image:', err));
+                return;
+            }
+
+            try {
+                const req = indexedDB.open('AuthGuardTransfer', 1);
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('transfers')) return;
+                    const tx = db.transaction('transfers', 'readwrite');
+                    const store = tx.objectStore('transfers');
+                    const getReq = store.get('staged_file');
+                    getReq.onsuccess = () => {
+                        if (getReq.result instanceof Blob) {
+                            const file = getReq.result;
+                            store.delete('staged_file');
+                            setFile(file);
+                        }
+                    };
+                };
+            } catch (err) {}
+        })();
     });
     </script>
 

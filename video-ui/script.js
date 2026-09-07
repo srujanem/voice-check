@@ -227,4 +227,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 50);
     }
+
+    // Auto-load transferred file from IndexedDB
+    (function checkAutoLoadVideo() {
+        try {
+            const req = indexedDB.open('AuthGuardTransfer', 1);
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('transfers')) return;
+                const tx = db.transaction('transfers', 'readwrite');
+                const store = tx.objectStore('transfers');
+                const getReq = store.get('staged_file');
+                getReq.onsuccess = () => {
+                    if (getReq.result instanceof Blob) {
+                        const file = getReq.result;
+                        store.delete('staged_file');
+                        handleFiles([file]);
+                    }
+                };
+            };
+        } catch (err) {}
+    })();
 });

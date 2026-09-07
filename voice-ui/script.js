@@ -562,9 +562,38 @@ function initVoiceUI() {
         errorAlert.classList.remove('hidden');
     }
 
-    function hideError() {
-        errorAlert.classList.add('hidden');
-    }
+    // --- Auto-Load Pending Transfer or Sample ---
+    (function checkAutoLoad() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('sample') === 'ai-voice') {
+            fetch('/assets/samples/sample_ai_voice.mp3')
+                .then(res => res.blob())
+                .then(blob => {
+                    const sampleFile = new File([blob], 'synthetic_voice_sample.mp3', { type: 'audio/mpeg' });
+                    handleFile(sampleFile);
+                })
+                .catch(err => console.warn('Could not load sample voice:', err));
+            return;
+        }
+
+        try {
+            const req = indexedDB.open('AuthGuardTransfer', 1);
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('transfers')) return;
+                const tx = db.transaction('transfers', 'readwrite');
+                const store = tx.objectStore('transfers');
+                const getReq = store.get('staged_file');
+                getReq.onsuccess = () => {
+                    if (getReq.result instanceof Blob) {
+                        const file = getReq.result;
+                        store.delete('staged_file');
+                        handleFile(file);
+                    }
+                };
+            };
+        } catch (e) {}
+    })();
 
 } // end initVoiceUI
 

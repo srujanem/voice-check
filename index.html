@@ -2543,10 +2543,318 @@
         @media (max-width: 1024px) {
             .landing-header h1 { font-size: 32px !important; }
             .landing-header p { font-size: 16px !important; }
-            body::after { display: none; } /* Remove grain on mobile for perf */
-            #particles-js { opacity: 0.3; } /* Reduce particle opacity on mobile */
+            body::after { display: none; }
+            #particles-js { opacity: 0.3; }
         }
 
+        /* ===== UNIVERSAL INSTANT SCANNER HUB ===== */
+        .universal-hub-container {
+            width: 100%;
+            max-width: 820px;
+            margin: 36px auto 16px;
+            position: relative;
+            z-index: 10;
+            text-align: left;
+        }
+
+        .universal-hub-card {
+            background: rgba(14, 17, 28, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 20px;
+            padding: 22px 26px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(6, 182, 212, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .universal-hub-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(2, 132, 199, 0.25);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06), 0 0 20px rgba(2, 132, 199, 0.08);
+        }
+
+        .hub-nav-tabs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 12px;
+        }
+
+        [data-theme="light"] .hub-nav-tabs {
+            border-bottom-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .hub-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 7px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hub-tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        [data-theme="light"] .hub-tab-btn:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .hub-tab-btn.active {
+            background: rgba(6, 182, 212, 0.14);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #06b6d4;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+        }
+
+        [data-theme="light"] .hub-tab-btn.active {
+            background: rgba(2, 132, 199, 0.1);
+            border-color: rgba(2, 132, 199, 0.35);
+            color: #0284c7;
+        }
+
+        /* Tab 1: Drop Area */
+        .hub-dropzone {
+            border: 1.5px dashed rgba(6, 182, 212, 0.35);
+            border-radius: 14px;
+            padding: 24px 20px;
+            text-align: center;
+            background: rgba(6, 182, 212, 0.02);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .hub-dropzone:hover, .hub-dropzone.dragover {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.08);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .hub-dropzone-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: #06b6d4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 4px;
+            transition: transform 0.25s ease;
+        }
+
+        .hub-dropzone:hover .hub-dropzone-icon {
+            transform: scale(1.08);
+        }
+
+        .hub-dropzone-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .hub-dropzone-desc {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+        }
+
+        .hub-format-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .hub-tag {
+            font-size: 11px;
+            font-family: var(--font-mono, monospace);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="light"] .hub-tag {
+            background: rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Tab 2: URL Input */
+        .hub-url-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hub-url-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .hub-url-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        [data-theme="light"] .hub-url-input {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+        }
+
+        .hub-url-input:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+        }
+
+        /* Tab 3: Text Input */
+        .hub-text-panel {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hub-textarea {
+            width: 100%;
+            height: 85px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            resize: none;
+            transition: all 0.2s ease;
+        }
+
+        [data-theme="light"] .hub-textarea {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+        }
+
+        .hub-textarea:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+        }
+
+        /* Routing status notification */
+        .hub-routing-status {
+            display: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            color: #22d3ee;
+            font-size: 12.5px;
+            font-weight: 600;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Samples bar */
+        .hub-samples-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
+
+        [data-theme="light"] .hub-samples-row {
+            border-top-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .hub-samples-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hub-sample-btn {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        [data-theme="light"] .hub-sample-btn {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .hub-sample-btn:hover {
+            color: #fff;
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(6, 182, 212, 0.1);
+            transform: translateY(-1px);
+        }
+
+        [data-theme="light"] .hub-sample-btn:hover {
+            color: #0369a1;
+            border-color: #0284c7;
+            background: rgba(2, 132, 199, 0.08);
+        }
+
+        @media (max-width: 600px) {
+            .hub-url-row {
+                flex-direction: column;
+            }
+            .hub-samples-row {
+                gap: 6px;
+            }
+            .universal-hub-card {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2850,6 +3158,86 @@
 <a class="btn-secondary" href="/dashboard.html?v=1787591944" style="display: inline-flex;"><i class="fa-solid fa-chart-pie"></i> Pro Dashboard</a>
 </div>
 </header>
+
+<!-- Universal Multi-Modal Instant Scanner & Auto-Router -->
+<div class="universal-hub-container">
+    <div class="universal-hub-card border-beam-card">
+        <div class="hub-nav-tabs">
+            <button class="hub-tab-btn active" id="hubTabFile" onclick="switchHubTab('file')">
+                <i class="fa-solid fa-cloud-arrow-up" style="color: #06b6d4;"></i> Drop Media
+            </button>
+            <button class="hub-tab-btn" id="hubTabUrl" onclick="switchHubTab('url')">
+                <i class="fa-solid fa-link" style="color: #8b5cf6;"></i> Scan URL
+            </button>
+            <button class="hub-tab-btn" id="hubTabText" onclick="switchHubTab('text')">
+                <i class="fa-solid fa-file-lines" style="color: #10b981;"></i> Check Text
+            </button>
+        </div>
+
+        <!-- Panel 1: Universal Dropzone -->
+        <div id="hubPanelFile" class="hub-panel">
+            <div class="hub-dropzone" id="hubDropzone" onclick="document.getElementById('hubFileInput').click()">
+                <div class="hub-dropzone-icon">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                </div>
+                <div class="hub-dropzone-title">Drop any audio, image, video, or document here</div>
+                <div class="hub-dropzone-desc">AuthGuard automatically detects the media type and routes to the right forensic engine</div>
+                <div class="hub-format-tags">
+                    <span class="hub-tag"><i class="fa-solid fa-microphone"></i> Audio (MP3, WAV)</span>
+                    <span class="hub-tag"><i class="fa-solid fa-image"></i> Image (JPG, PNG)</span>
+                    <span class="hub-tag"><i class="fa-solid fa-video"></i> Video (MP4)</span>
+                    <span class="hub-tag"><i class="fa-solid fa-file-pdf"></i> Document (PDF, TXT)</span>
+                </div>
+            </div>
+            <input type="file" id="hubFileInput" style="display: none;" accept="audio/*,image/*,video/*,.pdf,.txt,.doc,.docx" onchange="handleHubFileSelection(this.files[0])">
+        </div>
+
+        <!-- Panel 2: Scan URL -->
+        <div id="hubPanelUrl" class="hub-panel hub-url-panel">
+            <div class="hub-url-row">
+                <input type="url" id="hubUrlInput" class="hub-url-input" placeholder="Paste article link, news story, or social URL (https://...)" onkeydown="if(event.key==='Enter') submitHubUrl()">
+                <button class="btn-primary" onclick="submitHubUrl()" style="white-space: nowrap; padding: 10px 20px; font-size: 13px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Scan URL
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel 3: Paste Text -->
+        <div id="hubPanelText" class="hub-panel hub-text-panel">
+            <textarea id="hubTextInput" class="hub-textarea" placeholder="Paste suspicious text, email, essay, or prompt to inspect for ChatGPT / Gemini AI writing..."></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; color: var(--text-secondary);" id="hubTextCount">0 words</span>
+                <button class="btn-primary" onclick="submitHubText()" style="padding: 9px 20px; font-size: 13px;">
+                    <i class="fa-solid fa-robot"></i> Analyze Text
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Routing Status Toast -->
+        <div id="hubRoutingStatus" class="hub-routing-status">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span id="hubRoutingMsg">Routing media to detector...</span>
+        </div>
+
+        <!-- Quick Test Samples -->
+        <div class="hub-samples-row">
+            <span class="hub-samples-label"><i class="fa-solid fa-bolt" style="color: #06b6d4;"></i> Quick Samples:</span>
+            <a href="/voice-ui/index.html?sample=ai-voice" class="hub-sample-btn">
+                <i class="fa-solid fa-microphone-lines" style="color: #06b6d4;"></i> AI Voice Sample
+            </a>
+            <a href="/deepfake-ui/index.html?sample=ai-image" class="hub-sample-btn">
+                <i class="fa-solid fa-image" style="color: #8b5cf6;"></i> Deepfake Image
+            </a>
+            <a href="/text-ui/index.html?sample=ai-text" class="hub-sample-btn">
+                <i class="fa-solid fa-robot" style="color: #10b981;"></i> ChatGPT Text
+            </a>
+            <a href="/video-ui/index.html?sample=ai-video" class="hub-sample-btn">
+                <i class="fa-solid fa-video" style="color: #f43f5e;"></i> Deepfake Video
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- Hero Live Counter Strip -->
 <div class="hero-counter-strip">
 <div class="hero-counter-item">
@@ -3187,6 +3575,182 @@
           animateCounter('hc-countries', 140, '+', 1800);
       });
   })();
+
+  // ══════════════════════════════════════════════════════════════
+  // UNIVERSAL MULTI-MODAL INSTANT SCANNER & AUTO-ROUTER ENGINE
+  // ══════════════════════════════════════════════════════════════
+  window.switchHubTab = function(tab) {
+      document.querySelectorAll('.hub-tab-btn').forEach(b => b.classList.remove('active'));
+      const pFile = document.getElementById('hubPanelFile');
+      const pUrl = document.getElementById('hubPanelUrl');
+      const pText = document.getElementById('hubPanelText');
+      if (pFile) pFile.style.display = tab === 'file' ? 'block' : 'none';
+      if (pUrl) pUrl.style.display = tab === 'url' ? 'flex' : 'none';
+      if (pText) pText.style.display = tab === 'text' ? 'flex' : 'none';
+
+      if (tab === 'file') document.getElementById('hubTabFile')?.classList.add('active');
+      if (tab === 'url') {
+          document.getElementById('hubTabUrl')?.classList.add('active');
+          setTimeout(() => document.getElementById('hubUrlInput')?.focus(), 50);
+      }
+      if (tab === 'text') {
+          document.getElementById('hubTabText')?.classList.add('active');
+          setTimeout(() => document.getElementById('hubTextInput')?.focus(), 50);
+      }
+  };
+
+  window.submitHubUrl = function() {
+      const input = document.getElementById('hubUrlInput');
+      const url = input ? input.value.trim() : '';
+      if (!url) {
+          if (input) input.focus();
+          return;
+      }
+      window.location.href = '/url-ui/index.html?url=' + encodeURIComponent(url);
+  };
+
+  window.submitHubText = function() {
+      const input = document.getElementById('hubTextInput');
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+          if (input) input.focus();
+          return;
+      }
+      try {
+          sessionStorage.setItem('authguard_staged_text', text);
+      } catch(e) {}
+      window.location.href = '/text-ui/index.html?from=hub';
+  };
+
+  function routeFileToDetector(file) {
+      if (!file) return;
+      const name = (file.name || '').toLowerCase();
+      const type = (file.type || '').toLowerCase();
+
+      let targetUrl = '/deepfake-ui/index.html';
+      let targetName = 'Vision Transformer Deepfake Engine';
+      let iconClass = 'fa-image';
+
+      if (type.startsWith('audio/') || name.endsWith('.mp3') || name.endsWith('.wav') || name.endsWith('.flac') || name.endsWith('.m4a') || name.endsWith('.ogg')) {
+          targetUrl = '/voice-ui/index.html';
+          targetName = 'Voice Clone Biometrics';
+          iconClass = 'fa-microphone';
+      } else if (type.startsWith('image/') || name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png') || name.endsWith('.webp') || name.endsWith('.bmp')) {
+          targetUrl = '/deepfake-ui/index.html';
+          targetName = 'Vision Transformer Deepfake Engine';
+          iconClass = 'fa-image';
+      } else if (type.startsWith('video/') || name.endsWith('.mp4') || name.endsWith('.mov') || name.endsWith('.avi') || name.endsWith('.webm') || name.endsWith('.mkv')) {
+          targetUrl = '/video-ui/index.html';
+          targetName = 'Video Deepfake Frame Analyzer';
+          iconClass = 'fa-video';
+      } else if (type === 'application/pdf' || name.endsWith('.pdf')) {
+          targetUrl = '/document-ui/index.html';
+          targetName = 'Document Integrity Heatmap';
+          iconClass = 'fa-file-pdf';
+      } else if (name.endsWith('.txt') || type.startsWith('text/')) {
+          targetUrl = '/text-ui/index.html';
+          targetName = 'Text Perplexity Detector';
+          iconClass = 'fa-file-lines';
+      }
+
+      const statusEl = document.getElementById('hubRoutingStatus');
+      const msgEl = document.getElementById('hubRoutingMsg');
+      if (statusEl && msgEl) {
+          statusEl.style.display = 'flex';
+          msgEl.innerHTML = `<i class="fa-solid ${iconClass}"></i> Detected <strong>${file.name}</strong> &mdash; Routing to <strong>${targetName}</strong>...`;
+      }
+
+      try {
+          const req = indexedDB.open('AuthGuardTransfer', 1);
+          req.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains('transfers')) {
+                  db.createObjectStore('transfers');
+              }
+          };
+          req.onsuccess = (e) => {
+              const db = e.target.result;
+              const tx = db.transaction('transfers', 'readwrite');
+              tx.objectStore('transfers').put(file, 'staged_file');
+              tx.oncomplete = () => {
+                  setTimeout(() => { window.location.href = targetUrl; }, 350);
+              };
+          };
+          req.onerror = () => {
+              window.location.href = targetUrl;
+          };
+      } catch (err) {
+          window.location.href = targetUrl;
+      }
+  }
+
+  window.handleHubFileSelection = function(file) {
+      routeFileToDetector(file);
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+      const hubText = document.getElementById('hubTextInput');
+      const hubCount = document.getElementById('hubTextCount');
+      if (hubText && hubCount) {
+          hubText.addEventListener('input', () => {
+              const words = hubText.value.trim().split(/\s+/).filter(Boolean).length;
+              hubCount.textContent = words + (words === 1 ? ' word' : ' words');
+          });
+      }
+
+      const hubDropzone = document.getElementById('hubDropzone');
+      if (hubDropzone) {
+          ['dragenter', 'dragover'].forEach(ev => {
+              hubDropzone.addEventListener(ev, (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  hubDropzone.classList.add('dragover');
+              });
+          });
+          ['dragleave', 'drop'].forEach(ev => {
+              hubDropzone.addEventListener(ev, (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  hubDropzone.classList.remove('dragover');
+              });
+          });
+          hubDropzone.addEventListener('drop', (e) => {
+              if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                  routeFileToDetector(e.dataTransfer.files[0]);
+              }
+          });
+      }
+
+      // Page-wide Drag & Drop Overlay
+      const dragOverlay = document.getElementById('drag-overlay');
+      if (dragOverlay) {
+          let dragCounter = 0;
+          window.addEventListener('dragenter', (e) => {
+              if (e.dataTransfer && e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+                  dragCounter++;
+                  dragOverlay.classList.add('show');
+              }
+          });
+          window.addEventListener('dragleave', (e) => {
+              dragCounter--;
+              if (dragCounter <= 0) {
+                  dragCounter = 0;
+                  dragOverlay.classList.remove('show');
+              }
+          });
+          window.addEventListener('dragover', (e) => {
+              e.preventDefault();
+          });
+          window.addEventListener('drop', (e) => {
+              e.preventDefault();
+              dragCounter = 0;
+              dragOverlay.classList.remove('show');
+              if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                  routeFileToDetector(e.dataTransfer.files[0]);
+              }
+          });
+      }
+  });
   </script>
   </div>
   </div>

@@ -403,4 +403,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Auto-load incoming text from hub or URL params
+    (function checkAutoLoadText() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('sample') === 'ai-text') {
+            if (typeof window.loadSamplePrompt === 'function') {
+                window.loadSamplePrompt('ai');
+            }
+            setTimeout(() => {
+                const btn = document.getElementById('btnAnalyze');
+                if (btn) btn.click();
+            }, 300);
+            return;
+        }
+
+        const urlText = params.get('text');
+        let stagedText = null;
+        try {
+            stagedText = sessionStorage.getItem('authguard_staged_text');
+            if (stagedText) sessionStorage.removeItem('authguard_staged_text');
+        } catch(e) {}
+
+        const textToLoad = urlText ? decodeURIComponent(urlText) : stagedText;
+        if (textToLoad && textInput) {
+            textInput.value = textToLoad;
+            textInput.dispatchEvent(new Event('input'));
+            setTimeout(() => {
+                const btn = document.getElementById('btnAnalyze');
+                if (btn) btn.click();
+            }, 300);
+        }
+    })();
 });

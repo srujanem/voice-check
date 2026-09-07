@@ -157,4 +157,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 50);
     }
+
+    // Auto-detect incoming URL parameter
+    (function checkAutoLoadUrl() {
+        const incomingUrl = new URLSearchParams(window.location.search).get('url');
+        if (incomingUrl && urlInput) {
+            urlInput.value = decodeURIComponent(incomingUrl);
+            setTimeout(() => {
+                if (btnAnalyze) btnAnalyze.click();
+            }, 300);
+        }
+    })();
 });
