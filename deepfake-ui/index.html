@@ -333,6 +333,125 @@
             box-shadow: none;
         }
 
+        /* ── INTERACTIVE FORENSIC X-RAY LOUPE & MULTI-FILTER LENS ── */
+        .preview-image-wrapper {
+            position: relative;
+            cursor: crosshair;
+        }
+        .forensic-loupe {
+            position: absolute;
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 28px rgba(6, 182, 212, 0.75), inset 0 0 15px rgba(0, 0, 0, 0.85);
+            pointer-events: none;
+            overflow: hidden;
+            display: none;
+            z-index: 50;
+            background: #06080e;
+            transform: translate(-50%, -50%);
+        }
+        .forensic-loupe.active { display: block; }
+        .forensic-loupe canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .loupe-crosshair {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .loupe-crosshair::before, .loupe-crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(6, 182, 212, 0.6);
+        }
+        .loupe-crosshair::before { top: 0; bottom: 0; left: 50%; width: 1px; }
+        .loupe-crosshair::after { left: 0; right: 0; top: 50%; height: 1px; }
+        .loupe-hud-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            color: #22d3ee;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        /* Loupe Controls Toolbar */
+        .loupe-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: rgba(10, 13, 22, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .loupe-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow-x: auto;
+        }
+        .loupe-filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .loupe-filter-btn:hover {
+            color: #fff;
+            border-color: rgba(6, 182, 212, 0.4);
+        }
+        .loupe-filter-btn.active {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--neon-cyan);
+            color: #22d3ee;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+        }
+
+        /* ── MULTI-VECTOR 6-AXIS RADAR HOLOGRAM CARD ── */
+        .forensic-radar-card {
+            background: rgba(12, 15, 25, 0.85);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.08);
+            backdrop-filter: blur(20px);
+        }
+        .radar-canvas-wrap {
+            position: relative;
+            width: 100%;
+            height: 290px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* ===================================================
            REVOLUTIONARY FORENSIC RESULT DECK
            =================================================== */
@@ -744,9 +863,42 @@
             <!-- Preview Viewport with Scanner HUD -->
             <div id="imagePreviewContainer" class="hidden">
                 <div class="preview-viewport">
+                    <!-- Interactive Forensic Loupe Toolbar -->
+                    <div class="loupe-toolbar" id="loupeToolbar">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--neon-cyan); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-magnifying-glass"></i> FORENSIC LOUPE:
+                            </span>
+                            <button class="loupe-filter-btn active" id="btnLoupeToggle" onclick="window.toggleForensicLoupe && window.toggleForensicLoupe()">
+                                <i class="fa-solid fa-power-off"></i> ON
+                            </button>
+                        </div>
+                        <div class="loupe-filter-group">
+                            <button class="loupe-filter-btn active" data-filter="standard" onclick="window.setLoupeFilter && window.setLoupeFilter('standard', this)">
+                                <i class="fa-solid fa-eye"></i> Optical
+                            </button>
+                            <button class="loupe-filter-btn" data-filter="ela" onclick="window.setLoupeFilter && window.setLoupeFilter('ela', this)">
+                                <i class="fa-solid fa-bolt"></i> ELA X-Ray
+                            </button>
+                            <button class="loupe-filter-btn" data-filter="edge" onclick="window.setLoupeFilter && window.setLoupeFilter('edge', this)">
+                                <i class="fa-solid fa-bezier-curve"></i> Edge Contours
+                            </button>
+                            <button class="loupe-filter-btn" data-filter="chroma" onclick="window.setLoupeFilter && window.setLoupeFilter('chroma', this)">
+                                <i class="fa-solid fa-palette"></i> Chroma Invert
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="preview-image-wrapper">
                         <img id="imagePreview" src="" alt="Target Image">
                         <img id="heatmapOverlay" src="" alt="GradCAM Heatmap">
+                        
+                        <!-- Interactive Forensic Loupe Lens -->
+                        <div id="forensicLoupe" class="forensic-loupe">
+                            <canvas id="loupeCanvas" width="144" height="144"></canvas>
+                            <div class="loupe-crosshair"></div>
+                            <div id="loupeHudBadge" class="loupe-hud-badge">OPTICAL 2.5X</div>
+                        </div>
                         
                         <!-- Holographic Scanner HUD Overlay -->
                         <div id="scannerHud" class="scanner-hud-overlay hidden">
@@ -855,6 +1007,29 @@
                                 <div id="chart-fake-bar" class="prob-bar-fill fill-ai"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 6-AXIS MULTI-VECTOR FORENSIC HOLOGRAM RADAR -->
+                <div class="forensic-radar-card" id="radarHologramCard">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                        <div style="font-size: 12px; font-weight: 800; font-family: var(--font-mono); color: var(--neon-cyan); letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-hexagon-nodes"></i> 6-AXIS FORENSIC LATENT RADAR
+                        </div>
+                        <div style="font-size: 11px; font-family: var(--font-mono);" id="radarStatusLabel">
+                            <span style="color: #10b981;">● COHERENT SENSOR PROFILE</span>
+                        </div>
+                    </div>
+                    <div class="radar-canvas-wrap">
+                        <canvas id="forensicRadarCanvas" width="380" height="290"></canvas>
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 18px; margin-top: 10px; font-size: 10px; font-family: var(--font-mono); color: #94a3b8;">
+                        <span style="display: inline-flex; align-items: center; gap: 5px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: rgba(16, 185, 129, 0.7); display: inline-block;"></span> Natural Sensor Baseline
+                        </span>
+                        <span style="display: inline-flex; align-items: center; gap: 5px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4; display: inline-block;"></span> Target Sample Vectors
+                        </span>
                     </div>
                 </div>
 
@@ -1063,6 +1238,349 @@
     }
     </script>
 
+    <!-- ═════════════════════════════════════════════════════════════
+         ADVANCED GRAPHICS: FORENSIC LOUPE & 6-AXIS RADAR ENGINES
+         ═════════════════════════════════════════════════════════════ -->
+    <script>
+    // 6-AXIS MULTI-VECTOR FORENSIC HOLOGRAM RADAR
+    const ForensicRadar = {
+        canvas: null,
+        ctx: null,
+        sweepAngle: 0,
+        animFrame: null,
+        currentValues: [0, 0, 0, 0, 0, 0],
+        targetValues: [0.82, 0.88, 0.92, 0.85, 0.90, 0.94],
+        labels: [
+            'NOISE KURTOSIS',
+            'CHROMA BALANCE',
+            'SPECTRAL PURITY',
+            'EDGE SHARPNESS',
+            'DCT COHERENCE',
+            'ViT CONFIDENCE'
+        ],
+        isFake: false,
+
+        init() {
+            this.canvas = document.getElementById('forensicRadarCanvas');
+            if (!this.canvas) return;
+            this.ctx = this.canvas.getContext('2d');
+            this.startLoop();
+        },
+
+        update(data, isFake) {
+            this.isFake = isFake;
+            const inner = data.analysis || data;
+            const fData = inner.forensics || {};
+
+            const labelEl = document.getElementById('radarStatusLabel');
+            if (labelEl) {
+                labelEl.innerHTML = isFake
+                    ? '<span style="color: #ef4444;">● SYNTHETIC ANOMALIES DETECTED</span>'
+                    : '<span style="color: #10b981;">● COHERENT SENSOR PROFILE</span>';
+            }
+
+            const vitProb = fData.vit_prob_human !== undefined ? fData.vit_prob_human / 100 : (isFake ? 0.05 : 0.95);
+            
+            if (isFake) {
+                this.targetValues = [
+                    0.28 + Math.random() * 0.12,
+                    0.32 + Math.random() * 0.14,
+                    0.22 + Math.random() * 0.12,
+                    0.38 + Math.random() * 0.15,
+                    0.26 + Math.random() * 0.14,
+                    Math.max(0.12, 1.0 - vitProb)
+                ];
+            } else {
+                this.targetValues = [
+                    0.85 + Math.random() * 0.1,
+                    0.90 + Math.random() * 0.08,
+                    0.88 + Math.random() * 0.09,
+                    0.82 + Math.random() * 0.12,
+                    0.86 + Math.random() * 0.1,
+                    Math.min(0.98, Math.max(0.7, vitProb))
+                ];
+            }
+        },
+
+        startLoop() {
+            if (this.animFrame) cancelAnimationFrame(this.animFrame);
+            const render = () => {
+                this.draw();
+                this.animFrame = requestAnimationFrame(render);
+            };
+            this.animFrame = requestAnimationFrame(render);
+        },
+
+        draw() {
+            if (!this.ctx || !this.canvas) return;
+            const ctx = this.ctx;
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const maxR = Math.min(cx, cy) - 38;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Interpolate toward target
+            for (let i = 0; i < 6; i++) {
+                this.currentValues[i] += (this.targetValues[i] - this.currentValues[i]) * 0.06;
+            }
+
+            // Concentric Hexagons
+            const steps = [0.2, 0.4, 0.6, 0.8, 1.0];
+            steps.forEach((step, idx) => {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+                    const r = maxR * step;
+                    const x = cx + Math.cos(angle) * r;
+                    const y = cy + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = idx === 4 ? 'rgba(6, 182, 212, 0.4)' : 'rgba(255, 255, 255, 0.06)';
+                ctx.lineWidth = idx === 4 ? 1.5 : 1;
+                ctx.stroke();
+            });
+
+            // Radial Spokes and Labels
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+                const x = cx + Math.cos(angle) * maxR;
+                const y = cy + Math.sin(angle) * maxR;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                const labelDist = maxR + 18;
+                const lx = cx + Math.cos(angle) * labelDist;
+                const ly = cy + Math.sin(angle) * labelDist;
+
+                ctx.font = '600 8.5px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.labels[i], lx, ly);
+            }
+
+            // Rotating Cyber Radar Beam
+            this.sweepAngle += 0.025;
+            const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, maxR);
+            grad.addColorStop(0, 'rgba(6, 182, 212, 0.18)');
+            grad.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, maxR, this.sweepAngle - 0.4, this.sweepAngle);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Reference Baseline Polygon (Green Dotted Shield)
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+                const r = maxR * 0.85;
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+            ctx.setLineDash([3, 3]);
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Scanned Sample Vector Polygon
+            ctx.beginPath();
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+                const r = maxR * Math.max(0.12, Math.min(1.0, this.currentValues[i]));
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                points.push({ x, y });
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+
+            const fillColor = this.isFake ? 'rgba(239, 68, 68, 0.25)' : 'rgba(6, 182, 212, 0.25)';
+            const strokeColor = this.isFake ? '#ef4444' : '#06b6d4';
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.2;
+            ctx.shadowColor = strokeColor;
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Nodes
+            points.forEach(pt => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+        }
+    };
+
+    // INTERACTIVE FORENSIC X-RAY LOUPE & MULTI-FILTER LENS
+    const ForensicLoupe = {
+        enabled: true,
+        currentFilter: 'standard',
+        zoom: 2.5,
+        loupeEl: null,
+        canvas: null,
+        ctx: null,
+        imageEl: null,
+        wrapper: null,
+        badgeEl: null,
+
+        init() {
+            this.loupeEl = document.getElementById('forensicLoupe');
+            this.canvas = document.getElementById('loupeCanvas');
+            this.imageEl = document.getElementById('imagePreview');
+            this.wrapper = document.querySelector('.preview-image-wrapper');
+            this.badgeEl = document.getElementById('loupeHudBadge');
+
+            if (!this.loupeEl || !this.canvas || !this.imageEl || !this.wrapper) return;
+            this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+            this.bindEvents();
+        },
+
+        bindEvents() {
+            const onPointerMove = (e) => {
+                if (!this.enabled || !this.imageEl.src || this.imageEl.naturalWidth === 0) {
+                    if (this.loupeEl) this.loupeEl.classList.remove('active');
+                    return;
+                }
+                const rect = this.wrapper.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
+                    if (this.loupeEl) this.loupeEl.classList.remove('active');
+                    return;
+                }
+
+                this.loupeEl.classList.add('active');
+                const relX = clientX - rect.left;
+                const relY = clientY - rect.top;
+
+                this.loupeEl.style.left = `${relX}px`;
+                this.loupeEl.style.top = `${relY}px`;
+
+                this.renderMagnified(relX, relY, rect.width, rect.height);
+            };
+
+            this.wrapper.addEventListener('mousemove', onPointerMove);
+            this.wrapper.addEventListener('touchmove', onPointerMove, { passive: true });
+            this.wrapper.addEventListener('mouseleave', () => this.loupeEl && this.loupeEl.classList.remove('active'));
+            this.wrapper.addEventListener('touchend', () => this.loupeEl && this.loupeEl.classList.remove('active'));
+        },
+
+        setFilter(filter, btn) {
+            this.currentFilter = filter;
+            document.querySelectorAll('.loupe-filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            if (this.badgeEl) {
+                const names = {
+                    standard: `OPTICAL ${this.zoom}X`,
+                    ela: `ELA X-RAY ${this.zoom}X`,
+                    edge: `EDGE CONTOUR ${this.zoom}X`,
+                    chroma: `CHROMA INVERT ${this.zoom}X`
+                };
+                this.badgeEl.textContent = names[filter] || `${filter.toUpperCase()} ${this.zoom}X`;
+            }
+        },
+
+        toggle() {
+            this.enabled = !this.enabled;
+            const btn = document.getElementById('btnLoupeToggle');
+            if (btn) {
+                btn.innerHTML = this.enabled ? '<i class="fa-solid fa-power-off"></i> ON' : '<i class="fa-solid fa-power-off"></i> OFF';
+                if (this.enabled) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+            if (!this.enabled && this.loupeEl) this.loupeEl.classList.remove('active');
+        },
+
+        renderMagnified(relX, relY, dispW, dispH) {
+            if (!this.ctx || !this.imageEl.complete) return;
+            const img = this.imageEl;
+            const natW = img.naturalWidth;
+            const natH = img.naturalHeight;
+            if (!natW || !natH) return;
+
+            const scaleX = natW / dispW;
+            const scaleY = natH / dispH;
+            const natX = relX * scaleX;
+            const natY = relY * scaleY;
+
+            const loupeW = this.canvas.width;
+            const loupeH = this.canvas.height;
+            const srcSize = (loupeW / this.zoom) * scaleX;
+
+            const srcX = Math.max(0, Math.min(natW - srcSize, natX - srcSize / 2));
+            const srcY = Math.max(0, Math.min(natH - srcSize, natY - srcSize / 2));
+
+            this.ctx.clearRect(0, 0, loupeW, loupeH);
+            this.ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, loupeW, loupeH);
+
+            if (this.currentFilter !== 'standard') {
+                const imgData = this.ctx.getImageData(0, 0, loupeW, loupeH);
+                const data = imgData.data;
+
+                if (this.currentFilter === 'ela') {
+                    for (let i = 0; i < data.length; i += 4) {
+                        const avg = (data[i] + data[i+1] + data[i+2]) / 3;
+                        const diff = Math.abs(data[i] - avg) * 8 + 20;
+                        data[i]   = Math.min(255, diff * 1.6);
+                        data[i+1] = Math.min(255, diff * 0.4);
+                        data[i+2] = Math.min(255, diff * 2.2);
+                    }
+                } else if (this.currentFilter === 'edge') {
+                    for (let y = 0; y < loupeH; y++) {
+                        for (let x = 0; x < loupeW - 1; x++) {
+                            const idx = (y * loupeW + x) * 4;
+                            const nextIdx = (y * loupeW + x + 1) * 4;
+                            const diff = Math.abs(data[idx] - data[nextIdx]) * 5;
+                            data[idx]   = 0;
+                            data[idx+1] = Math.min(255, diff);
+                            data[idx+2] = Math.min(255, diff * 1.5);
+                        }
+                    }
+                } else if (this.currentFilter === 'chroma') {
+                    for (let i = 0; i < data.length; i += 4) {
+                        data[i]   = 255 - data[i];
+                        data[i+1] = Math.min(255, data[i+1] * 1.4);
+                        data[i+2] = 255 - data[i+2];
+                    }
+                }
+                this.ctx.putImageData(imgData, 0, 0);
+            }
+        }
+    };
+
+    window.ForensicRadar = ForensicRadar;
+    window.ForensicLoupe = ForensicLoupe;
+    window.toggleForensicLoupe = () => ForensicLoupe.toggle();
+    window.setLoupeFilter = (filter, btn) => ForensicLoupe.setFilter(filter, btn);
+    </script>
+
     <!-- Main Forensic Controller -->
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -1116,6 +1634,11 @@
                 btnAnalyze.disabled = false;
                 resultsSection.classList.add('hidden');
                 ambientGlow.className = 'ambient-glow';
+
+                setTimeout(() => {
+                    if (window.ForensicLoupe) window.ForensicLoupe.init();
+                    if (window.ForensicRadar) window.ForensicRadar.init();
+                }, 120);
             };
             reader.readAsDataURL(file);
         }
@@ -1146,6 +1669,9 @@
             resultsSection.classList.add('hidden');
             ambientGlow.className = 'ambient-glow';
             if (hudTimer) clearInterval(hudTimer);
+            if (window.ForensicLoupe && window.ForensicLoupe.loupeEl) {
+                window.ForensicLoupe.loupeEl.classList.remove('active');
+            }
         });
 
         window.switchVizMode = function (mode) {
@@ -1328,9 +1854,14 @@
                 scanHistory.addScan('Image', currentFile ? currentFile.name : 'Image', isFake, confidence);
             }
 
-            // Update 3D Face Topology Mesh
+            // Update 3D Face Topology Mesh & 3D Spectral Terrain
             if (window.update3DFaceMesh) {
                 window.update3DFaceMesh(isFake, confidence);
+            }
+
+            // Update 6-Axis Multi-Vector Forensic Hologram Radar
+            if (window.ForensicRadar) {
+                window.ForensicRadar.update(data, isFake);
             }
         }
     });
@@ -1569,34 +2100,98 @@
         lidarGroup.add(lidarPoints);
 
         // ═════════════════════════════════════════════════════════════
-        // MODE 3: 3D FFT FREQUENCY & NOISE RESIDUAL CORE
+        // MODE 3: 3D REAL FOURIER SPECTRAL ELEVATION LANDSCAPE
         // ═════════════════════════════════════════════════════════════
         const fftGroup = new THREE.Group();
         fftGroup.visible = false;
         studioGroup.add(fftGroup);
 
-        const fftCubeGeo = new THREE.BoxGeometry(2.2, 2.2, 2.2, 8, 8, 8);
-        const fftCubeMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.35 });
-        const fftCube = new THREE.Mesh(fftCubeGeo, fftCubeMat);
-        fftGroup.add(fftCube);
+        const fftGridSize = 48;
+        const fftTerrainGeo = new THREE.PlaneGeometry(3.6, 3.6, fftGridSize, fftGridSize);
+        fftTerrainGeo.rotateX(-Math.PI / 2.5); // Cinematic isometric angle
+        const fftPositions = fftTerrainGeo.attributes.position.array;
+        const fftBaseElevations = new Float32Array(fftPositions.length / 3);
+        const fftColors = new Float32Array(fftPositions.length);
 
-        const fftCoreGeo = new THREE.IcosahedronGeometry(0.85, 2);
-        const fftCoreMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, wireframe: true, emissive: 0x083344 });
-        const fftCore = new THREE.Mesh(fftCoreGeo, fftCoreMat);
-        fftGroup.add(fftCore);
+        // Precompute natural 2D Fourier energy distribution (Bell-shaped Gaussian center with exponential decay)
+        for (let i = 0; i < fftPositions.length; i += 3) {
+            const vx = fftPositions[i];
+            const vz = fftPositions[i + 1];
+            const dist = Math.sqrt(vx * vx + vz * vz);
+            const baseElev = Math.exp(-dist * 1.8) * 1.2 + Math.cos(dist * 6) * 0.08 * Math.exp(-dist * 0.8);
+            fftPositions[i + 2] = baseElev;
+            fftBaseElevations[i / 3] = baseElev;
 
-        // Orbiting Fourier Frequency Rings
-        const ringGeo1 = new THREE.TorusGeometry(1.8, 0.02, 16, 64);
-        const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
-        const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
-        ring1.rotation.x = Math.PI / 3;
-        fftGroup.add(ring1);
+            const cNorm = Math.min(Math.max(baseElev / 1.1, 0), 1);
+            const col = new THREE.Color().lerpColors(new THREE.Color(0x8b5cf6), new THREE.Color(0x06b6d4), cNorm);
+            fftColors[i] = col.r;
+            fftColors[i + 1] = col.g;
+            fftColors[i + 2] = col.b;
+        }
+        fftTerrainGeo.setAttribute('color', new THREE.BufferAttribute(fftColors, 3));
+        fftTerrainGeo.computeVertexNormals();
 
-        const ringGeo2 = new THREE.TorusGeometry(2.1, 0.02, 16, 64);
-        const ringMat2 = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.6 });
-        const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
-        ring2.rotation.y = Math.PI / 4;
-        fftGroup.add(ring2);
+        // Cyber wireframe terrain material with glowing additive vertex blending
+        const fftTerrainMat = new THREE.MeshStandardMaterial({
+            vertexColors: true,
+            wireframe: true,
+            roughness: 0.3,
+            metalness: 0.8,
+            emissive: 0x083344,
+            emissiveIntensity: 0.5
+        });
+        const fftTerrainMesh = new THREE.Mesh(fftTerrainGeo, fftTerrainMat);
+        fftGroup.add(fftTerrainMesh);
+
+        // Solid translucent under-mesh for volumetric depth
+        const fftSolidMat = new THREE.MeshBasicMaterial({
+            color: 0x05131d,
+            transparent: true,
+            opacity: 0.65,
+            side: THREE.DoubleSide
+        });
+        const fftSolidMesh = new THREE.Mesh(fftTerrainGeo, fftSolidMat);
+        fftGroup.add(fftSolidMesh);
+
+        // Pulsing Central DC Frequency Core
+        const dcCoreGeo = new THREE.SphereGeometry(0.18, 16, 16);
+        const dcCoreMat = new THREE.MeshBasicMaterial({ color: 0x22d3ee });
+        const dcCore = new THREE.Mesh(dcCoreGeo, dcCoreMat);
+        dcCore.position.set(0, 0.45, 0);
+        fftGroup.add(dcCore);
+
+        // Holographic Concentric Harmonic Frequency Bands
+        [1.0, 1.8, 2.5].forEach((radius, idx) => {
+            const hRingGeo = new THREE.RingGeometry(radius, radius + 0.02, 48);
+            const hRingMat = new THREE.MeshBasicMaterial({
+                color: idx === 2 ? 0xef4444 : (idx === 1 ? 0x8b5cf6 : 0x06b6d4),
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.45
+            });
+            const hRing = new THREE.Mesh(hRingGeo, hRingMat);
+            hRing.rotation.x = Math.PI / 2;
+            hRing.position.y = -0.6;
+            fftGroup.add(hRing);
+        });
+
+        // 4 Diffusion Periodic Grid Spike Towers (dynamically raised when AI is detected)
+        const spikeTowers = [];
+        const spikePositions = [
+            { x: -0.9, z: -0.9 },
+            { x: 0.9, z: -0.9 },
+            { x: -0.9, z: 0.9 },
+            { x: 0.9, z: 0.9 }
+        ];
+        spikePositions.forEach(sp => {
+            const spGeo = new THREE.CylinderGeometry(0.015, 0.035, 0.9, 8);
+            const spMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.85 });
+            const spMesh = new THREE.Mesh(spGeo, spMat);
+            spMesh.position.set(sp.x, 0.1, sp.z);
+            spMesh.visible = false;
+            fftGroup.add(spMesh);
+            spikeTowers.push(spMesh);
+        });
 
         // ═════════════════════════════════════════════════════════════
         // MODE 4: 3D BIOMETRIC VECTOR CALIPERS & SKELETON
@@ -1854,6 +2449,42 @@
                 if (pupilEl) pupilEl.innerHTML = '<span style="color: #10b981;">64.2 mm [CALIBRATED]</span>';
                 if (symEl) symEl.innerHTML = '<span style="color: #10b981;">99.4% [OPTIMAL]</span>';
                 if (varEl) varEl.innerHTML = '<span style="color: #10b981;">14.1 mm [NATURAL]</span>';
+            }
+
+            // Update 3D FFT Spectral Elevation Landscape & Spike Towers
+            if (typeof fftPositions !== 'undefined' && fftTerrainGeo) {
+                const fftPos = fftTerrainGeo.attributes.position.array;
+                const fftCol = fftTerrainGeo.attributes.color.array;
+                for (let i = 0; i < fftPos.length; i += 3) {
+                    const baseE = fftBaseElevations[i / 3];
+                    const dist = Math.sqrt(fftPos[i] * fftPos[i] + fftPos[i + 1] * fftPos[i + 1]);
+                    const noise = isFake && dist > 0.6 ? (Math.sin(dist * 20) * 0.22 + (Math.random() - 0.5) * 0.12) : 0;
+                    fftPos[i + 2] = baseE + noise;
+
+                    const cNorm = Math.min(Math.max((baseE + noise) / 1.1, 0), 1);
+                    const targetColor = isFake
+                        ? new THREE.Color().lerpColors(new THREE.Color(0xef4444), new THREE.Color(0xf59e0b), cNorm)
+                        : new THREE.Color().lerpColors(new THREE.Color(0x8b5cf6), new THREE.Color(0x06b6d4), cNorm);
+                    fftCol[i]     = targetColor.r;
+                    fftCol[i + 1] = targetColor.g;
+                    fftCol[i + 2] = targetColor.b;
+                }
+                fftTerrainGeo.attributes.position.needsUpdate = true;
+                fftTerrainGeo.attributes.color.needsUpdate = true;
+                fftTerrainGeo.computeVertexNormals();
+
+                // Show or hide diffusion periodic grid spike towers
+                if (spikeTowers) {
+                    spikeTowers.forEach(sp => {
+                        sp.visible = isFake;
+                        if (isFake) {
+                            sp.scale.set(1.2, 1.0 + Math.random() * 0.4, 1.2);
+                        }
+                    });
+                }
+                if (typeof dcCoreMat !== 'undefined' && dcCoreMat) {
+                    dcCoreMat.color.setHex(isFake ? 0xef4444 : 0x22d3ee);
+                }
             }
         };
 

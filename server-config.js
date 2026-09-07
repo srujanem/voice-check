@@ -17,7 +17,7 @@
     const DEFAULT_URL = 'https://cant-britain-demonstrates-fans.trycloudflare.com';
 
     // Add version string for cache busting
-    const CACHE_VERSION = "v=18";
+    const CACHE_VERSION = "v=19";
 
     // â”€â”€â”€ Inject status badge CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const style = document.createElement('style');
